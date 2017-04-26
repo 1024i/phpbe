@@ -1,0 +1,80 @@
+html { background: #f7f7f7; }
+body {
+	background: #fff;
+	color: #333;
+	margin: 1em auto 0 auto;
+	width: 700px;
+	padding: 10px 20px 40px 20px;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	border-radius: 11px;
+	border: 1px solid #dfdfdf;
+}
+
+
+body,td,th,div,span,li, input{font-size:14px; }
+.clrl{clear:left;}
+.clrr{clear:right;}
+.clr{clear:both;}
+.hide{display:none;}
+
+.head{ margin:5px 0 10px 0; padding:0 0 10px 10px; border-bottom:#ccc 1px solid;}
+.logo{ background:url(../images/logo.png) no-repeat; width:240px; height:60px;}
+.logo-text{ text-align:right; padding-top:38px; padding-right:28px; font-size:12px;}
+
+a { color: #444; text-decoration: none; }
+a:hover { color: #d54e21; }
+
+ ul.steps, .steps li{margin:0; padding:0;}
+ ul.steps{ margin-left:150px;}
+.steps li{list-style:none; float:left; width:120px; text-align:center;}
+.steps li div.icon{background:url(../images/step.gif); width:120px; height:40px;}
+.steps li div.title{text-align:center; padding-top:10px; padding-bottom:30px;}
+
+.step-on #icon-1{ background-position:0px 0px;}
+.step-over #icon-1{ background-position:0px -40px;}
+.step-off #icon-1{ background-position:0px -80px;}
+
+.step-on #icon-2{ background-position:0px -120px;}
+.step-over #icon-2{ background-position:0px -160px;}
+.step-off #icon-2{ background-position:0px -200px;}
+
+.step-on #icon-3{ background-position:0px -240px;}
+.step-over #icon-3{ background-position:0px -280px;}
+.step-off #icon-3{ background-position:0px -320px;}
+
+.step-on .title{ color:#C0DA9C;}
+.step-over .title{ color:#FCA82B;}
+.step-off .title{ color:#BBBBBB;}
+
+.error{ background:url(../images/icon-error.png) 5px center no-repeat #FDF4F5;  padding: 8px; padding-left:30px; color:#c00; border-top:#c00 1px solid; border-bottom:#c00 1px solid;}
+
+.init-form div{margin-bottom:5px;}
+.init-form label{ float:left; width:120px; text-align:right; padding-right:5px;}
+.init-form .button
+{
+	line-height: 14px;
+	padding: 3px 8px;
+	cursor: pointer;
+	border: 1px solid #bbb;
+	color: #464646;
+	-moz-border-radius: 6px;
+	-khtml-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	-khtml-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+.init-form .button:hover
+{
+	color: #000;
+	border-color: #666;
+}
+
+
+
+

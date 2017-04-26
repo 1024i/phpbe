@@ -1,0 +1,56 @@
+
+// 生成 label 标签函数
+.fn-label(@color) {
+  background-color: @color;
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: darken(@color, 10%);
+    }
+  }
+}
+
+
+
+.label{
+  padding: 3px 8px;
+  font-weight: bold;
+  line-height: 1;
+  color: #ffffff;
+  white-space:nowrap;
+  vertical-align:baseline;
+  .border-radius( 3px );
+
+  &[href] {
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+}
+
+
+.label {
+  .fn-label(@gray-light);
+}
+
+.label-primary {
+  .fn-label(@color-primary);
+}
+
+.label-success {
+  .fn-label(@color-success);
+}
+
+.label-warning {
+  .fn-label(@color-warning);
+}
+
+.label-error {
+  .fn-label(@color-error);
+}
+
+.label-info {
+  .fn-label(@color-info);
+}

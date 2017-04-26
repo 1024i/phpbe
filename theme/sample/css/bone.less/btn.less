@@ -1,0 +1,95 @@
+
+// 生成 btn 按钮函数
+.fn-btn(@color; @background; @border) {
+  color: @color;
+  background-color: @background;
+  border-color: @border;
+
+  &:hover,
+  &:focus,
+  &:active{
+    color: @color;
+    background-color: darken(@background, 8%);
+    border-color: darken(@border, 12%);
+  }
+
+  &[disabled]{
+    &,
+    &:hover,
+    &:focus,
+    &:active{
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+}
+
+
+
+.btn{
+  display: inline-block;
+  *display: inline;
+  padding: @padding-base-vertical @padding-base-horizontal;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: @font-size-base;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  .border-radius( @border-radius-base );
+  *zoom: 1;
+
+  &:active{
+    outline: 0;
+    background-image: none;
+  }
+
+  &[disabled]{
+    cursor: default;
+    .opacity(.65);
+  }
+}
+
+.btn {
+  .fn-btn(@btn-color; @btn-bg; @btn-border);
+}
+
+.btn-primary {
+  .fn-btn(#fff; @color-primary; darken(@color-primary, 5%));
+}
+
+.btn-success {
+  .fn-btn(#fff; @color-success; darken(@color-success, 5%));
+}
+
+.btn-warning {
+  .fn-btn(#fff; @color-warning; darken(@color-warning, 5%));
+}
+
+.btn-error {
+  .fn-btn(#fff; @color-error; darken(@color-error, 5%));
+}
+
+.btn-info {
+  .fn-btn(#fff; @color-info; darken(@color-info, 5%));
+}
+
+
+.btn-large {
+  padding: @padding-large-vertical @padding-large-horizontal;
+  font-size: @font-size-large;
+  .border-radius( @border-radius-large );
+}
+
+
+.btn-small,.btn-mini {
+  padding: @padding-small-vertical @padding-small-horizontal;
+  font-size: @font-size-small;
+  .border-radius( @border-radius-small );
+}
+
+.btn-mini {
+  padding: @padding-mini-vertical @padding-mini-horizontal;
+}

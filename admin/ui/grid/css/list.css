@@ -1,0 +1,65 @@
+.admin_ui_list{}
+
+
+
+.admin_ui_list .toolbar{ padding:5px 20px 5px 5px; }
+.admin_ui_list .toolbar table{width:100%;background-color:#FFFFFF;}
+
+.admin_ui_list .toolbar a.icon{ padding:34px 5px 0px 5px;width:100%; display: block; white-space:nowrap;}
+
+.admin_ui_list .toolbar a.create{background:url(../images/icon_32/create.png) no-repeat;}
+.admin_ui_list .toolbar a.edit{background:url(../images/icon_32/edit.png) no-repeat;}
+.admin_ui_list .toolbar a.unblock{background:url(../images/icon_32/unblock.png) no-repeat;}
+.admin_ui_list .toolbar a.block{background:url(../images/icon_32/block.png) no-repeat;}
+.admin_ui_list .toolbar a.delete{background:url(../images/icon_32/delete.png) no-repeat;}
+
+.admin_ui_list .toolbar a.able{background-position:center 0px; color:#666;}
+.admin_ui_list .toolbar a.able:hover{background-position:center -64px; color:#ff9900;}
+.admin_ui_list .toolbar a.disable{background-position:center -128px; color:#BBBBBB;}
+
+
+
+.admin_ui_list .list thead th{background-color:#F0F0F0; border-bottom:1px solid #ccc;}
+.admin_ui_list .list thead th a{color:#4466aa;}
+.admin_ui_list .list thead th a:hover{color:#FF0000;}
+
+.admin_ui_list .list tbody tr.hover,
+.admin_ui_list .list tbody tr.hover td{background-color:#FFFFDD;}
+.admin_ui_list .list tbody tr.checked,
+.admin_ui_list .list tbody tr.checked td{background-color:#FFFFBB;}
+
+.admin_ui_list .list tfoot td{background-color:#F0F0F0; border-top:1px solid #ccc;padding-left:12px;}
+
+.admin_ui_list .list a.icon{display:inline-block; width:16px; height:16px;}
+
+.admin_ui_list .list a.unblock,
+.admin_ui_list .list a.block-0{background:url(../images/icon_16/block.png) no-repeat;}
+.admin_ui_list .list a.block,
+.admin_ui_list .list a.block-1{background:url(../images/icon_16/block.png) 0px -16px no-repeat;}
+.admin_ui_list .list a.edit{background:url(../images/icon_16/edit.png) no-repeat;}
+.admin_ui_list .list a.edit:hover{background-position:0px -16px;}
+.admin_ui_list .list a.delete{background:url(../images/icon_16/delete.png) no-repeat; }
+.admin_ui_list .list a.delete:hover{ background-position:0px -16px;}
+.admin_ui_list .list a.on,
+.admin_ui_list .list a.status-1{background:url(../images/icon_16/on.gif) no-repeat;}
+.admin_ui_list .list a.off,
+.admin_ui_list .list a.status-0{background:url(../images/icon_16/on.gif) 0px -16px no-repeat;}
+.admin_ui_list .list a.checked,
+.admin_ui_list .list a.checked-1{background:url(../images/icon_16/checked.png) no-repeat;}
+.admin_ui_list .list a.unchecked,
+.admin_ui_list .list a.checked-0{background:url(../images/icon_16/checked.png) 0px -16px no-repeat;}
+
+.admin_ui_list .list a.order_up{background:url(../images/icon_16/rank.png) no-repeat;cursor:pointer;}
+.admin_ui_list .list a.order_up_disable{background:url(../images/icon_16/rank.png) -16px 0px no-repeat;cursor:default;}
+.admin_ui_list .list a.order_down{background:url(../images/icon_16/rank.png) 0px -16px no-repeat;cursor:pointer;}
+.admin_ui_list .list a.order_down_disable{background:url(../images/icon_16/rank.png) -16px -16px no-repeat;cursor:default;}
+
+
+.admin_ui_list .pagination a{ color: #666;}
+.admin_ui_list .pagination a:hover{background-color: #FFFFDD;}
+.admin_ui_list .pagination .active a{background-color: #FFFFBB;}
+.admin_ui_list .pagination .disabled a,
+.admin_ui_list .pagination .disabled a:hover{background-color: transparent;color: #ccc;}
+
+
+

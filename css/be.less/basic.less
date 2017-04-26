@@ -1,0 +1,40 @@
+html{}
+
+body{
+  margin:0;
+
+  font-family: @body-font-family;
+  font-size: @body-font-size;
+  line-height: @body-line-height;
+  background-color: @body-background-color;
+  color: @body-color;
+}
+
+a{
+  color: @a-color;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: @a-hover-color;
+    text-decoration: underline;
+  }
+}
+
+.show{display:block;}
+.hide{display:none;}
+.invisible{visibility:hidden;}
+
+.float-left{float:left;}
+.float-right{float:right;}
+
+.clear-left{clear:left;}
+.clear-right{clear:right;}
+.clear-both{clear:both;}
+.clear-left,
+.clear-right,
+.clear-both{width:0; height:0; margin:0; padding:0; overflow:hidden; visibility:hidden;}
+
+.align-left{text-align: left;}
+.align-right{ text-align: right;}
+.align-center{ text-align: center;}

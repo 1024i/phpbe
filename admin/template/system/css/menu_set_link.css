@@ -1,0 +1,33 @@
+
+.page_system_menu_set_link{ padding:0px 10px;}
+
+.page_system_menu_set_link table{ border-collapse:collapse; width:100%;}
+.page_system_menu_set_link th{height:30px;}
+.page_system_menu_set_link table, 
+.page_system_menu_set_link tr, 
+.page_system_menu_set_link td{margin:0; padding:0;}
+
+.page_system_menu_set_link .apps,
+.page_system_menu_set_link .menus{ height:210px; text-align:left;}
+
+.page_system_menu_set_link .apps,
+.page_system_menu_set_link .menus{ border:#ccc 1px solid; overflow:hidden; overflow-y:scroll;}
+
+.page_system_menu_set_link .apps ul,
+.page_system_menu_set_link .menus ul{ padding:0; margin:0;}
+
+.page_system_menu_set_link .apps li,
+.page_system_menu_set_link .menus li{padding:5px; cursor:pointer; list-style:none;}
+
+.page_system_menu_set_link .apps li{ background:url(../images/arrow_right.gif) no-repeat right center;}
+
+.page_system_menu_set_link .apps li.hover,
+.page_system_menu_set_link .menus li.hover{background-color: #FFFFDD;}
+
+.page_system_menu_set_link .apps li.on,
+.page_system_menu_set_link .menus li.on{background-color: #FFFFBB;}
+
+.page_system_menu_set_link .menus .menu{ display:none;}
+
+.page_system_menu_set_link .apps li img{margin:0px 3px;}
+

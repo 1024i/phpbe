@@ -1,0 +1,23 @@
+html, body{background:#ECECEC; }
+body{ padding-top:32px;}
+
+.view-thumbnail .files{}
+.view-thumbnail .files li{ display:inline-block; margin:4px 4px 8px 4px; width:124px;}
+
+.view-thumbnail .file{ background-color:#FFFFFF; }
+.view-thumbnail .file-icon{ width:122px; height:91px; overflow:hidden; text-align:center; line-height:91px;}
+.view-thumbnail .file-icon img{ max-width:100%; height:auto;}
+
+.view-thumbnail .file-name{ text-align:center; font-size:12px;overflow:hidden;text-overflow:ellipsis; padding:3px;}
+
+
+.view-list{ background-color:#FFFFFF; padding:0px 10px;}
+.view-list thead{}
+.view-list thead th{}
+
+.view-list tbody td{ line-height:35px; padding:2px 6px;}
+
+.view-list .file-icon{width:47px; height:35px; overflow:hidden; text-align:center; line-height:35px;}
+.view-list .file-icon img{ max-width:100%; height:auto;}
+.view-list .size{ color:#999; font-size:12px;}
+.view-list .time{ color:#999; font-size:12px;}

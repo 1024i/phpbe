@@ -1,0 +1,31 @@
+.admin_ui_category{}
+
+.admin_ui_category thead th{background-color:#F0F0F0; border-bottom:1px solid #ccc;}
+.admin_ui_category tbody input{ margin-bottom:0;}
+.admin_ui_category tfoot td{background-color:#F0F0F0; border-top:1px solid #ccc;padding-left:12px;}
+
+.admin_ui_category a.icon{display:inline-block; width:16px; height:16px;}
+
+.admin_ui_category a.delete{background:url(../images/delete.gif) no-repeat; }
+.admin_ui_category a.delete:hover{ background-position:0px -16px;}
+
+.admin_ui_category .order a.up{background:url(../images/order_up.gif) no-repeat;}
+.admin_ui_category .order a.down{background:url(../images/order_down.gif) no-repeat}
+.admin_ui_category .order a.disable{ background-position:0px -16px;cursor:default;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+
+.remote_app .name{ margin:10px 0px; font-size:18px; font-weight:bold; border-bottom:#ddd 1px solid; padding:0px 0px 5px 10px;}
+
+.remote_app .logo{ padding:10px;text-align:center;}
+.remote_app .logo img{ width:200px;}
+
+.remote_app h4{ border-bottom:#eee 1px solid; padding-bottom:10px;}
+
+.remote_app .note{ padding-bottom:10px; font-size:12px; color:#999;}
+
+.remote_app .summary{ padding-bottom:10px; line-height:25px;}
+.remote_app .screenshots{ padding:10px 10px 10px 40px; background:url(../images/screenshot_bg.png) left center no-repeat #FFF5F2; border:#FFEAE5 1px solid; margin-bottom:20px; min-height:60px;}
+
+.remote_app .buttons{ padding-bottom:20px; }
+
+.remote_app .version_description{ padding-bottom:20px; margin-top:20px; }
+
+.remote_app .version_comments{ padding-bottom:20px;}
+.remote_app .version_comments .version_comment{ padding-bottom:20px;}
+.remote_app .version_comments .version_comment .version_comment_box{ border:#eee 1px solid; padding:10px 15px 15px 15px; border:1px solid #F7E998;background-color:#FFFFD9;position:relative;}
+.remote_app .version_comments .version_comment .version_comment_box .speach-pull{ background:url(../images/comment-speach-pull.png) no-repeat; width:18px; height:20px; position: absolute; left:-18px; top:10px;}
+.remote_app .version_comments .version_comment_reply .version_comment_box{ border:#eee 1px solid; padding:10px 15px 15px 15px; border:1px solid #BBD6B7;background-color:#E9F9E1;position:relative;}
+.remote_app .version_comments .version_comment_reply .version_comment_box .speach-pull{ background:url(../images/comment-reply-speach-pull.png) no-repeat; width:18px; height:20px; position: absolute; right:-18px; top:10px;}
+.remote_app .version_comment_title{ font-weight:bold;}
+.remote_app .version_comment_title .version_comment_location{ font-weight:normal;font-size:12px; color:#999;}
+.remote_app .version_comment_title .version_comment_time{ font-weight:normal;font-size:12px; color:#999;}
+
+.remote_app .version_comment_body{ margin-top:10px;}
+.remote_app .version_comment-form{}
+
+
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+
+
+.position-table{}
+.position-table{}
+
+.position-table .position{ width:60px; height:60px; text-align:center; line-height:60px; background-color:#ddd; color:#999; margin:2px; cursor:pointer;}
+.position-table .on,
+.position-table .position:hover{ background-color:#ff3300; color:#fff;}
+
+.position-table .position-north,
+.position-table .position-center,
+.position-table .position-south{ width:120px;}
+.position-table .position-west,
+.position-table .position-center,
+.position-table .position-east{ height:120px; line-height:120px;}

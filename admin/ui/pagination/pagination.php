@@ -1,0 +1,141 @@
+<?php
+namespace admin\ui;
+
+class pagination extends \ui
+{
+
+    private $total = 0; // 总记录数
+    private $pages = 0; // 总页数
+    private $limit = 20; // 每页记录数
+    private $page = 1; // 页码
+    private $url = './'; // 链接
+
+	private $head = false;
+	public function head()
+	{
+		if (!$this->head) {
+			$this->head = true;
+			echo '<link type="text/css" rel="stylesheet" href="ui/pagination/css/pagination.css" />';
+		}
+	}
+	
+    // 设置当前第几页
+    public function set_page($page)
+    {
+        $page = intval($page);
+        if ($page < 0) $page = 1;
+        $this->page = $page;
+		
+		$this->update();
+    }
+
+    // 设置总记录数
+    public function set_total($total)
+    {
+        $total = intval($total);
+        if ($total < 0) $total = 0;
+        $this->total = $total;
+		
+		$this->update();
+    }
+
+    // 设置链接
+    public function set_url($url)
+    {
+        if (strpos($url, '?') === false)
+            $url .= '?';
+        else
+            $url .= '&';
+        $this->url = $url;
+    }
+
+    // 设置第页显示多少条记录
+    public function set_limit($limit)
+    {
+        $limit = intval($limit);
+        if ($limit < 0) $limit = 10;
+        $this->limit = $limit;
+		
+		$this->update();
+    }
+
+
+    // 更新
+    public function update()
+    {
+		if ($this->total<=0) return;
+		
+        $this->pages = ceil($this->total / $this->limit);
+        if ($this->page > $this->pages) $this->page = $this->pages;
+        if ($this->page < 1) $this->page = 1;
+    }
+
+    public function get_total()
+    {
+        return $this->total;
+    }
+
+    public function get_pages()
+    {
+        return $this->pages;
+    }
+
+    public function get_limit()
+    {
+        return $this->limit;
+    }
+
+    public function get_page()
+    {
+        return $this->page;
+    }
+
+    public function get_url()
+    {
+        return $this->url;
+    }
+
+    public function get_offset()
+    {
+        return ($this->page - 1) * $this->limit;
+    }
+
+
+    public function display()
+    {
+        if ($this->pages <= 1) return;
+        $window = 15;
+        $start_page = $this->page - intval($window / 2);
+        if ($start_page < 1) $start_page = 1;
+        $end_page = $start_page + $window - 1;
+        if ($end_page > $this->pages) $end_page = $this->pages;
+		
+		$this->head();
+        echo '<div class="admin_ui_pagination">';
+        echo '<ul>';
+        if ($this->page == 1) {
+            echo '<li class="prev disabled"><a href="#">&larr; '.'上一页'.'</a></li>';
+        } else {
+            echo '<li class="prev"><a href="' . $this->url . 'page=' . ($this->page - 1) . '">&larr; '.'上一页'.'</a></li>';
+        }
+        for ($i = $start_page; $i <= $end_page; $i++)
+        {
+            if ($i == $this->page) {
+                echo '<li class="active"><a href="#">' . $i . '</a></li>';
+            } else {
+                echo '<li><a href="' . $this->url . 'page=' . $i . '">' . $i . '</a></li>';
+            }
+        }
+        if ($this->page < $this->pages) {
+            echo '<li class="next"><a href="' . $this->url . 'page=' . ($this->page + 1) . '">'.'下一页'.'  &rarr;</a></li>';
+        } else {
+            echo '<li class="next disabled"><a href="#">'.'下一页'.'  &rarr;</a></li>';
+        }
+        echo '</ul>';
+        echo '</div>';
+    }
+
+
+
+}
+?>

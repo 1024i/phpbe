@@ -1,0 +1,13 @@
+
+.theme-west .theme-box-body{ padding:0px;}
+
+.theme-west .menu{}
+.theme-west .menu ul{ margin:0; padding:0;}
+.theme-west .menu li{ list-style:none;}
+.theme-west .menu li a{ display:block; height:50px; line-height:50px; padding:0px 10px 0px 30px; font-size:16px; border-bottom:#EEEEEE 1px solid; background-color:#f8f8f8; color:#444; text-decoration:none;}
+.theme-west .menu li a:hover{color:#FF3300;}
+.theme-west .menu li.parent{}
+.theme-west .menu li.parent a{ background:url(../images/parent.png) no-repeat right center #f8f8f8;}
+.theme-west .menu li.parent ul{margin:0; padding:0;}
+.theme-west .menu li.parent li{}
+.theme-west .menu li.parent li a{padding:0px 10px 0px 50px; background-image:none; background-color:#FFFFFF;}

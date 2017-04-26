@@ -1,0 +1,8 @@
+
+.admin_ui_editor table{width:100%;}
+.admin_ui_editor td{padding:6px 4px;}
+.admin_ui_editor .label{background-color:#F6F6F6; border-bottom:1px solid #E9E9E9; border-right:1px solid #E9E9E9; text-align:right; width:140px;}
+
+.admin_ui_editor label.error {display: inline; background:url(../images/unchecked.gif) no-repeat; height:16px; line-height:16px; margin-left:5px; padding-left:20px; color:#f30;}
+.admin_ui_editor label.success {display: inline; background:url(../images/checked.gif) no-repeat; height:16px; line-height:16px; margin-left:5px; padding-left:20px;}
+.admin_ui_editor input.error { background-color:#fee;}

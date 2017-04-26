@@ -1,0 +1,91 @@
+
+table {
+  max-width: 100%;
+  background-color: @table-bg;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th {
+  text-align: left;
+}
+
+
+.table {
+  width: 100%;
+
+  th,
+  td {
+    padding: @table-cell-padding;
+    line-height: @line-height;
+    vertical-align: top;
+    border-top: 1px solid @table-border-color;
+  }
+
+  th {
+    vertical-align: bottom;;
+    border-bottom: 1px solid darken(@table-border-color, 10%);
+
+    background-color: @table-thead-bg;
+    #gradient.vertical( lighten(@table-thead-bg, 5%); @table-thead-bg; 0%; 100%);
+  }
+
+  tfoot td {
+    border-top: 1px solid darken(@table-border-color, 10%);
+    border-bottom: 1px solid @table-border-color;
+
+    background-color: @table-thead-bg;
+    #gradient.vertical( lighten(@table-thead-bg, 5%); @table-thead-bg; 0%; 100%);
+  }
+
+  // 嵌套
+  .table {
+    background-color: @body-bg;
+  }
+}
+
+
+// 紧凑的，边距变小
+.table-condensed {
+  th,
+  td {
+    padding: @table-condensed-cell-padding;
+  }
+}
+
+// 带边框
+.table-bordered {
+  border: 1px solid @table-border-color;
+  th,
+  td {
+    border: 1px solid @table-border-color;
+  }
+
+  th {
+    border-bottom: 1px solid darken(@table-border-color, 10%);
+  }
+
+  tfoot td {
+    border-top: 1px solid darken(@table-border-color, 10%);
+  }
+}
+
+
+// 行间隔条纹
+.table-striped {
+  tbody tr:nth-child(odd) {
+    td,
+    th {
+      background-color: @table-bg-striped;
+    }
+  }
+}
+
+// 鼠标悬停背景变色
+.table-hover {
+  tbody tr:hover {
+    td{
+      background-color: @table-bg-hover;
+    }
+  }
+}
