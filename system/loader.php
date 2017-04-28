@@ -21,6 +21,8 @@ class loader
         $paths = explode('\\', $class);
         if ($paths[1] == 'admin') {
             $paths[1] = ADMIN;
+        } elseif ($paths[1] == 'data') {
+            $paths[1] = DATA;
         }
 
         $path = PATH_ROOT . implode(DS,  $paths) . '.php';
