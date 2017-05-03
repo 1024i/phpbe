@@ -19,13 +19,14 @@ class mysql
      * 连接数据库
      *
      * @return bool 是否连接成功
+     * @throws
      */
 	public static function connect()
 	{
         $config = be::get_config('db');
 
         $connection = new \PDO('mysql:dbname='.$config->name.';host='.$config->host.';port='.$config->port.';charset=utf8', $config->user, $config->pass);
-        if (!$connection) be_exit('连接 数据库'.$config->name.'（'.$config->host.'） 失败！');
+        if (!$connection) throw new exception('连接 数据库'.$config->name.'（'.$config->host.'） 失败！');
 
         // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
         $connection->query('SET NAMES utf8');
@@ -50,6 +51,7 @@ class mysql
      *
      * @param string $sql 查询语句
      * @return \PDOStatement | false：执行失败/执行成功
+     * @throws
      */
     public static function prepare($sql, array $driver_options = array())
     {
@@ -58,8 +60,7 @@ class mysql
 
         $statement = self::$connection->prepare($sql, $driver_options);
         if (!$statement) {
-            self::set_error($statement->errorCode().'：'.$statement->errorInfo().' SQL=' . $sql);
-            return false;
+            throw new exception($statement->errorCode().'：'.$statement->errorInfo().' SQL=' . $sql);
         }
 
         self::$statement = $statement;
@@ -72,10 +73,10 @@ class mysql
      * @param string $sql 查询语句
      * @param array $bind 占位参数
      * @return bool 执行成功/执行失败
+     * @throws
      */
     public static function execute($sql = null, $bind = array())
     {
-
         if ($sql === null) {
             if (self::$statement == null) {
                 self::set_error('没有预编译SQL！');
@@ -85,8 +86,7 @@ class mysql
             if (!self::$statement->execute($bind)) {
                 $error = self::$statement->errorInfo();
                 //print_r($error);
-                self::set_error($error[1].'：'.$error[2]);
-                return false;
+                throw new exception($error[1].'：'.$error[2]);
             }
 
             return true;
@@ -104,8 +104,7 @@ class mysql
                 if ($statement === false) {
                     $error = self::$connection->errorInfo();
                    // print_r($error);
-                    self::set_error($error[1].'：'.$error[2].' SQL=' . $sql);
-                    return false;
+                    throw new exception($error[1].'：'.$error[2].' SQL=' . $sql);
                 }
                 self::$statement = $statement;
 

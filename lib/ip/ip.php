@@ -31,7 +31,7 @@ class ip extends \system\lib
     // 析构函数
     public function __destruct()
     {
-        if ($this->db ! == null && is_resource($this->db)) fclose($this->db);
+        if ($this->db !== null && is_resource($this->db)) fclose($this->db);
     }
 
     public function convert($ip)

@@ -4,21 +4,17 @@ use \system\be;
 use \system\request;
 use \system\response;
 
-require PATH_ROOT . DS . 'system' . DS . 'loader.php';
-spl_autoload_register(array('\\system\\loader', 'autoload'));
-
-require PATH_ROOT . DS . 'system' . DS . 'tool.php';
-
-// 检查网站配置， 是否暂停服务
-$config_system = be::get_config('system');
-if ($config_system->offline === '1') response::end($config_system->offline_message);
-
-if ($config_system->error_log !== '0') {
-    set_error_handler('\system\error_log::error');
-    set_exception_handler('\system\error_log::exception');
-}
-
 try {
+
+    require PATH_ROOT . DS . 'system' . DS . 'loader.php';
+    spl_autoload_register(array('\\system\\loader', 'autoload'));
+
+    require PATH_ROOT . DS . 'system' . DS . 'tool.php';
+
+    // 检查网站配置， 是否暂停服务
+    $config_system = be::get_config('system');
+    if ($config_system->offline === '1') response::end($config_system->offline_message);
+
     // 启动 session
     \system\session::start();
 
@@ -169,12 +165,15 @@ try {
             response::end('未定义的任务：' . $task);
         }
     }
-} catch (Throwable $t) {
+
+} catch (Throwable $e) {
+    \system\error_log::log($e);
+
     if (request::is_ajax()) {
         response::set('error', -500);
-        response::set('message', $t->getMessage());
+        response::set('message', $e->getMessage());
         response::ajax();
     } else {
-        response::end($t->getMessage());
+        response::end($e->getMessage());
     }
 }

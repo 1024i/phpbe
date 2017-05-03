@@ -1,9 +1,9 @@
 <?php
-namespace lib;
+namespace lib\scws;
 
-require PATH_ROOT.DS.'libs'.DS.'scws'.DS.'pscws4'.DS.'pscws4.class.php';
+require PATH_ROOT.DS.'lib'.DS.'scws'.DS.'pscws4'.DS.'pscws4.class.php';
 
-class scws extends\ lib
+class scws extends \system\lib
 {
     
     private $handler = null;
@@ -11,11 +11,11 @@ class scws extends\ lib
     // 构造函数
     public function __construct()
     {
-		$this->handler = new PSCWS4();
+		$this->handler = new \PSCWS4();
 
 		$this->handler->set_charset('utf8');
-		$this->handler->set_dict(PATH_ROOT.DS.'libs'.DS.'scws'.DS.'pscws4'.DS.'etc'.DS.'dict.utf8.xdb');
-		$this->handler->set_rule(PATH_ROOT.DS.'libs'.DS.'scws'.DS.'pscws4'.DS.'etc'.DS.'rules.utf8.ini');
+		$this->handler->set_dict(PATH_ROOT.DS.'lib'.DS.'scws'.DS.'pscws4'.DS.'etc'.DS.'dict.utf8.xdb');
+		$this->handler->set_rule(PATH_ROOT.DS.'lib'.DS.'scws'.DS.'pscws4'.DS.'etc'.DS.'rules.utf8.ini');
     }
 
 	

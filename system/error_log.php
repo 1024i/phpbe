@@ -1,157 +1,81 @@
 <?php
+
 namespace system;
 
 /**
- * debug
+ * error_log
  */
 class error_log
 {
+    /*
+     * 错误或异常信息写入日志文件
+     *
+     * @param Throwable $e 错误或异常对象
+     * @author Lou Barnes<i@liu12.com>
+     */
+    public static function log(\Throwable $e)
+    {
+        $config_system = be::get_config('system');
+        if ($config_system->error_log & $e->getCode()) return;
 
-	/**
-	 * 处理普通 错语
-	 *
-	 * @param int $code 错误的级别
-	 * @param string $message 错误的信息
-	 * @param string $file 发生错误的文件名
-	 * @param int $line 错误发生的行号
-	 * @param array $context 指向错误发生时活动符号表的 array。 包含错误触发处作用域内所有变量的数组。
-	 * @throws exception\error_exception
-	 */
-	public static function error($code, $message, $file, $line, $context = array())
-	{
-		throw new exception\error_exception($code, $message, $file, $line, $context);
+        $type = null;
+        if ($e instanceof \Exception) {
+            $type = 'exception';
+        } elseif ($e instanceof \Error) {
+            $type = 'error';
+        }
 
-		if (!(error_reporting() & $code)) return;
+        $t = time();
 
-		$error = array(
-			'type' => 'error',
-			'code' => $code,
-			'message' => $message,
-			'file' => $file,
-			'line' => $line,
-			'trace' => debug_backtrace()
-		);
+        $error = [
+            'type' => $type,
+            'code' => $e->getCode(),
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTrace(),
+            'POST' => &$_POST,
+            'GET' => &$_GET,
+            'COOKIE' => &$_COOKIE,
+            'SESSION' => &$_SESSION,
+            'SERVER' => &$_SERVER,
+            'REQUEST' => &$_REQUEST,
+            'time' => $t,
+        ];
 
-		self::handle($error);
-	}
+        $year = date('Y', $t);
+        $month = date('m', $t);
+        $day = date('d', $t);
 
+        $path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month . DS . $day . '.data';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
 
-	/*
-	 * 处理异常（exception）错语
-	 *
-	 * @param Exception $e 异常
-	 *
-	 * @author Lou Barnes
-	 */
-	public static function exception($e)
-	{
-		if (!$e) return;
+        $offset = 0;
+        if (is_file($path)) $offset = filesize($path);
 
-		$error = array(
-			'type' => 'exception',
-			'code' => $e->getCode(),
-			'message' => $e->getMessage(),
-			'file' => $e->getFile(),
-			'line' => $e->getLine(),
-			'trace' => $e->getTrace()
-		);
+        // 单个日志文件大于 256 M 时，创建新的日志文件
+        $i = 1;
+        while ($offset > 256 * 1024 * 1024) {
+            $day = date('d', $t) . '-' . $i;
+            $path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month . DS . $day . '.data';
+            $offset = 0;
+            if (file_exists($path)) $offset = filesize($path);
+            $i++;
+        }
 
-		self::handle($error);
-	}
+        $error_data = serialize($error);
+        $f = fopen($path, 'ab+');
+        if ($f) {
+            fwrite($f, $error_data);
+            fclose($f);
+        }
 
-	public static function shutdown() {
-
-	}
-
-	/*
-	 * 处理SQL错语
-	 *
-	 * @param int $code 错误码
-	 * @param string $message 错误信息
-	 * @param string $sql 出错的 SQL 语句
-	 *
-	 * @author Lou Barnes
-	 */
-	public static function sql($code, $message, $sql)
-	{
-		$trace = debug_backtrace();
-
-		$file = '';
-		$line = 0;
-		$db_class_path = PATH_ROOT.DS.'system'.DS.'db.php';
-		foreach ($trace as $k => &$v) {
-			if (!isset($v['file'])) continue;
-			if (strncmp($db_class_path, $v['file'], strlen($db_class_path)) !== 0) {
-				$file = $v['file'];
-				$line = $v['line'];
-			}
-		}
-
-		$error = array(
-			'type' => 'sql',
-			'code' => $code,
-			'message' => $message.' SQL：'.$sql,
-			'file' => $file,
-			'line' => $line,
-			'trace' => $trace
-		);
-
-		self::handle($error);
-	}
-
-
-	/*
-	 * 合并处理错误信息
-	 * 跟据DEBUG 设置项显录错误信息，记录到日志文件
-	 *
-	 * @param array $error 错误信息
-	 *
-	 * @author Lou Barnes
-	 */
-	private static function handle($error)
-	{
-		$config_system = be::get_config('system');
-		if ($config_system->debug & 1)	// 输出调试信息
-		{
-			echo '<h1>出错啦！</h1>';
-			echo '错误编号：'.$error['trace']['code'].'<br />';
-			echo '错误信息：<pre style="display: inline;">'.htmlentities($error['trace']['message'], ENT_QUOTES, 'UTF-8').'</pre><br />';
-			echo '文件：'.$error['trace']['file'].'<br />';
-			echo '行号：'.$error['trace']['line'].'<br />';
-			echo '时间：'.date('Y-m-d H:i:s').'<br />';
-		}
-
-		if ($config_system->debug & 2) // 记录调试信息
-		{
-			debug::log($error);
-		}
-	}
-
-
-	/*
-	 * 调试信息写入日志文件
-	 *
-	 * @param array $error 错误信息
-	 *
-	 * @author Lou Barnes
-	 */
-	public static function log($error)
-	{
-		$t = time();
-
-		$error['POST'] = &$_POST;
-		$error['GET'] = &$_GET;
-		$error['COOKIE'] = &$_COOKIE;
-		$error['SESSION'] = &$_SESSION;
-		$error['SERVER'] = &$_SERVER;
-		$error['REQUEST'] = &$_REQUEST;
-		$error['time'] = $t;
-
-		$path = PATH_DATA.DS.'system'.DS.'error_log'.DS.date('Y',$t).DS.date('m',$t).DS.date('d',$t).'.log';
-		$dir = dirname($path);
-		if (!is_dir($dir)) mkdir($dir, 0777, true);
-
-		$formatted_error = strtr(serialize($error), array("\r\n" => ' '.chr(0), "\r" => chr(0), "\n" => chr(0))) . "\n";
-		file_put_contents($path, $formatted_error, FILE_APPEND | LOCK_EX);
-	}
+        $path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month . DS . $day . '.index';
+        $f = fopen($path, 'ab+');
+        if ($f) {
+            fwrite($f, pack('L', $offset));
+            fclose($f);
+        }
+    }
 }

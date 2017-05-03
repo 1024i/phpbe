@@ -6,7 +6,7 @@ namespace system;
  */
 abstract class app
 {
-	public $id = 0; // 应用在骨头网站上的编号, 以便升级更新
+	public $id = 0; // 应用在BE网站上的编号, 以便升级更新
     public $name = ''; // 应用名
 	public $label = ''; // 中文标识名， 如 '用户管理系统'
 	public $version = '1.0'; // 当前版本号
@@ -15,7 +15,7 @@ abstract class app
     /**
      * 构造函数
      * 
-	 * @param int $id 该应用在骨头网站上的编号
+	 * @param int $id 该应用在BE网站上的编号
      * @param string $label 应用中文名
      * @param string $version 应用版本号
      * @param string $icon 图标

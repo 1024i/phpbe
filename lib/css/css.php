@@ -126,6 +126,8 @@ class css extends \system\lib
         $min = min($r, $g, $b);
         $max = max($r, $g, $b);
 
+        $h = null;
+
         $l = ($min + $max) / 2;
         if ($min == $max) {
             $s = $h = 0;

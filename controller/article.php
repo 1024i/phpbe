@@ -21,6 +21,9 @@ class article extends \system\controller
 		$table = be::get_table('article');
 		$table->where('a', 1);
 
+		echo 2232;
+		echo $table->get_last_sql();
+		exit;
 
 		$table->where('(');
 		$table->where('category_id', 44);

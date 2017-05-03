@@ -12,7 +12,7 @@ class template_setup_setting extends template
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>骨头 <?php echo bone::get_version(); ?> 安装程序 - <?php echo $this->get_title(); ?></title>
+<title>BE <?php echo be::get_version(); ?> 安装程序 - <?php echo $this->get_title(); ?></title>
 
 <script type="text/javascript" language="javascript" src="../js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" language="javascript">$.ajaxSetup({cache: false});</script>
@@ -60,7 +60,7 @@ class template_setup_setting extends template
 	?>
 <div class="head">
 	<div class="logo">
-		<div class="logo-text">骨头 <?php echo bone::get_version(); ?> 安装程序</div>
+		<div class="logo-text">BE <?php echo be::get_version(); ?> 安装程序</div>
 	</div>	
 </div>
 
@@ -90,7 +90,7 @@ class template_setup_setting extends template
 		$error_num = $this->get("error_num");
 		$error_msg = $this->get("error_msg");
 
-		$config = bone::get_config('system_db');
+		$config = be::get_config('system_db');
 		
 		if ($error_num) {
 		?>

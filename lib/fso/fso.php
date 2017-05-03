@@ -35,7 +35,7 @@ class fso extends \system\lib
 
         if (is_dir($path)) {
             $handle = opendir($path);
-            while (($file = readdir($handle)) ! == false) {
+            while (($file = readdir($handle)) !== false) {
                 if ($file != '.' && $file != '..') {
                     $this->rm_dir($path . DS . $file);
                 }
@@ -71,7 +71,7 @@ class fso extends \system\lib
 
         $handle = opendir($src);
         if ($handle) {
-            while (false ! == ($file = readdir($handle))) {
+            while (false !== ($file = readdir($handle))) {
                 if ($file != '.' && $file != '..') {
                     $path = $src . DS . $file;
                     if (is_file($path)) {

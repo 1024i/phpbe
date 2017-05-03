@@ -1,7 +1,7 @@
 <?php
 namespace lib\mail;
 
-include PATH_ROOT . DS . 'libs' . DS . 'mail' . DS . 'phpmailer' . DS . 'class.phpmailer.php';
+include PATH_ROOT . DS . 'lib' . DS . 'mail' . DS . 'phpmailer' . DS . 'class.phpmailer.php';
 
 /*
 @版本日期: 2014年9月28日
@@ -19,7 +19,7 @@ class mail extends \system\lib
     // 构造函数
     public function __construct()
     {
-        $this->mailer = new PHPMailer();
+        $this->mailer = new \PHPMailer();
         $this->mailer->SetLanguage('zh_cn', PATH_ROOT . DS . 'libs' . DS . 'mail' . DS . 'phpmailer' . DS . 'language' . DS);
 
         $config = \system\be::get_config('system_mail');

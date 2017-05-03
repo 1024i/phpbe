@@ -2,14 +2,14 @@ html{}
 
 body{
 	margin:0;
-	font-family:"Microsoft YaHei", "Î¢ÈíÑÅºÚ", SimSun, "ËÎÌå", Helvetica, Arial, sans-serif;
+	font-family:"Microsoft YaHei", "Î¢ï¿½ï¿½ï¿½Åºï¿½", SimSun, "ï¿½ï¿½ï¿½ï¿½", Helvetica, Arial, sans-serif;
 	font-size:14px;
 	line-height:150%;
 	background-color:#ffffff;
 	color:#333;
 }
 
-a:{color:#428bca;text-decoration:none;}
+a{color:#428bca;text-decoration:none;}
 a:hover, a:focus{color:#2a6496;text-decoration:underline;}
 a:hover, a:active {outline:0;}
 a:focus{outline:thin dotted #333;}

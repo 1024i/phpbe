@@ -4,7 +4,7 @@ class theme extends template
 
 	public function display()
 	{
-		$config = bone::get_config('system');
+		$config = be::get_config('system');
 ?>
 <!DOCTYPE html>
 <html>
@@ -64,7 +64,7 @@ class theme extends template
 	
 	protected function north()
 	{
-	$config = bone::get_config('system');
+	$config = be::get_config('system');
 	?>
 
 <div class="logo">
@@ -76,7 +76,7 @@ class theme extends template
 		<?php
 		$menu_id = request::get('menu_id', 0, 'int');
 		
-		$north_menu = bone::get_menu('north');
+		$north_menu = be::get_menu('north');
 		$north_menu_tree = $north_menu->get_menu_tree();
 		
 		if (count($north_menu_tree)) {
@@ -143,7 +143,7 @@ class theme extends template
 	protected function south()
 	{
 
-		$south_menu = bone::get_menu('south');
+		$south_menu = be::get_menu('south');
 		$south_menu_tree = $south_menu->get_menu_tree();
 		if (count($south_menu_tree)) {
 			echo '<div class="foot-menu">';
@@ -165,12 +165,12 @@ class theme extends template
 			echo '</div>';
 		}
 		
-		$config = bone::get_config('system');		
-		/* 免费使用骨头系统， 请保留 www.mrbone.org 链接 */
+		$config = be::get_config('system');
+		/* 免费使用BE系统， 请保留 www.phpbe.com 链接 */
 	?>
 <div class="copyright clr">
 &copy;2010 版权所有: <?php echo $config->site_name; ?> &nbsp; 
-使用 <a href="http://www.mrbone.org" target="_blank" title="访问骨头官网">骨头V<?php echo bone::get_version(); ?></a> 开发
+使用 <a href="http://www.phpbe.com" target="_blank" title="访问BE官网">BEV<?php echo be::get_version(); ?></a> 开发
 </div>
 	<?php
 	}
@@ -181,7 +181,7 @@ class theme extends template
 	protected function west()
 	{
 
-$my = bone::get_user();
+$my = be::get_user();
 	?>
 <h2>用户登陆</h2>
 
