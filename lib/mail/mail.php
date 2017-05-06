@@ -1,4 +1,5 @@
 <?php
+
 namespace lib\mail;
 
 include PATH_ROOT . DS . 'lib' . DS . 'mail' . DS . 'phpmailer' . DS . 'class.phpmailer.php';
@@ -127,14 +128,14 @@ class mail extends \system\lib
     }
 
     // 占位符格式化
-    public function format($text, $datas)
+    public function format($text, $data)
     {
-        if (is_array($datas)) {
-            foreach ($datas as $key => $val) {
+        if (is_array($data)) {
+            foreach ($data as $key => $val) {
                 $text = str_replace('{' . $key . '}', $val, $text);
             }
         } else {
-            $text = str_replace('{0}', $datas, $text);
+            $text = str_replace('{0}', $data, $text);
         }
 
         return $text;

@@ -1,4 +1,5 @@
 <?php
+
 namespace system;
 
 /**
@@ -16,11 +17,11 @@ abstract class row extends obj
     protected $cache_expire = 0;
 
     /**
-	 * 构造函数
+     * 构造函数
      *
-	 * @param string $row_name 表名
-	 * @param string $primary_key	主键名
-	 */
+     * @param string $row_name 表名
+     * @param string $primary_key 主键名
+     */
     public function __construct($row_name, $primary_key = 'id')
     {
         $this->table_name = $row_name;
@@ -30,8 +31,8 @@ abstract class row extends obj
     /**
      * 绑定一个数据源， GET, POST, 或者一个数组, 对象
      *
-     * @param string $data 要绑定的数据对象
-     * @return bool
+     * @param string | array | object $data 要绑定的数据对象
+     * @return \system\row | bool
      */
     public function bind($data)
     {
@@ -39,28 +40,28 @@ abstract class row extends obj
             $this->set_error('绑定失败，不合法的数据源！');
             return false;
         }
-        
+
         if (is_object($data)) $data = get_object_vars($data);
-        
+
         $properties = get_object_vars($this);
-        
+
         foreach ($properties as $key => $value) {
             if (isset($data[$key])) {
                 $val = $data[$key];
                 $this->$key = $val;
             }
         }
-        
+
         return $this;
     }
 
     /**
-	 * 加载记录
+     * 加载记录
      *
-	 * @param mixed $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
+     * @param string|int|array  $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
      * @return bool
-	 */
+     */
     public function load($field, $value = null)
     {
         $sql = null;
@@ -68,23 +69,23 @@ abstract class row extends obj
 
         if ($value === null) {
             if (is_array($field)) {
-                $sql = 'SELECT * FROM '.$this->table_name.' WHERE';
-                foreach ($field as $key=>$val) {
-                    $sql .= ' '.$key.'=? AND';
+                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE';
+                foreach ($field as $key => $val) {
+                    $sql .= ' ' . $key . '=? AND';
                     $values[] = $val;
                 }
-                $sql = substr($sql,0,-4);
+                $sql = substr($sql, 0, -4);
             } elseif (is_numeric($field)) {
-                $sql = 'SELECT * FROM '.$this->table_name.' WHERE '.$this->primary_key.' = \''.intval($field).'\'';
+                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $this->primary_key . ' = \'' . intval($field) . '\'';
             } elseif (is_string($field)) {
-                $sql = 'SELECT * FROM '.$this->table_name.' WHERE '.$field;
+                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $field;
             }
         } else {
             if (is_array($field)) {
                 $this->set_error('row->load() 方法参数错误！');
                 return false;
             }
-            $sql = 'SELECT * FROM '.$this->table_name.' WHERE '.$field.'=?';
+            $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $field . '=?';
             $values[] = $value;
         }
 
@@ -96,7 +97,7 @@ abstract class row extends obj
             if ($cache !== false) $row = $cache;
         }
 
-        if($row === null) {
+        if ($row === null) {
             $row = db::get_object($sql, $values);
 
             if (db::has_error()) {
@@ -122,7 +123,7 @@ abstract class row extends obj
      *
      * @return bool
      */
-	public function save()
+    public function save()
     {
         $success = null;
 
@@ -159,13 +160,13 @@ abstract class row extends obj
             return false;
         }
 
-		db::execute('DELETE FROM '.$this->table_name.' WHERE '.$this->primary_key.'=?', array($id));
+        db::execute('DELETE FROM ' . $this->table_name . ' WHERE ' . $this->primary_key . '=?', array($id));
 
         if (db::has_error()) {
             $this->set_error(db::get_error());
             return false;
         }
-        
+
         return true;
     }
 
@@ -187,11 +188,11 @@ abstract class row extends obj
      * @param int $step 自增量
      * @return bool
      */
-    public function increment($field, $step=1)
+    public function increment($field, $step = 1)
     {
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
-        $sql = 'UPDATE '.$this->table_name.' SET '.$field.'='.$field.'+'.$step.' WHERE '.$this->primary_key.'=?';
+        $sql = 'UPDATE ' . $this->table_name . ' SET ' . $field . '=' . $field . '+' . $step . ' WHERE ' . $this->primary_key . '=?';
         db::execute($sql, array($id));
 
         if (db::has_error()) {
@@ -209,11 +210,11 @@ abstract class row extends obj
      * @param int $step 自减量
      * @return bool
      */
-    public function decrement($field, $step=1)
+    public function decrement($field, $step = 1)
     {
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
-        $sql = 'UPDATE '.$this->table_name.' SET '.$field.'='.$field.'-'.$step.' WHERE '.$this->primary_key.'=?';
+        $sql = 'UPDATE ' . $this->table_name . ' SET ' . $field . '=' . $field . '-' . $step . ' WHERE ' . $this->primary_key . '=?';
         db::execute($sql, array($id));
 
         if (db::has_error()) {

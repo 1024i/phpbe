@@ -31,63 +31,63 @@ class article extends \system\controller
 		$table->where('create_time', '>', 1396694808);
 		$table->where(')');
 
-		$table->where(array(
+		$table->where([
 			'(',
 				'(',
-					array('category_id', 40),
+					['category_id', 40],
 					'OR',
-					array('category_id', 41),
+					['category_id', 41],
 				')',
 				'OR',
-				array('category_id', 42),
+				['category_id', 42],
 				'OR',
 				'(',
-					array('category_id', 43),
+					['category_id', 43],
 					'OR',
-					array('category_id', 44),
+					['category_id', 44],
 				')',
 			')',
 			'OR',
-			array('create_time', '>', 1396694808),
-		));
+			['create_time', '>', 1396694808],
+		]);
 
-		$table->where(array(
-			array(
-				array(
-					array(
-						array('category_id', 40),
+		$table->where([
+			[
+				[
+					[
+						['category_id', 40],
 						'OR',
-						array('category_id', 41)
-					),
+						['category_id', 41]
+					],
 					'OR',
-					array('category_id', 42)
-				),
+					['category_id', 42]
+				],
 				'OR',
-				array('category_id', 44)
-			),
+				['category_id', 44]
+			],
 			'OR',
-			array('create_time', '>', 1396694808),
-		));
+			['create_time', '>', 1396694808],
+		]);
 
 		echo $table->get_last_sql();
 		exit;
 
-		$where = array();
-		$where[] = array(
+		$where = [];
+		$where[] = [
 			'(',
-				array('category_id', '=', 44),
+				['category_id', '=', 44],
 				'OR',
 				'(',
-					array('category_id', '=', 41),
+					['category_id', '=', 41],
 					'OR',
-					array('category_id', '=', 42),
+					['category_id', '=', 42],
 				')',
 			')',
 			'OR',
-			array('create_time', '>', 1396694808),
-		);
+			['create_time', '>', 1396694808],
+		];
 
-		$where[] = array('home', 0);
+		$where[] = ['home', 0];
 
 
 		$table->where($where);
