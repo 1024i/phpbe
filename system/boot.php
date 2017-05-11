@@ -171,9 +171,10 @@ try {
 
     if (request::is_ajax()) {
         response::set('error', -500);
-        response::set('message', $e->getMessage());
+        response::set('message', '系统错误：' . $e->getMessage());
         response::ajax();
     } else {
-        response::end($e->getMessage());
+        //response::redirect(URL_ROOT . '/500.html');
+        response::end('系统错误：' . $e->getMessage());
     }
 }

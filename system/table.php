@@ -1,4 +1,5 @@
 <?php
+
 namespace system;
 
 /**
@@ -9,7 +10,9 @@ class table extends obj
 
     protected $table_name = ''; // 表名
     protected $primary_key = 'id'; // 主键
-    protected $fields = '*'; // 字段列表
+    protected $fields = []; // 字段列表
+
+    protected $quote = '`'; // 字段或表名转义符 mysql: `
 
     protected $alias = ''; // 当前表的别名
     protected $join = array(); // 表连接
@@ -133,7 +136,7 @@ class table extends obj
     /**
      * 设置查询条件
      *
-     * @param string $field 字段名或需要直接拼接进SQL的字符
+     * @param string | array $field 字段名或需要直接拼接进SQL的字符
      * @param string $op 操作类型：=/<>/!=/>/</>=/<=/between/not between/in/not in/like/not like
      * @param string $value 值，
      * @return table
@@ -162,7 +165,7 @@ class table extends obj
         // 如果第一个参数为数组，认定为一次传入多个条件
         if (is_array($field)) {
 
-            if ( $n > 0 && (is_array($this->where[$n-1]) || substr($this->where[$n-1], -1) == ')')) {
+            if ($n > 0 && (is_array($this->where[$n - 1]) || substr($this->where[$n - 1], -1) == ')')) {
                 $this->where[] = 'AND';
             }
 
@@ -170,7 +173,7 @@ class table extends obj
             foreach ($field as $w) {
                 if (is_array($w)) {
                     $len = count($w);
-                    if(is_array($w[0]) || $len > 3 || ($len == 3 && is_array($w[1])) ) {
+                    if (is_array($w[0]) || $len > 3 || ($len == 3 && is_array($w[1]))) {
                         $this->where($w);
                     } else {
                         if ($len == 2) {
@@ -186,11 +189,20 @@ class table extends obj
             $this->where[] = ')';
         } else {
 
-            if ($op !== null && $n > 0 && (is_array($this->where[$n-1]) || substr($this->where[$n-1], -1) == ')')) {
-                $this->where[] = 'AND';
+            $field = trim($field);
+
+            if ($op === null) {
+                if (substr($field, 0, 1) == '(') {
+                    if ( $n > 0 && (is_array($this->where[$n - 1]) || substr($this->where[$n - 1], -1) == ')')) {
+                        $this->where[] = 'AND';
+                    }
+                }
+            } else {
+                if ($n > 0 && (is_array($this->where[$n - 1]) || substr($this->where[$n - 1], -1) == ')')) {
+                    $this->where[] = 'AND';
+                }
             }
 
-            $field = trim($field);
             if ($op === null) {  // 第二个参数为空时，第一个参数直接拼入 sql
                 $this->where[] = $field;
             } elseif (is_array($op)) { // 第二个参数为数组时，传入的为带占位符的 sql
@@ -267,10 +279,10 @@ class table extends obj
             $this->order_by = $field;
         } else {
             $dir = strtoupper(trim($dir));
-            if ($dir!='ASC' && $dir!='DESC') {
+            if ($dir != 'ASC' && $dir != 'DESC') {
                 $this->order_by = $field;
             } else {
-                $this->order_by = $field . ' ' . $dir;
+                $this->order_by = $this->quote . $field . $this->quote . ' ' . $dir;
             }
         }
         return $this;
@@ -340,7 +352,7 @@ class table extends obj
      */
     public function get_object($fields = null)
     {
-         return $this->query('get_object', $fields);
+        return $this->query('get_object', $fields);
     }
 
     /**
@@ -351,7 +363,64 @@ class table extends obj
      */
     public function get_objects($fields = null)
     {
-         return $this->query('get_objects', $fields);
+        return $this->query('get_objects', $fields);
+    }
+
+    /**
+     * 查询包含两个字段的键值对
+     *
+     * @param string $key_field 作为key的字段
+     * @param string $val_field 作为value的字段
+     * @return array() 数组
+     */
+    public function get_maps($key_field, $val_field)
+    {
+        $arrays = $this->query('get_array', $this->quote . $key_field . $this->quote . ',' . $this->quote . $val_field . $this->quote);
+        $maps = array();
+        if ($arrays && count($arrays) > 0) {
+            foreach ($arrays as $array) {
+                $maps[$array[$key_field]] = $array[$val_field];
+            }
+        }
+        return $maps;
+    }
+
+    /**
+     * 查询带索引的数组列表
+     *
+     * @param string $key_field 作为key的字段
+     * @param string $fields 查询的字段列表
+     * @return array 二维数组
+     */
+    public function get_array_maps($key_field, $fields = null)
+    {
+        $arrays = $this->query('get_arrays', $fields);
+        $maps = array();
+        if ($arrays && count($arrays) > 0) {
+            foreach ($arrays as $array) {
+                $maps[$array[$key_field]] = $array;
+            }
+        }
+        return $maps;
+    }
+
+    /**
+     * 查询带索引的对象列表
+     *
+     * @param string $key_field 作为key的字段
+     * @param string $fields 查询的字段列表
+     * @return array() 对象数组
+     */
+    public function get_object_maps($key_field, $fields = null)
+    {
+        $objects = $this->query('get_objects', $fields);
+        $maps = array();
+        if ($objects && count($objects) > 0) {
+            foreach ($objects as $object) {
+                $maps[$object->$key_field] = $object;
+            }
+        }
+        return $maps;
     }
 
     /**
@@ -361,27 +430,28 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return mixed
      */
-    private function query($fn, $fields = null){
+    private function query($fn, $fields = null)
+    {
         $sql_data = $this->prepare_sql();
         $sql = null;
         if ($fields === null) {
-            $sql = 'SELECT ' . $this->fields;
-        }else{
+            $sql = 'SELECT ' . $this->quote . implode($this->quote . ',' . $this->quote, $this->fields) . $this->quote;
+        } else {
             $sql = 'SELECT ' . $fields;
         }
-        $sql .= ' FROM ' . $this->table_name;
+        $sql .= ' FROM ' . $this->quote . $this->table_name . $this->quote;
         if ($this->alias) {
             $sql .= ' AS ' . $this->alias;
         }
         foreach ($this->join as $join) {
-            $sql .= $join[0] . ' ' . $join[1] . ' ON ' . $join[2];
+            $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' WHERE ' . $sql_data[0];
 
         $this->last_sql = array($sql, $sql_data[1]);
 
         $cache_key = null;
-        if ($this->cache_expire>0) {
+        if ($this->cache_expire > 0) {
             $cache_key = 'table:' . $fn . ':' . sha1($sql . serialize($sql_data[1]));
             $cache = cache::get($cache_key);
             if ($cache !== false) return $cache;
@@ -393,7 +463,7 @@ class table extends obj
             return false;
         }
 
-        if ($this->cache_expire>0) {
+        if ($this->cache_expire > 0) {
             cache::set($cache_key, $result, $this->cache_expire);
         }
 
@@ -404,7 +474,7 @@ class table extends obj
      * 纺计数量
      *
      * @param string $field 字段
-     * @return number
+     * @return int
      */
     public function count($field = '*')
     {
@@ -462,14 +532,14 @@ class table extends obj
      * @param int $step 自增量     *
      * @return bool
      */
-    public function increment($field, $step=1)
+    public function increment($field, $step = 1)
     {
         $sql_data = $this->prepare_sql();
-        $sql = 'UPDATE ' . $this->table_name;
+        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
         foreach ($this->join as $join) {
-            $sql .= $join[0] . ' ' . $join[1] . ' ON ' . $join[2];
+            $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= ' SET ' . $field . '=' . $field . '+' . intval($step);
+        $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . intval($step);
         $sql .= ' WHERE ' . $sql_data[0];
 
         db::execute($sql, $sql_data[1]);
@@ -483,20 +553,20 @@ class table extends obj
     }
 
     /**
-    * 自减某个字段
-    *
-    * @param string $field 字段名
-    * @param int $step 自减量    *
-    * @return bool
-    */
-    public function decrement($field, $step=1)
+     * 自减某个字段
+     *
+     * @param string $field 字段名
+     * @param int $step 自减量    *
+     * @return bool
+     */
+    public function decrement($field, $step = 1)
     {
         $sql_data = $this->prepare_sql();
-        $sql = 'UPDATE ' . $this->table_name;
+        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
         foreach ($this->join as $join) {
-            $sql .= $join[0] . ' ' . $join[1] . ' ON ' . $join[2];
+            $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= ' SET ' . $field . '=' . $field . '-' . intval($step);
+        $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . intval($step);
         $sql .= ' WHERE ' . $sql_data[0];
 
         db::execute($sql, $sql_data[1]);
@@ -518,11 +588,11 @@ class table extends obj
     public function update($values = array())
     {
         $sql_data = $this->prepare_sql();
-        $sql = 'UPDATE ' . $this->table_name;
+        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
         foreach ($this->join as $join) {
-            $sql .= $join[0] . ' ' . $join[1] . ' ON ' . $join[2];
+            $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= ' SET ' . implode('=?,', array_keys($values)) . '=?';
+        $sql .= ' SET ' . $this->quote . implode($this->quote . '=?,' . $this->quote, array_keys($values)) . $this->quote . '=?';
         $sql .= ' WHERE ' . $sql_data[0];
 
         if (!db::execute($sql, array_merge(array_values($values), $sql_data[1]))) {
@@ -541,9 +611,9 @@ class table extends obj
     public function delete()
     {
         $sql_data = $this->prepare_sql();
-        $sql = 'DELETE FROM ' . $this->table_name;
+        $sql = 'DELETE FROM ' . $this->quote . $this->table_name . $this->quote;
         foreach ($this->join as $join) {
-            $sql .= $join[0] . ' ' . $join[1] . ' ON ' . $join[2];
+            $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' WHERE ' . $sql_data[0];
 
@@ -562,7 +632,7 @@ class table extends obj
      */
     public function truncate()
     {
-        $sql = 'TRUNCATE TABLE ' . $this->table_name;
+        $sql = 'TRUNCATE TABLE ' . $this->quote . $this->table_name . $this->quote;
         if (!db::execute($sql)) {
             $this->set_error(db::get_error());
             return false;
@@ -577,7 +647,7 @@ class table extends obj
      */
     public function drop()
     {
-        $sql = 'DROP TABLE ' . $this->table_name;
+        $sql = 'DROP TABLE ' . $this->quote . $this->table_name . $this->quote;
         if (!db::execute($sql)) {
             $this->set_error(db::get_error());
             return false;
@@ -610,6 +680,8 @@ class table extends obj
      */
     public function prepare_sql()
     {
+
+        print_r($this->where);
         $sql = '';
         $values = array();
 
@@ -620,7 +692,7 @@ class table extends obj
                     $sql .= ' ' . $where[0];
                     $values = array_merge($values, $where[1]);
                 } else {
-                    $sql .= ' ' . $where[0] . ' ' . strtoupper($where[1]);
+                    $sql .= $this->quote . $where[0] . $this->quote . ' ' . strtoupper($where[1]);
                     if (is_array($where[2])) {
                         $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
                         $values = array_merge($values, $where[2]);
@@ -638,15 +710,15 @@ class table extends obj
         if ($this->having) $sql .= ' HAVING ' . $this->having;
         if ($this->order_by) $sql .= ' ORDER BY ' . $this->order_by;
 
-        if ($this->limit>0) {
-            if ($this->offset>0) {
-                $sql .= ' LIMIT ' .  $this->offset  . ',' . $this->limit;
+        if ($this->limit > 0) {
+            if ($this->offset > 0) {
+                $sql .= ' LIMIT ' . $this->offset . ',' . $this->limit;
             } else {
                 $sql .= ' LIMIT ' . $this->limit;
             }
         } else {
-            if ($this->offset>0) {
-                $sql .= ' OFFSET ' .  $this->offset;
+            if ($this->offset > 0) {
+                $sql .= ' OFFSET ' . $this->offset;
             }
         }
 
@@ -676,9 +748,10 @@ class table extends obj
     /**
      * 获取字段列表
      *
-     * @return string
+     * @return array
      */
-    public function get_fields(){
+    public function get_fields()
+    {
         return $this->fields;
     }
 
@@ -687,14 +760,15 @@ class table extends obj
      *
      * @return string
      */
-    public function get_last_sql(){
+    public function get_last_sql()
+    {
         if ($this->last_sql == null) return '';
         $last_sql = $this->last_sql[0];
         $values = $this->last_sql[1];
         $n = count($values);
         $i = 0;
-        while(($pos = strpos($last_sql, '?')) !== false && $i < $n){
-            $last_sql = substr($last_sql, 0, $pos) . '\'' . addslashes($values[$i]) . '\'' . substr($last_sql, $pos+1);
+        while (($pos = strpos($last_sql, '?')) !== false && $i < $n) {
+            $last_sql = substr($last_sql, 0, $pos) . '\'' . addslashes($values[$i]) . '\'' . substr($last_sql, $pos + 1);
             $i++;
         }
         return $last_sql;

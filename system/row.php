@@ -11,6 +11,8 @@ abstract class row extends obj
     protected $table_name = '';
     protected $primary_key = '';
 
+    protected $quote = '`'; // 字段或表名转义符 mysql: `
+
     /**
      * 缓存失效时间（单位：秒），0 为不使用缓存
      */
@@ -58,9 +60,9 @@ abstract class row extends obj
     /**
      * 加载记录
      *
-     * @param string|int|array  $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
+     * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
-     * @return bool
+     * @return \system\row | false
      */
     public function load($field, $value = null)
     {
@@ -69,23 +71,23 @@ abstract class row extends obj
 
         if ($value === null) {
             if (is_array($field)) {
-                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE';
+                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE';
                 foreach ($field as $key => $val) {
-                    $sql .= ' ' . $key . '=? AND';
+                    $sql .= ' ' . $this->quote . $key . $this->quote . '=? AND';
                     $values[] = $val;
                 }
                 $sql = substr($sql, 0, -4);
             } elseif (is_numeric($field)) {
-                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $this->primary_key . ' = \'' . intval($field) . '\'';
+                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . ' = \'' . intval($field) . '\'';
             } elseif (is_string($field)) {
-                $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $field;
+                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $field;
             }
         } else {
             if (is_array($field)) {
                 $this->set_error('row->load() 方法参数错误！');
                 return false;
             }
-            $sql = 'SELECT * FROM ' . $this->table_name . ' WHERE ' . $field . '=?';
+            $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $field . $this->quote . '=?';
             $values[] = $value;
         }
 
@@ -160,7 +162,7 @@ abstract class row extends obj
             return false;
         }
 
-        db::execute('DELETE FROM ' . $this->table_name . ' WHERE ' . $this->primary_key . '=?', array($id));
+        db::execute('DELETE FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?', array($id));
 
         if (db::has_error()) {
             $this->set_error(db::get_error());
@@ -192,7 +194,7 @@ abstract class row extends obj
     {
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
-        $sql = 'UPDATE ' . $this->table_name . ' SET ' . $field . '=' . $field . '+' . $step . ' WHERE ' . $this->primary_key . '=?';
+        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
         db::execute($sql, array($id));
 
         if (db::has_error()) {
@@ -214,7 +216,7 @@ abstract class row extends obj
     {
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
-        $sql = 'UPDATE ' . $this->table_name . ' SET ' . $field . '=' . $field . '-' . $step . ' WHERE ' . $this->primary_key . '=?';
+        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
         db::execute($sql, array($id));
 
         if (db::has_error()) {
