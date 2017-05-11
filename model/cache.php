@@ -22,7 +22,7 @@ class cache extends \system\model
 
         $lib_fso = be::get_lib('fso');
         if ($file === null) return $lib_fso->rm_dir(PATH_DATA.DS.'cache'.DS.$dir);
-        return $lib_fso->rm_dir(PATH_DATA.DS.'cache'.DS.$dir.DS.$file);
+        return $lib_fso->rm_dir(PATH_DATA.DS.'system'.DS.'cache'.DS.$dir.DS.$file);
     }
 
     /**
@@ -47,7 +47,7 @@ class cache extends \system\model
         $fields = db::get_objects('SHOW FULL FIELDS FROM '. $row_name);
 
         $code = '<?php'."\n";
-        $code .= 'namespace data\cache\row;'."\n";        $code .= "\n";
+        $code .= 'namespace data\system\cache\row;'."\n";        $code .= "\n";
         $code .= 'class '.$name.' extends \system\row'."\n";
         $code .= '{'."\n";
 
@@ -86,7 +86,7 @@ class cache extends \system\model
         $code .= '}'."\n";
         $code .= "\n";
 
-        $path = PATH_DATA.DS.'cache'.DS.'row'.DS.$name.'.php';
+        $path = PATH_DATA.DS.'system'.DS.'cache'.DS.'row'.DS.$name.'.php';
         file_put_contents($path, $code);
         chmod($path,  0755);
 
@@ -119,7 +119,7 @@ class cache extends \system\model
         }
 
         $code = '<?php'."\n";
-        $code .= 'namespace data\cache\table;'."\n";
+        $code .= 'namespace data\system\cache\table;'."\n";
         $code .= "\n";
         $code .= 'class '.$name.' extends \system\table'."\n";
         $code .= '{'."\n";
@@ -132,11 +132,11 @@ class cache extends \system\model
 
         $code .= '    protected $table_name = \''.$table_name.'\'; // 表名'."\n";
         $code .= '    protected $primary_key = \''.$primary_key.'\'; // 主键'."\n";
-        $code .= '    protected $fields = \''.implode(',', $field_names).'\'; // 字段列表'."\n";
+        $code .= '    protected $fields = [\''.implode('\', \'', $field_names).'\']; // 字段列表'."\n";
         $code .= '}'."\n";
         $code .= "\n";
 
-        $path = PATH_DATA.DS.'cache'.DS.'table'.DS.$name.'.php';
+        $path = PATH_DATA.DS.'system'.DS.'cache'.DS.'table'.DS.$name.'.php';
         file_put_contents($path, $code);
         chmod($path,  0755);
 
@@ -206,7 +206,7 @@ class cache extends \system\model
             return false;
         }
 
-        $path = PATH_DATA.DS.'cache'.DS.'html'.DS.$class.'.html';
+        $path = PATH_DATA.DS.'system'.DS.'cache'.DS.'html'.DS.$class.'.html';
         file_put_contents($path, $row->body);
         chmod($path,  0755);
 
