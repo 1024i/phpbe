@@ -1,6 +1,14 @@
-/.svn
-/*.txt
-/*.log
 /*.csv
 /*.exe
-.idea/
+/*.txt
+/.svn
+/*.log
+/.idea
+/data/cache/*
+
+# Windows thumbnail db
+Thumbs.db
+
+# Eclipse project files
+.classpath
+.project

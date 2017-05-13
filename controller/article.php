@@ -122,9 +122,9 @@ class article extends \system\controller
                 $menu_exist = false;
                 foreach ($north_menu_tree as $menu) {
                     if (
-                        array_key_exists('controller', $menu->params) && $menu->params['controller'] == 'article' &&
-                        array_key_exists('task', $menu->params) && $menu->params['task'] == 'listing' &&
-                        array_key_exists('category_id', $menu->params) && $menu->params['category_id'] == $parent_category->id
+                        isset($menu->params['controller']) && $menu->params['controller'] == 'article' &&
+                        isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
+                        isset($menu->params['category_id']) && $menu->params['category_id'] == $parent_category->id
                     ) {
                         $template->set('menu_id', $menu->id);
                         break;
@@ -155,7 +155,12 @@ class article extends \system\controller
         $template->set('articles', $articles);
 
         // 热门文章
-        $hottest_articles = $model_article->get_articles(array('category_id' => $category_id, 'order_by' => 'hits', 'order_by_dir' => 'DESC', 'limit' => 10));
+        $hottest_articles = $model_article->get_articles([
+            'category_id' => $category_id,
+            'order_by' => 'hits',
+            'order_by_dir' => 'DESC',
+            'limit' => 10
+        ]);
         $template->set('hottest_articles', $hottest_articles);
 
         // 推荐文章

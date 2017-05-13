@@ -1,6 +1,4 @@
 <?php
-namespace theme\huxiu;
-
 use system\be;
 use system\request;
 
