@@ -240,34 +240,19 @@ class cache extends \system\model
      */
     public function update_template($theme, $template, $admin = false)
     {
-        $file_theme = null;
-        if ($admin) {
-            $file_theme = PATH_ADMIN . DS . 'theme' . DS . $theme . DS . $theme . '.php';
-        } else {
-            $file_theme = PATH_ROOT . DS . 'theme' . DS . $theme . DS . $theme . '.php';
-        }
+        $file_theme = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . $theme . '.php';
         if (file_exists($file_theme)) {
             $this->set_error('主题 ' . $theme . ' 不存在！');
             return false;
         }
 
-        $file_template = null;
-        if ($admin) {
-            $file_template = PATH_ADMIN . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
-        } else {
-            $file_template = PATH_ROOT . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
-        }
+        $file_template = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
         if (file_exists($file_template)) {
             $this->set_error('模板 ' . $template . ' 不存在！');
             return false;
         }
 
-        $path = null;
-        if ($admin) {
-            $path = PATH_ROOT . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
-        } else {
-            $path = PATH_ROOT . DS . 'system' . DS . 'cache' . DS . 'template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
-        }
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . ($admin ? 'admin_template' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -365,15 +350,11 @@ class cache extends \system\model
 
         $namespace_suffix = '';
         if (count($templates)) {
-            $namespace_suffix = '\\'.implode('\\', $templates);
+            $namespace_suffix = '\\' . implode('\\', $templates);
         }
 
         $code_php = '<?php' . "\n";
-        if ($admin) {
-            $code_php .= 'namespace data\\system\\cache\\admin_template\\' . $theme . $namespace_suffix . ';' . "\n";
-        } else {
-            $code_php .= 'namespace data\\system\\cache\\template\\' . $theme . $namespace_suffix . ';' . "\n";
-        }
+        $code_php .= 'namespace data\\system\\cache\\' . ($admin ? 'admin_template' : 'template') . '\\' . $theme . $namespace_suffix . ';' . "\n";
         $code_php .= "\n";
         $code_php .= $code_use;
         $code_php .= "\n";
@@ -389,7 +370,7 @@ class cache extends \system\model
         $code_php .= '}' . "\n";
         $code_php .= "\n";
 
-        file_put_contents($path, $code_php,LOCK_EX);
+        file_put_contents($path, $code_php, LOCK_EX);
         chmod($path, 0755);
 
         return true;

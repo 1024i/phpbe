@@ -1,4 +1,5 @@
 <?php
+
 namespace system;
 
 /**
@@ -139,46 +140,60 @@ class response
     /**
      * 显示模板
      *
-     * @param $template
+     * @param string $template 模板名
+     * @param string $theme 主题名
      */
     public static function display($template, $theme = null)
     {
         $template_instance = null;
         if (substr($template, 0, 6) === 'admin.') {
-            $theme_class_name = '\\admin\\theme\\theme';
-            $theme_instance = new $theme_class_name();
-
-            $template_class_name = '\\admin\\template\\' . str_replace('.', '\\', $template);
-            $template_instance = new $template_class_name();
+            $template_instance = be::get_admin_template(substr($template, 6), $theme);
         } else {
-            if ($theme === null) {
-                $config = be::get_config('system');
-                $theme = $config->theme;
-            }
-
-            $theme_class_name = '\\theme\\' . $theme . '\\' . $theme;
-            $theme_instance = new $theme_class_name();
-
-            $template_class_name = '\\template\\' . str_replace('.', '\\', $template);
-            $template_instance = new $template_class_name();
+            $template_instance = be::get_template($template, $theme);
         }
 
-        $template_instance->set_theme($theme_instance);
-        $template_instance->set(self::$data);
+        foreach (self::$data as $key => $val) {
+            $template_instance->$key = $val;
+        }
 
         $message = session::get('_message');
         if ($message) {
-            $template_instance->set('_message', $message);
+            $template_instance->_message = $message;
         }
 
         $template_instance->display();
     }
 
-
-
-    public static function end($string)
+    /**
+     * 获取模板内容
+     *
+     * @param string $template 模板名
+     * @param string $theme 主题名
+     * @return  string
+     */
+    public static function fetch($template, $theme = null)
     {
-        exit('<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><div style="padding:10px;text-align:center;">' . $string . '</div></body></html>');
+        ob_start();
+        ob_clean();
+        self::display($template, $theme);
+        $content = ob_get_contents();
+        ob_end_clean();
+        return $content;
+    }
+
+    /**
+     * 结束输出
+     *
+     * @param string $string 输出内空
+     * @return  string
+     */
+    public static function end($string = null)
+    {
+        if ($string === null) {
+            exit;
+        } else {
+            exit('<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><div style="padding:10px;text-align:center;">' . $string . '</div></body></html>');
+        }
     }
 
 }

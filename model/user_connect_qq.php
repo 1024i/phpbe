@@ -61,7 +61,7 @@ class user_connect_qq extends \system\model
 		$lib_http = be::get_lib('http');
 		$response = $lib_http->get($url);
 
-        if (strpos($response, "callback") ! == false){
+        if (strpos($response, "callback") !== false){
 
             $lpos = strpos($response, "(");
             $rpos = strrpos($response, ")");
@@ -89,7 +89,7 @@ class user_connect_qq extends \system\model
 		$response = $lib_http->get($url);
 
         //--------检测错误是否发生
-        if (strpos($response, "callback") ! == false){
+        if (strpos($response, "callback") !== false){
 
             $lpos = strpos($response, "(");
             $rpos = strrpos($response, ")");

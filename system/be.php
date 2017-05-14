@@ -1,4 +1,5 @@
 <?php
+
 namespace system;
 
 
@@ -18,7 +19,7 @@ namespace system;
 abstract class be
 {
 
-	private static $cache = array(); // 缓存资源实例
+    private static $cache = array(); // 缓存资源实例
 
     private static $version = '2.0'; // 系统版本号
 
@@ -57,7 +58,7 @@ abstract class be
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         if (defined('ENVIRONMENT')) {
-            $path = PATH_ROOT . DS .  'config' . DS . $config . '.' . ENVIRONMENT . '.php';
+            $path = PATH_ROOT . DS . 'config' . DS . $config . '.' . ENVIRONMENT . '.php';
             if (file_exists($path)) {
                 include_once $path;
             }
@@ -81,7 +82,7 @@ abstract class be
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         if (defined('ENVIRONMENT')) {
-            $path = PATH_ADMIN . DS .  'config' . DS . $config . '.' . ENVIRONMENT . '.php';
+            $path = PATH_ADMIN . DS . 'config' . DS . $config . '.' . ENVIRONMENT . '.php';
             if (file_exists($path)) {
                 include_once $path;
             }
@@ -119,13 +120,13 @@ abstract class be
      */
     public static function get_row($row)
     {
-        $path = PATH_ROOT . DS .  'row' . DS . $row.'.php';
+        $path = PATH_ROOT . DS . 'row' . DS . $row . '.php';
         if (file_exists($path)) {
             $class_name = '\\row\\' . $row;
             return (new $class_name());
         }
 
-        $path = PATH_DATA . DS . 'system' .DS . 'cache' . DS . 'row' . DS . $row.'.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'row' . DS . $row . '.php';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_row($row);
@@ -146,13 +147,13 @@ abstract class be
     {
         if ($table === null) return new table();
 
-        $path = PATH_ROOT . DS .  'table' . DS . $table.'.php';
+        $path = PATH_ROOT . DS . 'table' . DS . $table . '.php';
         if (file_exists($path)) {
             $class_name = '\\table\\' . $table;
             return (new $class_name());
         }
 
-        $path = PATH_DATA . DS . 'system' .DS . 'cache' . DS . 'table' . DS . $table.'.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'table' . DS . $table . '.php';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_table($table);
@@ -173,7 +174,7 @@ abstract class be
         $key = 'menu-' . $menu;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' .DS . 'cache' . DS . 'menu' . DS . $menu . '.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $menu . '.php';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_menu($menu);
@@ -196,7 +197,7 @@ abstract class be
         $key = 'role-' . $role_id;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' .DS .  'cache' . DS . 'role' . DS . $role_id . '.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'role' . DS . $role_id . '.php';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_role($role_id);
@@ -222,7 +223,7 @@ abstract class be
         $key = 'html-' . $class;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA.DS . 'cache' . DS . 'html' . DS . $class . '.html';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html' . DS . $class . '.html';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_html($class);
@@ -232,77 +233,32 @@ abstract class be
         return self::$cache[$key];
     }
 
-
     /**
-     * 获取指定的一个主题
+     * 获取指定的一个模板
      *
+     * @param string $template 模板名
      * @param string $theme 主题名
      * @return template
      */
-    public static function get_theme($theme = null)
+    public static function get_template($template, $theme = null)
     {
         if ($theme === null) {
             $config = be::get_config('system');
             $theme = $config->theme;
         }
 
-        $key = 'theme-' . $theme;
+        $key = 'template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $theme_class_name = '\\theme\\' . $theme . '\\' . $theme;
-        $theme_instance= new $theme_class_name();
-        self::$cache[$key] = $theme_instance;
-        return self::$cache[$key];
-    }
-
-
-    /**
-     * 获取指定的一个后台主题
-     *
-     * @param string $theme 主题名
-     * @return template
-     */
-    public static function get_admin_theme($theme = null)
-    {
-        if ($theme === null) {
-            $config = be::get_admin_config('system');
-            $theme = $config->theme;
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        if (!file_exists($path)) {
+            $model_cache = be::get_model('cache');
+            $model_cache->update_template($template, $theme);
+            if (!file_exists($path)) return null;
         }
 
-        $key = 'admin_theme-' . $theme;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $theme_class_name = '\\admin\\theme\\' . $theme . '\\' . $theme;
-        $theme_instance= new $theme_class_name();
-        self::$cache[$key] = $theme_instance;
-        return self::$cache[$key];
-    }
-
-
-    /**
-     * 获取指定的一个模板
-     *
-     * @param string $template 模板名
-	 * @param string $theme 主题名
-     * @return template
-     */
-    public static function get_template($template, $theme = null)
-    {
-		if ($theme === null) {
-			$config = be::get_config('system');
-			$theme = $config->theme;
-		}
-
-        $key = 'template-' . $theme . '-' . $template;
-        if (!isset(self::$cache[$key])) return self::$cache[$key];
-
-        $template_class_name = '\\template\\' . str_replace('.', '\\', $template);
+        $template_class_name = '\\data\\system\\cache\\template\\' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
-
-        $theme_class_name = '\\theme\\' . $theme . '\\' . $theme;
-        $theme_instance= new $theme_class_name();
-
-        $template_instance->set_theme($theme_instance);
 
         self::$cache[$key] = $template_instance;
         return self::$cache[$key];
@@ -313,25 +269,32 @@ abstract class be
      * 获取指定的一个后台模板
      *
      * @param string $template 模板名
+     * @param string $theme 主题名
      * @return template
      */
-    public static function get_admin_template($template)
+    public static function get_admin_template($template, $theme = null)
     {
-        $key = 'admin_template-' . $template;
+        if ($theme === null) {
+            $config = be::get_admin_config('system');
+            $theme = $config->theme;
+        }
+
+        $key = 'admin_template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $template_class_name = '\\admin\\template\\' . str_replace('.', '\\', $template);
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        if (!file_exists($path)) {
+            $model_cache = be::get_model('cache');
+            $model_cache->update_admin_template($template, $theme);
+            if (!file_exists($path)) return null;
+        }
+
+        $template_class_name = '\\data\\system\\cache\\admin_template\\' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
-
-        $theme_class_name = '\\admin\\theme\\theme';
-        $theme_instance= new $theme_class_name();
-
-        $template_instance->set_theme($theme_instance);
 
         self::$cache[$key] = $template_instance;
         return self::$cache[$key];
     }
-
 
     /**
      * 获取指定的一个路由
@@ -400,14 +363,14 @@ abstract class be
     public static function get_admin_user($id = 0)
     {
         $key = 'admin_user-' . $id;
-        if (!isset(self::$cache[$key])) return self::$cache[$key];
+        if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $user = null;
         if ($id == 0) {
             $user = session::get('_admin_user');
         } else {
             $user = db::get_object('SELECT * FROM be_admin_user WHERE id=' . intval($id));
-            if ($user!=null) {
+            if ($user != null) {
                 unset($user->password);
                 unset($user->token);
             }

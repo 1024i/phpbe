@@ -1,5 +1,4 @@
 <?php
-
 namespace model;
 
 use \system\be;
@@ -323,7 +322,7 @@ class article extends \system\model
                 ->cache(be::get_config('article')->cache_expire)
                 ->get_objects();
 
-            $this->category_tree = $this->_create_categoy_tree($categories);
+            $this->category_tree = $this->_create_category_tree($categories);
         }
         return $this->category_tree;
     }
