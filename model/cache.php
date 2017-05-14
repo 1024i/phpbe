@@ -266,12 +266,19 @@ class cache extends \system\model
         if (preg_match($pattern, $content_template, $matches)) { // 查找替换 html
             $code_html = $matches[1];
 
-            $pattern = '/use\s(.+);/';
-            if (preg_match_all($pattern, $content_template, $matches)) {
+            if (preg_match_all('/use\s(.+);/', $content_template, $matches)) {
                 foreach ($matches[1] as $m) {
                     $code_use .= 'use ' . $m . ';' . "\n";
                 }
             }
+
+            $pattern = '/<\?php(.*?)\?>\s+<!--{html}-->/s';
+            if (preg_match($pattern, $content_template, $matches)) {
+                $code_pre = trim($matches[1]);
+                $code_pre = preg_replace('/use\s(.+);/', '', $code_pre);
+                $code_pre = preg_replace('/\s+$/m', '', $code_pre);
+            }
+
         } else {
             $pattern = '/use\s(.+);/';
             if (preg_match_all($pattern, $content_theme, $matches)) {
@@ -279,10 +286,28 @@ class cache extends \system\model
                     $code_use .= 'use ' . $m . ';' . "\n";
                 }
             }
+
             if (preg_match_all($pattern, $content_template, $matches)) {
                 foreach ($matches[1] as $m) {
                     $code_use .= 'use ' . $m . ';' . "\n";
                 }
+            }
+
+            $pattern = '/<\?php(.*?)\?>\s+<!--{html}-->/s';
+            if (preg_match($pattern, $content_theme, $matches)) {
+                $code_pre_theme = trim($matches[1]);
+                $code_pre_theme = preg_replace('/use\s(.+);/', '', $code_pre_theme);
+                $code_pre_theme = preg_replace('/\s+$/m', '', $code_pre_theme);
+
+                $code_pre = $code_pre_theme . "\n" ;
+            }
+
+            if (preg_match($pattern, $content_template, $matches)) {
+                $code_pre_template = trim($matches[1]);
+                $code_pre_template = preg_replace('/use\s(.+);/', '', $code_pre_template);
+                $code_pre_template = preg_replace('/\s+$/m', '', $code_pre_template);
+
+                $code_pre .= $code_pre_template . "\n";
             }
 
             if (preg_match($pattern, $content_theme, $matches)) {
