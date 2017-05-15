@@ -4,7 +4,9 @@
 /.svn
 /*.log
 /.idea
-/data/cache/*
+/data/system/cache/
+/data/system/error_log/
+/data/system/tmp/
 
 # Windows thumbnail db
 Thumbs.db

@@ -56,7 +56,7 @@ class cache extends \system\model
         $code = '<?php' . "\n";
         $code .= 'namespace data\\system\\cache\\row;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $name . ' extends \system\row' . "\n";
+        $code .= 'class ' . $name . ' extends \\system\\row' . "\n";
         $code .= '{' . "\n";
 
         foreach ($fields as $field) {
@@ -122,25 +122,22 @@ class cache extends \system\model
             }
         }
 
-        $primary_key = 'id';
         $fields = db::get_objects('SHOW FULL FIELDS FROM ' . $table_name);
+        $primary_key = 'id';
         $field_names = array();
         foreach ($fields as $field) {
+            if ($field->Key == 'PRI') {
+                $primary_key = $field->Field;
+            }
+
             $field_names[] = $field->Field;
         }
 
         $code = '<?php' . "\n";
         $code .= 'namespace data\\system\\cache\\table;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $name . ' extends \system\table' . "\n";
+        $code .= 'class ' . $name . ' extends \\system\\table' . "\n";
         $code .= '{' . "\n";
-
-        foreach ($fields as $field) {
-            if ($field->Key == 'PRI') {
-                $primary_key = $field->Field;
-            }
-        }
-
         $code .= '    protected $table_name = \'' . $table_name . '\'; // 表名' . "\n";
         $code .= '    protected $primary_key = \'' . $primary_key . '\'; // 主键' . "\n";
         $code .= '    protected $fields = [\'' . implode('\', \'', $field_names) . '\']; // 字段列表' . "\n";
