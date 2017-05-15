@@ -439,6 +439,7 @@ class table extends obj
         } else {
             $sql = 'SELECT ' . $fields;
         }
+
         $sql .= ' FROM ' . $this->quote . $this->table_name . $this->quote;
         if ($this->alias) {
             $sql .= ' AS ' . $this->alias;
@@ -446,7 +447,7 @@ class table extends obj
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= ' WHERE ' . $sql_data[0];
+        $sql .= $sql_data[0];
 
         $this->last_sql = array($sql, $sql_data[1]);
 
@@ -540,7 +541,7 @@ class table extends obj
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . intval($step);
-        $sql .= ' WHERE ' . $sql_data[0];
+        $sql .= $sql_data[0];
 
         db::execute($sql, $sql_data[1]);
 
@@ -567,7 +568,7 @@ class table extends obj
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . intval($step);
-        $sql .= ' WHERE ' . $sql_data[0];
+        $sql .= $sql_data[0];
 
         db::execute($sql, $sql_data[1]);
 
@@ -593,7 +594,7 @@ class table extends obj
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . implode($this->quote . '=?,' . $this->quote, array_keys($values)) . $this->quote . '=?';
-        $sql .= ' WHERE ' . $sql_data[0];
+        $sql .= $sql_data[0];
 
         if (!db::execute($sql, array_merge(array_values($values), $sql_data[1]))) {
             $this->set_error(db::get_error());
@@ -615,7 +616,7 @@ class table extends obj
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= ' WHERE ' . $sql_data[0];
+        $sql .= $sql_data[0];
 
         if (!db::execute($sql, $sql_data[1])) {
             $this->set_error(db::get_error());
@@ -680,29 +681,30 @@ class table extends obj
      */
     public function prepare_sql()
     {
-
-        print_r($this->where);
         $sql = '';
         $values = array();
 
         // 处理 where 条件
-        foreach ($this->where as $where) {
-            if (is_array($where)) {
-                if (is_array($where[1])) {
-                    $sql .= ' ' . $where[0];
-                    $values = array_merge($values, $where[1]);
-                } else {
-                    $sql .= $this->quote . $where[0] . $this->quote . ' ' . strtoupper($where[1]);
-                    if (is_array($where[2])) {
-                        $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
-                        $values = array_merge($values, $where[2]);
+        if (count($this->where) > 0) {
+            $sql .= ' WHERE ';
+            foreach ($this->where as $where) {
+                if (is_array($where)) {
+                    if (is_array($where[1])) {
+                        $sql .= ' ' . $where[0];
+                        $values = array_merge($values, $where[1]);
                     } else {
-                        $sql .= ' ?';
-                        $values[] = $where[2];
+                        $sql .= $this->quote . $where[0] . $this->quote . ' ' . strtoupper($where[1]);
+                        if (is_array($where[2])) {
+                            $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
+                            $values = array_merge($values, $where[2]);
+                        } else {
+                            $sql .= ' ?';
+                            $values[] = $where[2];
+                        }
                     }
+                } else {
+                    $sql .= ' ' . $where;
                 }
-            } else {
-                $sql .= ' ' . $where;
             }
         }
 

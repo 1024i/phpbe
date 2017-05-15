@@ -1,4 +1,6 @@
 <?php
+define('IS_BACKEND', true); // 是否后台
+
 /*
  * URL_ROOT: 网站网址
  * 可改为实际网址以提高性能， 结尾不带左斜杠("/")
@@ -12,6 +14,5 @@ $url .= isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HO
 $url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/admin/index.php'));
 define('URL_ROOT', $url);
 
-require dirname(__DIR__).DIRECTORY_SEPARATOR.'define.php';
-require PATH_ADMIN.DS.'system'.DS.'boot.php';
-?>
+require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'define.php';
+require PATH_ADMIN . DS . 'system' . DS . 'boot.php';

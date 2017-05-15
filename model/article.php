@@ -33,7 +33,6 @@ class article extends \system\model
         if (isset($options['limit']) && $options['limit']) $table_article->limit($options['limit']);
 
         $table_article->cache(be::get_config('article')->cache_expire);
-
         return $table_article->get_objects();
     }
 

@@ -19,7 +19,7 @@ class redis extends \system\cache\driver
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('redis')) be_exit('服务器未安装 redis 扩展！');
+        if (!extension_loaded('redis')) \system\response::end('服务器未安装 redis 扩展！');
 
         if (!empty($options)) {
             $this->handler = new \Redis;

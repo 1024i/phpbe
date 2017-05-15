@@ -5,7 +5,6 @@ namespace controller;
 use \system\be;
 use \system\request;
 use \system\response;
-use \system\session;
 
 class article extends \system\controller
 {
@@ -54,22 +53,16 @@ class article extends \system\controller
             ]);
         }
 
-        $template = be::get_template('article.home');
-
         $config_system = be::get_config('system');
-        $template->set_title($config_system->home_title);
-        $template->set_meta_keywords($config_system->home_meta_keywords);
-        $template->set_meta_description($config_system->home_meta_description);
-
-        $template->set('latest_thumbnail_articles', $latest_thumbnail_articles);
-
-        $template->set('active_users', $active_users);
-        $template->set('month_hottest_articles', $month_hottest_articles);
-        $template->set('top_articles', $top_articles);
-
-        $template->set('categories', $top_categories);
-
-        $template->display();
+        response::set('title', $config_system->home_title);
+        response::set('meta_keywords', $config_system->home_meta_keywords);
+        response::set('meta_description', $config_system->home_meta_description);
+        response::set('latest_thumbnail_articles', $latest_thumbnail_articles);
+        response::set('active_users', $active_users);
+        response::set('month_hottest_articles', $month_hottest_articles);
+        response::set('top_articles', $top_articles);
+        response::set('categories', $top_categories);
+        response::display();
     }
 
     public function articles()

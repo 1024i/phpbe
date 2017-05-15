@@ -29,7 +29,8 @@ if (!defined('URL_ROOT')) { // 后台管理
 	$url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/index.php'));
 	define('URL_ROOT', $url);
 }
-define('URL_ADMIN', $url . '/' . ADMIN);
+
+define('URL_ADMIN', URL_ROOT . '/' . ADMIN);
 
 // 可写文件存储 目录名
 define('DATA', 'data');

@@ -250,14 +250,15 @@ abstract class be
         $key = 'template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . '_' .  $theme . DS . str_replace('.', DS, $template) . '.php';
         if (!file_exists($path)) {
+
             $model_cache = be::get_model('cache');
-            $model_cache->update_template($template, $theme);
+            $model_cache->update_template($theme, $template);
             if (!file_exists($path)) return null;
         }
 
-        $template_class_name = '\\data\\system\\cache\\template\\' . $theme . '\\' . str_replace('.', '\\', $template);
+        $template_class_name = '\\data\\system\\cache\\template\\_' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
 
         self::$cache[$key] = $template_instance;
@@ -282,14 +283,14 @@ abstract class be
         $key = 'admin_template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . '_' . $theme . DS . str_replace('.', DS, $template) . '.php';
         if (!file_exists($path)) {
             $model_cache = be::get_model('cache');
-            $model_cache->update_admin_template($template, $theme);
+            $model_cache->update_admin_template($theme, $template);
             if (!file_exists($path)) return null;
         }
 
-        $template_class_name = '\\data\\system\\cache\\admin_template\\' . $theme . '\\' . str_replace('.', '\\', $template);
+        $template_class_name = '\\data\\system\\cache\\admin_template\\_' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
 
         self::$cache[$key] = $template_instance;

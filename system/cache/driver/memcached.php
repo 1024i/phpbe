@@ -19,9 +19,9 @@ class memcached extends \system\cache\driver
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcached')) be_exit('服务器未安装 memcached 扩展！');
+        if (!extension_loaded('memcached')) \system\response::end('服务器未安装 memcached 扩展！');
 
-        if (empty($options)) be_exit('memcached 配置错误！');
+        if (empty($options)) \system\response::end('memcached 配置错误！');
 
         $this->handler = new \Memcached;
         $this->handler->addServers($options);

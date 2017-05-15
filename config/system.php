@@ -9,7 +9,7 @@ class system
     public $site_name = 'BE v2.0';  // 网站名称
     public $sef = '0';  // 是否开启伪静态
     public $sef_suffix = '.html';  // 伪静态页后辍
-    public $theme = 'huxiu';  // 默认主题
+    public $theme = 'default';  // 默认主题
     public $home_params = ['controller'=>'article', 'task'=>'home'];  // 默认首页参数
     public $home_title = '首页';  // 首页的标题
     public $home_meta_keywords = '';  // 首页的 meta keywords

@@ -62,7 +62,7 @@ class response
     /**
      * 设置暂存数据
      * @param string $name 名称
-     * @param string $value 值 (可以是数组或对象)
+     * @param mixed $value 值 (可以是数组或对象)
      */
     public static function set($name, $value)
     {
@@ -143,13 +143,26 @@ class response
      * @param string $template 模板名
      * @param string $theme 主题名
      */
-    public static function display($template, $theme = null)
+    public static function display($template = null, $theme = null)
     {
         $template_instance = null;
-        if (substr($template, 0, 6) === 'admin.') {
-            $template_instance = be::get_admin_template(substr($template, 6), $theme);
+        if ($template === null) {
+            $controller = request::request('controller');
+            $task = request::request('task', 'index');
+            $template = $controller . '.' . $task;
+
+            if (defined('IS_BACKEND') && IS_BACKEND) {
+                $template_instance = be::get_admin_template($template, $theme);
+            } else {
+                $template_instance = be::get_template($template, $theme);
+            }
+
         } else {
-            $template_instance = be::get_template($template, $theme);
+            if (defined('IS_BACKEND') && IS_BACKEND) {
+                $template_instance = be::get_admin_template($template, $theme);
+            } else {
+                $template_instance = be::get_template($template, $theme);
+            }
         }
 
         foreach (self::$data as $key => $val) {
