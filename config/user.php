@@ -3,25 +3,25 @@ namespace config;
 
 class user
 {
-    public $register = '1';  // 是否开启注册功能
-    public $captcha_login = '0';  // 是否开启登陆验证码
-    public $captcha_register = '1';  // 是否开启注册验证码
-    public $email_valid = '0';  // 是否发送激活链接验证用户邮箱
-    public $email_register = '0';  // 注册成功后是否发送提示邮件
+    public $register = true;  // 是否开启注册功能
+    public $captcha_login = false;  // 是否开启登陆验证码
+    public $captcha_register = true;  // 是否开启注册验证码
+    public $email_valid = false;  // 是否发送激活链接验证用户邮箱
+    public $email_register = false;  // 注册成功后是否发送提示邮件
     public $email_register_admin = '1024i@gmail.com';  // 新用户注册后给管理员发送邮件
     public $default_avatar_s = '0_s.png';  // 用户默认头像 小 small
     public $default_avatar_m = '0_m.png';  // 用户默认头像 中 medium
     public $default_avatar_l = '0_l.png';  // 用户默认头像 大 large
-    public $avatar_s_w = '32';  // 用户头像 小 长度
-    public $avatar_s_h = '32';  // 用户头像 小 高度
-    public $avatar_m_w = '64';  // 用户头像 中 长度
-    public $avatar_m_h = '64';  // 用户头像 中 高度
-    public $avatar_l_w = '96';  // 用户头像 大 长度
-    public $avatar_l_h = '96';  // 用户头像 大 高度
-    public $connect_qq = '1';  // 连接QQ账号 0:不连接 1:连接
+    public $avatar_s_w = 32;  // 用户头像 小 长度
+    public $avatar_s_h = 32;  // 用户头像 小 高度
+    public $avatar_m_w = 64;  // 用户头像 中 长度
+    public $avatar_m_h = 64;  // 用户头像 中 高度
+    public $avatar_l_w = 96;  // 用户头像 大 长度
+    public $avatar_l_h = 96;  // 用户头像 大 高度
+    public $connect_qq = true;  // 连接QQ账号 0:不连接 1:连接
     public $connect_qq_app_id = '101043103';  // QQ APP ID
     public $connect_qq_app_key = 'a58f79f168cd21815416a93826b485c5';  // QQ APP KEY
-    public $connect_sina = '1';  // 连接新浪微博账号 0:不连接 1:连接
+    public $connect_sina = true;  // 连接新浪微博账号 0:不连接 1:连接
     public $connect_sina_app_key = '1295333283';  // 新浪微博 App Key
     public $connect_sina_app_secret = '6ea122b52d501ba4433dc92d4fd1d806';  // 新浪微博 App Secret
 

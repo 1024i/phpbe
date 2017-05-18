@@ -9,18 +9,19 @@ $config = be::get_config('system');
 <html>
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="<?php echo $this->meta_description; ?>"/>
     <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
 
-    <script src="<?php echo URL_ROOT; ?>/js/jquery-1.9.1.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/js/jquery.validate.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery-1.11.0.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.validate.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/bootstrap/2.3.1/css/bootstrap.min.css"/>
-    <script src="<?php echo URL_ROOT; ?>/bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/css/global.css"/>
-    <script src="<?php echo URL_ROOT; ?>/theme/default/js/global.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/css/theme.css"/>
     <script src="<?php echo URL_ROOT; ?>/theme/default/js/theme.js"></script>
@@ -132,7 +133,7 @@ $config = be::get_config('system');
 
         <div class="theme-center">
             <div class="wraper">
-                <!--{/message}-->
+                <!--{message}-->
                 <?php
                 if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->message->body . '</div>';
                 ?>
@@ -142,6 +143,9 @@ $config = be::get_config('system');
                 <!--{/center}-->
             </div>
         </div>
+
+        <!--{east}-->
+        <!--{/east}-->
 
         <div class="clrl"></div>
         <!--{/middle}-->
