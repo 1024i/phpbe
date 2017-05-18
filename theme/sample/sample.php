@@ -10,21 +10,22 @@ $config = be::get_config('system');
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="description" content="<?php echo $this->meta_description; ?>"/>
     <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
 
-    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery-1.11.0.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.validate.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.cookie.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery.validate.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
 
-    <script src="<?php echo URL_ROOT; ?>/theme/default/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/default/css/theme.css"/>
-    <script src="<?php echo URL_ROOT; ?>/theme/default/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/css/theme.css"/>
+    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/theme.js"></script>
 
     <script>
         var URL_ROOT = '<?php echo URL_ROOT; ?>';
@@ -43,7 +44,9 @@ $config = be::get_config('system');
 
         <!--{north}-->
         <div class="logo">
-            <img src="<?php echo URL_ROOT; ?>/images/logo.gif" alt="<?php echo $config->site_name; ?>"/>
+            <a href="<?php echo URL_ROOT; ?>" title="<?php echo $config->site_name; ?>">
+                <img src="<?php echo URL_ROOT; ?>/theme/sample/images/logo.gif" alt="<?php echo $config->site_name; ?>"/>
+            </a>
         </div>
 
         <div class="menu">
@@ -135,7 +138,7 @@ $config = be::get_config('system');
             <div class="wraper">
                 <!--{message}-->
                 <?php
-                if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->message->body . '</div>';
+                if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->_message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->_message->body . '</div>';
                 ?>
                 <!--{/message}-->
 

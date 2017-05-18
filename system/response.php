@@ -169,9 +169,8 @@ class response
             $template_instance->$key = $val;
         }
 
-        $message = session::get('_message');
-        if ($message) {
-            $template_instance->_message = $message;
+        if (session::has('_message')) {
+            $template_instance->_message = session::delete('_message');
         }
 
         $template_instance->display();
@@ -202,6 +201,10 @@ class response
      */
     public static function end($string = null)
     {
+        if (session::has('_message')) {
+            session::delete('_message');
+        }
+
         if ($string === null) {
             exit;
         } else {

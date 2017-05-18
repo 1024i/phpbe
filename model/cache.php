@@ -169,11 +169,11 @@ class cache extends \system\model
             return false;
         }
 
-        $model = be::get_admin_model('menu');
-        if (!$model->update_cache($row->id)) {
-            $this->set_error($model->get_error());
-            return false;
-        }
+        //$model = be::get_admin_model('menu');
+        //if (!$model->update_cache($row->id)) {
+            //$this->set_error($model->get_error());
+            //return false;
+        //}
 
         return true;
     }
@@ -249,7 +249,7 @@ class cache extends \system\model
             return false;
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . ($admin ? 'admin_template' : 'template') . DS . '_' . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . ($admin ? 'admin_template' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -261,7 +261,7 @@ class cache extends \system\model
         $code_html = '';
         $pattern = '/<!--{html}-->(.*?)<!--{\/html}-->/s';
         if (preg_match($pattern, $content_template, $matches)) { // 查找替换 html
-            $code_html = $matches[1];
+            $code_html = trim($matches[1]);
 
             if (preg_match_all('/use\s(.+);/', $content_template, $matches)) {
                 foreach ($matches[1] as $m) {
@@ -279,7 +279,7 @@ class cache extends \system\model
         } else {
 
             if (preg_match($pattern, $content_theme, $matches)) {
-                $code_html = $matches[1];
+                $code_html = trim($matches[1]);
 
                 $pattern = '/<!--{head}-->(.*?)<!--{\/head}-->/s';
                 if (preg_match($pattern, $content_template, $matches)) { // 查找替换 head
@@ -359,10 +359,10 @@ class cache extends \system\model
                 $code_pre_theme = trim($matches[1]);
                 $code_pre_theme = preg_replace('/use\s(.+);/', '', $code_pre_theme);
                 $code_pre_theme = preg_replace('/\s+$/m', '', $code_pre_theme);
-
                 $code_pre = $code_pre_theme . "\n" ;
             }
 
+            $pattern = '/<\?php(.*?)\?>\s+<!--{(?:html|head|body|north|middle|west|center|east|south|message)}-->/s';
             if (preg_match($pattern, $content_template, $matches)) {
                 $code_pre_template = trim($matches[1]);
                 $code_pre_template = preg_replace('/use\s(.+);/', '', $code_pre_template);
@@ -381,11 +381,11 @@ class cache extends \system\model
         }
 
         $code_php = '<?php' . "\n";
-        $code_php .= 'namespace data\\system\\cache\\' . ($admin ? 'admin_template' : 'template') . '\\_' . $theme . $namespace_suffix . ';' . "\n";
+        $code_php .= 'namespace data\\system\\cache\\' . ($admin ? 'admin_template' : 'template') . '\\' . $theme . $namespace_suffix . ';' . "\n";
         $code_php .= "\n";
         $code_php .= $code_use;
         $code_php .= "\n";
-        $code_php .= 'class ' . $class_name . "\n";
+        $code_php .= 'class ' . $class_name . ' extends \\system\\template' . "\n";
         $code_php .= '{' . "\n";
         $code_php .= '  public function display()' . "\n";
         $code_php .= '  {' . "\n";

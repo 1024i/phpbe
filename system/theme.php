@@ -54,8 +54,8 @@ class theme
 			<meta name="keywords" content="<?php echo $template->get_meta_keywords();?>" />
 			<title><?php echo $template->get_title().' - '.$config->site_name; ?></title>
 
-			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/js/jquery-1.11.0.min.js"></script>
-			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/js/jquery.validate.min.js"></script>
+			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/theme/default/js/jquery-1.11.0.min.js"></script>
+			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.validate.min.js"></script>
 
 			<script type="text/javascript" language="javascript">
 				var URL_ROOT = '<?php echo URL_ROOT; ?>';

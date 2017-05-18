@@ -2,108 +2,33 @@
 namespace system;
 
 /**
- * 
- * 主题基类
- * 主题和模板里只放控制界面的代码，如数据格式，页面布局，不要有业务代码， 更不要操作数据库 
- *
+ * 模板基类
  */
 class template
 {
-    protected $title = ''; // 标题
-    protected $meta_keywords = ''; // meta keywords
-    protected $meta_description = '';  // meta description
-    
-    protected $data = array(); // 数据
+    public $title = ''; // 标题
+    public $meta_keywords = ''; // meta keywords
+    public $meta_description = '';  // meta description
+    public $_message = null;  // 消息
 
+    /*
+    网站主色调
+    数组 10 个元素
+    下标（index）：0, 1, 2, 3, 4, 5, 6, 7, 8, 9，
+    主颜色: $this->colors[0], 模板主要颜色，
+    其它颜色 依次减淡 10%, 即 ([index]*10)%
 
-	protected $theme = null;
-	/*
-	 * @param object $theme 主题
-	 */
-	public function set_theme($theme)
-	{
-		$this->theme = $theme;
-	}
+    可以仅有一个元素 即 $this->colors[0], 指定下标不存在时自动跟据主颜色按百分比换算。
+    */
+    public $colors = array('#333333');
 
-
-    /**
-     * 
-     * 输出函数
-     */
-    public function display()
+    public function get_color($index = 0)
     {
-		if ($this->theme === null) return;
+        if ($index == 0) return $this->colors[0];
+        if (array_key_exists($index, $this->colors)) return $this->colors[$index];
 
-		$this->theme->set_template($this);
-		$this->theme->display();
+        $lib_css = be::get_lib('css');
+        return $lib_css->lighter($this->colors[0], $index*10);
     }
-
-   /**
-     * 
-     * 向模板中注入数据
-     * @param string $name 名称
-     * @param mixed $value 值
-     */
-    public function set($name, $value = null)
-    {
-        if (is_array($name)) {
-            $this->data = array_merge($this->data, $name);
-        } else {
-            $this->data[$name] = $value;
-        }
-    }
-
-    /**
-     *
-     * 取数据
-     * @param string $name 名称
-     */
-    public function get($name, $default=null)
-    {
-        if (isset($this->data[$name]))
-            return $this->data[$name];
-        else
-            return $default;
-    }
-
-    /**
-     * 
-     * 设置标题
-     * @param string $title
-     */
-    public function set_title($title)
-    {
-        $this->title = $title;
-    }
-
-	/**
-	 *
-	 * 获取标题
-	 */
-	public function get_title()
-	{
-		return $this->title;
-	}
-
-    public function set_meta_keywords($meta_keywords)
-    {
-        $this->meta_keywords = $meta_keywords;
-    }
-
-	public function get_meta_keywords()
-	{
-		return $this->meta_keywords;
-	}
-
-
-    public function set_meta_description($meta_description)
-    {
-        $this->meta_description = $meta_description;
-    }
-
-	public function get_meta_description()
-	{
-		return $this->meta_description;
-	}
 
 }

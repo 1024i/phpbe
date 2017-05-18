@@ -1,19 +1,18 @@
 <?php
-
 use \system\be;
 use \system\request;
 use \system\response;
 
+require PATH_ROOT . DS . 'system' . DS . 'loader.php';
+spl_autoload_register(array('\\system\\loader', 'autoload'));
+
+require PATH_ROOT . DS . 'system' . DS . 'tool.php';
+
+// 检查网站配置， 是否暂停服务
+$config_system = be::get_config('system');
+if ($config_system->offline === '1') response::end($config_system->offline_message);
+
 try {
-
-    require PATH_ROOT . DS . 'system' . DS . 'loader.php';
-    spl_autoload_register(array('\\system\\loader', 'autoload'));
-
-    require PATH_ROOT . DS . 'system' . DS . 'tool.php';
-
-    // 检查网站配置， 是否暂停服务
-    $config_system = be::get_config('system');
-    if ($config_system->offline === '1') response::end($config_system->offline_message);
 
     // 启动 session
     \system\session::start();
@@ -30,7 +29,7 @@ try {
     $script_name = $_SERVER['SCRIPT_NAME'];
     if ($script_name != '/index.php') $uri = substr($uri, strrpos($script_name, '/index.php'));
 
-    if ($config_system->sef !== '0') {
+    if ($config_system->sef) {
         if ($_SERVER['QUERY_STRING'] != '') $uri = substr($uri, 0, strrpos($uri, '?'));
 
         $len_sef_suffix = strlen($config_system->sef_suffix);
@@ -71,10 +70,10 @@ try {
         if (request::is_ajax()) {
             response::set('error', -404);
             response::set('message', '页面不存在！');
-            response::set('redirect_url', URL_ROOT . '/404.html');
+            response::set('redirect_url', URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
             response::ajax();
         } else {
-            response::redirect(URL_ROOT . '/404.html');
+                        response::redirect(URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
         }
     }
 
@@ -171,10 +170,17 @@ try {
 
     if (request::is_ajax()) {
         response::set('error', -500);
-        response::set('message', '系统错误：' . $e->getMessage());
+        if ($config_system->debug) {
+            response::set('message', '系统错误：' . $e->getMessage());
+        } else {
+            response::set('message', '系统错误！');
+        }
         response::ajax();
     } else {
-        //response::redirect(URL_ROOT . '/500.html');
-        response::end('系统错误：' . $e->getMessage());
+        if ($config_system->debug) {
+            response::end('系统错误：' . $e->getMessage());
+        } else {
+            response::redirect(URL_ROOT . '/theme/' . $config_system->theme . '/500.html');
+        }
     }
 }

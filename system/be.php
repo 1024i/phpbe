@@ -127,7 +127,7 @@ abstract class be
         }
 
         $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'row' . DS . $row . '.php';
-        if (!file_exists($path)) {
+        if (be::get_config('system')->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_row($row);
             if (!file_exists($path)) return null;
@@ -154,7 +154,7 @@ abstract class be
         }
 
         $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'table' . DS . $table . '.php';
-        if (!file_exists($path)) {
+        if (be::get_config('system')->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_table($table);
             if (!file_exists($path)) return null;
@@ -175,7 +175,7 @@ abstract class be
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $menu . '.php';
-        if (!file_exists($path)) {
+        if (be::get_config('system')->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_menu($menu);
             if (!file_exists($path)) return null;
@@ -198,7 +198,7 @@ abstract class be
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'role' . DS . $role_id . '.php';
-        if (!file_exists($path)) {
+        if (be::get_config('system')->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_role($role_id);
             if (!file_exists($path)) return null;
@@ -224,7 +224,7 @@ abstract class be
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html' . DS . $class . '.html';
-        if (!file_exists($path)) {
+        if (be::get_config('system')->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_html($class);
             if (!file_exists($path)) return '';
@@ -242,23 +242,22 @@ abstract class be
      */
     public static function get_template($template, $theme = null)
     {
+        $config = be::get_config('system');
         if ($theme === null) {
-            $config = be::get_config('system');
             $theme = $config->theme;
         }
 
         $key = 'template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . '_' .  $theme . DS . str_replace('.', DS, $template) . '.php';
-        if (!file_exists($path)) {
-
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        if ($config->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_template($theme, $template);
             if (!file_exists($path)) return null;
         }
 
-        $template_class_name = '\\data\\system\\cache\\template\\_' . $theme . '\\' . str_replace('.', '\\', $template);
+        $template_class_name = '\\data\\system\\cache\\template\\' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
 
         self::$cache[$key] = $template_instance;
@@ -275,22 +274,22 @@ abstract class be
      */
     public static function get_admin_template($template, $theme = null)
     {
+        $config = be::get_admin_config('system');
         if ($theme === null) {
-            $config = be::get_admin_config('system');
             $theme = $config->theme;
         }
 
         $key = 'admin_template-' . $theme . '-' . $template;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . '_' . $theme . DS . str_replace('.', DS, $template) . '.php';
-        if (!file_exists($path)) {
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        if ($config->debug || !file_exists($path)) {
             $model_cache = be::get_model('cache');
             $model_cache->update_admin_template($theme, $template);
             if (!file_exists($path)) return null;
         }
 
-        $template_class_name = '\\data\\system\\cache\\admin_template\\_' . $theme . '\\' . str_replace('.', '\\', $template);
+        $template_class_name = '\\data\\system\\cache\\admin_template\\' . $theme . '\\' . str_replace('.', '\\', $template);
         $template_instance = new $template_class_name();
 
         self::$cache[$key] = $template_instance;

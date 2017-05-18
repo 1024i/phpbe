@@ -1,9 +1,8 @@
 <?php
 use \system\be;
-
+$config = be::get_config('system');
 $config_article = be::get_config('article');
 ?>
-
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/article/css/bjqs.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/template/article/js/bjqs-1.3.min.js"></script>
@@ -14,7 +13,7 @@ $config_article = be::get_config('article');
 <style type="text/css">
 ol.bjqs-markers li a{
 	padding:2px 6px;
-	background:<?php echo $this->theme->get_color(3); ?>;
+	background:<?php echo $this->get_color(3); ?>;
 	color:#fff;
 	margin:2px;
 	text-decoration: none;
@@ -22,7 +21,7 @@ ol.bjqs-markers li a{
 
 ol.bjqs-markers li.active-marker a,
 ol.bjqs-markers li a:hover{
-	background:<?php echo $this->theme->get_color(); ?>;
+	background:<?php echo $this->get_color(); ?>;
 }
 </style>
 <script type="text/javascript" language="javascript">
@@ -161,7 +160,7 @@ foreach ($categories as $category) {
     <?php
 }
 ?>
-<!--{center}-->
+<!--{/center}-->
 
 
 <!--{east}-->
