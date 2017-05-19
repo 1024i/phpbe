@@ -3,12 +3,20 @@
 伪静态页配置：
 
 默认使用 Apache 栩置
+将以下内容存为 .htaccess, 放在网站根目录下
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . index.php [L]
 
+禁止Apache 列出目录结构
+<Files *>
+Options -Indexes
+</Files>
+
+
 Nginx 伪静态页配置
+将以下内容拷贝到 nginx 的配置文件中
 location / {
     if (!-e $request_filename){
         rewrite ^/(.*)$ /index.php last;
@@ -16,7 +24,8 @@ location / {
 }
 
 
-IIS 伪静态页配置
+IIS 伪静态页配置，
+将以下内容存为 web.config， 放在网站根目录下
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <system.webServer>
