@@ -74,14 +74,15 @@ class response
     }
 
     /**
-     * 设置暂存数据
-     * @param string $name 名称
-     * @param mixed $value 值 (可以是数组或对象)
+     * 设置消息
+     *
+     * @param string $message 消息内容
+     * @param string $type 消息类型
      */
-    public static function set_message($message)
+    public static function set_message($message, $type = 'success')
     {
         $data = new \stdClass();
-        $data->type = 'error';
+        $data->type = $type;
         $data->body = $message;
         session::set('_message', $data);
     }
@@ -122,10 +123,7 @@ class response
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
-            $data = new \stdClass();
-            $data->type = 'success';
-            $data->body = $message;
-            session::set('_message', $data);
+            self::set_message($message, 'success');
 
             if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
             header('location:' . $redirect_url);
@@ -147,10 +145,7 @@ class response
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
-            $data = new \stdClass();
-            $data->type = 'error';
-            $data->body = $message;
-            session::set('_message', $data);
+            self::set_message($message, 'error');
 
             if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
             header('location:' . $redirect_url);

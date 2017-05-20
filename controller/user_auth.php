@@ -3,24 +3,22 @@ namespace controller;
 
 use \system\be;
 use \system\request;
+use \system\response;
 
 class user_auth extends \system\controller
 {
-
     public function __construct()
     {
-		$user = be::get_user();
-        if ($user->id == 0) {
+		$my = be::get_user();
+        if ($my->id == 0) {
 			if (request::is_ajax()) {
-				$this->set('error', -1);
-				$this->set('message', '登陆超时，请重新登陆！');
-				$this->set('redirect_url', url('controller=user&task=login&return=http_referer'));
-				$this->ajax();
+                response::set('error', -1);
+                response::set('message', '登陆超时，请重新登陆！');
+                response::set('redirect_url', url('controller=user&task=login&return=http_referer'));
+                response::ajax();
 			} else {
-				$this->set_message('登陆超时，请重新登陆！', 'error');
-				$this->redirect(url('controller=user&task=login&return=http_referer'));
+                response::error('登陆超时，请重新登陆！', url('controller=user&task=login&return=http_referer'));
 			}
 		}
     }
 }
-?>

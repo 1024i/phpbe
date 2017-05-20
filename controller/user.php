@@ -400,5 +400,3 @@ class user extends \system\controller
     }
 
 }
-
-?>

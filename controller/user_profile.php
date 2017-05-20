@@ -3,24 +3,23 @@ namespace controller;
 
 use \system\be;
 use \system\request;
+use system\response;
 
 class user_profile extends user_auth
 {
 
 	public function home()
 	{
-        $template = be::get_template('user_profile.home');
-        $template->set_title('用户中心');
-        $template->display();
+        response::set_title('用户中心');
+        response::display();
 	}
 
 
     // 上传头像
     public function edit_avatar()
     {
-        $template = be::get_template('user_profile.edit_avatar');
-        $template->set_title('上传头像');
-        $template->display();
+        response::set_title('上传头像');
+        response::display();
     }
 
 
@@ -38,12 +37,12 @@ class user_profile extends user_auth
 				$type = substr($name, $pos+1);
 			}
 			if (!in_array($type, $config_system->allow_upload_image_types)) {
-				$this->set_message('您上传的不是合法的图像文件！', 'error');
+				response::set_message('您上传的不是合法的图像文件！', 'error');
 			} else {
 				$lib_image = be::get_lib('image');
 				$lib_image->open($avatar['tmp_name']);
 				if (!$lib_image->is_image()) {
-					$this->set_message('您上传的不是合法的图像文件！', 'error');
+                    response::set_message('您上传的不是合法的图像文件！', 'error');
 				} else {
 					$my = be::get_user();
 
@@ -77,9 +76,9 @@ class user_profile extends user_auth
 					$my->avatar_s = $row_user->avatar_s = $my->id.'_'.$t.'_s.'.$image_type;
 
 					if ($row_user->save()) {
-						$this->set_message('您的头像已更新！');
+                        response::set_message('您的头像已更新！');
 					} else {
-						$this->set_message($row_user->get_error(), 'error');
+                        response::set_message($row_user->get_error(), 'error');
 					}
 				}
 			}
@@ -93,16 +92,16 @@ class user_profile extends user_auth
                 '4'=>'没有文件被上传！',
                 '5'=>'上传的文件大小为 0！'
            );
-			$error = '';
+			$error = null;
 			if (array_key_exists($avatar['error'], $upload_errors)) {
 				$error = $upload_errors[$avatar['error']];
 			} else {
 				$error = '错误代码：'.$avatar['error'];
 			}
-			$this->set_message('上传失败'.'('.$error.')', 'error');
+            response::set_message('上传失败'.'('.$error.')', 'error');
 		}
 
-		$this->redirect(url('controller=user_profile&task=edit_avatar'));
+        response::redirect(url('controller=user_profile&task=edit_avatar'));
 	}
 
 	// 删除头像，即改成系统默认头像
@@ -127,22 +126,20 @@ class user_profile extends user_auth
 		$my->avatar_m = $row_user->avatar_m = '';
 		$my->avatar_l = $row_user->avatar_l = '';
 
+		$return = url('controller=user_profile&task=edit_avatar');
 		if ($row_user->save()) {
-			$this->set_message('您的头像已删除！');
+            response::success('您的头像已删除！', $return);
         } else {
-            $this->set_message($row_user->get_error(), 'error');
+            response::error($row_user->get_error(), $return);
         }
-
-		$this->redirect(url('controller=user_profile&task=edit_avatar'));
 	}
 
 
     // 修改用户资料
     public function edit()
     {
-        $template = be::get_template('user_profile.edit');
-        $template->set_title('修改资料');
-        $template->display();
+        response::set_title('修改资料');
+        response::display();
     }
 
     // 修改用户资料
@@ -159,23 +156,16 @@ class user_profile extends user_auth
 		$my->mobile = $row_user->mobile = request::post('mobile', '');
 		$my->qq = $row_user->qq = request::post('qq', '');
 
-        if ($row_user->save()) {
-            $this->set('error', 0);
-            $this->set('message', '您的资料已保存！');
-            $this->ajax();
-        } else {
-            $this->set('error', 2);
-            $this->set('message', $row_user->get_error());
-            $this->ajax();
-        }
+        $row_user->save();
+
+        response::success('您的资料已保存！');
     }
 
     // 修改密码
     public function edit_password()
     {
-        $template = be::get_template('user_profile.edit_password');
-        $template->set_title('修改密码');
-        $template->display();
+        response::set_title('修改密码');
+        response::display();
     }
 
     // 修改密码
@@ -192,30 +182,17 @@ class user_profile extends user_auth
 
 		$model_user = be::get_model('user');
 		if ($model_user->encrypt_password($password)!=$row_user->password) {
-            $this->set('error', 1);
-            $this->set('message', '当前密码错误！');
-            $this->ajax();
+            response::error('当前密码错误！');
 		}
 
         if ($password1 != $password2) {
-            $this->set('error', 2);
-            $this->set('message', '两次输入的密码不匹配！');
-            $this->ajax();
+            response::error('两次输入的密码不匹配！');
         }
 
 		$row_user->password = $model_user->encrypt_password($password1);
-        
-        if ($row_user->save()) {
-            $this->set('error', 0);
-            $this->set('message', '您的密码已重设！');
-            $this->ajax();
-        } else {
-            $this->set('error', 3);
-            $this->set('message', $row_user->get_error());
-            $this->ajax();
-        }
-    
+        $row_user->save();
+
+        response::success('您的密码已重设！');
     }
 
 }
-?>
