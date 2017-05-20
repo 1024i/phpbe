@@ -107,7 +107,7 @@ abstract class app
 
 	public function get_db_info($rows = null)
 	{
-        $info = new stdClass();
+        $info = new \stdClass();
         $info->total = 0;
         $info->created = 0;
         $info->tables = array();

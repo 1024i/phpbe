@@ -4,6 +4,11 @@ namespace system;
 
 /**
  * response
+ * @package system
+ *
+ * @method void set_title(string $title) static 设置 title
+ * @method void set_meta_keywords(string $meta_keywords)  static 设置 meta keywords
+ * @method void set_meta_description(string $meta_description)  static 设置 meta description
  */
 class response
 {
@@ -58,7 +63,6 @@ class response
         exit();
     }
 
-
     /**
      * 设置暂存数据
      * @param string $name 名称
@@ -67,6 +71,19 @@ class response
     public static function set($name, $value)
     {
         self::$data[$name] = $value;
+    }
+
+    /**
+     * 设置暂存数据
+     * @param string $name 名称
+     * @param mixed $value 值 (可以是数组或对象)
+     */
+    public static function set_message($message)
+    {
+        $data = new \stdClass();
+        $data->type = 'error';
+        $data->body = $message;
+        session::set('_message', $data);
     }
 
     /**
@@ -102,13 +119,15 @@ class response
         if (request::is_ajax()) {
             self::set('error', 0);
             self::set('message', $message);
-            self::set('redirect_url', $redirect_url);
+            if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
             $data = new \stdClass();
             $data->type = 'success';
             $data->body = $message;
             session::set('_message', $data);
+
+            if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
             header('location:' . $redirect_url);
             exit();
         }
@@ -125,13 +144,15 @@ class response
         if (request::is_ajax()) {
             self::set('error', 1);
             self::set('message', $message);
-            self::set('redirect_url', $redirect_url);
+            if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
             $data = new \stdClass();
             $data->type = 'error';
             $data->body = $message;
             session::set('_message', $data);
+
+            if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
             header('location:' . $redirect_url);
             exit();
         }
@@ -209,6 +230,16 @@ class response
             exit;
         } else {
             exit('<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><div style="padding:10px;text-align:center;">' . $string . '</div></body></html>');
+        }
+    }
+
+    /*
+     * 封装 set_xxx 方法
+     */
+    public static function __callStatic($fn, $args)
+    {
+        if (substr($fn, 0, 4) == 'set_' && count($args) == 1) {
+            self::$data[substr($fn, 4)] = $args[0];
         }
     }
 

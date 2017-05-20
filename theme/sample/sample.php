@@ -79,7 +79,7 @@ $config = be::get_config('system');
                         if ($menu->home)
                             echo URL_ROOT;
                         else
-                            echo url($menu->url);
+                            echo $menu->url;
                         echo '" target="' . $menu->target . '"><span>' . $menu->name . '</span></a>';
                         echo '</li>';
                     }
@@ -180,7 +180,7 @@ $config = be::get_config('system');
         }
         ?>
         <div class="copyright clr">
-            &copy;2010 版权所有: <?php echo $config->site_name; ?> &nbsp;
+            &copy;2017 版权所有: <?php echo $config->site_name; ?> &nbsp;
             使用 <a href="http://www.phpbe.com" target="_blank" title="访问BE官网">BEV<?php echo be::get_version(); ?></a> 开发
         </div>
         <!--{/south}-->

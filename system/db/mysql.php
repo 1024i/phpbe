@@ -458,7 +458,7 @@ class mysql
      * @param string $table 表名
      * @return bool
      */
-    public function drop_table($table)
+    public static function drop_table($table)
     {
         return self::execute('DROP TABLE IF EXISTS `' . $table .'`');
     }
@@ -468,12 +468,12 @@ class mysql
      *
      * @return bool
      */
-    public function start_transaction()
+    public static function start_transaction()
     {
         return self::begin_transaction();
     }
 
-    public function begin_transaction()
+    public static function begin_transaction()
     {
         if (!isset(self::$connection)) self::connect();
         if (!isset(self::$connection)) return false;
@@ -485,7 +485,7 @@ class mysql
      *
      * @return bool
      */
-    public function rollback()
+    public static function rollback()
     {
         if (!isset(self::$connection)) self::connect();
         if (!isset(self::$connection)) return false;
@@ -497,7 +497,7 @@ class mysql
      *
      * @return bool
      */
-    public function commit()
+    public static function commit()
     {
         if (!isset(self::$connection)) self::connect();
         if (!isset(self::$connection)) return false;
@@ -509,7 +509,7 @@ class mysql
      *
      * @return bool
      */
-    public function in_transaction()
+    public static function in_transaction()
     {
         if (!isset(self::$connection)) self::connect();
         if (!isset(self::$connection)) return false;

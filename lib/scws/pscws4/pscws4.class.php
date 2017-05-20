@@ -122,7 +122,7 @@ class PSCWS4
 	function set_charset($charset = 'gbk')
 	{
 		$charset = strtolower(trim($charset));
-		if ($charset ! == $this->_cs) {
+		if ($charset !== $this->_cs) {
 			$this->_cs = $charset;
 			
 			// charset's mblen map, only for utf-8 & gbk(big5)

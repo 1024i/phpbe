@@ -25,7 +25,7 @@ class router
 				$url_params .= '/' . $key . '-' . $val;
 			}
 		}
-		
+		echo URL_ROOT . '/' . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
 		return URL_ROOT . '/' . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
 	}
 

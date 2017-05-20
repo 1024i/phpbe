@@ -3,8 +3,10 @@
 namespace controller;
 
 use \system\be;
+use \system\db;
 use \system\request;
 use \system\response;
+use \system\exception\custom_exception;
 
 class article extends \system\controller
 {
@@ -54,9 +56,9 @@ class article extends \system\controller
         }
 
         $config_system = be::get_config('system');
-        response::set('title', $config_system->home_title);
-        response::set('meta_keywords', $config_system->home_meta_keywords);
-        response::set('meta_description', $config_system->home_meta_description);
+        response::set_title($config_system->home_title);
+        response::set_meta_keywords($config_system->home_meta_keywords);
+        response::set_meta_description($config_system->home_meta_description);
         response::set('latest_thumbnail_articles', $latest_thumbnail_articles);
         response::set('active_users', $active_users);
         response::set('month_hottest_articles', $month_hottest_articles);
@@ -67,27 +69,10 @@ class article extends \system\controller
 
     public function articles()
     {
-
-        $table = be::get_table('article');
-
-        $table->where('category_id', 44);
-        $table->where('home', 0);
-        $table->where('create_time', '>', 1396694808);
-        $table->cache(10000);
-
-
-        print_r($table->parse_sql());
-
-        $users = $table->select();
-        print_r($users);
-        exit;
-
         $config_article = be::get_config('article');
 
-        $template = be::get_template('article.articles');
-
         $category_id = request::get('category_id', 0, 'int');
-        $template->set('category_id', $category_id);
+        response::set('category_id', $category_id);
 
         $row_article_category = be::get_row('article_category');
         $row_article_category->cache($config_article->cache_expire);
@@ -95,8 +80,8 @@ class article extends \system\controller
 
         if ($row_article_category->id == 0) response::end('文章分类不存在！');
 
-        $template->set_title($row_article_category->name);
-        $template->set('category', $row_article_category);
+        response::set_title($row_article_category->name);
+        response::set('category', $row_article_category);
 
         if ($row_article_category->parent_id > 0) {
             $parent_category = null;
@@ -107,7 +92,7 @@ class article extends \system\controller
                 $tmp_category->load($parent_id);
             }
             $parent_category = $tmp_category;
-            $template->set('parent_category', $parent_category);
+            response::set('parent_category', $parent_category);
 
             $north_menu = be::get_menu('north');
             $north_menu_tree = $north_menu->get_menu_tree();
@@ -119,13 +104,13 @@ class article extends \system\controller
                         isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
                         isset($menu->params['category_id']) && $menu->params['category_id'] == $parent_category->id
                     ) {
-                        $template->set('menu_id', $menu->id);
+                        response::set('menu_id', $menu->id);
                         break;
                     }
                 }
             }
         } else {
-            $template->set('parent_category', $row_article_category);
+            response::set('parent_category', $row_article_category);
         }
 
         $model_article = be::get_model('article');
@@ -138,14 +123,14 @@ class article extends \system\controller
         $pagination->set_total($model_article->get_article_count($option));
         $pagination->set_page(request::get('page', 1, 'int'));
         $pagination->set_url('controller=article&task=articles&category_id=' . $category_id);
-        $template->set('pagination', $pagination);
+        response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->get_offset();
         $option['limit'] = $limit;
         $option['order_by_string'] = '`top` DESC, `rank` DESC, `create_time` DESC';
 
         $articles = $model_article->get_articles($option);
-        $template->set('articles', $articles);
+        response::set('articles', $articles);
 
         // 热门文章
         $hottest_articles = $model_article->get_articles([
@@ -154,13 +139,13 @@ class article extends \system\controller
             'order_by_dir' => 'DESC',
             'limit' => 10
         ]);
-        $template->set('hottest_articles', $hottest_articles);
+        response::set('hottest_articles', $hottest_articles);
 
         // 推荐文章
         $top_articles = $model_article->get_articles(array('category_id' => $category_id, 'top' => 1, 'order_by' => 'top', 'order_by_dir' => 'DESC', 'limit' => 10));
-        $template->set('top_articles', $top_articles);
+        response::set('top_articles', $top_articles);
 
-        $template->display();
+        response::display('article.articles');
     }
 
 
@@ -201,10 +186,9 @@ class article extends \system\controller
             'article_id' => $article_id
         ]);
 
-        $template = be::get_template('article.detail');
-        $template->set_title($row_article->title);
-        $template->set_meta_keywords($row_article->meta_keywords);
-        $template->set_meta_description($row_article->meta_description);
+        response::set_title($row_article->title);
+        response::set_meta_keywords($row_article->meta_keywords);
+        response::set_meta_description($row_article->meta_description);
 
         $north_menu = be::get_menu('north');
         $north_menu_tree = $north_menu->get_menu_tree();
@@ -216,8 +200,8 @@ class article extends \system\controller
                     isset($menu->params['task']) && $menu->params['task'] == 'detail' &&
                     isset($menu->params['article_id']) && $menu->params['article_id'] == $article_id
                 ) {
-                    $template->set('menu_id', $menu->id);
-                    if ($menu->home == 1) $template->set('home', 1);
+                    response::set('menu_id', $menu->id);
+                    if ($menu->home == 1) response::set('home', 1);
                     $menu_exist = true;
                     break;
                 }
@@ -230,7 +214,7 @@ class article extends \system\controller
                         isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
                         isset($menu->params['category_id']) && $menu->params['category_id'] == $row_article->category_id
                     ) {
-                        $template->set('menu_id', $menu->id);
+                        response::set('menu_id', $menu->id);
                         $menu_exist = true;
                         break;
                     }
@@ -238,13 +222,12 @@ class article extends \system\controller
             }
         }
 
-        $template->set('article', $row_article);
-        $template->set('similar_articles', $similar_articles);
-        $template->set('hottest_articles', $hottest_articles);
-        $template->set('top_articles', $top_articles);
-        $template->set('comments', $comments);
-
-        $template->display();
+        response::set('article', $row_article);
+        response::set('similar_articles', $similar_articles);
+        response::set('hottest_articles', $hottest_articles);
+        response::set('top_articles', $top_articles);
+        response::set('comments', $comments);
+        response::display();
     }
 
 
@@ -253,44 +236,42 @@ class article extends \system\controller
     {
         $my = be::get_user();
         if ($my->id == 0) {
-            response::set('error', 1);
-            response::set('message', '请先登陆！');
-            response::ajax();
+            response::error('请先登陆！');
         }
 
         $article_id = request::get('article_id', 0, 'int');
         if ($article_id == 0) {
-            response::set('error', 2);
-            response::set('message', '参数(article_id)缺失！');
-            response::ajax();
+            response::error('参数(article_id)缺失！');
         }
 
-        $row_article = be::get_row('article');
+        try {
+            db::begin_transaction();
 
-        $row_article->load($article_id);
-        if ($row_article->id == 0 || $row_article->block == 1) {
-            response::set('error', 3);
-            response::set('message', '文章不存在！');
-            response::ajax();
+            $row_article = be::get_row('article');
+            $row_article->load($article_id);
+            if ($row_article->id == 0 || $row_article->block == 1) {
+                throw new custom_exception('文章不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->article_id = $article_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $model_article = be::get_model('article');
+            $model_article->like($article_id);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+            response::error($e->getMessage());
         }
 
-        $row_article_vote_log = be::get_row('article_vote_log');
-        $row_article_vote_log->load(array('article_id' => $article_id, 'user_id' => $my->id));
-        if ($row_article_vote_log->id > 0) {
-            response::set('error', 4);
-            response::set('message', '您已经表过态啦！');
-            response::ajax();
-        }
-        $row_article_vote_log->article_id = $article_id;
-        $row_article_vote_log->user_id = $my->id;
-        $row_article_vote_log->save();
-
-        $model_article = be::get_model('article');
-        $model_article->like($article_id);
-
-        response::set('error', 0);
-        response::set('message', '提交成功！');
-        response::ajax();
+        response::success('提交成功！');
     }
 
     // 不喜欢
@@ -298,43 +279,42 @@ class article extends \system\controller
     {
         $my = be::get_user();
         if ($my->id == 0) {
-            response::set('error', 1);
-            response::set('message', '请先登陆！');
-            response::ajax();
+            response::error('请先登陆！');
         }
 
         $article_id = request::get('article_id', 0, 'int');
         if ($article_id == 0) {
-            response::set('error', 2);
-            response::set('message', '参数(article_id)缺失！');
-            response::ajax();
+            response::error('参数(article_id)缺失！');
         }
 
-        $row_article = be::get_row('article');
-        $row_article->load($article_id);
-        if ($row_article->id == 0 || $row_article->block == 1) {
-            response::set('error', 3);
-            response::set('message', '文章不存在！');
-            response::ajax();
+        try {
+            db::begin_transaction();
+
+            $row_article = be::get_row('article');
+            $row_article->load($article_id);
+            if ($row_article->id == 0 || $row_article->block == 1) {
+                throw new custom_exception('文章不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->article_id = $article_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $model_article = be::get_model('article');
+            $model_article->dislike($article_id);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+            response::error($e->getMessage());
         }
 
-        $row_article_vote_log = be::get_row('article_vote_log');
-        $row_article_vote_log->load(array('article_id' => $article_id, 'user_id' => $my->id));
-        if ($row_article_vote_log->id > 0) {
-            response::set('error', 4);
-            response::set('message', '您已经表过态啦！');
-            response::ajax();
-        }
-        $row_article_vote_log->article_id = $article_id;
-        $row_article_vote_log->user_id = $my->id;
-        $row_article_vote_log->save();
-
-        $model_article = be::get_model('article');
-        $model_article->dislike($article_id);
-
-        response::set('error', 0);
-        response::set('message', '提交成功！');
-        response::ajax();
+        response::success('提交成功！');
     }
 
 
@@ -342,39 +322,29 @@ class article extends \system\controller
     {
         $my = be::get_user();
         if ($my->id == 0) {
-            response::set('error', 1);
-            response::set('message', '请先登陆！');
-            response::ajax();
+            response::error('请先登陆！');
         }
 
         $article_id = request::post('article_id', 0, 'int');
         if ($article_id == 0) {
-            response::set('error', 2);
-            response::set('message', '参数(article_id)缺失！');
-            response::ajax();
+            response::error('参数(article_id)缺失！');
         }
 
         $row_article = be::get_row('article');
         $row_article->load($article_id);
         if ($row_article->id == 0 || $row_article->block == 1) {
-            response::set('error', 3);
-            response::set('message', '文章不存在！');
-            response::ajax();
+            response::error('文章不存在！');
         }
 
         $body = request::post('body', '');
         $body = trim($body);
         $body_length = strlen($body);
         if ($body_length == 0) {
-            response::set('error', 5);
-            response::set('message', '请输入评论内容！');
-            response::ajax();
+            response::error('请输入评论内容！');
         }
 
         if ($body_length > 2000) {
-            response::set('error', 6);
-            response::set('message', '评论内容过长！');
-            response::ajax();
+            response::error('评论内容过长！');
         }
 
         $row_article_comment = be::get_row('article_comment');
@@ -390,9 +360,7 @@ class article extends \system\controller
 
         $row_article_comment->save();
 
-        response::set('error', 0);
-        response::set('message', '提交成功！');
-        response::ajax();
+        response::success('提交成功！');
     }
 
     // 顶
@@ -400,43 +368,42 @@ class article extends \system\controller
     {
         $my = be::get_user();
         if ($my->id == 0) {
-            response::set('error', 1);
-            response::set('message', '请先登陆！');
-            response::ajax();
+            response::error('请先登陆！');
         }
 
         $comment_id = request::get('comment_id', 0, 'int');
         if ($comment_id == 0) {
-            response::set('error', 2);
-            response::set('message', '参数(comment_id)缺失！');
-            response::ajax();
+            response::error('参数(comment_id)缺失！');
         }
 
-        $row_article_comment = be::get_row('article_comment');
-        $row_article_comment->load($comment_id);
-        if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
-            response::set('error', 3);
-            response::set('message', '评论不存在！');
-            response::ajax();
+        try {
+            db::begin_transaction();
+
+            $row_article_comment = be::get_row('article_comment');
+            $row_article_comment->load($comment_id);
+            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
+                throw new custom_exception('评论不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->comment_id = $comment_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $model_article = be::get_model('article');
+            $model_article->comment_like($comment_id);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+            response::error($e->getMessage());
         }
 
-        $row_article_vote_log = be::get_row('article_vote_log');
-        $row_article_vote_log->load(array('comment_id' => $comment_id, 'user_id' => $my->id));
-        if ($row_article_vote_log->id > 0) {
-            response::set('error', 4);
-            response::set('message', '您已经表过态啦！');
-            response::ajax();
-        }
-        $row_article_vote_log->comment_id = $comment_id;
-        $row_article_vote_log->user_id = $my->id;
-        $row_article_vote_log->save();
-
-        $model_article = be::get_model('article');
-        $model_article->comment_like($comment_id);
-
-        response::set('error', 0);
-        response::set('message', '提交成功！');
-        response::ajax();
+        response::success('提交成功！');
     }
 
     // 踩
@@ -444,44 +411,42 @@ class article extends \system\controller
     {
         $my = be::get_user();
         if ($my->id == 0) {
-            response::set('error', 1);
-            response::set('message', '请先登陆！');
-            response::ajax();
+            response::error('请先登陆！');
         }
 
         $comment_id = request::get('comment_id', 0, 'int');
         if ($comment_id == 0) {
-            response::set('error', 2);
-            response::set('message', '参数(comment_id)缺失！');
-            response::ajax();
+            response::error('参数(comment_id)缺失！');
         }
 
-        $row_article_comment = be::get_row('article_comment');
-        $row_article_comment->load($comment_id);
-        if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
-            response::set('error', 3);
-            response::set('message', '评论不存在！');
-            response::ajax();
+        try {
+            db::begin_transaction();
+
+            $row_article_comment = be::get_row('article_comment');
+            $row_article_comment->load($comment_id);
+            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
+                throw new custom_exception('评论不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->comment_id = $comment_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $model_article = be::get_model('article');
+            $model_article->comment_dislike($comment_id);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+            response::error($e->getMessage());
         }
 
-        $row_article_vote_log = be::get_row('article_vote_log');
-        $row_article_vote_log->load(array('comment_id' => $comment_id, 'user_id' => $my->id));
-        if ($row_article_vote_log->id > 0) {
-            response::set('error', 4);
-            response::set('message', '您已经表过态啦！');
-            response::ajax();
-        }
-        $row_article_vote_log->comment_id = $comment_id;
-        $row_article_vote_log->user_id = $my->id;
-        $row_article_vote_log->save();
-
-
-        $model_article = be::get_model('article');
-        $model_article->comment_dislike($comment_id);
-
-        response::set('error', 0);
-        response::set('message', '提交成功！');
-        response::ajax();
+        response::success('提交成功！');
     }
 
     public function user()
@@ -507,16 +472,15 @@ class article extends \system\controller
         }
         $comment_count = $model_article->get_comment_count($option);
 
-        $template = be::get_template('article.user');
-        $template->set_title($user->name . ' 的动态');
-        $template->set_meta_keywords($user->name . ' 的动态');
-        $template->set_meta_description($user->name . ' 的动态');
-        $template->set('user', $user);
-        $template->set('articles', $articles);
-        $template->set('article_count', $article_count);
-        $template->set('comments', $comments);
-        $template->set('comment_count', $comment_count);
-        $template->display();
+        response::set_title($user->name . ' 的动态');
+        response::set_meta_keywords($user->name . ' 的动态');
+        response::set_meta_description($user->name . ' 的动态');
+        response::set('user', $user);
+        response::set('articles', $articles);
+        response::set('article_count', $article_count);
+        response::set('comments', $comments);
+        response::set('comment_count', $comment_count);
+        response::display();
     }
 
 }

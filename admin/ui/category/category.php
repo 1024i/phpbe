@@ -158,7 +158,7 @@ class category extends \ui
                         if (isset($field['template'])) {
                             $str = $field['template'];
                             $start = strpos($str, '{');
-                            while ($start ! == false)
+                            while ($start !== false)
                             {
                                 $end = strpos($str, '}');
                                 $key = substr($str, $start + 1, ($end - $start - 1));

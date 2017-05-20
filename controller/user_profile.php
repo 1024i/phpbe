@@ -34,7 +34,7 @@ class user_profile extends user_auth
 			$name = strtolower($avatar['name']);
 			$type = '';
 			$pos = strrpos($name, '.');
-			if ($pos! == false) {
+			if ($pos!== false) {
 				$type = substr($name, $pos+1);
 			}
 			if (!in_array($type, $config_system->allow_upload_image_types)) {

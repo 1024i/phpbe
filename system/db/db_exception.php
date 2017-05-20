@@ -4,6 +4,6 @@ namespace system\db;
 /**
  * 错误异常
  */
-class exception extends \exception
+class db_exception extends \exception
 {
 }

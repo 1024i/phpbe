@@ -1,5 +1,5 @@
 <?php
-namespace data\cache\menu;
+namespace data\system\cache\menu;
 
 class south extends \system\menu
 {

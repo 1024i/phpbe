@@ -175,7 +175,7 @@ class category_tree extends \ui
                         if (isset($field['template'])) {
                             $str = $field['template'];
                             $start = strpos($str, '{');
-                            while ($start ! == false)
+                            while ($start !== false)
                             {
                                 $end = strpos($str, '}');
                                 $key = substr($str, $start + 1, ($end - $start - 1));
@@ -233,7 +233,7 @@ class category_tree extends \ui
                 }
                 $categories[] = $category;
                 
-                if ($sub_category ! == null) $this->_create_categories($sub_category, $categories);
+                if ($sub_category !== null) $this->_create_categories($sub_category, $categories);
             }
         }
         return $categories;

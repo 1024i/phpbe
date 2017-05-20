@@ -139,7 +139,7 @@ class grid extends \ui
         echo '<tr>';
         echo '<td align="left" valign="bottom"><div class="filter">';
         
-        if ($this->filters ! == null) {
+        if ($this->filters !== null) {
             foreach ($this->filters as $filter) {
 				if ($filter['type'] == 'button') continue;
 				
@@ -294,7 +294,7 @@ class grid extends \ui
                     if (isset($field['template'])) {
                         $str = $field['template'];
                         $start = strpos($str, '{');
-                        while ($start ! == false)
+                        while ($start !== false)
                         {
                             $end = strpos($str, '}');
                             $key = substr($str, $start + 1, ($end - $start - 1));
@@ -332,7 +332,7 @@ class grid extends \ui
         echo '</tbody>';
         
         $total = $pages = $limit = $page = 0;
-        if ($this->pagination ! == null) {
+        if ($this->pagination !== null) {
             $total = $this->pagination->get_total();
             $pages = $this->pagination->get_pages();
             $limit = $this->pagination->get_limit();
@@ -343,7 +343,7 @@ class grid extends \ui
         echo '<tr>';
         echo '<td colspan="' . $n . '">';
         if ($this->footer === null) {
-            if ($this->pagination ! == null) {
+            if ($this->pagination !== null) {
                 echo '总计 <strong>'.$total.'</strong> 条记录';
                 if ($pages > 1) echo '(<strong>'.$pages.'</strong> 页), 每页显示 <strong>'.$limit.'</strong> 条记录';
             } else {
@@ -359,7 +359,7 @@ class grid extends \ui
         echo '</table>';
         echo '</div>';
         
-        if ($this->pagination ! == null && $pages > 1) {
+        if ($this->pagination !== null && $pages > 1) {
             $window = $this->pagination_window;
 			$half_window = intval($window / 2);
 			if ($pages - $page < $half_window) {
@@ -397,7 +397,7 @@ class grid extends \ui
         
         echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_id" name="id" value="">';
         echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_page" name="page" value="' . $page . '">';
-        if ($this->order_by ! == null) {
+        if ($this->order_by !== null) {
             echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_order_by" name="order_by" value="' . $this->order_by . '">';
             echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_order_by_dir" name="order_by_dir" value="' . $this->order_by_dir . '">';
         }

@@ -1148,7 +1148,7 @@ class PHPMailer {
    * @return void
    */
   public function SmtpClose() {
-    if ($this->smtp ! == null) {
+    if ($this->smtp !== null) {
       if ($this->smtp->Connected()) {
         $this->smtp->Quit();
         $this->smtp->Close();
@@ -1343,7 +1343,7 @@ class PHPMailer {
     while (!$foundSplitPos) {
       $lastChunk = substr($encodedText, $maxLength - $lookBack, $lookBack);
       $encodedCharPos = strpos($lastChunk, "=");
-      if ($encodedCharPos ! == false) {
+      if ($encodedCharPos !== false) {
         // Found start of encoded character byte within $lookBack block.
         // Check the encoded byte value (the 2 chars after the '=')
         $hex = substr($encodedText, $maxLength - $lookBack + $encodedCharPos + 1, 2);
@@ -2472,7 +2472,7 @@ class PHPMailer {
 	// condense down to \n
 	$nstr = str_replace(array("\r\n", "\r"), "\n", $str);
 	// Now convert LE as needed
-	if ($this->LE ! == "\n") {
+	if ($this->LE !== "\n") {
 		$nstr = str_replace("\n", $this->LE, $nstr);
 	}
     return  $nstr;
@@ -2662,7 +2662,7 @@ class PHPMailer {
   public static function filenameToType($filename) {
     //In case the path is a URL, strip any query string before getting extension
     $qpos = strpos($filename, '?');
-    if ($qpos ! == false) {
+    if ($qpos !== false) {
       $filename = substr($filename, 0, $qpos);
     }
     $pathinfo = self::mb_pathinfo($filename);

@@ -55,7 +55,7 @@ class http extends \system\lib
         $this->handler->set_url($url);
         $this->handler->set_header('method', 'POST');
 
-        if ($data ! == null) {
+        if ($data !== null) {
             foreach ($data as $key => $val) {
                 $this->handler->set_data($key, $val);
             }

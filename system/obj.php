@@ -3,7 +3,7 @@ namespace system;
 
 abstract class obj
 {
-    protected $_errors = array();
+    protected $_errors = [];
 
     public function set_error($error)
     {

@@ -23,7 +23,7 @@ class imagick extends \system\lib
     // 析构函数
     public function __destruct()
     {
-        if ($this->image ! == null) $this->image->destroy();
+        if ($this->image !== null) $this->image->destroy();
     }
 
     // 载入图像

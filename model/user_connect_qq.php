@@ -145,7 +145,7 @@ class user_connect_qq extends \system\model
 		
 		$t = date('YmdHis', $t);
 
-		$tmp_avatar = PATH_DATA.DS.$t.'_'.$row_user->id;
+		$tmp_avatar = PATH_DATA.DS.'system'.DS.'tmp'.DS.'user_connect_qq_'.$t.'_'.$row_user->id;
 		file_put_contents($tmp_avatar, $response);
 
 		$lib_image = be::get_lib('image');

@@ -1,5 +1,5 @@
 <?php
-namespace data\cache\menu;
+namespace data\system\cache\menu;
 
 class north extends \system\menu
 {

@@ -260,7 +260,7 @@ class POP3 {
       stream_set_timeout($this->pop_conn, $tval, 0);
     } else {
       //  Does not work on Windows
-      if (substr(PHP_OS, 0, 3) ! == 'WIN') {
+      if (substr(PHP_OS, 0, 3) !== 'WIN') {
         socket_set_timeout($this->pop_conn, $tval, 0);
       }
     }
@@ -366,7 +366,7 @@ class POP3 {
    * @return boolean
    */
   private function checkResponse ($string) {
-    if (substr($string, 0, 3) ! == '+OK') {
+    if (substr($string, 0, 3) !== '+OK') {
       $this->error = array(
         'error' => "Server reported an error: $string",
         'errno' => 0,

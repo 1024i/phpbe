@@ -105,7 +105,7 @@ class XDB_R
 	{
 		fseek($fd, 0, SEEK_SET);
 		$buf = fread($fd, 32);
-		if (strlen($buf) ! == 32) return false;
+		if (strlen($buf) !== 32) return false;
 		$hdr = unpack('a3tag/Cver/Ibase/Iprime/Ifsize/fcheck/a12reversed', $buf);
 		if ($hdr['tag'] != XDB_TAGNAME) return false;
 

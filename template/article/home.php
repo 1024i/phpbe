@@ -183,7 +183,7 @@ $config_user = be::get_config('user');
 			<?php 
 			foreach ($active_users as $active_user) {
 				?>
-				<li style="width:<?php echo $config_user->default_avatar_m_w; ?>px;">
+				<li style="width:<?php echo $config_user->avatar_m_w; ?>px;">
 					<div class="active-user-avatar">
 					<a href="<?php echo url('controller=article&task=user&user_id='.$active_user->id); ?>" title="查看 <?php echo $active_user->name; ?> 的动态">
 					<img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.(isset($active_user->avatar_m)?$active_user->avatar_m:('default/'.$config_user->default_avatar_m)); ?>" alt="<?php echo $active_user->name; ?>" />

@@ -73,7 +73,7 @@ try {
             response::set('redirect_url', URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
             response::ajax();
         } else {
-                        response::redirect(URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
+            response::redirect(URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
         }
     }
 
@@ -84,7 +84,7 @@ try {
 
         $app_name = $controller;
         $pos = strpos($controller, '_');
-        if ($pos! == false) $app_name = substr($controller, 0, $pos);
+        if ($pos!== false) $app_name = substr($controller, 0, $pos);
 
         $app = be::get_app($app_name);
 
@@ -167,6 +167,10 @@ try {
 
 } catch (Throwable $e) {
     \system\error_log::log($e);
+
+    if ($e instanceof \system\db\db_exception) {
+        if (\system\db::in_transaction()) \system\db::rollback();
+    }
 
     if (request::is_ajax()) {
         response::set('error', -500);

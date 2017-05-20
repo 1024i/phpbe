@@ -42,7 +42,7 @@ abstract class menu
 	 * 获取一项菜单 或 整个菜单
 	 *
 	 * @param int $menu_id 菜单编号
-	 * @return object | false
+	 * @return object | false | array
 	 */
 	public function get_menu($menu_id=0)
 	{

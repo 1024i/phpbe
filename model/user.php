@@ -358,5 +358,3 @@ class user extends \system\model
     }
 
 }
-
-?>

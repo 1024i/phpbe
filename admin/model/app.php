@@ -7,7 +7,7 @@ class app extends \system\model
 {
 
 
-	private $be_api = 'http://www.mrbe.org/api/';
+	private $be_api = 'http://api.phpbe.com/';
 
     private $app_tables = null;    
 	private $apps = null;
@@ -63,10 +63,10 @@ class app extends \system\model
         $lib_http = be::get_lib('http');
         $response = $lib_http->get($this->be_api . 'app_download/'.$app->version->id.'/');
 
-		$zip = PATH_ADMIN.DS.'tmp'.DS.'app_'.$app->name.'.zip';
+		$zip = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name.'.zip';
         file_put_contents($zip, $response);
 
-		$dir = PATH_ADMIN.DS.'tmp'.DS.'app_'.$app->name;
+		$dir = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name;
         $lib_zip = be::get_lib('zip');
         $lib_zip->open($zip);
         if (!$lib_zip->extract_to($dir)) {
@@ -83,9 +83,10 @@ class app extends \system\model
 		$app_obj->install();
 
 		$admin_config_system = be::get_admin_config('system');
+        $model_system = be::get_model('system');
 		if (!in_array($app->name, $admin_config_system->apps)) {
 			$admin_config_system->apps[] = $app->name;
-			$this->save_config_file($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
+            $model_system->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
 		}
 
 		// 删除临时文件
@@ -111,7 +112,7 @@ class app extends \system\model
 		}
 
 		$admin_config_system->apps = $apps;
-		$this->save_config_file($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
+        be::get_model('system')->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
 
 		$app = be::get_app($name);
 		$app->uninstall();

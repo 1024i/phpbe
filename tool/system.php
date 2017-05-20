@@ -13,7 +13,7 @@ class system
     public static function url($url)
     {
         $config_system = \system\be::get_config('system');
-        if ($config_system->sef !== '0') {
+        if ($config_system->sef) {
             $urls = explode('&', $url);
 
             if (count($urls) == 0) return URL_ROOT;

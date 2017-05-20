@@ -3,6 +3,7 @@ namespace controller;
 
 use \system\be;
 use \system\request;
+use \system\response;
 use \system\session;
 
 class user extends \system\controller
@@ -18,17 +19,16 @@ class user extends \system\controller
     {
         $my = be::get_user();
         if ($my->id>0) {
-			$this->redirect(url('controller=user_profile&task=home'));
+			response::redirect(url('controller=user_profile&task=home'));
 		}
 
 		// 登陆成功后跳转到的网址
 		$return = request::get('return','');
 		if ($return == 'http_referer' && isset($_SERVER['HTTP_REFERER'])) $return = base64_encode($_SERVER['HTTP_REFERER']);
 
-        $template = be::get_template('user.login');
-        $template->set_title('登陆');
-		$template->set('return', $return);
-        $template->display();
+        response::set_title('登陆');
+        response::set('return', $return);
+        response::display();
     }
 
 	// 登陆验证码
@@ -56,43 +56,39 @@ class user extends \system\controller
     {
         $username = request::post('username', '');
         $password = request::post('password', '');
-        $rememberme = request::post('rememberme', '0');
+        $remember_me = request::post('remember_me', '0');
         
         $return = request::post('return', '');
 
         if ($username == '') {
-            $this->set_message('用户名不能为空！', 'error');
-			$this->redirect(url('controller=user&task=login&return=' . $return));
+			response::error('用户名不能为空！', url('controller=user&task=login&return=' . $return));
         }
         
         if ($password == '') {
-            $this->set_message('密码不能为空！', 'error');
-			$this->redirect(url('controller=user&task=login&return=' . $return));
+            response::error('密码不能为空！', url('controller=user&task=login&return=' . $return));
         }
         
 		$config_user = be::get_config('user');
 		if ($config_user->captcha_login == '1') {
 			if (request::post('captcha', '') != session::get('captcha_login')) {
-				$this->set_message('验证码错误！', 'error');
-				$this->redirect(url('controller=user&task=login&return=' . $return));
+                response::error('验证码错误！', url('controller=user&task=login&return=' . $return));
 			}
 		}
         
         $model_user = be::get_model('user');
-        if ($model_user->login($username, $password, $rememberme)) {
+        if ($model_user->login($username, $password, $remember_me)) {
 			if ($config_user->captcha_login == '1') session::delete('captcha_login');
 
-			$redirect_url = '';
+			$redirect_url = null;
 			if ($return == '') {
 				$redirect_url = url('controller=user_profile&task=home');
 			} else {
 				$redirect_url = base64_decode($return);
 			}
 
-            $this->redirect($redirect_url);
+            response::redirect($redirect_url);
 		} else {
-			$this->set_message($model_user->get_error(), 'error');
-			$this->redirect(url('controller=user&task=login&return=' . $return));
+            response::error($model_user->get_error(), url('controller=user&task=login&return=' . $return));
 		}
     }
 
@@ -101,57 +97,46 @@ class user extends \system\controller
     {
         $username = request::post('username', '');
         $password = request::post('password', '');
-        $rememberme = request::post('rememberme', '0');
+        $remember_me = request::post('remember_me', '0');
 		$return = request::post('return', '');
         
         
         if ($username == '') {
-            $this->set('error', 1);
-            $this->set('message', '用户名不能为空！');
-            $this->ajax();
+            response::error('用户名不能为空！');
         }
         
         if ($password == '') {
-            $this->set('error', 2);
-            $this->set('message', '密码不能为空！');
-            $this->ajax();
+            response::error( '密码不能为空！');
         }
 
 		$config_user = be::get_config('user');
 		if ($config_user->captcha_login == '1') {
 			if (request::post('captcha', '') != session::get('captcha_login')) {
-				$this->set('error', 3);
-				$this->set('message', '验证码错误！');
-				$this->ajax();
+                response::error('验证码错误！');
 			}
 		}
         
         $model_user = be::get_model('user');
-        if ($model_user->login($username, $password, $rememberme)) {
+        if ($model_user->login($username, $password, $remember_me)) {
 			if ($config_user->captcha_login == '1') session::delete('captcha_login');
 
-			$redirect_url = '';
+			$redirect_url = null;
 			if ($return == '') {
 				$redirect_url = url('controller=user_profile&task=home');
 			} else {
 				$redirect_url = base64_decode($return);
 			}
 
-            $this->set('error', 0);
-			$this->set('redirect_url', $redirect_url);
-            $this->set('message', '登陆成功！');
-            $this->ajax();
+            response::success('登陆成功！', $redirect_url);
         } else {
-            $this->set('error', 4);
-            $this->set('message', $model_user->get_error());
-            $this->ajax();
+            response::error($model_user->get_error());
         }
     }
 
 	public function qq_login()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_qq == '0') be_exit('使用QQ账号登陆未启用！');
+		if ($config_user->connect_qq == '0') response::end('使用QQ账号登陆未启用！');
 
 		$model_user_connect_qq = be::get_model('user_connect_qq');
 		$model_user_connect_qq->login();
@@ -160,17 +145,17 @@ class user extends \system\controller
 	public function qq_login_callback()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_qq == '0') be_exit('使用QQ账号登陆未启用！');
+		if ($config_user->connect_qq == '0') response::end('使用QQ账号登陆未启用！');
 
 		$model_user_connect_qq = be::get_model('user_connect_qq');
 		$access_token = $model_user_connect_qq->callback();
-		if ($access_token == false) be_exit($model_user_connect_qq->get_error());
+		if ($access_token == false) response::end($model_user_connect_qq->get_error());
 
 		$openid = $model_user_connect_qq->get_openid($access_token);
-		if ($openid == false) be_exit($model_user_connect_qq->get_error());
+		if ($openid == false) response::end($model_user_connect_qq->get_error());
 
 		$user_info = $model_user_connect_qq->get_user_info($access_token, $openid);
-		if ($user_info == false) be_exit($model_user_connect_qq->get_error());
+		if ($user_info == false) response::end($model_user_connect_qq->get_error());
 
 		$row_user_connect_qq = be::get_row('user_connect_qq');
 		$row_user_connect_qq->load_by('openid', $openid);
@@ -191,14 +176,14 @@ class user extends \system\controller
 		$row_user_connect_qq->openid = $openid;
 		$row_user_connect_qq->save();
 
-		$this->redirect(url('controller=user_profile&task=home'));
+        response::redirect(url('controller=user_profile&task=home'));
 	}
 
 
 	public function sina_login()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_sina == '0') be_exit('使用新浪微博账号登陆未启用！');
+		if ($config_user->connect_sina == '0') response::end('使用新浪微博账号登陆未启用！');
 
 		$model_user_connect_sina = be::get_model('user_connect_sina');
 		$model_user_connect_sina->login();
@@ -207,17 +192,17 @@ class user extends \system\controller
 	public function sina_login_callback()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_sina == '0') be_exit('使用新浪微博账号登陆未启用！');
+		if ($config_user->connect_sina == '0') response::end('使用新浪微博账号登陆未启用！');
 
 		$model_user_connect_sina = be::get_model('user_connect_sina');
 		$access_token = $model_user_connect_sina->callback();
-		if ($access_token == false) be_exit($model_user_connect_sina->get_error());
+		if ($access_token == false) response::end($model_user_connect_sina->get_error());
 
 		$uid = $model_user_connect_sina->get_uid($access_token);
-		if ($uid == false) be_exit($model_user_connect_sina->get_error());
+		if ($uid == false) response::end($model_user_connect_sina->get_error());
 
 		$user_info = $model_user_connect_sina->get_user_info($access_token, $uid);
-		if ($user_info == false) be_exit($model_user_connect_sina->get_error());
+		if ($user_info == false) response::end($model_user_connect_sina->get_error());
 
 		$row_user_connect_sina = be::get_row('user_connect_sina');
 		$row_user_connect_sina->load_by('uid', $uid);
@@ -238,7 +223,7 @@ class user extends \system\controller
 		$row_user_connect_sina->uid = $uid;
 		$row_user_connect_sina->save();
 
-		$this->redirect(url('controller=user_profile&task=home'));
+        response::redirect(url('controller=user_profile&task=home'));
 	}
 
 
@@ -246,11 +231,10 @@ class user extends \system\controller
     public function register()
     {
 		$config_user = be::get_config('user');
-		if ($config_user->register == '0') be_exit('注册功能已禁用！');
+		if ($config_user->register == '0') response::end('注册功能已禁用！');
 
-        $template = be::get_template('user.register');
-        $template->set_title('注册新账号');
-        $template->display();
+        response::set_title('注册新账号');
+        response::display();
     }
 
 	// 验证码
@@ -279,9 +263,7 @@ class user extends \system\controller
 		$config_user = be::get_config('user');
 
 		if ($config_user->register == '0') {
-            $this->set('error', 1);
-            $this->set('message', '注册功能已禁用！');
-            $this->ajax();
+            response::error('注册功能已禁用！');
         }
 
         $username = request::post('username', '');
@@ -294,54 +276,37 @@ class user extends \system\controller
         
         
         if ($username == '') {
-            $this->set('error', 2);
-            $this->set('message', '用户名不能为空！');
-            $this->ajax();
+            response::error('用户名不能为空！');
         }
         
         if ($email == '') {
-            $this->set('error', 3);
-            $this->set('message', '邮箱不能为空！');
-            $this->ajax();
+            response::error('邮箱不能为空！');
         }
         
         if (!$model_user->is_email($email)) {
-            $this->set('error', 4);
-            $this->set('message', '非法的邮箱格式！');
-            $this->ajax();
+            response::error('非法的邮箱格式！');
         }
         
         if ($password == '') {
-            $this->set('error', 5);
-            $this->set('message', '密码不能为空！');
-            $this->ajax();
+            response::error('密码不能为空！');
         }
         
         if ($password != $password2) {
-            $this->set('error', 6);
-            $this->set('message', '两次输入的密码不匹配！');
-            $this->ajax();
+            response::error('两次输入的密码不匹配！');
         }
 
 		if ($config_user->captcha_register == '1') {
 			if (request::post('captcha', '') != session::get('captcha_register')) {
-				$this->set('error', 6);
-				$this->set('message', '验证码错误！');
-				$this->ajax();
+                response::error('验证码错误！');
 			}
 		}
         
         if ($model_user->register($username, $email, $password, $name)) {
 			if ($config_user->captcha_register == '1') session::delete('captcha_register');
 
-            $this->set('error', 0);
-			$this->set('redirect_url', url('controller=user&task=register_success&username='.$username.'&email='.$email));
-            $this->set('message', '您的账号已成功创建！');
-            $this->ajax();
+            response::success('您的账号已成功创建！', url('controller=user&task=register_success&username='.$username.'&email='.$email));
         } else {
-            $this->set('error', 7);
-            $this->set('message', $model_user->get_error());
-            $this->ajax();
+            response::error($model_user->get_error());
         }
     }
 
@@ -351,20 +316,18 @@ class user extends \system\controller
         $username = request::get('username','');
         $email = request::get('email','');
 
-        $template = be::get_template('user.register_success');
-        $template->set_title('注册成功');
-		$template->set('username', $username);
-		$template->set('email', $email);
-        $template->display();
+        response::set_title('注册成功');
+        response::set('username', $username);
+		response::set('email', $email);
+        response::display();
     }
 
 
     //找回密码表单
     public function forgot_password()
     {
-        $template = be::get_template('user.forgot_password');
-        $template->set_title('忘记密码');
-        $template->display();
+        response::set_title('忘记密码');
+        response::display();
     }
 
     //提交找回密码
@@ -372,20 +335,14 @@ class user extends \system\controller
     {
         $username = request::post('username', '');
         if ($username == '') {
-            $this->set('error', 1);
-            $this->set('message', '参数(username)缺失！');
-            $this->ajax();
+            response::error('参数(username)缺失！');
         }
         
         $model = be::get_model('user');
         if ($model->forgot_password($username)) {
-            $this->set('error', 0);
-            $this->set('message', '找回密码链接已发送到您的邮箱。');
-            $this->ajax();
+            response::success('找回密码链接已发送到您的邮箱。');
         } else {
-            $this->set('error', 2);
-            $this->set('message', $model->get_error());
-            $this->ajax();
+            response::error($model->get_error());
         }
     }
 
@@ -394,18 +351,17 @@ class user extends \system\controller
     {
         $user_id = request::get('user_id', 0, 'int');
         $token = request::get('token','');
-        if ($user_id == 0 || $token == '') be_exit('找回密码链接已失效！');
+        if ($user_id == 0 || $token == '') response::end('找回密码链接已失效！');
         
         $row_user = be::get_row('user');
         $row_user->load($user_id);
         
-        if ($row_user->token == '') be_exit('您的密码已重设！');
-        if ($row_user->token != $token) be_exit('找回密码链接非法！');
-        
-        $template = be::get_template('user.forgot_password_reset');
-        $template->set_title('重设密码');
-        $template->set('user', $row_user);
-        $template->display();
+        if ($row_user->token == '') response::end('您的密码已重设！');
+        if ($row_user->token != $token) response::end('找回密码链接非法！');
+
+        response::set_title('重设密码');
+        response::set('user', $row_user);
+        response::display();
     }
 
     // 重设密码保存
@@ -415,29 +371,21 @@ class user extends \system\controller
         $token = request::post('token', '');
         
         if ($user_id == 0 || $token == '') {
-            $this->set('error', 1);
-            $this->set('message', '参数(user_id/token)缺失！');
-            $this->ajax();
+            response::error('参数(user_id/token)缺失！');
         }
         
         $password = request::post('password', '');
         $password2 = request::post('password2', '');
         
         if ($password != $password2) {
-            $this->set('error', 2);
-            $this->set('message', '两次输入的密码不匹配！');
-            $this->ajax();
+            response::error('两次输入的密码不匹配！');
         }
         
         $model = be::get_model('user');
         if ($model->forgot_password_reset($user_id, $token, $password)) {
-            $this->set('error', 0);
-            $this->set('message', '重设密码成功！');
-            $this->ajax();
+            response::success('重设密码成功！');
         } else {
-            $this->set('error', 3);
-            $this->set('message', $model->get_error());
-            $this->ajax();
+            response::error($model->get_error());
         }
     
     }
@@ -447,9 +395,8 @@ class user extends \system\controller
     {
         $model = be::get_model('user');
         $model->logout();
-        
-		$this->set_message('成功退出！');
-        $this->redirect(url('controller=user&task=login'));
+
+        response::success('成功退出！', url('controller=user&task=login'));
     }
 
 }
