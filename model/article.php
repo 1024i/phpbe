@@ -2,6 +2,8 @@
 namespace model;
 
 use \system\be;
+use \system\db;
+use \system\exception\custom_exception;
 
 class article extends \system\model
 {
@@ -409,7 +411,40 @@ class article extends \system\model
      */
     public function like($article_id)
     {
-        return be::get_row('article')->load($article_id)->increment('like', 1);
+        try {
+            db::begin_transaction();
+
+            $my = be::get_user();
+            if ($my->id == 0) {
+                throw new custom_exception('请先登陆！');
+            }
+
+            $row_article = be::get_row('article');
+            $row_article->load($article_id);
+            if ($row_article->id == 0 || $row_article->block == 1) {
+                throw new custom_exception('文章不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->article_id = $article_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $row_article->increment('like', 1);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -420,7 +455,97 @@ class article extends \system\model
      */
     public function dislike($article_id)
     {
-        return be::get_row('article')->load($article_id)->increment('dislike', 1);
+        try {
+            db::begin_transaction();
+
+            $my = be::get_user();
+            if ($my->id == 0) {
+                throw new custom_exception('请先登陆！');
+            }
+
+            $row_article = be::get_row('article');
+            $row_article->load($article_id);
+            if ($row_article->id == 0 || $row_article->block == 1) {
+                throw new custom_exception('文章不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->article_id = $article_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $row_article->increment('dislike', 1);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 提交评论
+     *
+     * @param int $article_id 文章编号
+     * @param string $comment_body 评论内容
+     * @return bool
+     */
+    public function comment($article_id, $comment_body)
+    {
+        try {
+            db::begin_transaction();
+
+            $my = be::get_user();
+            if ($my->id == 0) {
+                throw new custom_exception('请先登陆！');
+            }
+
+            $row_article = be::get_row('article');
+            $row_article->load($article_id);
+            if ($row_article->id == 0 || $row_article->block == 1) {
+                throw new custom_exception('文章不存在！');
+            }
+
+            $comment_body = trim($comment_body);
+            $comment_body_length = strlen($comment_body);
+            if ($comment_body_length == 0) {
+                throw new custom_exception('请输入评论内容！');
+            }
+
+            if ($comment_body_length > 2000) {
+                throw new custom_exception('评论内容过长！');
+            }
+
+            $row_article_comment = be::get_row('article_comment');
+            $row_article_comment->article_id = $article_id;
+            $row_article_comment->user_id = $my->id;
+            $row_article_comment->user_name = $my->name;
+            $row_article_comment->body = $comment_body;
+            $row_article_comment->ip = $_SERVER['REMOTE_ADDR'];
+            $row_article_comment->create_time = time();
+
+            $config_article = be::get_config('article');
+            $row_article_comment->block = ($config_article->comment_public == 1 ? 0 : 1);
+
+            $row_article_comment->save();
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -431,7 +556,40 @@ class article extends \system\model
      */
     public function comment_like($comment_id)
     {
-        return be::get_row('article_comment')->load($comment_id)->increment('like', 1);
+        try {
+            db::begin_transaction();
+
+            $my = be::get_user();
+            if ($my->id == 0) {
+                throw new custom_exception('请先登陆！');
+            }
+
+            $row_article_comment = be::get_row('article_comment');
+            $row_article_comment->load($comment_id);
+            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
+                throw new custom_exception('评论不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->comment_id = $comment_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $row_article_comment->increment('like', 1);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -442,7 +600,40 @@ class article extends \system\model
      */
     public function comment_dislike($comment_id)
     {
-        return be::get_row('article_comment')->load($comment_id)->increment('dislike', 1);
+        try {
+            db::begin_transaction();
+
+            $my = be::get_user();
+            if ($my->id == 0) {
+                throw new custom_exception('请先登陆！');
+            }
+
+            $row_article_comment = be::get_row('article_comment');
+            $row_article_comment->load($comment_id);
+            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
+                throw new custom_exception('评论不存在！');
+            }
+
+            $row_article_vote_log = be::get_row('article_vote_log');
+            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
+            if ($row_article_vote_log->id > 0) {
+                throw new custom_exception('您已经表过态啦！');
+            }
+            $row_article_vote_log->comment_id = $comment_id;
+            $row_article_vote_log->user_id = $my->id;
+            $row_article_vote_log->save();
+
+            $row_article_comment->increment('dislike', 1);
+
+            db::commit();
+        } catch (custom_exception $e) {
+            db::rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
 }

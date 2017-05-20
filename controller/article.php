@@ -3,10 +3,8 @@
 namespace controller;
 
 use \system\be;
-use \system\db;
 use \system\request;
 use \system\response;
-use \system\exception\custom_exception;
 
 class article extends \system\controller
 {
@@ -97,7 +95,7 @@ class article extends \system\controller
             $north_menu = be::get_menu('north');
             $north_menu_tree = $north_menu->get_menu_tree();
             if (count($north_menu_tree)) {
-                $menu_exist = false;
+                //$menu_exist = false;
                 foreach ($north_menu_tree as $menu) {
                     if (
                         isset($menu->params['controller']) && $menu->params['controller'] == 'article' &&
@@ -215,7 +213,7 @@ class article extends \system\controller
                         isset($menu->params['category_id']) && $menu->params['category_id'] == $row_article->category_id
                     ) {
                         response::set('menu_id', $menu->id);
-                        $menu_exist = true;
+                        //$menu_exist = true;
                         break;
                     }
                 }
@@ -230,45 +228,17 @@ class article extends \system\controller
         response::display();
     }
 
-
     // 喜欢
     public function ajax_like()
     {
-        $my = be::get_user();
-        if ($my->id == 0) {
-            response::error('请先登陆！');
-        }
-
         $article_id = request::get('article_id', 0, 'int');
         if ($article_id == 0) {
             response::error('参数(article_id)缺失！');
         }
 
-        try {
-            db::begin_transaction();
-
-            $row_article = be::get_row('article');
-            $row_article->load($article_id);
-            if ($row_article->id == 0 || $row_article->block == 1) {
-                throw new custom_exception('文章不存在！');
-            }
-
-            $row_article_vote_log = be::get_row('article_vote_log');
-            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
-            if ($row_article_vote_log->id > 0) {
-                throw new custom_exception('您已经表过态啦！');
-            }
-            $row_article_vote_log->article_id = $article_id;
-            $row_article_vote_log->user_id = $my->id;
-            $row_article_vote_log->save();
-
-            $model_article = be::get_model('article');
-            $model_article->like($article_id);
-
-            db::commit();
-        } catch (custom_exception $e) {
-            db::rollback();
-            response::error($e->getMessage());
+        $model_article = be::get_model('article');
+        if (!$model_article->like($article_id)) {
+            response::error($model_article->get_error());
         }
 
         response::success('提交成功！');
@@ -277,41 +247,14 @@ class article extends \system\controller
     // 不喜欢
     public function ajax_dislike()
     {
-        $my = be::get_user();
-        if ($my->id == 0) {
-            response::error('请先登陆！');
-        }
-
         $article_id = request::get('article_id', 0, 'int');
         if ($article_id == 0) {
             response::error('参数(article_id)缺失！');
         }
 
-        try {
-            db::begin_transaction();
-
-            $row_article = be::get_row('article');
-            $row_article->load($article_id);
-            if ($row_article->id == 0 || $row_article->block == 1) {
-                throw new custom_exception('文章不存在！');
-            }
-
-            $row_article_vote_log = be::get_row('article_vote_log');
-            $row_article_vote_log->load(['article_id' => $article_id, 'user_id' => $my->id]);
-            if ($row_article_vote_log->id > 0) {
-                throw new custom_exception('您已经表过态啦！');
-            }
-            $row_article_vote_log->article_id = $article_id;
-            $row_article_vote_log->user_id = $my->id;
-            $row_article_vote_log->save();
-
-            $model_article = be::get_model('article');
-            $model_article->dislike($article_id);
-
-            db::commit();
-        } catch (custom_exception $e) {
-            db::rollback();
-            response::error($e->getMessage());
+        $model_article = be::get_model('article');
+        if (!$model_article->dislike($article_id)) {
+            response::error($model_article->get_error());
         }
 
         response::success('提交成功！');
@@ -320,45 +263,17 @@ class article extends \system\controller
 
     public function ajax_comment()
     {
-        $my = be::get_user();
-        if ($my->id == 0) {
-            response::error('请先登陆！');
-        }
-
         $article_id = request::post('article_id', 0, 'int');
         if ($article_id == 0) {
             response::error('参数(article_id)缺失！');
         }
 
-        $row_article = be::get_row('article');
-        $row_article->load($article_id);
-        if ($row_article->id == 0 || $row_article->block == 1) {
-            response::error('文章不存在！');
-        }
-
         $body = request::post('body', '');
-        $body = trim($body);
-        $body_length = strlen($body);
-        if ($body_length == 0) {
-            response::error('请输入评论内容！');
+
+        $model_article = be::get_model('article');
+        if (!$model_article->comment($article_id, $body)) {
+            response::error($model_article->get_error());
         }
-
-        if ($body_length > 2000) {
-            response::error('评论内容过长！');
-        }
-
-        $row_article_comment = be::get_row('article_comment');
-        $row_article_comment->article_id = $article_id;
-        $row_article_comment->user_id = $my->id;
-        $row_article_comment->user_name = $my->name;
-        $row_article_comment->body = $body;
-        $row_article_comment->ip = $_SERVER['REMOTE_ADDR'];
-        $row_article_comment->create_time = time();
-
-        $config_article = be::get_config('article');
-        $row_article_comment->block = ($config_article->comment_public == 1 ? 0 : 1);
-
-        $row_article_comment->save();
 
         response::success('提交成功！');
     }
@@ -366,41 +281,14 @@ class article extends \system\controller
     // 顶
     public function ajax_comment_like()
     {
-        $my = be::get_user();
-        if ($my->id == 0) {
-            response::error('请先登陆！');
-        }
-
         $comment_id = request::get('comment_id', 0, 'int');
         if ($comment_id == 0) {
             response::error('参数(comment_id)缺失！');
         }
 
-        try {
-            db::begin_transaction();
-
-            $row_article_comment = be::get_row('article_comment');
-            $row_article_comment->load($comment_id);
-            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
-                throw new custom_exception('评论不存在！');
-            }
-
-            $row_article_vote_log = be::get_row('article_vote_log');
-            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
-            if ($row_article_vote_log->id > 0) {
-                throw new custom_exception('您已经表过态啦！');
-            }
-            $row_article_vote_log->comment_id = $comment_id;
-            $row_article_vote_log->user_id = $my->id;
-            $row_article_vote_log->save();
-
-            $model_article = be::get_model('article');
-            $model_article->comment_like($comment_id);
-
-            db::commit();
-        } catch (custom_exception $e) {
-            db::rollback();
-            response::error($e->getMessage());
+        $model_article = be::get_model('article');
+        if (!$model_article->comment_like($comment_id)) {
+            response::error($model_article->get_error());
         }
 
         response::success('提交成功！');
@@ -409,41 +297,14 @@ class article extends \system\controller
     // 踩
     public function ajax_comment_dislike()
     {
-        $my = be::get_user();
-        if ($my->id == 0) {
-            response::error('请先登陆！');
-        }
-
         $comment_id = request::get('comment_id', 0, 'int');
         if ($comment_id == 0) {
             response::error('参数(comment_id)缺失！');
         }
 
-        try {
-            db::begin_transaction();
-
-            $row_article_comment = be::get_row('article_comment');
-            $row_article_comment->load($comment_id);
-            if ($row_article_comment->id == 0 || $row_article_comment->block == 1) {
-                throw new custom_exception('评论不存在！');
-            }
-
-            $row_article_vote_log = be::get_row('article_vote_log');
-            $row_article_vote_log->load(['comment_id' => $comment_id, 'user_id' => $my->id]);
-            if ($row_article_vote_log->id > 0) {
-                throw new custom_exception('您已经表过态啦！');
-            }
-            $row_article_vote_log->comment_id = $comment_id;
-            $row_article_vote_log->user_id = $my->id;
-            $row_article_vote_log->save();
-
-            $model_article = be::get_model('article');
-            $model_article->comment_dislike($comment_id);
-
-            db::commit();
-        } catch (custom_exception $e) {
-            db::rollback();
-            response::error($e->getMessage());
+        $model_article = be::get_model('article');
+        if (!$model_article->comment_dislike($comment_id)) {
+            response::error($model_article->get_error());
         }
 
         response::success('提交成功！');
@@ -484,5 +345,3 @@ class article extends \system\controller
     }
 
 }
-
-?>
