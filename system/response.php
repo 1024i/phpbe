@@ -114,11 +114,12 @@ class response
      *
      * @param string $message 消息
      * @param string $redirect_url 跳转网址
+     * @param int $code 错误码
      */
-    public static function success($message, $redirect_url = null)
+    public static function success($message, $redirect_url = null, $code = 0)
     {
         if (request::is_ajax()) {
-            self::set('error', 0);
+            self::set('error', $code);
             self::set('message', $message);
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
@@ -136,11 +137,12 @@ class response
      *
      * @param string $message 消息
      * @param string $redirect_url 跳转网址
+     * @param int $code 错误码
      */
-    public static function error($message, $redirect_url = null)
+    public static function error($message, $redirect_url = null, $code = 1)
     {
         if (request::is_ajax()) {
-            self::set('error', 1);
+            self::set('error', $code);
             self::set('message', $message);
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();

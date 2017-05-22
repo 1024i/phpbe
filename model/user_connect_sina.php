@@ -159,4 +159,3 @@ class user_connect_sina extends \system\model
 	}
 
 }
-?>

@@ -67,13 +67,11 @@ try {
 
     $instance = be::get_controller($controller);
     if ($instance === null) {
+        $redirect_url = URL_ROOT . '/theme/' . $config_system->theme . '/404.html';
         if (request::is_ajax()) {
-            response::set('error', -404);
-            response::set('message', '页面不存在！');
-            response::set('redirect_url', URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
-            response::ajax();
+            response::error('页面不存在！', $redirect_url, -404);
         } else {
-            response::redirect(URL_ROOT . '/theme/' . $config_system->theme . '/404.html');
+            response::redirect($redirect_url);
         }
     }
 
@@ -157,9 +155,7 @@ try {
 
     } else {
         if (request::is_ajax()) {
-            response::set('error', -404);
-            response::set('message', '未定义的任务：' . $task);
-            response::ajax();
+            response::error('未定义的任务：' . $task, null, -404);
         } else {
             response::end('未定义的任务：' . $task);
         }
@@ -168,18 +164,14 @@ try {
 } catch (Throwable $e) {
     \system\error_log::log($e);
 
-    if ($e instanceof \system\db\db_exception) {
-        if (\system\db::in_transaction()) \system\db::rollback();
-    }
+    if (\system\db::in_transaction()) \system\db::rollback();
 
     if (request::is_ajax()) {
-        response::set('error', -500);
         if ($config_system->debug) {
-            response::set('message', '系统错误：' . $e->getMessage());
+            response::error('系统错误：' . $e->getMessage(), null, -500);
         } else {
-            response::set('message', '系统错误！');
+            response::error('系统错误！', null, -500);
         }
-        response::ajax();
     } else {
         if ($config_system->debug) {
             response::end('系统错误：' . $e->getMessage());

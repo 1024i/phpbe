@@ -59,66 +59,26 @@ class user extends \system\controller
         $remember_me = request::post('remember_me', '0');
         
         $return = request::post('return', '');
+        $error_return = url('controller=user&task=login&return=' . $return);
 
         if ($username == '') {
-			response::error('用户名不能为空！', url('controller=user&task=login&return=' . $return));
+			response::error('用户名不能为空！', $error_return);
         }
         
         if ($password == '') {
-            response::error('密码不能为空！', url('controller=user&task=login&return=' . $return));
+            response::error('密码不能为空！', $error_return);
         }
         
 		$config_user = be::get_config('user');
-		if ($config_user->captcha_login == '1') {
+		if ($config_user->captcha_login) {
 			if (request::post('captcha', '') != session::get('captcha_login')) {
-                response::error('验证码错误！', url('controller=user&task=login&return=' . $return));
+                response::error('验证码错误！', $error_return);
 			}
 		}
         
         $model_user = be::get_model('user');
         if ($model_user->login($username, $password, $remember_me)) {
-			if ($config_user->captcha_login == '1') session::delete('captcha_login');
-
-			$redirect_url = null;
-			if ($return == '') {
-				$redirect_url = url('controller=user_profile&task=home');
-			} else {
-				$redirect_url = base64_decode($return);
-			}
-
-            response::redirect($redirect_url);
-		} else {
-            response::error($model_user->get_error(), url('controller=user&task=login&return=' . $return));
-		}
-    }
-
-    // 登陆检查
-    public function ajax_login_check()
-    {
-        $username = request::post('username', '');
-        $password = request::post('password', '');
-        $remember_me = request::post('remember_me', '0');
-		$return = request::post('return', '');
-        
-        
-        if ($username == '') {
-            response::error('用户名不能为空！');
-        }
-        
-        if ($password == '') {
-            response::error( '密码不能为空！');
-        }
-
-		$config_user = be::get_config('user');
-		if ($config_user->captcha_login == '1') {
-			if (request::post('captcha', '') != session::get('captcha_login')) {
-                response::error('验证码错误！');
-			}
-		}
-        
-        $model_user = be::get_model('user');
-        if ($model_user->login($username, $password, $remember_me)) {
-			if ($config_user->captcha_login == '1') session::delete('captcha_login');
+			if ($config_user->captcha_login) session::delete('captcha_login');
 
 			$redirect_url = null;
 			if ($return == '') {
@@ -128,15 +88,15 @@ class user extends \system\controller
 			}
 
             response::success('登陆成功！', $redirect_url);
-        } else {
-            response::error($model_user->get_error());
-        }
+		} else {
+            response::error($model_user->get_error(), $error_return);
+		}
     }
 
 	public function qq_login()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_qq == '0') response::end('使用QQ账号登陆未启用！');
+		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
 
 		$model_user_connect_qq = be::get_model('user_connect_qq');
 		$model_user_connect_qq->login();
@@ -145,7 +105,7 @@ class user extends \system\controller
 	public function qq_login_callback()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_qq == '0') response::end('使用QQ账号登陆未启用！');
+		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
 
 		$model_user_connect_qq = be::get_model('user_connect_qq');
 		$access_token = $model_user_connect_qq->callback();
@@ -183,7 +143,7 @@ class user extends \system\controller
 	public function sina_login()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_sina == '0') response::end('使用新浪微博账号登陆未启用！');
+		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
 
 		$model_user_connect_sina = be::get_model('user_connect_sina');
 		$model_user_connect_sina->login();
@@ -192,7 +152,7 @@ class user extends \system\controller
 	public function sina_login_callback()
 	{
 		$config_user = be::get_config('user');
-		if ($config_user->connect_sina == '0') response::end('使用新浪微博账号登陆未启用！');
+		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
 
 		$model_user_connect_sina = be::get_model('user_connect_sina');
 		$access_token = $model_user_connect_sina->callback();
@@ -231,7 +191,7 @@ class user extends \system\controller
     public function register()
     {
 		$config_user = be::get_config('user');
-		if ($config_user->register == '0') response::end('注册功能已禁用！');
+		if (!$config_user->register) response::end('注册功能已禁用！');
 
         response::set_title('注册新账号');
         response::display();
@@ -262,7 +222,7 @@ class user extends \system\controller
     {
 		$config_user = be::get_config('user');
 
-		if ($config_user->register == '0') {
+		if (!$config_user->register) {
             response::error('注册功能已禁用！');
         }
 
@@ -295,14 +255,14 @@ class user extends \system\controller
             response::error('两次输入的密码不匹配！');
         }
 
-		if ($config_user->captcha_register == '1') {
+		if ($config_user->captcha_register) {
 			if (request::post('captcha', '') != session::get('captcha_register')) {
                 response::error('验证码错误！');
 			}
 		}
         
         if ($model_user->register($username, $email, $password, $name)) {
-			if ($config_user->captcha_register == '1') session::delete('captcha_register');
+			if ($config_user->captcha_register) session::delete('captcha_register');
 
             response::success('您的账号已成功创建！', url('controller=user&task=register_success&username='.$username.'&email='.$email));
         } else {

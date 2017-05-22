@@ -179,4 +179,3 @@ class user_connect_qq extends \system\model
 	}
 
 }
-?>
