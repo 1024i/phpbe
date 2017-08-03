@@ -1,12 +1,12 @@
 <?php
 namespace admin\model;
 
-use \system\be;
-use \system\db;
-use \system\session;
-use \system\cookie;
+use system\be;
+use system\db;
+use system\session;
+use system\cookie;
 
-class admin_user extends \system\model
+class admin_user extends \system\service
 {
 
 	public function login($username, $password)
@@ -136,7 +136,7 @@ class admin_user extends \system\model
     public function get_user_count($option = array())
     {
         $query = 'SELECT COUNT(*) FROM `be_admin_user` WHERE 1 ' . $this->create_user_sql($option);
-        return db::get_result($query);
+        return db::get_value($query);
     }
 
 	// 生成查找用户的 SQL
@@ -234,12 +234,12 @@ class admin_user extends \system\model
 
     public function is_username_available($username, $user_id=0)
     {
-        return db::get_result('SELECT COUNT(*) FROM `be_admin_user` WHERE '.($user_id>0?'`id`!='.$user_id.' AND ':'').'`username`=\'' . $username . '\'') == 0;
+        return db::get_value('SELECT COUNT(*) FROM `be_admin_user` WHERE '.($user_id>0?'`id`!='.$user_id.' AND ':'').'`username`=\'' . $username . '\'') == 0;
     }
 
     public function is_email_available($email, $user_id=0)
     {
-        return db::get_result('SELECT COUNT(*) FROM `be_admin_user` WHERE '.($user_id>0?('`id`!='.$user_id.' AND '):'').'`email`=\'' . $email . '\'') == 0;
+        return db::get_value('SELECT COUNT(*) FROM `be_admin_user` WHERE '.($user_id>0?('`id`!='.$user_id.' AND '):'').'`email`=\'' . $email . '\'') == 0;
     }
 
 	public function get_groups()
@@ -275,7 +275,7 @@ class admin_user extends \system\model
     public function get_log_count($option = array())
     {
         $sql = 'SELECT COUNT(*) FROM `be_admin_user_log` WHERE 1 '  . $this->create_log_sql($option);
-        return db::get_result($sql);
+        return db::get_value($sql);
     }
 
 	private function create_log_sql($option = array())

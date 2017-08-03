@@ -1,9 +1,9 @@
 <?php
 namespace controller;
 
-use \system\be;
-use \system\request;
-use \system\db;
+use system\be;
+use system\request;
+use system\db;
 
 class setup extends \system\controller
 {
@@ -43,15 +43,15 @@ class setup extends \system\controller
 		$config_db->db_pass = request::post('db_pass', '');
 		$config_db->db_name = request::post('db_name', '');
 
-		$model_setup = be::get_model('setup');
-		$model_setup->save_config($config_db, PATH_ROOT.DS.'configs'.DS.'db.php');
+		$service_setup = be::get_service('setup');
+		$service_setup->save_config($config_db, PATH_ROOT.DS.'configs'.DS.'db.php');
 
 		db::connect();
 		if (db::has_error()) {
 			$this->set_message(db::get_error(), 'error');
 			$this->redirect(url('controller=setup&task=setting'));
 		} else {
-			$model_setup->install();
+			$service_setup->install();
 			$this->redirect(url('controller=setup&task=complete'));
 		}
 	}

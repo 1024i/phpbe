@@ -1,5 +1,5 @@
 <?php
-namespace model;
+namespace service;
 
 class install extends \system\service
 {

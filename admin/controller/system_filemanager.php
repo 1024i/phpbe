@@ -84,8 +84,8 @@ class system_filemanager extends \admin\system\controller
 		$option['sort'] = $sort;
 		$option['filter_image'] = $filter_image;
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		$files = $model_system_filemanager->get_files($option);
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		$files = $service_system_filemanager->get_files($option);
 
 	    $template = be::get_admin_template('system_filemanager.browser');
 		$template->set('path', $path);
@@ -102,11 +102,11 @@ class system_filemanager extends \admin\system\controller
 	{
 		$dir_name = request::post('dir_name', '');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		if ($model_system_filemanager->create_dir($dir_name)) {
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		if ($service_system_filemanager->create_dir($dir_name)) {
 			$this->set_message('创建文件夹('.$dir_name.')成功！');
 		} else {
-			$this->set_message($model_system_filemanager->get_error(), 'error');
+			$this->set_message($service_system_filemanager->get_error(), 'error');
 		}
 
 		$this->redirect('./?controller=system_filemanager&task=browser');
@@ -117,11 +117,11 @@ class system_filemanager extends \admin\system\controller
 	{
 		$dir_name = request::get('dir_name','');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		if ($model_system_filemanager->delete_dir($dir_name)) {
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		if ($service_system_filemanager->delete_dir($dir_name)) {
 			$this->set_message('删除文件夹('.$dir_name.')成功！');
 		} else {
-			$this->set_message($model_system_filemanager->get_error(), 'error');
+			$this->set_message($service_system_filemanager->get_error(), 'error');
 		}
 
 		$this->redirect('./?controller=system_filemanager&task=browser');
@@ -133,11 +133,11 @@ class system_filemanager extends \admin\system\controller
 		$old_dir_name = request::post('old_dir_name', '');
 		$new_dir_name = request::post('new_dir_name', '');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		if ($model_system_filemanager->edit_dir_name($old_dir_name, $new_dir_name)) {
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		if ($service_system_filemanager->edit_dir_name($old_dir_name, $new_dir_name)) {
 			$this->set_message('重命名文件夹成功！');
 		} else {
-			$this->set_message($model_system_filemanager->get_error(), 'error');
+			$this->set_message($service_system_filemanager->get_error(), 'error');
 		}
 
 		$this->redirect('./?controller=system_filemanager&task=browser');
@@ -165,10 +165,10 @@ class system_filemanager extends \admin\system\controller
 				$this->redirect($return);
 			}
 
-			$model_system_filemanager = be::get_admin_model('system_filemanager');
-			$abs_path = $model_system_filemanager->get_abs_path();
+			$service_system_filemanager = be::get_admin_service('system_filemanager');
+			$abs_path = $service_system_filemanager->get_abs_path();
 			if ($abs_path == false) {
-				$this->set_message($model_system_filemanager->get_error(), 'error');
+				$this->set_message($service_system_filemanager->get_error(), 'error');
 				$this->redirect($return);
 			}
 
@@ -191,8 +191,8 @@ class system_filemanager extends \admin\system\controller
 			if (move_uploaded_file($file['tmp_name'], $dst_path)) {
 				$watermark = request::post('watermark', 0, 'int');
 				if ($watermark == 1 && in_array($type, $config_system->allow_upload_image_types)) {
-					$model_system = be::get_admin_model('system');
-					$model_system->watermark($dst_path);
+					$service_system = be::get_admin_service('system');
+					$service_system->watermark($dst_path);
 				}
 
 				if ($rename == false) {
@@ -231,11 +231,11 @@ class system_filemanager extends \admin\system\controller
 	{
 		$file_name = request::get('file_name','');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		if ($model_system_filemanager->delete_file($file_name)) {
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		if ($service_system_filemanager->delete_file($file_name)) {
 			$this->set_message('删除文件('.$file_name.')成功！');
 		} else {
-			$this->set_message($model_system_filemanager->get_error(), 'error');
+			$this->set_message($service_system_filemanager->get_error(), 'error');
 		}
 
 		$this->redirect('./?controller=system_filemanager&task=browser');
@@ -247,11 +247,11 @@ class system_filemanager extends \admin\system\controller
 		$old_file_name = request::post('old_file_name', '');
 		$new_file_name = request::post('new_file_name', '');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		if ($model_system_filemanager->edit_file_name($old_file_name, $new_file_name)) {
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		if ($service_system_filemanager->edit_file_name($old_file_name, $new_file_name)) {
 			$this->set_message('重命名文件成功！');
 		} else {
-			$this->set_message($model_system_filemanager->get_error(), 'error');
+			$this->set_message($service_system_filemanager->get_error(), 'error');
 		}
 
 		$this->redirect('./?controller=system_filemanager&task=browser');
@@ -261,10 +261,10 @@ class system_filemanager extends \admin\system\controller
 	{
 		$file_name = request::get('file_name','');
 
-		$model_system_filemanager = be::get_admin_model('system_filemanager');
-		$abs_file_path = $model_system_filemanager->get_abs_file_path($file_name);
+		$service_system_filemanager = be::get_admin_service('system_filemanager');
+		$abs_file_path = $service_system_filemanager->get_abs_file_path($file_name);
 		if ($abs_file_path == false) {
-			echo $model_system_filemanager->get_error();
+			echo $service_system_filemanager->get_error();
 		} else {
 			header('Pragma: private');
 			header('Cache-control: private, must-revalidate');

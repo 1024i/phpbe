@@ -1,5 +1,5 @@
 <?php
-use \system\be;
+use system\be;
 ?>
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/article/css/articles.css">

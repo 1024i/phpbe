@@ -74,7 +74,7 @@ class edit extends \admin\theme
            )
        );
 		
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		if ($admin_model_system->get_language() == 'zh_cn') {
 			$ui_editor->add_fields(
 				array(

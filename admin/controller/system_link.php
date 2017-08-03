@@ -1,8 +1,8 @@
 <?php
 namespace admin\controller;
 
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
 
 // 友情链接
 class system_link extends \admin\system\controller
@@ -22,7 +22,7 @@ class system_link extends \admin\system\controller
 			$limit = $admin_config_system->limit;
 		}
 		
-		$admin_model_system_link = be::get_admin_model('system_link');
+		$admin_model_system_link = be::get_admin_service('system_link');
 		$template = be::get_admin_template('system_link.links');
         $template->set_title('友情链接');
 
@@ -84,7 +84,7 @@ class system_link extends \admin\system\controller
 		$row_system_link->bind(request::post());
 
 		if ($row_system_link->save()) {
-            $admin_model_system_link = be::get_admin_model('system_link');
+            $admin_model_system_link = be::get_admin_service('system_link');
             $admin_model_system_link->update();
             
 			if ($id == 0) {
@@ -107,7 +107,7 @@ class system_link extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_link = be::get_admin_model('system_link');
+        $admin_model_system_link = be::get_admin_service('system_link');
         if ($admin_model_system_link->unblock($ids)) {
             $admin_model_system_link->update();
             
@@ -125,7 +125,7 @@ class system_link extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_link = be::get_admin_model('system_link');
+        $admin_model_system_link = be::get_admin_service('system_link');
         if ($admin_model_system_link->block($ids)) {
             $admin_model_system_link->update();
             
@@ -143,7 +143,7 @@ class system_link extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_link = be::get_admin_model('system_link');
+        $admin_model_system_link = be::get_admin_service('system_link');
         if ($admin_model_system_link->delete($ids)) {
             $admin_model_system_link->update();
             

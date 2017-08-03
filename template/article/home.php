@@ -1,5 +1,5 @@
 <?php
-use \system\be;
+use system\be;
 $config = be::get_config('system');
 $config_article = be::get_config('article');
 ?>

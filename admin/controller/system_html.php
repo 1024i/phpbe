@@ -1,8 +1,8 @@
 <?php
 namespace admin\controller;
 
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
 
 // 自定义模块
 class system_html extends \admin\system\controller
@@ -22,7 +22,7 @@ class system_html extends \admin\system\controller
 			$limit = $admin_config_system->limit;
 		}
 		
-		$admin_model_system_html = be::get_admin_model('system_html');
+		$admin_model_system_html = be::get_admin_service('system_html');
 		$template = be::get_admin_template('system_html.htmls');
         $template->set_title('自定义模块');
 
@@ -113,7 +113,7 @@ class system_html extends \admin\system\controller
         $id = request::get('id', 0, 'int');
         $class = request::get('class','');
         
-        $admin_model_system_html = be::get_admin_model('system_html');
+        $admin_model_system_html = be::get_admin_service('system_html');
         echo $admin_model_system_html->is_class_available($class, $id) ? 'true' : 'false';
     }
 
@@ -121,7 +121,7 @@ class system_html extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_html = be::get_admin_model('system_html');
+        $admin_model_system_html = be::get_admin_service('system_html');
         
         if ($admin_model_system_html->unblock($ids)) {
             $this->set_message('公开自定义模块成功！');
@@ -138,7 +138,7 @@ class system_html extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_html = be::get_admin_model('system_html');
+        $admin_model_system_html = be::get_admin_service('system_html');
         if ($admin_model_system_html->block($ids)) {
             $this->set_message('屏蔽自定义模块成功！');
             system_log('屏蔽自定义模块：#'.$ids);
@@ -154,7 +154,7 @@ class system_html extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_html = be::get_admin_model('system_html');
+        $admin_model_system_html = be::get_admin_service('system_html');
         if ($admin_model_system_html->delete($ids)) {
             $this->set_message('删除自定义模块成功！');
             system_log('删除自定义模块：#'.$ids);

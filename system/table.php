@@ -306,27 +306,49 @@ class table extends obj
      * @param string $field 查询的字段
      * @return string|int
      */
-    public function get_result($field)
+    public function get_value($field)
     {
-        return $this->query('get_result', $field);
+        return $this->query('get_value', $field);
     }
 
     /**
      * 查询单个字段的所有记录
      *
      * @param string $field 查询的字段
-     * @return array() 数组
+     * @return array 数组
      */
-    public function get_results($field)
+    public function get_values($field)
     {
-        return $this->query('get_results', $field);
+        return $this->query('get_values', $field);
+    }
+
+    /**
+     * 查询单个字段的所有记录, 跌代器方式
+     *
+     * @param string $field 查询的字段
+     * @return \Generator 跌代器
+     */
+    public function get_yield_values($field)
+    {
+        return $this->query('get_yield_values', $field);
+    }
+
+    /**
+     * 查询单个字段的所有记录
+     *
+     * @param string $field 查询的字段
+     * @return array 数组
+     */
+    public function get_key_values($key_field, $value_field)
+    {
+        return $this->query('get_key_values', $key_field.','.$value_field);
     }
 
     /**
      * 查询单条记录
      *
      * @param string $fields 查询用到的字段列表
-     * @return array() 数组
+     * @return array 数组
      */
     public function get_array($fields = null)
     {
@@ -337,11 +359,33 @@ class table extends obj
      * 查询多条记录
      *
      * @param string $fields 查询用到的字段列表
-     * @return array(array()) 二维数组
+     * @return array 二维数组
      */
     public function get_arrays($fields = null)
     {
         return $this->query('get_arrays', $fields);
+    }
+
+    /**
+     * 查询多条记录, 跌代器方式
+     *
+     * @param string $fields 查询用到的字段列表
+     * @return \Generator 跌代器
+     */
+    public function get_yield_arrays($fields = null)
+    {
+        return $this->query('get_yield_arrays', $fields);
+    }
+
+    /**
+     * 查询多条记录
+     *
+     * @param string $fields 查询用到的字段列表
+     * @return array 二维数组
+     */
+    public function get_key_arrays($key_field, $fields = null)
+    {
+        return $this->query('get_arrays', $fields, $key_field);
     }
 
     /**
@@ -356,10 +400,10 @@ class table extends obj
     }
 
     /**
-     * 查询多条记发
+     * 查询多条记录
      *
      * @param string $fields 查询用到的字段列表
-     * @return array(object) 对象列表
+     * @return array
      */
     public function get_objects($fields = null)
     {
@@ -367,60 +411,25 @@ class table extends obj
     }
 
     /**
-     * 查询包含两个字段的键值对
+     * 查询多条记录, 跌代器方式
      *
-     * @param string $key_field 作为key的字段
-     * @param string $val_field 作为value的字段
-     * @return array() 数组
+     * @param string $fields 查询用到的字段列表
+     * @return \Generator 跌代器
      */
-    public function get_maps($key_field, $val_field)
+    public function get_yield_objects($fields = null)
     {
-        $arrays = $this->query('get_array', $this->quote . $key_field . $this->quote . ',' . $this->quote . $val_field . $this->quote);
-        $maps = array();
-        if ($arrays && count($arrays) > 0) {
-            foreach ($arrays as $array) {
-                $maps[$array[$key_field]] = $array[$val_field];
-            }
-        }
-        return $maps;
+        return $this->query('get_yield_objects', $fields);
     }
 
     /**
-     * 查询带索引的数组列表
+     * 查询多条记发
      *
-     * @param string $key_field 作为key的字段
-     * @param string $fields 查询的字段列表
-     * @return array 二维数组
+     * @param string $fields 查询用到的字段列表
+     * @return array 对象列表
      */
-    public function get_array_maps($key_field, $fields = null)
+    public function get_key_objects($key_field, $fields = null)
     {
-        $arrays = $this->query('get_arrays', $fields);
-        $maps = array();
-        if ($arrays && count($arrays) > 0) {
-            foreach ($arrays as $array) {
-                $maps[$array[$key_field]] = $array;
-            }
-        }
-        return $maps;
-    }
-
-    /**
-     * 查询带索引的对象列表
-     *
-     * @param string $key_field 作为key的字段
-     * @param string $fields 查询的字段列表
-     * @return array() 对象数组
-     */
-    public function get_object_maps($key_field, $fields = null)
-    {
-        $objects = $this->query('get_objects', $fields);
-        $maps = array();
-        if ($objects && count($objects) > 0) {
-            foreach ($objects as $object) {
-                $maps[$object->$key_field] = $object;
-            }
-        }
-        return $maps;
+        return $this->query('get_key_objects', $fields, $key_field);
     }
 
     /**
@@ -430,7 +439,7 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return mixed
      */
-    private function query($fn, $fields = null)
+    private function query($fn, $fields = null, $key_field = null)
     {
         $sql_data = $this->prepare_sql();
         $sql = null;
@@ -458,7 +467,7 @@ class table extends obj
             if ($cache !== false) return $cache;
         }
 
-        $result = db::$fn($sql, $sql_data[1]);
+        $result = $key_field === null ? db::$fn($sql, $sql_data[1]) : db::$fn($sql, $sql_data[1], $key_field);
         if (false === $result) {
             $this->set_error(db::get_error());
             return false;
@@ -479,7 +488,7 @@ class table extends obj
      */
     public function count($field = '*')
     {
-        return $this->query('get_result', 'COUNT(' . $field . ')');
+        return $this->query('get_value', 'COUNT(' . $field . ')');
     }
 
     /**
@@ -490,7 +499,7 @@ class table extends obj
      */
     public function sum($field)
     {
-        return $this->query('get_result', 'SUM(' . $field . ')');
+        return $this->query('get_value', 'SUM(' . $field . ')');
     }
 
     /**
@@ -501,7 +510,7 @@ class table extends obj
      */
     public function min($field)
     {
-        return $this->query('get_result', 'MIN(' . $field . ')');
+        return $this->query('get_value', 'MIN(' . $field . ')');
     }
 
     /**
@@ -512,7 +521,7 @@ class table extends obj
      */
     public function max($field)
     {
-        return $this->query('get_result', 'MAX(' . $field . ')');
+        return $this->query('get_value', 'MAX(' . $field . ')');
     }
 
     /**
@@ -523,7 +532,7 @@ class table extends obj
      */
     public function avg($field)
     {
-        return $this->query('get_result', 'AVG(' . $field . ')');
+        return $this->query('get_value', 'AVG(' . $field . ')');
     }
 
     /**

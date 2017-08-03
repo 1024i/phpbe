@@ -1,10 +1,10 @@
 <?php
 namespace admin\model;
 
-use \system\be;
-use \system\db;
+use system\be;
+use system\db;
 
-class system_announcement extends \system\model
+class system_announcement extends \system\service
 {
 
     public function get_system_announcements($option=array())

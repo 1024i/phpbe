@@ -2,29 +2,29 @@
 
 namespace controller;
 
-use \system\be;
-use \system\request;
-use \system\response;
+use system\be;
+use system\request;
+use system\response;
 
 class article extends \system\controller
 {
 
     public function home()
     {
-        $model_article = be::get_model('article');
+        $service_article = be::get_service('article');
 
         // 最新带图文章
-        $latest_thumbnail_articles = $model_article->get_articles([
+        $latest_thumbnail_articles = $service_article->get_articles([
             'thumbnail' => 1,
             'order_by' => 'create_time',
             'order_by_dir' => 'DESC',
             'limit' => 6
         ]);
 
-        $active_users = $model_article->get_active_users();
+        $active_users = $service_article->get_active_users();
 
         // 本月热点
-        $month_hottest_articles = $model_article->get_articles([
+        $month_hottest_articles = $service_article->get_articles([
             'order_by' => 'hits',
             'order_by_dir' => 'DESC',
             'from_time' => time() - 86400 * 30,
@@ -32,7 +32,7 @@ class article extends \system\controller
         ]);
 
         // 推荐文章
-        $top_articles = $model_article->get_articles([
+        $top_articles = $service_article->get_articles([
             'top' => 1,
             'order_by' => 'top',
             'order_by_dir' => 'DESC',
@@ -40,12 +40,12 @@ class article extends \system\controller
         ]);
 
         $top_categories = array();
-        $categories = $model_article->get_categories();
+        $categories = $service_article->get_categories();
         foreach ($categories as $category) {
             if ($category->parent_id > 0) continue;
             $top_categories[] = $category;
 
-            $category->articles = $model_article->get_articles([
+            $category->articles = $service_article->get_articles([
                 'category_id' => $category->id,
                 'order_by' => 'create_time',
                 'order_by_dir' => 'DESC',
@@ -111,14 +111,14 @@ class article extends \system\controller
             response::set('parent_category', $row_article_category);
         }
 
-        $model_article = be::get_model('article');
+        $service_article = be::get_service('article');
 
         $option = array('category_id' => $category_id);
 
         $limit = 10;
         $pagination = be::get_ui('pagination');
         $pagination->set_limit($limit);
-        $pagination->set_total($model_article->get_article_count($option));
+        $pagination->set_total($service_article->get_article_count($option));
         $pagination->set_page(request::get('page', 1, 'int'));
         $pagination->set_url('controller=article&task=articles&category_id=' . $category_id);
         response::set('pagination', $pagination);
@@ -127,11 +127,11 @@ class article extends \system\controller
         $option['limit'] = $limit;
         $option['order_by_string'] = '`top` DESC, `rank` DESC, `create_time` DESC';
 
-        $articles = $model_article->get_articles($option);
+        $articles = $service_article->get_articles($option);
         response::set('articles', $articles);
 
         // 热门文章
-        $hottest_articles = $model_article->get_articles([
+        $hottest_articles = $service_article->get_articles([
             'category_id' => $category_id,
             'order_by' => 'hits',
             'order_by_dir' => 'DESC',
@@ -140,7 +140,7 @@ class article extends \system\controller
         response::set('hottest_articles', $hottest_articles);
 
         // 推荐文章
-        $top_articles = $model_article->get_articles(array('category_id' => $category_id, 'top' => 1, 'order_by' => 'top', 'order_by_dir' => 'DESC', 'limit' => 10));
+        $top_articles = $service_article->get_articles(array('category_id' => $category_id, 'top' => 1, 'order_by' => 'top', 'order_by_dir' => 'DESC', 'limit' => 10));
         response::set('top_articles', $top_articles);
 
         response::display('article.articles');
@@ -159,12 +159,12 @@ class article extends \system\controller
         $row_article->load($article_id);
         $row_article->increment('hit', 1); // 点击量加 1
 
-        $model_article = be::get_model('article');
+        $service_article = be::get_service('article');
 
-        $similar_articles = $model_article->get_similar_articles($row_article, 10);
+        $similar_articles = $service_article->get_similar_articles($row_article, 10);
 
         // 热门文章
-        $hottest_articles = $model_article->get_articles([
+        $hottest_articles = $service_article->get_articles([
             'category_id' => $row_article->category_id,
             'order_by' => 'hits',
             'order_by_dir' => 'DESC',
@@ -172,7 +172,7 @@ class article extends \system\controller
         ]);
 
         // 推荐文章
-        $top_articles = $model_article->get_articles([
+        $top_articles = $service_article->get_articles([
             'category_id' => $row_article->category_id,
             'top' => 1,
             'order_by' => 'top',
@@ -180,7 +180,7 @@ class article extends \system\controller
             'limit' => 10
         ]);
 
-        $comments = $model_article->get_comments([
+        $comments = $service_article->get_comments([
             'article_id' => $article_id
         ]);
 
@@ -236,9 +236,9 @@ class article extends \system\controller
             response::error('参数(article_id)缺失！');
         }
 
-        $model_article = be::get_model('article');
-        if (!$model_article->like($article_id)) {
-            response::error($model_article->get_error());
+        $service_article = be::get_service('article');
+        if (!$service_article->like($article_id)) {
+            response::error($service_article->get_error());
         }
 
         response::success('提交成功！');
@@ -252,9 +252,9 @@ class article extends \system\controller
             response::error('参数(article_id)缺失！');
         }
 
-        $model_article = be::get_model('article');
-        if (!$model_article->dislike($article_id)) {
-            response::error($model_article->get_error());
+        $service_article = be::get_service('article');
+        if (!$service_article->dislike($article_id)) {
+            response::error($service_article->get_error());
         }
 
         response::success('提交成功！');
@@ -270,9 +270,9 @@ class article extends \system\controller
 
         $body = request::post('body', '');
 
-        $model_article = be::get_model('article');
-        if (!$model_article->comment($article_id, $body)) {
-            response::error($model_article->get_error());
+        $service_article = be::get_service('article');
+        if (!$service_article->comment($article_id, $body)) {
+            response::error($service_article->get_error());
         }
 
         response::success('提交成功！');
@@ -286,9 +286,9 @@ class article extends \system\controller
             response::error('参数(comment_id)缺失！');
         }
 
-        $model_article = be::get_model('article');
-        if (!$model_article->comment_like($comment_id)) {
-            response::error($model_article->get_error());
+        $service_article = be::get_service('article');
+        if (!$service_article->comment_like($comment_id)) {
+            response::error($service_article->get_error());
         }
 
         response::success('提交成功！');
@@ -302,9 +302,9 @@ class article extends \system\controller
             response::error('参数(comment_id)缺失！');
         }
 
-        $model_article = be::get_model('article');
-        if (!$model_article->comment_dislike($comment_id)) {
-            response::error($model_article->get_error());
+        $service_article = be::get_service('article');
+        if (!$service_article->comment_dislike($comment_id)) {
+            response::error($service_article->get_error());
         }
 
         response::success('提交成功！');
@@ -318,20 +318,20 @@ class article extends \system\controller
         $user = be::get_user($user_id);
         if ($user->block == 1) response::end('该用户账号已被停用！');
 
-        $model_article = be::get_model('article');
+        $service_article = be::get_service('article');
 
         $option = ['user_id' => $user_id, 'order_by' => 'create_time', 'order_by_dir' => 'DESC', 'limit' => 30];
-        $articles = $model_article->get_articles($option);
-        $article_count = $model_article->get_article_count($option);
+        $articles = $service_article->get_articles($option);
+        $article_count = $service_article->get_article_count($option);
 
         $option = ['user_id' => $user_id, 'order_by' => 'create_time', 'order_by_dir' => 'DESC', 'limit' => 30];
-        $comments = $model_article->get_comments($option);
+        $comments = $service_article->get_comments($option);
         foreach ($comments as $comment) {
             $row_article = be::get_row('article');
             $row_article->load($comment->article_id);
             $comment->article = $row_article;
         }
-        $comment_count = $model_article->get_comment_count($option);
+        $comment_count = $service_article->get_comment_count($option);
 
         response::set_title($user->name . ' 的动态');
         response::set_meta_keywords($user->name . ' 的动态');

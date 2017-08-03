@@ -32,7 +32,7 @@ class system_html extends \model
     public function get_system_html_count($option=array())
     {
         $sql = 'SELECT COUNT(*) FROM `be_system_html` WHERE 1'. $this->create_system_html_sql($option);
-        return db::get_result($sql);
+        return db::get_value($sql);
     }
 
 	private function create_system_html_sql($option=array())
@@ -48,7 +48,7 @@ class system_html extends \model
     public function is_class_available($class, $id)
     {
         $sql = 'SELECT COUNT(*) FROM `be_system_html` WHERE `class`=\''.$class.'\' AND `id`!='.$id;
-        $n = db::get_result($sql);
+        $n = db::get_value($sql);
         return $n == 0;
     }
 
@@ -73,7 +73,7 @@ class system_html extends \model
 
     public function block($ids)
     {
-        $classes = db::get_results('SELECT `class` FROM `be_system_html` WHERE `id` IN(' . $ids . ')');
+        $classes = db::get_values('SELECT `class` FROM `be_system_html` WHERE `id` IN(' . $ids . ')');
 		foreach ($classes as $class) {
 			$path = PATH_DATA.DS.'system'.DS.'html'.DS.$class.'.html';
 			if (file_exists($path)) @unlink($path);
@@ -88,7 +88,7 @@ class system_html extends \model
 
     public function delete($ids)
     {
-        $classes = db::get_results('SELECT `class` FROM `be_system_html` WHERE `id` IN(' . $ids . ')');
+        $classes = db::get_values('SELECT `class` FROM `be_system_html` WHERE `id` IN(' . $ids . ')');
 		foreach ($classes as $class) {
 			$path = PATH_DATA.DS.'system'.DS.'html'.DS.$class.'.html';
 			if (file_exists($path)) @unlink($path);

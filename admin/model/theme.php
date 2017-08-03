@@ -1,10 +1,10 @@
 <?php
 namespace admin\model;
 
-use \system\be;
+use system\be;
 
 
-class theme extends \system\model
+class theme extends \system\service
 {
 
 	private $themes = null;

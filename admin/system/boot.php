@@ -1,8 +1,8 @@
 <?php
 
-use \system\be;
-use \system\request;
-use \system\session;
+use system\be;
+use system\request;
+use system\session;
 
 require PATH_ROOT.DS.'system'.DS.'tool.php';
 require PATH_ROOT.DS.'system'.DS.'be.php';
@@ -14,7 +14,7 @@ session::start();
 
 $my = be::get_admin_user();
 if ($my->id == 0) {
-    $admin_model_admin_user = be::get_admin_model('admin_user');
+    $admin_model_admin_user = be::get_admin_service('admin_user');
     $admin_model_admin_user->remember_me();
 }
 

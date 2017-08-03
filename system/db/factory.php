@@ -1,11 +1,12 @@
 <?php
-namespace system;
-use system\db\exception;
+namespace system\db;
+
+use system\be;
 
 /**
- * 数据库类
+ * 数据库工厂类
  */
-class db extends db\mysql
+class factory
 {
     private static $instances = [];
 

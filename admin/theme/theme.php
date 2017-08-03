@@ -1,7 +1,7 @@
 <?php
 namespace admin\theme;
 
-use \system\be;
+use system\be;
 
 class theme extends \system\template
 {
@@ -82,8 +82,8 @@ class theme extends \system\template
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">应用<b class="caret"></b></a>
 			<ul class="dropdown-menu">
 				<?php
-				$model_system = be::get_admin_model('system');
-				$apps = $model_system->get_apps();
+				$service_system = be::get_admin_service('system');
+				$apps = $service_system->get_apps();
 				?>
 				<li><a href="./?controller=system&task=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
 				<li><a href="./?controller=system&task=remote_apps">安装新应用</a></li>
@@ -151,8 +151,8 @@ class theme extends \system\template
 
     protected function west()
     {
-        $model_system = be::get_admin_model('system');
-        $apps = $model_system->get_apps();
+        $service_system = be::get_admin_service('system');
+        $apps = $service_system->get_apps();
         ?>
 <div class="west-title"><div class="title-icon">已安装的应用</div></div>
 

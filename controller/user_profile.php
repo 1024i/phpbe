@@ -1,8 +1,8 @@
 <?php
 namespace controller;
 
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
 use system\response;
 
 class user_profile extends user_auth
@@ -180,8 +180,8 @@ class user_profile extends user_auth
 		$row_user = be::get_row('user');
 		$row_user->load($my->id);
 
-		$model_user = be::get_model('user');
-		if ($model_user->encrypt_password($password)!=$row_user->password) {
+		$service_user = be::get_service('user');
+		if ($service_user->encrypt_password($password)!=$row_user->password) {
             response::error('当前密码错误！');
 		}
 
@@ -189,7 +189,7 @@ class user_profile extends user_auth
             response::error('两次输入的密码不匹配！');
         }
 
-		$row_user->password = $model_user->encrypt_password($password1);
+		$row_user->password = $service_user->encrypt_password($password1);
         $row_user->save();
 
         response::success('您的密码已重设！');

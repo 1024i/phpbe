@@ -32,7 +32,7 @@ class system_link extends \model
     public function get_system_link_count($option=array())
     {
         $sql = 'SELECT COUNT(*) FROM `be_system_link` WHERE 1'. $this->create_system_link_sql($option);
-        return db::get_result($sql);
+        return db::get_value($sql);
     }
 
 	private function create_system_link_sql($option=array())
@@ -91,7 +91,7 @@ class system_link extends \model
             $i++;
         }
         
-        $admin_model_system = be::get_admin_model('system');
+        $admin_model_system = be::get_admin_service('system');
         $admin_model_system->save_config_file($config_system_link, PATH_ROOT.DS.'configs'.DS.'system_link.php');
     }
 

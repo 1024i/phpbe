@@ -18,8 +18,8 @@ class remote_app extends \admin\theme
 
 	protected function center()
 	{
-		$model_system = be::get_admin_model('system');
-        $installed_apps = $model_system->get_apps();
+		$service_system = be::get_admin_service('system');
+        $installed_apps = $service_system->get_apps();
 		
 	    $remote_app = $this->get('remote_app');
 	    if ($remote_app->status!='0') {

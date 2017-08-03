@@ -21,7 +21,7 @@ class article extends \admin\system\controller
 			$limit = $admin_config_system->limit;
 		}
 		
-		$admin_model_article = be::get_admin_model('article');
+		$admin_model_article = be::get_admin_service('article');
 		$template = be::get_admin_template('article.articles');
         $template->set_title('文章列表');
 
@@ -50,8 +50,8 @@ class article extends \admin\system\controller
 		}
 		$template->set('articles', $articles);
 		
-		$model_article = be::get_model('article');
-		$template->set('categories', $model_article->get_categories());
+		$service_article = be::get_service('article');
+		$template->set('categories', $service_article->get_categories());
 
 		$template->display();
 
@@ -75,8 +75,8 @@ class article extends \admin\system\controller
 		}
 		$template->set('article', $row_article);
 		
-		$model_article = be::get_model('article');
-		$categories = $model_article->get_categories();
+		$service_article = be::get_service('article');
+		$categories = $service_article->get_categories();
 		$template->set('categories', $categories);
 		$template->display();
 	}
@@ -147,8 +147,8 @@ class article extends \admin\system\controller
 
 					// 下截远程图片添加水印
 					if ($download_remote_image_watermark == 1) {
-						$model_system = be::get_admin_model('system');
-						$model_system->watermark($dir_path.DS.$local_image_name);
+						$service_system = be::get_admin_service('system');
+						$service_system->watermark($dir_path.DS.$local_image_name);
 					}
 
 					$body = str_replace($remote_image, URL_ROOT.'/'.DATA.'/article/'.$dir_name.'/'.$local_image_name, $body);
@@ -303,12 +303,12 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $model_article = be::get_admin_model('article');
-        if ($model_article->unblock($ids)) {
+        $service_article = be::get_admin_service('article');
+        if ($service_article->unblock($ids)) {
             $this->set_message('公开文章成功！');
             system_log('公开文章：#'.$ids);
         } else {
-			$this->set_message($model_article->get_error(), 'error');
+			$this->set_message($service_article->get_error(), 'error');
 		}
 
 		$lib_history = be::get_lib('history');
@@ -319,12 +319,12 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $model_article = be::get_admin_model('article');
-        if ($model_article->block($ids)) {
+        $service_article = be::get_admin_service('article');
+        if ($service_article->block($ids)) {
             $this->set_message('屏蔽文章成功！');
             system_log('屏蔽文章：#'.$ids);
         } else {
-			$this->set_message($model_article->get_error(), 'error');
+			$this->set_message($service_article->get_error(), 'error');
 		}
 
 		$lib_history = be::get_lib('history');
@@ -335,12 +335,12 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
         
-        $model_article = be::get_admin_model('article');
-        if ($model_article->delete($ids)) {
+        $service_article = be::get_admin_service('article');
+        if ($service_article->delete($ids)) {
             $this->set_message('删除文章成功！');
             system_log('删除文章：#'.$ids);
         } else {
-			$this->set_message($model_article->get_error(), 'error');
+			$this->set_message($service_article->get_error(), 'error');
 		}
 
 		$lib_history = be::get_lib('history');
@@ -370,9 +370,9 @@ class article extends \admin\system\controller
 
 		$config_article = be::get_config('article');
 
-		$this->set('error', 0);
-		$this->set('summary', limit($body, intval($config_article->get_summary)));
-		$this->ajax();
+		response::set('error', 0);
+		response::set('summary', limit($body, intval($config_article->get_summary)));
+		response::ajax();
 	}
 
 
@@ -396,9 +396,9 @@ class article extends \admin\system\controller
 			$meta_keywords = implode(' ', $tmp_meta_keywords);
 		}
 
-		$this->set('error', 0);
-		$this->set('meta_keywords', $meta_keywords);
-		$this->ajax();
+		response::set('error', 0);
+		response::set('meta_keywords', $meta_keywords);
+		response::ajax();
 	}
 
 	// 从内容中提取 META 描述
@@ -408,19 +408,19 @@ class article extends \admin\system\controller
 
 		$config_article = be::get_config('article');
 
-		$this->set('error', 0);
-		$this->set('meta_description', limit($body, intval($config_article->get_meta_description)));
-		$this->ajax();
+		response::set('error', 0);
+		response::set('meta_description', limit($body, intval($config_article->get_meta_description)));
+		response::ajax();
 	}
 
 
     public function categories()
     {
-        $model_article = be::get_admin_model('article');
+        $service_article = be::get_admin_service('article');
 
         $template = be::get_admin_template('article.categories');
         $template->set_title('分类管理');
-        $template->set('categories', $model_article->get_categories());
+        $template->set('categories', $service_article->get_categories());
         $template->display();
     }
 
@@ -453,24 +453,24 @@ class article extends \admin\system\controller
     {
         $category_id = request::post('id', 0, 'int');
         if (!$category_id) {
-            $this->set('error', 1);
-            $this->set('message', '参数(id)缺失！');
+            response::set('error', 1);
+            response::set('message', '参数(id)缺失！');
         } else {
             $row_category = be::get_row('article_category');
             $row_category->load($category_id);
             
-            $model_article = be::get_admin_model('article');
-            if ($model_article->delete_category($category_id)) {
-                $this->set('error', 0);
-                $this->set('message', '分类删除成功！');
+            $service_article = be::get_admin_service('article');
+            if ($service_article->delete_category($category_id)) {
+                response::set('error', 0);
+                response::set('message', '分类删除成功！');
 
                 system_log('删除文章分类：#'.$category_id.': '.$row_category->title);
             } else {
-                $this->set('error', 2);
-                $this->set('message', $model_article->get_error());
+                response::set('error', 2);
+                response::set('message', $service_article->get_error());
             }
         }
-        $this->ajax();
+        response::ajax();
     }
     
 
@@ -488,7 +488,7 @@ class article extends \admin\system\controller
 			$limit = $admin_config_system->limit;
 		}
 
-		$admin_model_article = be::get_admin_model('article');
+		$admin_model_article = be::get_admin_service('article');
 		$template = be::get_admin_template('article.comments');
         $template->set_title('评论列表');
 
@@ -535,7 +535,7 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $model = be::get_admin_model('article');
+        $model = be::get_admin_service('article');
         
         if ($model->comments_unblock($ids)) {
             $this->set_message('公开评论成功！');
@@ -552,7 +552,7 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $model = be::get_admin_model('article');
+        $model = be::get_admin_service('article');
         if ($model->comments_block($ids)) {
             $this->set_message('屏蔽评论成功！');
             system_log('屏蔽文章评论：#'.$ids);
@@ -568,7 +568,7 @@ class article extends \admin\system\controller
 	{
         $ids = request::post('id', '');
 
-        $model = be::get_admin_model('article');
+        $model = be::get_admin_service('article');
         if ($model->comments_delete($ids)) {
             $this->set_message('删除评论成功！');
             system_log('删除文章评论：#'.$ids.')');
@@ -651,8 +651,8 @@ class article extends \admin\system\controller
 			}
 		}
 
-		$model_system = be::get_admin_model('system');
-		$model_system->save_config_file($config_article, PATH_ROOT.DS.'configs'.DS.'article.php');
+		$service_system = be::get_admin_service('system');
+		$service_system->save_config_file($config_article, PATH_ROOT.DS.'configs'.DS.'article.php');
 		
 		system_log('设置文章系统参数');
 		

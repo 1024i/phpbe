@@ -1,8 +1,8 @@
 <?php
 namespace admin\system;
 
-use \system\be;
-use \system\request\request;
+use system\be;
+use system\request\request;
 
 class controller extends \system\controller
 {
@@ -21,9 +21,9 @@ class controller extends \system\controller
         $my = be::get_admin_user();
         if ($my->id == 0) {
             if (substr($task, 0, 5) == 'ajax_') {
-                $this->set('status', 1024);
-                $this->set('description', '登陆超时，请重新登陆！');
-                $this->ajax();
+                response::set('status', 1024);
+                response::set('description', '登陆超时，请重新登陆！');
+                response::ajax();
             } else {
 				$this->set_message('登陆超时，请重新登陆！', 'notice');
 				$this->redirect('./?controller=admin_user&task=login&return='.base64_encode(URL_ROOT.'/'.ADMIN.'/?'.$_SERVER['QUERY_STRING']));
@@ -65,9 +65,9 @@ class controller extends \system\controller
                 if ($permission_text == '') $permission_text = '您没有权限';
             
                 if (substr($task, 0, 5) == 'ajax_') {
-                    $this->set('status', 1024);
-                    $this->set('description', $permission_text);
-                    $this->ajax();
+                    response::set('status', 1024);
+                    response::set('description', $permission_text);
+                    response::ajax();
                 } else {
                     be_exit($permission_text);
                 }

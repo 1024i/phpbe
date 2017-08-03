@@ -1,9 +1,9 @@
 <?php
 namespace admin\model;
 
-use \system\be;
+use system\be;
 
-class app extends \system\model
+class app extends \system\service
 {
 
 
@@ -83,10 +83,10 @@ class app extends \system\model
 		$app_obj->install();
 
 		$admin_config_system = be::get_admin_config('system');
-        $model_system = be::get_model('system');
+        $service_system = be::get_service('system');
 		if (!in_array($app->name, $admin_config_system->apps)) {
 			$admin_config_system->apps[] = $app->name;
-            $model_system->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
+            $service_system->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
 		}
 
 		// 删除临时文件
@@ -112,7 +112,7 @@ class app extends \system\model
 		}
 
 		$admin_config_system->apps = $apps;
-        be::get_model('system')->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
+        be::get_service('system')->save_config($admin_config_system, PATH_ADMIN.DS.'configs'.DS.'system.php');
 
 		$app = be::get_app($name);
 		$app->uninstall();

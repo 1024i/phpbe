@@ -1,8 +1,8 @@
 <?php
 namespace admin\controller;
 
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
 
 class system extends \admin\system\controller
 {
@@ -19,11 +19,11 @@ class system extends \admin\system\controller
 		$row_user->load($my->id);
 		$template->set('user', $row_user);
 
-		$admin_model_user = be::get_admin_model('user');
+		$admin_model_user = be::get_admin_service('user');
 		$user_count = $admin_model_user->get_user_count();
 		$template->set('user_count', $user_count);
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$template->set('recent_logs', $admin_model_system->get_logs(array('user_id'=>$my->id,'offset'=>0, 'limit'=>10)));
 		$template->set('app_count', $admin_model_system->get_app_count());
 		$template->set('theme_count', $admin_model_system->get_theme_count());
@@ -39,7 +39,7 @@ class system extends \admin\system\controller
 	{
 		$group_id = request::get('group_id', 0, 'int');
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		
 		$groups = $admin_model_system->get_menu_groups();
 		if ($group_id == 0) $group_id = $groups[0]->id;
@@ -83,7 +83,7 @@ class system extends \admin\system\controller
             }
         }
         
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
         $admin_model_system->update_menu($group_id);
 
         $row_system_menu_group = be::get_row('system_menu_group');
@@ -99,26 +99,26 @@ class system extends \admin\system\controller
     {
         $id = request::post('id', 0, 'int');
         if (!$id) {
-            $this->set('error', 2);
-            $this->set('message', '参数(id)缺失！');
+            response::set('error', 2);
+            response::set('message', '参数(id)缺失！');
         } else {
             $row_system_menu = be::get_row('system_menu');
             $row_system_menu->load($id);
             
-            $admin_model_system = be::get_admin_model('system');
+            $admin_model_system = be::get_admin_service('system');
             if ($admin_model_system->delete_menu($id)) {
 				$admin_model_system->update_menu($row_system_menu->group_id);
 
-                $this->set('error', 0);
-                $this->set('message', '删除菜单成功！');
+                response::set('error', 0);
+                response::set('message', '删除菜单成功！');
                 
                 system_log('删除菜单: #'.$id.' '.$row_system_menu->name);
             } else {
-                $this->set('error', 3);
-                $this->set('message', $admin_model_system->get_error());
+                response::set('error', 3);
+                response::set('message', $admin_model_system->get_error());
             }
         }
-        $this->ajax();
+        response::ajax();
     }
     
     public function menu_set_link()
@@ -132,7 +132,7 @@ class system extends \admin\system\controller
         
         $template->set('url', $url);
         
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$apps = $admin_model_system->get_apps();
         $template->set('apps', $apps);
 		
@@ -143,33 +143,33 @@ class system extends \admin\system\controller
     {
 		$id = request::get('id', 0, 'int');
         if ($id == 0) {
-            $this->set('error', 1);
-            $this->set('message','参数(id)缺失！');
+            response::set('error', 1);
+            response::set('message','参数(id)缺失！');
         } else {
             $row_system_menu = be::get_row('system_menu');
             $row_system_menu->load($id);
             
-            $admin_model_system = be::get_admin_model('system');
+            $admin_model_system = be::get_admin_service('system');
             if ($admin_model_system->set_home_menu($id)) {
 				$admin_model_system->update_menu($row_system_menu->group_id);
 
-                $this->set('error', 0);
-                $this->set('message', '设置首页菜单成功！');
+                response::set('error', 0);
+                response::set('message', '设置首页菜单成功！');
                 
                 system_log('设置新首页菜单：#'.$id.' '.$row_system_menu->name);
             } else {
-                $this->set('error', 2);
-                $this->set('message', $admin_model_system->get_error());
+                response::set('error', 2);
+                response::set('message', $admin_model_system->get_error());
             }
         }
-        $this->ajax();
+        response::ajax();
     }
 
 
 	// ==  ==  ==  ==  ==  ==  ==  ==  ==  === 菜单分组管理
 	public function menu_groups()
 	{
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 
 		$template = be::get_admin_template('system.menu_groups');
         $template->set_title('添加新菜单组');
@@ -238,7 +238,7 @@ class system extends \admin\system\controller
 			if (in_array($row_menu_group->class_name, array('north', 'south', 'dashboard'))) {
 				$this->set_message('系统菜单不可删除！', 'error');
 			} else {
-				$admin_model_system = be::get_admin_model('system');
+				$admin_model_system = be::get_admin_service('system');
 				if ($admin_model_system->delete_menu_group($row_menu_group->id)) {
 					system_log('成功删除菜单组！');
 					$this->set_message('成功删除菜单组！');
@@ -260,7 +260,7 @@ class system extends \admin\system\controller
 	// ==  ==  ==  ==  ==  ==  ==  ==  ==  === 应用管理
 	public function apps()
 	{
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$apps = $admin_model_system->get_apps();
 
 		$template = be::get_admin_template('system.apps');
@@ -271,7 +271,7 @@ class system extends \admin\system\controller
 
 	public function remote_apps()
 	{
-	    $admin_model_system = be::get_admin_model('system');
+	    $admin_model_system = be::get_admin_service('system');
         $remote_apps = $admin_model_system->get_remote_apps(post::_());
 
 		$template = be::get_admin_template('system.remote_apps');
@@ -285,7 +285,7 @@ class system extends \admin\system\controller
 		$app_id = request::get('app_id', 0, 'int');
 		if ($app_id == 0) be_exit('参数(app_id)缺失！');
 
-	    $admin_model_system = be::get_admin_model('system');
+	    $admin_model_system = be::get_admin_service('system');
 	    
         $remote_app = $admin_model_system->get_remote_app($app_id);
 
@@ -299,67 +299,67 @@ class system extends \admin\system\controller
 	{
 		$app_id = request::get('app_id', 0, 'int');
 		if ($app_id == 0) {
-		    $this->set('error', 1);
-            $this->set('message', '参数(app_id)缺失！');
-			$this->ajax();
+		    response::set('error', 1);
+            response::set('message', '参数(app_id)缺失！');
+			response::ajax();
 		}
 
-	    $admin_model_system = be::get_admin_model('system');
+	    $admin_model_system = be::get_admin_service('system');
         $remote_app = $admin_model_system->get_remote_app($app_id);
 	    if ($remote_app->status!='0') {
-		    $this->set('error', 2);
-            $this->set('message', $remote_app->description);
-			$this->ajax();
+		    response::set('error', 2);
+            response::set('message', $remote_app->description);
+			response::ajax();
 	    }
 
 		$app = $remote_app->app;
 		if (file_exists(PATH_ADMIN.DS.'apps'.DS.$app->name.'php')) {
-		    $this->set('error', 3);
-            $this->set('message', '已存在安装标识为'.$app->name.'的应用');
-			$this->ajax();
+		    response::set('error', 3);
+            response::set('message', '已存在安装标识为'.$app->name.'的应用');
+			response::ajax();
 		}
 
         if ($admin_model_system->install_app($app)) {
             system_log('安装新应用：'.$app->name);
             
-            $this->set('error', 0);
-            $this->set('message', '应用安装成功！');
+            response::set('error', 0);
+            response::set('message', '应用安装成功！');
         } else {
-            $this->set('error', 4);
-            $this->set('message', $admin_model_system->get_error());
+            response::set('error', 4);
+            response::set('message', $admin_model_system->get_error());
         }
 
-		$this->ajax();
+		response::ajax();
 	}
 
 	public function ajax_uninstall_app()
 	{
 		$app_name = request::get('app_name','');
 		if ($app_name == '') {
-		    $this->set('error', 1);
-            $this->set('message', '参数(app_name)缺失！');
-			$this->ajax();
+		    response::set('error', 1);
+            response::set('message', '参数(app_name)缺失！');
+			response::ajax();
 		}
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		if ($admin_model_system->uninstall_app($app_name)) {
             system_log('卸载应用：'.$app_name);
             
-            $this->set('error', 0);
-            $this->set('message', '应用卸载成功！');
+            response::set('error', 0);
+            response::set('message', '应用卸载成功！');
         } else {
-            $this->set('error', 2);
-            $this->set('message', $admin_model_system->get_error());
+            response::set('error', 2);
+            response::set('message', $admin_model_system->get_error());
         }
         
-        $this->ajax();
+        response::ajax();
 	}
 
 
 	// ==  ==  ==  ==  ==  ==  ==  ==  ==  === 主题管理
 	public function themes()
 	{
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$themes = $admin_model_system->get_themes(post::_());
 
 		$template = be::get_admin_template('system.themes');
@@ -373,28 +373,28 @@ class system extends \admin\system\controller
 	{
 		$theme = request::get('theme','');
         if ($theme == '') {
-            $this->set('error', 1);
-            $this->set('message', '参数(theme)缺失！');
+            response::set('error', 1);
+            response::set('message', '参数(theme)缺失！');
         } else {
-            $admin_model_system = be::get_admin_model('system');
+            $admin_model_system = be::get_admin_service('system');
             if ($admin_model_system->set_default_theme($theme)) {
                 system_log('设置主题（'.$theme.') 为默认主题！');
                 
-                $this->set('error', 0);
-                $this->set('message', '设置默认主题成功！');
+                response::set('error', 0);
+                response::set('message', '设置默认主题成功！');
             } else {
-                $this->set('error', 2);
-                $this->set('message', $admin_model_system->get_error());
+                response::set('error', 2);
+                response::set('message', $admin_model_system->get_error());
             }
         }
-        $this->ajax();
+        response::ajax();
 	}
 	
 
 	// 在线主题
 	public function remote_themes()
 	{
-	    $admin_model_system = be::get_admin_model('system');
+	    $admin_model_system = be::get_admin_service('system');
 	    
 		$local_themes = $admin_model_system->get_themes();
         $remote_themes = $admin_model_system->get_remote_themes(request::post());
@@ -411,30 +411,30 @@ class system extends \admin\system\controller
 	{
 		$theme_id = request::get('theme_id', 0, 'int');
 		if ($theme_id == 0) {
-		    $this->set('error', 1);
-            $this->set('message', '参数(theme_id)缺失！');
-			$this->ajax();
+		    response::set('error', 1);
+            response::set('message', '参数(theme_id)缺失！');
+			response::ajax();
 		}
 
-	    $admin_model_system = be::get_admin_model('system');
+	    $admin_model_system = be::get_admin_service('system');
         $remote_theme = $admin_model_system->get_remote_theme($theme_id);
 
 	    if ($remote_theme->status!='0') {
-		    $this->set('error', 2);
-            $this->set('message', $remote_theme->description);
-			$this->ajax();
+		    response::set('error', 2);
+            response::set('message', $remote_theme->description);
+			response::ajax();
 	    }
 
 		if ($admin_model_system->install_theme($remote_theme->theme)) {
 			system_log('安装新主题：'.$remote_theme->theme->name);
 
-			$this->set('error', 0);
-			$this->set('message', '主题新安装成功！');
-			$this->ajax();
+			response::set('error', 0);
+			response::set('message', '主题新安装成功！');
+			response::ajax();
 		} else {
-			$this->set('error', 3);
-            $this->set('message', $admin_model_system->get_error());
-			$this->ajax();
+			response::set('error', 3);
+            response::set('message', $admin_model_system->get_error());
+			response::ajax();
 		}
 	}
 
@@ -446,22 +446,22 @@ class system extends \admin\system\controller
 	{
 		$theme = request::get('theme','');
         if ($theme == '') {
-		    $this->set('error', 1);
-            $this->set('message', '参数(theme)缺失！');
-			$this->ajax();
+		    response::set('error', 1);
+            response::set('message', '参数(theme)缺失！');
+			response::ajax();
 		}
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		if ($admin_model_system->uninstall_theme($theme)) {
 			system_log('卸载主题：'.$theme);
 
-			$this->set('error', 0);
-			$this->set('message', '主题卸载成功！');
-			$this->ajax();
+			response::set('error', 0);
+			response::set('message', '主题卸载成功！');
+			response::ajax();
 		} else {
-			$this->set('error', 2);
-            $this->set('message', $admin_model_system->get_error());
-			$this->ajax();
+			response::set('error', 2);
+            response::set('message', $admin_model_system->get_error());
+			response::ajax();
 		}
 	}
 
@@ -530,7 +530,7 @@ class system extends \admin\system\controller
 		$config->smtp_pass = request::post('smtp_pass', '');
         $config->smtp_secure = request::post('smtp_secure', '');
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$admin_model_system->save_config_file($config, PATH_ROOT.DS.'configs'.DS.'system_mail.php');
 		
 		system_log('改动发送邮件设置');
@@ -629,7 +629,7 @@ class system extends \admin\system\controller
 			}
 		}
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$admin_model_system->save_config_file($config, PATH_ROOT.DS.'configs'.DS.'system_watermark.php');
 		
 		system_log('修改水印设置');
@@ -650,7 +650,7 @@ class system extends \admin\system\controller
 
 		sleep(1);
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$admin_model_system->watermark($dst);
 
 		$template = be::get_admin_template('system.config_watermark_test');
@@ -671,7 +671,7 @@ class system extends \admin\system\controller
 			$limit = $admin_config_system->limit;
 		}
 		
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$template = be::get_admin_template('system.logs');
         $template->set_title('系统日志');
 
@@ -692,14 +692,14 @@ class system extends \admin\system\controller
 	// 后台登陆日志
     public function ajax_delete_logs()
     {
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
         $admin_model_system->delete_logs();
 
 		system_log('删除三个月前系统日志');
 
-		$this->set('error', 0);
-		$this->set('message', '删除日志成功！');
-		$this->ajax();
+		response::set('error', 0);
+		response::set('message', '删除日志成功！');
+		response::ajax();
     }
 
 	public function history_back()

@@ -5,7 +5,7 @@ class dev extends \admin\controller
 {
 	public function db_tables()
 	{
-		$admin_model = be::get_admin_model('dev');
+		$admin_model = be::get_admin_service('dev');
 		$db_tables = $admin_model->get_db_tables();
 		/*
 		foreach ($db_tables as $db_table) {
@@ -23,7 +23,7 @@ class dev extends \admin\controller
 	{
 		$db_table_name = request::get('db_table_name','');
 
-		$admin_model = be::get_admin_model('dev');
+		$admin_model = be::get_admin_service('dev');
 		$db_table = $admin_model->get_db_table($db_table_name);
 		//print_r($db_table);
 

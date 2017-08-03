@@ -1,8 +1,9 @@
 <?php
 namespace admin\controller;
 
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
+use system\response;
 
 class admin_user extends \admin\system\controller
 {
@@ -29,30 +30,30 @@ class admin_user extends \admin\system\controller
 		$password = request::post('password', '');
 
 		if ($username == '') {
-			$this->set('error', 1);
-			$this->set('message', '请输入用户名！');
-			$this->ajax();
+			response::set('error', 1);
+			response::set('message', '请输入用户名！');
+			response::ajax();
 		}
         
         if ($password == '') {
-			$this->set('error', 2);
-			$this->set('message', '请输入密码！');
-			$this->ajax();
+			response::set('error', 2);
+			response::set('message', '请输入密码！');
+			response::ajax();
 		}
 
-		$admin_model_admin_user = be::get_admin_model('admin_user');
+		$admin_model_admin_user = be::get_admin_service('admin_user');
 		$user = $admin_model_admin_user->login($username, $password);
 		
 		if ($user) {
 		    system_log('登录后台');
 		    
-			$this->set('error', 0);
-			$this->set('message', '登录成功！');
-			$this->ajax();
+			response::set('error', 0);
+			response::set('message', '登录成功！');
+			response::ajax();
 		} else {
-			$this->set('error', 2);
-			$this->set('message', $admin_model_admin_user->get_error());
-			$this->ajax();
+			response::set('error', 2);
+			response::set('message', $admin_model_admin_user->get_error());
+			response::ajax();
 		}
 	}
 
@@ -60,7 +61,7 @@ class admin_user extends \admin\system\controller
 	// 退出登陆
 	public function logout()
 	{
-		$admin_model_admin_user = be::get_admin_model('admin_user');
+		$admin_model_admin_user = be::get_admin_service('admin_user');
 		$admin_model_admin_user->logout();
 
 		$this->redirect('./?controller=user&task=login', '成功退出！');
@@ -91,7 +92,7 @@ class admin_user extends \admin\system\controller
 		if ($group_id>0) $option['group_id'] = $group_id;
 		if ($admin_group_id>0) $option['admin_group_id'] = $admin_group_id;
         
-        $admin_model_user = be::get_admin_model('user');
+        $admin_model_user = be::get_admin_service('user');
         
         $template = be::get_admin_template('user.users');
         $template->set_title('用户列表');
@@ -184,7 +185,7 @@ class admin_user extends \admin\system\controller
             $this->redirect('./?controller=admin_user&task=edit&id=' . $id);
 		}
 
-		$admin_model_user = be::get_admin_model('user');
+		$admin_model_user = be::get_admin_service('user');
 
 		if (!$admin_model_user->is_username_available($row_user->username, $id)) {
 			$this->set_message('用户名('.$row_user->username.')已被占用！', 'error');
@@ -197,8 +198,8 @@ class admin_user extends \admin\system\controller
 		}
 
         if ($password != '') {
-			$model_user = be::get_model('user');
-            $row_user->password = $model_user->encrypt_password($password);
+			$service_user = be::get_service('user');
+            $row_user->password = $service_user->encrypt_password($password);
 		}
         else
             unset($row_user->password);
@@ -275,29 +276,29 @@ class admin_user extends \admin\system\controller
     {
         $username = request::get('username','');
         
-        $model_user = be::get_admin_model('user');
-        echo $model_user->is_username_available($username) ? 'true' : 'false';
+        $service_user = be::get_admin_service('user');
+        echo $service_user->is_username_available($username) ? 'true' : 'false';
     }
 
     public function check_email()
     {
         $email = request::get('email','');
         
-        $model_user = be::get_admin_model('user');
-        echo $model_user->is_email_available($email) ? 'true' : 'false';
+        $service_user = be::get_admin_service('user');
+        echo $service_user->is_email_available($email) ? 'true' : 'false';
     }
 
     public function unblock()
     {
         $ids = request::post('id', '');
         
-        $model_user = be::get_admin_model('user');
-        if ($model_user->unblock($ids)) {
+        $service_user = be::get_admin_service('user');
+        if ($service_user->unblock($ids)) {
             $this->set_message('启用用户账号成功！');
             system_log('启用用户账号：#'.$ids);
         }
         else
-            $this->set_message($model_user->get_error(), 'error');
+            $this->set_message($service_user->get_error(), 'error');
         
 		$lib_history = be::get_lib('history');
 		$lib_history->back();
@@ -307,13 +308,13 @@ class admin_user extends \admin\system\controller
     {
         $ids = request::post('id', '');
         
-        $model_user = be::get_admin_model('user');
-        if ($model_user->block($ids)) {
+        $service_user = be::get_admin_service('user');
+        if ($service_user->block($ids)) {
             $this->set_message('屏蔽用户账号成功！');
             system_log('屏蔽用户账号：#'.$ids);
         }
         else
-            $this->set_message($model_user->get_error(), 'error');
+            $this->set_message($service_user->get_error(), 'error');
         
 		$lib_history = be::get_lib('history');
 		$lib_history->back();
@@ -323,18 +324,18 @@ class admin_user extends \admin\system\controller
     {
         $user_id = request::get('user_id', 0, 'int');
         
-        $admin_model_user = be::get_admin_model('user');
+        $admin_model_user = be::get_admin_service('user');
         if ($admin_model_user->init_avatar($user_id)) {
             system_log('删除 #'.$user_id.' 用户头像');
             
-            $this->set('error', 0);
-            $this->set('message', '删除头像成功！');
+            response::set('error', 0);
+            response::set('message', '删除头像成功！');
         } else {
-            $this->set('error', 2);
-            $this->set('message', $admin_model_user->get_error());
+            response::set('error', 2);
+            response::set('message', $admin_model_user->get_error());
         }
         
-        $this->ajax();
+        response::ajax();
 
     }
 
@@ -342,7 +343,7 @@ class admin_user extends \admin\system\controller
     {
         $ids = request::post('id', '');
         
-        $admin_model_user = be::get_admin_model('user');
+        $admin_model_user = be::get_admin_service('user');
         if ($admin_model_user->delete($ids)) {
             $this->set_message('删除用户账号成功！');
             system_log('删除用户账号：#'.$ids);
@@ -357,7 +358,7 @@ class admin_user extends \admin\system\controller
 
 	public function groups()
 	{
-		$admin_model_user = be::get_admin_model('user');
+		$admin_model_user = be::get_admin_service('user');
 		$admin_groups = $admin_model_user->get_admin_groups();
 
 		foreach ($admin_groups as $group) {
@@ -407,25 +408,25 @@ class admin_user extends \admin\system\controller
 	{
 		$group_id = request::post('id', 0, 'int');
 		if ($group_id == 0) {
-			$this->set('error', 1);
-			$this->set('message', '参数(group_id)缺失！');
-			$this->ajax();
+			response::set('error', 1);
+			response::set('message', '参数(group_id)缺失！');
+			response::ajax();
 		}
 
 		$row_user_admin_group = be::get_row('user_admin_group');
 		$row_user_admin_group->load($group_id);
 		if ($row_user_admin_group->id == 0) {
-			$this->set('error', 2);
-			$this->set('message', '不存在的分组');
-			$this->ajax();
+			response::set('error', 2);
+			response::set('message', '不存在的分组');
+			response::ajax();
 		}
 
-		$admin_model_user = be::get_admin_model('user');
+		$admin_model_user = be::get_admin_service('user');
 		$user_count = $admin_model_user->get_user_count(array('admin_group_id'=>$group_id));
 		if ($user_count>0) {
-			$this->set('error', 3);
-			$this->set('message', '当前有'.$user_count.'个用户属于这个分组，禁止删除！');
-			$this->ajax();
+			response::set('error', 3);
+			response::set('message', '当前有'.$user_count.'个用户属于这个分组，禁止删除！');
+			response::ajax();
 		}
 
 		$row_user_admin_group->delete();
@@ -434,9 +435,9 @@ class admin_user extends \admin\system\controller
 
 		system_log('删除后台用户组：'.$row_user_admin_group->name);
 
-		$this->set('error', 0);
-		$this->set('message', '删除用户组成功！');
-		$this->ajax();
+		response::set('error', 0);
+		response::set('message', '删除用户组成功！');
+		response::ajax();
 	}
 
 	public function group_permissions()
@@ -448,7 +449,7 @@ class admin_user extends \admin\system\controller
 		$row_user_admin_group->load($group_id);
 		if ($row_user_admin_group->id == 0) be_exit('不存在的分组！');
 
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$apps = $admin_model_system->get_apps();
 
 		$template = be::get_admin_template('user.admin_group_permissions');
@@ -489,7 +490,7 @@ class admin_user extends \admin\system\controller
 
 	private function update_admin_config_user_group()
 	{
-		$admin_model_user = be::get_admin_model('user');
+		$admin_model_user = be::get_admin_service('user');
 		$admin_groups = $admin_model_user->get_admin_groups();
 
 		$names = array();
@@ -521,8 +522,8 @@ class admin_user extends \admin\system\controller
 			}
 		}
 
-		$model_system = be::get_admin_model('system');
-		$model_system->save_config_file($admin_config_user_group, PATH_ADMIN.DS.'configs'.DS.'user_group.php');
+		$service_system = be::get_admin_service('system');
+		$service_system->save_config_file($admin_config_user_group, PATH_ADMIN.DS.'configs'.DS.'user_group.php');
 	}
 
 	
@@ -544,13 +545,13 @@ class admin_user extends \admin\system\controller
 			'success'=>$success
 		);
 
-        $model_user = be::get_admin_model('user');
+        $service_user = be::get_admin_service('user');
         $template = be::get_admin_template('user.logs');
         $template->set_title('后台登陆日志');
 
         $pagination = be::get_admin_ui('pagination');
         $pagination->set_limit($limit);
-        $pagination->set_total($model_user->get_log_count($option));
+        $pagination->set_total($service_user->get_log_count($option));
         $pagination->set_page(request::post('page', 1, 'int'));
 
 		$option['offset'] = $pagination->get_offset();
@@ -559,7 +560,7 @@ class admin_user extends \admin\system\controller
         $template->set('pagination', $pagination);
         $template->set('key', $key);
         $template->set('success', $success);
-        $template->set('logs', $model_user->get_logs($option));
+        $template->set('logs', $service_user->get_logs($option));
         
         $template->display();
     }
@@ -567,14 +568,14 @@ class admin_user extends \admin\system\controller
 	// 后台登陆日志
     public function ajax_delete_logs()
     {
-        $admin_model_user = be::get_admin_model('user');
+        $admin_model_user = be::get_admin_service('user');
         $admin_model_user->delete_logs();
 
 		system_log('删除后台用户登陆日志');
 
-		$this->set('error', 0);
-		$this->set('message', '删除后台用户登陆日志成功！');
-		$this->ajax();
+		response::set('error', 0);
+		response::set('message', '删除后台用户登陆日志成功！');
+		response::ajax();
     }
 
 
@@ -656,8 +657,8 @@ class admin_user extends \admin\system\controller
 			}
 		}
 
-		$model_system = be::get_admin_model('system');
-		$model_system->save_config_file($config_user, PATH_ROOT.DS.'configs'.DS.'user.php');
+		$service_system = be::get_admin_service('system');
+		$service_system->save_config_file($config_user, PATH_ROOT.DS.'configs'.DS.'user.php');
 		
 		system_log('设置用户系统参数');
 		

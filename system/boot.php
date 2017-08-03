@@ -1,7 +1,7 @@
 <?php
-use \system\be;
-use \system\request;
-use \system\response;
+use system\be;
+use system\request;
+use system\response;
 
 require PATH_ROOT . DS . 'system' . DS . 'loader.php';
 spl_autoload_register(array('\\system\\loader', 'autoload'));
@@ -19,7 +19,7 @@ try {
 
     $my = be::get_user();
     if (!isset($my->id) || $my->id == 0) {
-        $model = be::get_model('user');
+        $model = be::get_service('user');
         $model->remember_me();
     }
 

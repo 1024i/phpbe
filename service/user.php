@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+namespace service;
 
 use system\be;
 use system\db;

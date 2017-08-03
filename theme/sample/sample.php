@@ -1,6 +1,6 @@
 <?php
-use \system\be;
-use \system\request;
+use system\be;
+use system\request;
 
 $config = be::get_config('system');
 ?>

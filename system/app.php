@@ -118,7 +118,7 @@ abstract class app
 
 		$info->total = count($rows);
 
-		$system_tables = db::get_results('SHOW TABLES');
+		$system_tables = db::get_values('SHOW TABLES');
 
 		$created = 0;
 		foreach ($rows as $row) {
@@ -140,7 +140,7 @@ abstract class app
 
 		if (!is_array($rows)) return false;
 
-		$system_tables = db::get_results('SHOW TABLES');
+		$system_tables = db::get_values('SHOW TABLES');
 
 		$created = 0;
 		foreach ($rows as $row) {

@@ -30,7 +30,7 @@
 	   void set_duality(bool set);	   
 
 	   void send_text(string text);
-	   mixed get_result(void);
+	   mixed get_value(void);
 	   mixed get_tops([int limit [, string attr]]);
 
 	   string version(void);
@@ -197,7 +197,7 @@ class PSCWS4
 	}
 
 	// 取回一批分词结果(需要多次调用, 直到返回 false)
-	function get_result()
+	function get_value()
 	{
 		$off = $this->_off;
 		$len = $this->_len;
@@ -284,7 +284,7 @@ class PSCWS4
 		// reutrn the result
 		$this->_off = ($ch > $len ? $len : $off);
 		if (count($this->_res) == 0)
-			return $this->get_result();
+			return $this->get_value();
 
 		return $this->_res;
 	}
@@ -313,7 +313,7 @@ class PSCWS4
 		$this->_off = $cnt = 0;
 		$list = array();
 
-		while ($tmpa = $this->get_result())
+		while ($tmpa = $this->get_value())
 		{
 			foreach ($tmpa as $tmp) {
 				if ($tmp['idf'] < 0.2 || substr($tmp['attr'], 0, 1) == '#') continue;

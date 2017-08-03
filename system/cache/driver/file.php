@@ -99,7 +99,7 @@ class file extends \system\cache\driver
     public function set_multi($values, $expire = 0)
     {
         foreach ($values as $key => $value) {
-            $this->set($key, $value, $expire);
+            response::set($key, $value, $expire);
         }
         return true;
     }

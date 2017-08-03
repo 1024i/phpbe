@@ -1,9 +1,9 @@
 <?php
 namespace admin\system;
 
-use \system\be;
-use \system\request;
-use \system\response;
+use system\be;
+use system\request;
+use system\response;
 
 class controller extends \system\controller
 {

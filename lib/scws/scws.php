@@ -68,9 +68,9 @@ class scws extends \system\lib
 	}
 
 	// 取回一批分词结果(需要多次调用, 直到返回 false)
-	public function get_result()
+	public function get_value()
 	{
-		return $this->handler->get_result();
+		return $this->handler->get_value();
 	}
 
 	// 取回频率和权重综合最大的前 N 个词

@@ -1,9 +1,9 @@
 <?php
 namespace controller;
 
-use \system\be;
-use \system\request;
-use \system\response;
+use system\be;
+use system\request;
+use system\response;
 
 class user_auth extends \system\controller
 {

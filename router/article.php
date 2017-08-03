@@ -1,7 +1,7 @@
 <?php
 namespace router;
 
-use \system\be;
+use system\be;
 
 class article extends \system\router
 {

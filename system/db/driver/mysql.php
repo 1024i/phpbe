@@ -1,26 +1,27 @@
 <?php
 
-namespace system\db;
+namespace system\db\driver;
 
 use system\be;
-use system\cache;
+use system\db\driver;
+use system\db\exception;
 
 /**
  * 数据库类
  */
-class mysql
+class mysql extends driver
 {
-    private static $errors = array(); // 保存错误信息
+    private $errors = array(); // 保存错误信息
 
     /**
      * @var \PDO
      */
-    private static $connection = null; // 数据库连接
+    private $connection = null; // 数据库连接
 
     /**
      * @var \PDOStatement
      */
-    private static $statement = null; // 预编译 sql
+    private $statement = null; // 预编译 sql
 
     /**
      * 连接数据库
@@ -28,7 +29,7 @@ class mysql
      * @return bool 是否连接成功
      * @throws
      */
-    public static function connect()
+    public function connect()
     {
         $config = be::get_config('db');
         $connection = new \PDO('mysql:dbname=' . $config->name . ';host=' . $config->host . ';port=' . $config->port . ';charset=utf8', $config->user, $config->pass);
@@ -37,12 +38,8 @@ class mysql
         // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
         $connection->query('SET NAMES utf8');
 
-        self::$connection = $connection;
+        $this->connection = $connection;
         return true;
-    }
-
-    public static function toggle($key) {
-
     }
 
     /**
@@ -50,9 +47,9 @@ class mysql
      *
      * @return bool 是否关闭成功
      */
-    public static function close()
+    public function close()
     {
-        if (self::$connection) self::$connection = null;
+        if ($this->connection) $this->connection = null;
         return true;
     }
 
@@ -63,17 +60,17 @@ class mysql
      * @return \PDOStatement SQL预编译结果对象
      * @throws
      */
-    public static function prepare($sql, array $driver_options = array())
+    public function prepare($sql, array $driver_options = array())
     {
-        if (!isset(self::$connection)) self::connect();
+        if (!isset($this->connection)) $this->connect();
 
-        $statement = self::$connection->prepare($sql, $driver_options);
+        $statement = $this->connection->prepare($sql, $driver_options);
         if (!$statement) {
             throw new exception($statement->errorCode() . '：' . $statement->errorInfo() . ' SQL=' . $sql);
         }
 
-        self::$statement = $statement;
-        return self::$statement;
+        $this->statement = $statement;
+        return $this->statement;
     }
 
     /**
@@ -84,38 +81,38 @@ class mysql
      * @return bool 执行成功/执行失败
      * @throws
      */
-    public static function execute($sql = null, $bind = array())
+    public function execute($sql = null, $bind = array())
     {
         if ($sql === null) {
-            if (self::$statement == null) {
-                self::set_error('没有预编译SQL！');
+            if ($this->statement == null) {
+                $this->set_error('没有预编译SQL！');
                 return false;
             }
 
-            if (!self::$statement->execute($bind)) {
-                $error = self::$statement->errorInfo();
+            if (!$this->statement->execute($bind)) {
+                $error = $this->statement->errorInfo();
                 //print_r($error);
                 throw new exception($error[1] . '：' . $error[2]);
             }
 
             return true;
         } else {
-            self::free();
+            $this->free();
 
             if (count($bind) > 0) {
-                self::prepare($sql);
-                return self::execute(null, $bind);
+                $this->prepare($sql);
+                return $this->execute(null, $bind);
             } else {
-                if (!isset(self::$connection)) self::connect();
-                if (!isset(self::$connection)) return false;
+                if (!isset($this->connection)) $this->connect();
+                if (!isset($this->connection)) return false;
 
-                $statement = self::$connection->query($sql);
+                $statement = $this->connection->query($sql);
                 if ($statement === false) {
-                    $error = self::$connection->errorInfo();
+                    $error = $this->connection->errorInfo();
                     // print_r($error);
                     throw new exception($error[1] . '：' . $error[2] . ' SQL=' . $sql);
                 }
-                self::$statement = $statement;
+                $this->statement = $statement;
 
                 return true;
             }
@@ -127,9 +124,9 @@ class mysql
      *
      * @return \PDOStatement
      */
-    public static function get_statement()
+    public function get_statement()
     {
-        return self::$statement;
+        return $this->statement;
     }
 
     /**
@@ -137,10 +134,10 @@ class mysql
      *
      * @return bool 是否释放成功
      */
-    public static function free()
+    public function free()
     {
-        if (self::$statement) self::$statement->closeCursor();
-        self::$statement = null;
+        if ($this->statement) $this->statement->closeCursor();
+        $this->statement = null;
         return true;
     }
 
@@ -148,13 +145,13 @@ class mysql
      * 最后一次查询影响到的记录条数
      * @return int | bool 条数/失败
      */
-    public static function row_count()
+    public function row_count()
     {
-        if (self::$statement == null) {
-            self::set_error('没有预编译SQL！');
+        if ($this->statement == null) {
+            $this->set_error('没有预编译SQL！');
             return false;
         }
-        return self::$statement->rowCount();
+        return $this->statement->rowCount();
     }
 
     /**
@@ -164,11 +161,11 @@ class mysql
      * @param array $bind 参数
      * @return string | false
      */
-    public static function get_value($sql = null, $bind = array())
+    public function get_value($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $row = self::$statement->fetch(\PDO::FETCH_NUM);
+        if ($this->execute($sql, $bind)) {
+            $row = $this->statement->fetch(\PDO::FETCH_NUM);
             if ($row) $result = $row[0];
         }
 
@@ -182,11 +179,11 @@ class mysql
      * @param array $bind 参数
      * @return array | false
      */
-    public static function get_values($sql = null, $bind = array())
+    public function get_values($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetchAll(\PDO::FETCH_COLUMN);
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetchAll(\PDO::FETCH_COLUMN);
         }
 
         return $result;
@@ -199,10 +196,10 @@ class mysql
      * @param array $bind 参数
      * @return void
      */
-    public static function get_yield_values($sql = null, $bind = array())
+    public function get_yield_values($sql = null, $bind = array())
     {
-        if (self::execute($sql, $bind)) {
-            while ($row = self::$statement->fetch(\PDO::FETCH_NUM)) {
+        if ($this->execute($sql, $bind)) {
+            while ($row = $this->statement->fetch(\PDO::FETCH_NUM)) {
                 yield $row[0];
             }
         }
@@ -216,11 +213,11 @@ class mysql
      * @param array $bind 参数
      * @return array | false
      */
-    public static function get_key_values($sql = null, $bind = array())
+    public function get_key_values($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
         }
 
         return $result;
@@ -233,11 +230,11 @@ class mysql
      * @param array $bind 参数
      * @return array | false
      */
-    public static function get_array($sql = null, $bind = array())
+    public function get_array($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetch(\PDO::FETCH_ASSOC);
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetch(\PDO::FETCH_ASSOC);
         }
 
         return $result;
@@ -250,11 +247,11 @@ class mysql
      * @param array $bind 参数
      * @return array | false
      */
-    public static function get_arrays($sql = null, $bind = array())
+    public function get_arrays($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetchAll(\PDO::FETCH_ASSOC);
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         return $result;
@@ -267,10 +264,10 @@ class mysql
      * @param array $bind 参数
      * @return void
      */
-    public static function get_yield_arrays($sql = null, $bind = array())
+    public function get_yield_arrays($sql = null, $bind = array())
     {
-        if (self::execute($sql, $bind)) {
-            while ($result = self::$statement->fetch(\PDO::FETCH_ASSOC)) {
+        if ($this->execute($sql, $bind)) {
+            while ($result = $this->statement->fetch(\PDO::FETCH_ASSOC)) {
                 yield $result;
             }
         }
@@ -284,11 +281,11 @@ class mysql
      * @param string $key 作为下标索引的字段名
      * @return array | false
      */
-    public static function get_key_arrays($sql = null, $bind = array(), $key)
+    public function get_key_arrays($sql = null, $bind = array(), $key)
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $arrays = self::$statement->fetchAll(\PDO::FETCH_ASSOC);
+        if ($this->execute($sql, $bind)) {
+            $arrays = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
 
             $result = [];
             foreach ($arrays as $array) {
@@ -306,11 +303,11 @@ class mysql
      * @param array $bind 参数
      * @return object | false
      */
-    public static function get_object($sql = null, $bind = array())
+    public function get_object($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetchObject();
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetchObject();
         }
 
         return $result;
@@ -323,11 +320,11 @@ class mysql
      * @param array $bind 参数
      * @return array(object) | false
      */
-    public static function get_objects($sql = null, $bind = array())
+    public function get_objects($sql = null, $bind = array())
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $result = self::$statement->fetchAll(\PDO::FETCH_OBJ);
+        if ($this->execute($sql, $bind)) {
+            $result = $this->statement->fetchAll(\PDO::FETCH_OBJ);
         }
 
         return $result;
@@ -340,10 +337,10 @@ class mysql
      * @param array $bind 参数
      * @return void
      */
-    public static function get_yield_objects($sql = null, $bind = array())
+    public function get_yield_objects($sql = null, $bind = array())
     {
-        if (self::execute($sql, $bind)) {
-            while ($result = self::$statement->fetchObject()) {
+        if ($this->execute($sql, $bind)) {
+            while ($result = $this->statement->fetchObject()) {
                 yield $result;
             }
         }
@@ -357,11 +354,11 @@ class mysql
      * @param string $key 作为下标索引的字段名
      * @return array(object) | false
      */
-    public static function get_key_objects($sql = null, $bind = array(), $key)
+    public function get_key_objects($sql = null, $bind = array(), $key)
     {
         $result = false;
-        if (self::execute($sql, $bind)) {
-            $objects = self::$statement->fetchAll(\PDO::FETCH_OBJ);
+        if ($this->execute($sql, $bind)) {
+            $objects = $this->statement->fetchAll(\PDO::FETCH_OBJ);
             $result = [];
             foreach ($objects as $object) {
                 $result[$object->$key] = $object;
@@ -378,22 +375,22 @@ class mysql
      * @param object /array(object) $obj 要插入数据库的对象或对象数组，对象属性需要和该表字段一致
      * @return bool
      */
-    public static function insert($table, $obj)
+    public function insert($table, $obj)
     {
         // 批量插入
         if (is_array($obj)) {
             $vars = get_object_vars($obj[0]);
             $sql = 'INSERT INTO `' . $table . '`(`' . implode('`,`', array_keys($vars)) . '`) VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-            self::prepare($sql);
+            $this->prepare($sql);
             foreach ($obj as $o) {
                 $vars = get_object_vars($o);
-                self::execute(null, array_values($vars));
+                $this->execute(null, array_values($vars));
             }
             return true;
         } else {
             $vars = get_object_vars($obj);
             $sql = 'INSERT INTO `' . $table . '`(`' . implode('`,`', array_keys($vars)) . '`) VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-            if (!self::execute($sql, array_values($vars))) return false;
+            if (!$this->execute($sql, array_values($vars))) return false;
             return true;
         }
     }
@@ -406,7 +403,7 @@ class mysql
      * @param string $primary_key 主键
      * @return bool
      */
-    public static function update($table, $obj, $primary_key)
+    public function update($table, $obj, $primary_key)
     {
         $fields = array();
         $field_values = array();
@@ -434,14 +431,14 @@ class mysql
         }
 
         if ($where == null) {
-            self::set_error('更新数据时未指定条件！');
+            $this->set_error('更新数据时未指定条件！');
             return false;
         }
 
         $sql = 'UPDATE `' . $table . '` SET `' . implode('`,`', $fields) . '` WHERE ' . $where;
         $field_values[] = $where_value;
 
-        return self::execute($sql, $field_values);
+        return $this->execute($sql, $field_values);
     }
 
     /**
@@ -450,11 +447,11 @@ class mysql
      * @param string $string 字符串
      * @return string
      */
-    public static function quote($string)
+    public function quote($string)
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return $string;
-        return self::$connection->quote($string);
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return $string;
+        return $this->connection->quote($string);
     }
 
     /**
@@ -462,16 +459,16 @@ class mysql
      *
      * @return int
      */
-    public static function get_insert_id()
+    public function get_insert_id()
     {
-        return self::get_last_insert_id();
+        return $this->get_last_insert_id();
     }
 
-    public static function get_last_insert_id()
+    public function get_last_insert_id()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return false;
-        return self::$connection->lastInsertId();
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return false;
+        return $this->connection->lastInsertId();
     }
 
     /**
@@ -479,9 +476,9 @@ class mysql
      *
      * @return array
      */
-    public static function get_tables()
+    public function get_tables()
     {
-        return self::get_objects('SHOW TABLES');
+        return $this->get_objects('SHOW TABLES');
     }
 
     /**
@@ -490,9 +487,9 @@ class mysql
      * @param string $table 表名
      * @return array
      */
-    public static function get_table_fields($table)
+    public function get_table_fields($table)
     {
-        $fields = self::get_objects('SHOW FIELDS FROM `' . $table . '`');
+        $fields = $this->get_objects('SHOW FIELDS FROM `' . $table . '`');
 
         $data = array();
         foreach ($fields as $field) {
@@ -507,9 +504,9 @@ class mysql
      * @param string $table 表名
      * @return bool
      */
-    public static function drop_table($table)
+    public function drop_table($table)
     {
-        return self::execute('DROP TABLE IF EXISTS `' . $table .'`');
+        return $this->execute('DROP TABLE IF EXISTS `' . $table .'`');
     }
 
     /**
@@ -517,16 +514,16 @@ class mysql
      *
      * @return bool
      */
-    public static function start_transaction()
+    public function start_transaction()
     {
-        return self::begin_transaction();
+        return $this->begin_transaction();
     }
 
-    public static function begin_transaction()
+    public function begin_transaction()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return false;
-        return self::$connection->beginTransaction();
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return false;
+        return $this->connection->beginTransaction();
     }
 
     /**
@@ -534,11 +531,11 @@ class mysql
      *
      * @return bool
      */
-    public static function rollback()
+    public function rollback()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return false;
-        return self::$connection->rollBack();
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return false;
+        return $this->connection->rollBack();
     }
 
     /**
@@ -546,11 +543,11 @@ class mysql
      *
      * @return bool
      */
-    public static function commit()
+    public function commit()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return false;
-        return self::$connection->commit();
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return false;
+        return $this->connection->commit();
     }
 
     /**
@@ -558,11 +555,11 @@ class mysql
      *
      * @return bool
      */
-    public static function in_transaction()
+    public function in_transaction()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return false;
-        return self::$connection->inTransaction();
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return false;
+        return $this->connection->inTransaction();
     }
 
     /**
@@ -570,10 +567,10 @@ class mysql
      *
      * @return \PDO
      */
-    public static function get_connection()
+    public function get_connection()
     {
-        if (!isset(self::$connection)) self::connect();
-        return self::$connection;
+        if (!isset($this->connection)) $this->connect();
+        return $this->connection;
     }
 
     /**
@@ -581,38 +578,38 @@ class mysql
      *
      * @return string
      */
-    public static function get_version()
+    public function get_version()
     {
-        if (!isset(self::$connection)) self::connect();
-        if (!isset(self::$connection)) return '';
-        return self::$connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
+        if (!isset($this->connection)) $this->connect();
+        if (!isset($this->connection)) return '';
+        return $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
     }
 
-    public static function set_error($error)
+    public function set_error($error)
     {
-        self::$errors[] = $error;
+        $this->errors[] = $error;
     }
 
-    public static function get_error()
+    public function get_error()
     {
-        if (count(self::$errors) > 0) {
-            return self::$errors[0];
+        if (count($this->errors) > 0) {
+            return $this->errors[0];
         }
         return false;
     }
 
     public function get_errors()
     {
-        return self::$errors;
+        return $this->errors;
     }
 
-    public static function has_error()
+    public function has_error()
     {
-        return count(self::$errors) > 0 ? true : false;
+        return count($this->errors) > 0 ? true : false;
     }
 
-    public static function clear_errors()
+    public function clear_errors()
     {
-        self::$errors = array();
+        $this->errors = array();
     }
 }

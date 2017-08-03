@@ -2,10 +2,10 @@
 
 namespace admin\model;
 
-use \system\be;
-use \system\db;
+use system\be;
+use system\db;
 
-class menu extends \system\model
+class menu extends \system\service
 {
 
     /**
@@ -47,7 +47,7 @@ class menu extends \system\model
     // 获取菜单组中总数
     public function get_menu_group_sum()
     {
-        return db::get_result('SELECT COUNT(*) FROM `be_system_menu_group`');
+        return db::get_value('SELECT COUNT(*) FROM `be_system_menu_group`');
     }
 
 

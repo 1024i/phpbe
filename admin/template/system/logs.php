@@ -54,7 +54,7 @@ class logs extends \admin\theme
 		);
 
 		$lib_ip = null;
-		$admin_model_system = be::get_admin_model('system');
+		$admin_model_system = be::get_admin_service('system');
 		$language = $admin_model_system->get_language();
 		if ($language == 'zh_cn') {
 			$lib_ip = be::get_lib('ip');

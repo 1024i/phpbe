@@ -19,7 +19,7 @@ class system_announcement extends \admin\controller
 			$limit = $admin_config_system->limit;
 		}
 		
-		$admin_model_system_announcement = be::get_admin_model('system_announcement');
+		$admin_model_system_announcement = be::get_admin_service('system_announcement');
 		$template = be::get_admin_template('system_announcement.announcements');
         $template->set_title('公告');
 
@@ -104,7 +104,7 @@ class system_announcement extends \admin\controller
 	{
         $ids = request::post('id', '');
         
-        $admin_model_system_announcement = be::get_admin_model('system_announcement');
+        $admin_model_system_announcement = be::get_admin_service('system_announcement');
         if ($admin_model_system_announcement->unblock($ids)) {
             $this->set_message('公开公告成功！');
             system_log('公开公告：#'.$ids);
@@ -120,7 +120,7 @@ class system_announcement extends \admin\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_announcement = be::get_admin_model('system_announcement');
+        $admin_model_system_announcement = be::get_admin_service('system_announcement');
         if ($admin_model_system_announcement->block($ids)) {
             $this->set_message('屏蔽公告成功！');
             system_log('屏蔽公告：'.$ids);
@@ -136,7 +136,7 @@ class system_announcement extends \admin\controller
 	{
         $ids = request::post('id', '');
 
-        $admin_model_system_announcement = be::get_admin_model('system_announcement');
+        $admin_model_system_announcement = be::get_admin_service('system_announcement');
         if ($admin_model_system_announcement->delete($ids)) {
             $this->set_message('删除公告成功！');
             system_log('删除公告：'.$ids);

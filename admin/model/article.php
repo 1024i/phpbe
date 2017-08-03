@@ -1,10 +1,10 @@
 <?php
 namespace admin\model;
 
-use \system\be;
-use \system\db;
+use system\be;
+use system\db;
 
-class article extends \system\model
+class article extends \system\service
 {
 
     public function get_articles($option=array())
@@ -34,7 +34,7 @@ class article extends \system\model
     public function get_article_count($option=array())
     {
         $sql = 'SELECT COUNT(*) FROM `be_article` WHERE 1'. $this->create_article_sql($option);
-        return db::get_result($sql);
+        return db::get_value($sql);
     }
 
 	private function create_article_sql($option=array())
@@ -45,8 +45,8 @@ class article extends \system\model
 			if ($option['category_id'] == 0)
 				$sql .= ' AND `category_id`=0';
 			elseif ($option['category_id'] > 0) {
-				$model_article = be::get_model('article');
-				$ids = $model_article->get_sub_category_ids($option['category_id']);
+				$service_article = be::get_service('article');
+				$ids = $service_article->get_sub_category_ids($option['category_id']);
 				if (count($ids) > 0) {
 					$ids[] = $option['category_id'];
 					$sql .= ' AND `category_id` IN(' . implode(',', $ids) . ')';
@@ -128,7 +128,7 @@ class article extends \system\model
     public function get_comment_count($option=array())
     {
         $sql = 'SELECT COUNT(*) FROM `be_article_comment` WHERE 1'. $this->create_comment_sql($option);
-        return db::get_result($sql);
+        return db::get_value($sql);
     }
 
 	private function create_comment_sql($option=array())

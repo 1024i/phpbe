@@ -1,10 +1,10 @@
 <?php
 namespace admin\model;
 
-use \system\be;
-use \system\db;
+use system\be;
+use system\db;
 
-class system extends \system\model
+class system extends \system\service
 {
 
 
@@ -125,7 +125,7 @@ class system extends \system\model
     public function get_log_count($option = array())
     {
         $query = 'SELECT COUNT(*) FROM `be_system_log` WHERE 1 ' . $this->create_log_sql($option);
-        return db::get_result($query);
+        return db::get_value($query);
     }
 
 	private function create_log_sql($option = array())
