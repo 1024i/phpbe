@@ -1,9 +1,12 @@
 <?php
 use system\be;
+?>
+
+<!--{head}-->
+<?php
 $config = be::get_config('system');
 $config_article = be::get_config('article');
 ?>
-<!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/article/css/bjqs.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/template/article/js/bjqs-1.3.min.js"></script>
 
@@ -97,7 +100,7 @@ foreach ($categories as $category) {
     ?>
     <div class="theme-box-container">
         <div class="theme-box">
-            <div class="theme-box-title"><?php echo $category->name; ?><a href="<?php echo url('controller=article&task=listing&category_id='.$category->id); ?>" class="more" style="float:right;">更多...</a></div>
+            <div class="theme-box-title"><?php echo $category->name; ?><a href="<?php echo url('controller=article&task=articles&category_id='.$category->id); ?>" class="more" style="float:right;">更多...</a></div>
             <div class="theme-box-body">
 
 

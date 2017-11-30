@@ -1,29 +1,21 @@
 <?php
-class template_user_forgot_password_reset extends theme
-{
+use system\be;
+use system\request;
+?>
 
-	protected function head()
-	{
-	parent::head();
-	?>
+<!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/user/css/forgot_password_reset.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/template/user/js/forgot_password_reset.js"></script>
-	<?php
-	}
+<!--{/head}-->
 
-	protected function middle($option=array())
-	{
-		parent::middle(array('west'=>0, 'east'=>0));  // 不需要左右边栏
-	}
-	
-	protected function center()
-	{
-		$user = $this->get('user');
-		?>
-<?php $this->center_box_head(); ?>
+<!--{middle}-->
+<!--{center}-->
+<?php
+$user = $this->user;
+?>
 <div class="theme-box-container">
 	<div class="theme-box">
-		<div class="theme-box-title"><?php echo $this->get_title(); ?></div>
+		<div class="theme-box-title"><?php echo $this->title; ?></div>
 		<div class="theme-box-body">
 			<form id="form-forgot_password_reset">
 		
@@ -80,10 +72,5 @@ class template_user_forgot_password_reset extends theme
 		</div>
 	</div>
 </div>
-<?php $this->center_box_foot(); ?>
-		<?php
-	}		
-		
-
-}
-?>
+<!--{/center}-->
+<!--{/middle}-->

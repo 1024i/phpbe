@@ -1,28 +1,9 @@
-<?php
-class template_user_login extends theme
-{
-	
-	protected function head()
-	{
-	parent::head();
-	?>
+<!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/user/css/login.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/template/user/js/login.js"></script>
-	<?php
-	}
-	
-	
-	protected function middle($option = array())
-	{
-		parent::middle(array('west'=>0, 'east'=>0));  // 不需要左右边栏
-	}
-	
+<!--{/head}-->
 
-	protected function center()
-	{
-		$config_user = be::get_config('user');
-		?>
-<?php $this->center_box_head(); ?>
+<!--{middle}-->
 <div class="theme-box-container">
 	<div class="theme-box">
 		<div class="theme-box-title"><?php echo $this->get_title(); ?></div>
@@ -123,10 +104,4 @@ class template_user_login extends theme
 		</div>
 	</div>
 </div>
-<?php $this->center_box_foot(); ?>
-		<?php
-	}		
-		
-
-}
-?>
+<!--{/head}-->

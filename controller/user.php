@@ -35,7 +35,7 @@ class user extends \system\controller
     public function captcha_login()
     {
 		$template = be::get_template('user.login');
-		$color = $template->get_color();
+		$color = response::get_color();
 
 		$lib_css = be::get_lib('css');
 		$rgb_color = $lib_css->hex_to_rgb($color);
@@ -201,7 +201,7 @@ class user extends \system\controller
     public function captcha_register()
     {
 		$template = be::get_template('user.register');
-		$color = $template->get_color();
+		$color = response::get_color();
 
 		$lib_css = be::get_lib('css');
 		$rgb_color = $lib_css->hex_to_rgb($color);

@@ -1,6 +1,7 @@
 <?php
 namespace system\session\driver;
 
+use system\response;
 
 /**
  * memcached session
@@ -23,7 +24,7 @@ class memcached extends \SessionHandler
 	 */
 	public function __construct($config_session)
 	{
-		if (!extension_loaded('memcached')) be_exit('SESSION 初始化失败：服务器未安装 memcached 扩展！');
+		if (!extension_loaded('memcached')) response::end('SESSION 初始化失败：服务器未安装 memcached 扩展！');
 
 		if (isset($config_session->memcached)) {
 			$this->options = $config_session->memcached;
@@ -41,7 +42,7 @@ class memcached extends \SessionHandler
 	public function open($save_path, $session_id) {
 		$options = $this->options;
 		if ($options === null) {
-			be_exit('SESSION 初始化失败：memcached 配置参数错误！');
+			response::end('SESSION 初始化失败：memcached 配置参数错误！');
 		} else {
 			$this->handler = new \Memcached;
 			$this->handler->addServers($options);

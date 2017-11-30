@@ -9,17 +9,24 @@ use system\be;
  */
 class driver
 {
-    private $errors = array(); // 保存错误信息
+    protected $errors = array(); // 保存错误信息
 
     /**
      * @var \PDO
      */
-    private $connection = null; // 数据库连接
+    protected $connection = null; // 数据库连接
 
     /**
      * @var \PDOStatement
      */
-    private $statement = null; // 预编译 sql
+    protected $statement = null; // 预编译 sql
+
+    protected $config = array();
+
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
 
     /**
      * 连接数据库
@@ -29,14 +36,6 @@ class driver
      */
     public function connect()
     {
-        $config = be::get_config('db');
-        $connection = new \PDO('mysql:dbname=' . $config->name . ';host=' . $config->host . ';port=' . $config->port . ';charset=utf8', $config->user, $config->pass);
-        if (!$connection) throw new exception('连接 数据库' . $config->name . '（' . $config->host . '） 失败！');
-
-        // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
-        $connection->query('SET NAMES utf8');
-
-        $this->connection = $connection;
         return true;
     }
 
@@ -378,7 +377,7 @@ class driver
         // 批量插入
         if (is_array($obj)) {
             $vars = get_object_vars($obj[0]);
-            $sql = 'INSERT INTO `' . $table . '`(`' . implode('`,`', array_keys($vars)) . '`) VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
+            $sql = 'INSERT INTO ' . $table . '(' . implode(',', array_keys($vars)) . ') VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
             $this->prepare($sql);
             foreach ($obj as $o) {
                 $vars = get_object_vars($o);
@@ -387,7 +386,7 @@ class driver
             return true;
         } else {
             $vars = get_object_vars($obj);
-            $sql = 'INSERT INTO `' . $table . '`(`' . implode('`,`', array_keys($vars)) . '`) VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
+            $sql = 'INSERT INTO ' . $table . '(' . implode(',', array_keys($vars)) . ') VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
             if (!$this->execute($sql, array_values($vars))) return false;
             return true;
         }
@@ -416,14 +415,14 @@ class driver
 
             // 主键不更新
             if ($key == $primary_key) {
-                $where = '`'. $key . '`=?';
+                $where = ''. $key . '=?';
                 $where_value = $value;
                 continue;
             }
             if ($value === null) {
                 continue;
             } else {
-                $fields[] = '`'. $key . '`=?';
+                $fields[] = ''. $key . '=?';
                 $field_values[] = $value;
             }
         }
@@ -433,7 +432,7 @@ class driver
             return false;
         }
 
-        $sql = 'UPDATE `' . $table . '` SET `' . implode('`,`', $fields) . '` WHERE ' . $where;
+        $sql = 'UPDATE ' . $table . ' SET ' . implode(',', $fields) . ' WHERE ' . $where;
         $field_values[] = $where_value;
 
         return $this->execute($sql, $field_values);
@@ -457,11 +456,6 @@ class driver
      *
      * @return int
      */
-    public function get_insert_id()
-    {
-        return $this->get_last_insert_id();
-    }
-
     public function get_last_insert_id()
     {
         if (!isset($this->connection)) $this->connect();
@@ -487,7 +481,7 @@ class driver
      */
     public function get_table_fields($table)
     {
-        $fields = $this->get_objects('SHOW FIELDS FROM `' . $table . '`');
+        $fields = $this->get_objects('SHOW FIELDS FROM ' . $table);
 
         $data = array();
         foreach ($fields as $field) {
@@ -504,7 +498,7 @@ class driver
      */
     public function drop_table($table)
     {
-        return $this->execute('DROP TABLE IF EXISTS `' . $table .'`');
+        return $this->execute('DROP TABLE IF EXISTS ' . $table);
     }
 
     /**

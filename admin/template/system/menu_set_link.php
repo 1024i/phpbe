@@ -1,29 +1,26 @@
 <?php
-namespace admin\template\system;
+use system\be;
+?>
 
-class menu_set_link extends \template
-{
+<!--{html}-->
+<?php
+$config = be::get_config('system');
+$apps = $this->get('apps');
 
+$url = $this->get('url');
 
-    public function display()
-    {
-        $config = be::get_config('system');
-		$apps = $this->get('apps');
-		
-		$url = $this->get('url');
-
-		$selected_app_name = '';
-		foreach ($apps as $app) {
-			$menus = $app->get_menus();
-			if (count($menus)>0) {
-				foreach ($menus as $menu) {
-					if ($menu['url'] == $url) {
-						$selected_app_name = $app->name;
-						break 2;
-					}
-				}
-			}
-		}
+$selected_app_name = '';
+foreach ($apps as $app) {
+    $menus = $app->get_menus();
+    if (count($menus)>0) {
+        foreach ($menus as $menu) {
+            if ($menu['url'] == $url) {
+                $selected_app_name = $app->name;
+                break 2;
+            }
+        }
+    }
+}
 ?>
 
 <div class="page_system_menu_set_link">
@@ -82,9 +79,4 @@ class menu_set_link extends \template
 </tr>
 </table>
 </div>
-
-<?php
-    }
-
-}
-?>
+<!--{/html}-->

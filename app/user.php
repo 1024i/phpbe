@@ -1,138 +1,142 @@
 <?php
+
 namespace app;
+
+use system\be;
 
 class user extends \system\app
 {
 
-	public function __construct()
-	{
-		parent::__construct(2, '用户', '1.0', 'template/user/images/user.gif');
-	}
+    public function __construct()
+    {
+        parent::__construct(2, '用户', '1.0', 'template/user/images/user.gif');
+    }
 
-	// 新建前台菜单时可用的链接项
+    // 新建前台菜单时可用的链接项
     public function get_menus()
     {
-		return array(
-			array(
-				'name'=>'登陆页面',
-				'url'=>'controller=user&task=login'
-			),
-			array(
-				'name'=>'注册页面',
-				'url'=>'controller=user&task=register'
-			),
-			array(
-				'name'=>'找回密码页面',
-				'url'=>'controller=user&task=forget_password'
-			)
-		);
+        return array(
+            array(
+                'name' => '登陆页面',
+                'url' => 'controller=user&task=login'
+            ),
+            array(
+                'name' => '注册页面',
+                'url' => 'controller=user&task=register'
+            ),
+            array(
+                'name' => '找回密码页面',
+                'url' => 'controller=user&task=forget_password'
+            )
+        );
     }
 
     public function get_admin_menus()
-	{
-		return array(
-			array(
-				'name'=>'用户列表',
-				'url'=>'./?controller=user&task=users',
-				'icon'=>'template/user/images/users.gif'
-			),
-			array(
-				'name'=>'用户组',
-				'url'=>'./?controller=user&task=groups',
-				'icon'=>'template/user/images/groups.png'
-			),
-			array(
-				'name'=>'设置',
-				'url'=>'./?controller=user&task=setting',
-				'icon'=>'template/user/images/setting.png'
-			)
-		);
-	}
+    {
+        return array(
+            array(
+                'name' => '用户列表',
+                'url' => './?controller=user&task=users',
+                'icon' => 'template/user/images/users.gif'
+            ),
+            array(
+                'name' => '用户角色',
+                'url' => './?controller=user&task=roles',
+                'icon' => 'template/user/images/roles.png'
+            ),
+            array(
+                'name' => '设置',
+                'url' => './?controller=user&task=setting',
+                'icon' => 'template/user/images/setting.png'
+            )
+        );
+    }
 
 
-	public function get_permission_maps()
-	{
-		return array(
-			'user.index'=>'-',
-			'user.login'=>'-',
-			'user.captcha_login'=>'-',
-			'user.login_check'=>'-',
-			'user.ajax_login_check'=>'-',
-			'user.qq_login'=>'-',
-			'user.qq_login_callback'=>'-',
-			'user.sina_login'=>'-',
-			'user.sina_login_callback'=>'-',
-            'user.register'=>'-',
-            'user.captcha_register'=>'-',
-            'user.ajax_register_save'=>'-',
-            'user.register_success'=>'-',
-            'user.forgot_password'=>'-',
-            'user.ajax_forgot_password_save'=>'-',
-            'user.forgot_password_reset'=>'-',
-            'user.ajax_forgot_password_reset_save'=>'-',
-            'user.logout'=>'-',
+    public function get_permissions()
+    {
+        return [
+            '-' => [
+                'user.index',
+                'user.login',
+                'user.captcha_login',
+                'user.login_check',
+                'user.ajax_login_check',
+                'user.qq_login',
+                'user.qq_login_callback',
+                'user.sina_login',
+                'user.sina_login_callback',
+                'user.register',
+                'user.captcha_register',
+                'user.ajax_register_save',
+                'user.register_success',
+                'user.forgot_password',
+                'user.ajax_forgot_password_save',
+                'user.forgot_password_reset',
+                'user.ajax_forgot_password_reset_save',
+                'user.logout',
 
-            'user_profile.home'=>'-',
-            'user_profile.edit_avatar'=>'-',
-            'user_profile.edit_avatar_save'=>'-',
-            'user_profile.init_avatar'=>'-',
-            'user_profile.edit'=>'-',
-            'user_profile.ajax_edit_save'=>'-',
-            'user_profile.edit_password'=>'-',
-            'user_profile.ajax_edit_password_save'=>'-',           
-		);
-	}
+                'user_profile.home',
+                'user_profile.edit_avatar',
+                'user_profile.edit_avatar_save',
+                'user_profile.init_avatar',
+                'user_profile.edit',
+                'user_profile.ajax_edit_save',
+                'user_profile.edit_password',
+                'user_profile.ajax_edit_password_save',
+            ]
+        ];
+    }
 
-	public function get_admin_permissions()
-	{
-		return array(
-			'users'=>'查看用户列表',
-			'edit'=>'添加/修改用户资料',
-			'delete'=>'删除用户',
-			'groups'=>'管理用户组及权限',
-            'setting'=>'设置用户系统参数',
-		);
-	}
-
-	public function get_admin_permission_maps()
-	{
-		return array(
-            'user.login'=>'-',
-            'user.ajax_login_check'=>'-',
-            'user.logout'=>'-',
-
-			'user.users'=>'users',
-			'user.edit'=>'edit',
-			'user.edit_save'=>'edit',
-            'user.check_username'=>'edit',
-            'user.check_email'=>'edit',
-			'user.unblock'=>'edit',
-			'user.block'=>'edit',
-            'user.ajax_init_avatar'=>'edit',
-			'user.delete'=>'delete',
-            
-            'user.groups'=>'groups',
-            'user.groups_save'=>'groups',
-            'user.ajax_group_set_default'=>'groups',
-            'user.ajax_group_delete'=>'groups',
-            'user.group_permissions'=>'groups',
-            'user.group_permissions_save'=>'groups',
-
-			'user.setting'=>'setting',
-			'user.setting_save'=>'setting'
-		);
-	}
-    
-
-	public function get_db_tables()
-	{
-		return array('be_user', 'be_user_admin_log') ;
-	}
+    public function get_admin_permissions()
+    {
+        return [
+            '-' => [
+                'user.login',
+                'user.ajax_login_check',
+                'user.logout',
+            ],
+            '查看用户列表' => [
+                'user.users',
+            ],
+            '添加/修改用户资料' => [
+                'user.edit',
+                'user.edit_save',
+                'user.check_username',
+                'user.check_email',
+                'user.unblock',
+                'user.block',
+                'user.ajax_init_avatar',
+            ],
+            '删除用户' => [
+                'user.delete',
+            ],
+            '管理用户组及权限' => [
+                'user.roles',
+                'user.roles_save',
+                'user.ajax_set_default_role',
+                'user.ajax_delete_role',
+                'user.role_permissions',
+                'user.role_permissions_save',
+            ],
+            '设置用户系统参数' => [
+                'user.setting',
+                'user.setting_save',
+            ],
+        ];
+    }
 
 
-	public function install_db()
-	{
-		db::execute('
+    public function get_db_tables()
+    {
+        return array('be_user', 'be_user_admin_log');
+    }
+
+
+    public function install_db()
+    {
+        $db = be::get_db();
+        $db->execute('
 CREATE TABLE IF NOT EXISTS `be_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(120) NOT NULL,
@@ -151,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `be_user` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 		');
 
-		db::execute('
+        $db->execute('
 CREATE TABLE IF NOT EXISTS `be_user_admin_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(120) NOT NULL,
@@ -164,13 +168,13 @@ CREATE TABLE IF NOT EXISTS `be_user_admin_log` (
 		');
 
 
-		db::execute("
+        $db->execute("
 INSERT INTO `be_user` (`id`, `username`, `password`, `key`, `avatar`, `avatar_s`, `avatar_l`, `email`, `name`, `is_admin`, `block`, `register_time`, `last_visit_time`) VALUES
 (1, 'admin', '52341be594af95eb94323a23ce48a010', '', 'template/user/images/avatar.png', 'template/user/images/avatar_s.png', 'template/user/images/avatar_l.png', '', '管理员', 1, 0, 946656000, 946656000);
 		");
 
 
-		db::execute("
+        $db->execute("
 CREATE TABLE IF NOT EXISTS `be_user_connect_qq` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -191,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `be_user_connect_qq` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 		");
 
-		db::execute("
+        $db->execute("
 CREATE TABLE IF NOT EXISTS `be_user_connect_sina` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -232,15 +236,15 @@ CREATE TABLE IF NOT EXISTS `be_user_connect_sina` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 		");
 
-	}
+    }
 
 
-
-	public function uninstall()
-	{
-		$this->set_error('系统基本应用，不可删除');
-		return false;
-	}
+    public function uninstall()
+    {
+        $this->set_error('系统基本应用，不可删除');
+        return false;
+    }
 
 }
+
 ?>

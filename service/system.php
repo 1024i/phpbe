@@ -17,18 +17,19 @@ class system extends \system\service
     public function clear_cache($dir = null, $file = null)
     {
         if ($dir === null) {
-            return $this->clear_cache('admin_template')
-                && $this->clear_cache('file')
+            return $this->clear_cache('file')
                 && $this->clear_cache('html')
                 && $this->clear_cache('menu')
-                && $this->clear_cache('role')
+                && $this->clear_cache('user_role')
+                && $this->clear_cache('admin_user_role')
                 && $this->clear_cache('row')
                 && $this->clear_cache('table')
-                && $this->clear_cache('template');
+                && $this->clear_cache('template')
+                && $this->clear_cache('admin_template');
         }
 
         $lib_fso = be::get_lib('fso');
-        if ($file === null) return $lib_fso->rm_dir(PATH_DATA . DS . 'cache' . DS . $dir);
+        if ($file === null) return $lib_fso->rm_dir(PATH_DATA . DS . 'system' . DS . 'cache' . DS . $dir);
         return $lib_fso->rm_dir(PATH_DATA . DS . 'system' . DS . 'cache' . DS . $dir . DS . $file);
     }
 
@@ -41,17 +42,17 @@ class system extends \system\service
     public function update_cache_row($name)
     {
         $row_name = $name;
-
-        if (!db::get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
+        $db = be::get_db();
+        if (!$db->get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
             $row_name = 'be_' . $row_name;
-            if (!db::get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
+            if (!$db->get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
                 $this->set_error('未找到名称为 ' . $name . ' 的数据库表！');
                 return false;
             }
         }
 
         $primary_key = 'id';
-        $fields = db::get_objects('SHOW FULL FIELDS FROM ' . $row_name);
+        $fields = $db->get_objects('SHOW FULL FIELDS FROM ' . $row_name);
 
         $code = '<?php' . "\n";
         $code .= 'namespace data\\system\\cache\\row;' . "\n";
@@ -113,16 +114,16 @@ class system extends \system\service
     public function update_cache_table($name)
     {
         $table_name = $name;
-
-        if (!db::get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
+        $db = be::get_db();
+        if (!$db->get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
             $table_name = 'be_' . $table_name;
-            if (!db::get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
+            if (!$db->get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
                 $this->set_error('未找到名称为 ' . $name . ' 的数据库表！');
                 return false;
             }
         }
 
-        $fields = db::get_objects('SHOW FULL FIELDS FROM ' . $table_name);
+        $fields = $db->get_objects('SHOW FULL FIELDS FROM ' . $table_name);
         $primary_key = 'id';
         $field_names = array();
         foreach ($fields as $field) {
@@ -169,7 +170,8 @@ class system extends \system\service
             return false;
         }
 
-        $menus = db::get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `rank` ASC');;
+        $db = be::get_db();
+        $menus = $db->get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `rank` ASC');;
 
         $code = '<?php' . "\n";
         $code .= 'namespace data\system\cache\menu;' . "\n";
@@ -227,31 +229,82 @@ class system extends \system\service
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        file_put_contents(PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $group->class_name . '.php', $code);
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $group->class_name . '.php';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $code, LOCK_EX);
+        chmod($path, 0755);
 
         return true;
     }
 
     /**
-     * 更新用户角色
+     * 更新前台用户角色
      *
      * @param int $role_id 用户角色ID
      * @return bool
      */
-    public function update_cache_role($role_id)
+    public function update_cache_user_role($role_id)
     {
-        $row = be::get_row('system_menu_group');
+        $row = be::get_row('user_role');
         $row->load($role_id);
         if (!$row->id) {
-            $this->set_error('未找到指定编号（#' . $role_id . '）的角色！');
+            $this->set_error('未找到指定编号（#' . $role_id . '）的用户角色！');
             return false;
         }
 
-        $model = be::get_admin_service('role');
-        if (!$model->update_cache($row->id)) {
-            $this->set_error($model->get_error());
+        $code = '<?php' . "\n";
+        $code .= 'namespace data\system\cache\user_role;' . "\n";
+        $code .= "\n";
+        $code .= 'class user_role_' . $role_id . ' extends \system\role' . "\n";
+        $code .= '{' . "\n";
+        $code .= '  public $name = \''.$row->name.'\';' . "\n";
+        $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
+        $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
+        $code .= '}' . "\n";
+
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'user_role' . DS . 'user_role_' . $role_id . '.php';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $code, LOCK_EX);
+        chmod($path, 0755);
+
+        return true;
+    }
+
+    /**
+     * 更新后台管理员角色
+     *
+     * @param int $role_id 管理员角色ID
+     * @return bool
+     */
+    public function update_cache_admin_user_role($role_id)
+    {
+        $row = be::get_row('admin_user_role');
+        $row->load($role_id);
+        if (!$row->id) {
+            $this->set_error('未找到指定编号（#' . $role_id . '）的管理员角色！');
             return false;
         }
+
+        $code = '<?php' . "\n";
+        $code .= 'namespace data\system\cache\admin_user_role;' . "\n";
+        $code .= "\n";
+        $code .= 'class admin_user_role_' . $role_id . ' extends \system\role' . "\n";
+        $code .= '{' . "\n";
+        $code .= '  public $name = \''.$row->name.'\';' . "\n";
+        $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
+        $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
+        $code .= '}' . "\n";
+
+        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $code, LOCK_EX);
+        chmod($path, 0755);
 
         return true;
     }
@@ -434,6 +487,19 @@ class system extends \system\service
             $namespace_suffix = '\\' . implode('\\', $templates);
         }
 
+        $code_vars = '';
+        $config_path = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . 'config.php';
+        if (file_exists($config_path)) {
+            include $config_path;
+            $theme_config_class_name = ($admin ? 'admin\\' : '') . 'theme\\' . $theme.'\\config';
+            if (class_exists($theme_config_class_name)) {
+                $theme_config = new $theme_config_class_name();
+                if (isset($theme_config->colors) && is_array($theme_config->colors)) {
+                    $code_vars .= '  public $colors = [\''.implode('\',\'', $theme_config->colors).'\'];' . "\n";
+                }
+            }
+        }
+
         $code_php = '<?php' . "\n";
         $code_php .= 'namespace data\\system\\cache\\' . ($admin ? 'admin_template' : 'template') . '\\' . $theme . $namespace_suffix . ';' . "\n";
         $code_php .= "\n";
@@ -441,6 +507,8 @@ class system extends \system\service
         $code_php .= "\n";
         $code_php .= 'class ' . $class_name . ' extends \\system\\template' . "\n";
         $code_php .= '{' . "\n";
+        $code_php .= $code_vars;
+        $code_php .= "\n";
         $code_php .= '  public function display()' . "\n";
         $code_php .= '  {' . "\n";
         $code_php .= $code_pre;
@@ -478,7 +546,7 @@ class system extends \system\service
      *
      * @return bool 是否保存成功
      */
-    public function save_config($config, $path)
+    public function update_config($config, $path)
     {
         $comments = array();
         if (file_exists($path)) {
@@ -508,8 +576,14 @@ class system extends \system\service
 
         $vars = get_object_vars($config);
 
+        $class = get_class($config);
+
+        $namespace = substr($class, 0, strrpos($class, '\\'));
+        $class_name = substr($class, strrpos($class, '\\') + 1);
+
         $buf = "<?php\n";
-        $buf .= 'class ' . get_class($config) . "\n";
+        $buf .= 'namespace '.$namespace.';'. "\n\n";
+        $buf .= 'class ' . $class_name . "\n";
         $buf .= "{\r\n";
 
         foreach ($vars as $key => $val) {
@@ -551,7 +625,6 @@ class system extends \system\service
             $buf .= "\n";
         }
         $buf .= "}\n";
-        $buf .= '?>';
 
         return file_put_contents($path, $buf);
     }

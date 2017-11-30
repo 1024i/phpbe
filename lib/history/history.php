@@ -2,7 +2,7 @@
 namespace lib\history;
 
 use system\session;
-use system\request\post;
+use system\request;
 
 /*
 @版本日期: 2013年12月20日
@@ -32,7 +32,7 @@ class history extends \system\lib
     public function save()
     {
         session::set('_history_url', $_SERVER['REQUEST_URI']);
-        session::set('_history_data_post', serialize(post::_()));
+        session::set('_history_data_post', serialize(request::post()));
     }
 
     // 返回保存的页面

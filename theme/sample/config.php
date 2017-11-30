@@ -18,7 +18,7 @@ class config
     public $author_email = 'lou@loubarnes.com'; // 作者邮箱
     public $author_website = 'http://www.1024i.com'; // 作者网站
 
-    protected $colors = array('#333333');
+    public $colors = array('#333333');
 
     /*
      * 缩略图文件路径

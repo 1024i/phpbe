@@ -157,7 +157,7 @@ class article extends \system\controller
         $row_article = be::get_row('article');
         $row_article->cache($config_article->cache_expire);
         $row_article->load($article_id);
-        $row_article->increment('hit', 1); // 点击量加 1
+        $row_article->increment('hits', 1); // 点击量加 1
 
         $service_article = be::get_service('article');
 
@@ -225,122 +225,6 @@ class article extends \system\controller
         response::set('hottest_articles', $hottest_articles);
         response::set('top_articles', $top_articles);
         response::set('comments', $comments);
-        response::display();
-    }
-
-    // 喜欢
-    public function ajax_like()
-    {
-        $article_id = request::get('article_id', 0, 'int');
-        if ($article_id == 0) {
-            response::error('参数(article_id)缺失！');
-        }
-
-        $service_article = be::get_service('article');
-        if (!$service_article->like($article_id)) {
-            response::error($service_article->get_error());
-        }
-
-        response::success('提交成功！');
-    }
-
-    // 不喜欢
-    public function ajax_dislike()
-    {
-        $article_id = request::get('article_id', 0, 'int');
-        if ($article_id == 0) {
-            response::error('参数(article_id)缺失！');
-        }
-
-        $service_article = be::get_service('article');
-        if (!$service_article->dislike($article_id)) {
-            response::error($service_article->get_error());
-        }
-
-        response::success('提交成功！');
-    }
-
-
-    public function ajax_comment()
-    {
-        $article_id = request::post('article_id', 0, 'int');
-        if ($article_id == 0) {
-            response::error('参数(article_id)缺失！');
-        }
-
-        $body = request::post('body', '');
-
-        $service_article = be::get_service('article');
-        if (!$service_article->comment($article_id, $body)) {
-            response::error($service_article->get_error());
-        }
-
-        response::success('提交成功！');
-    }
-
-    // 顶
-    public function ajax_comment_like()
-    {
-        $comment_id = request::get('comment_id', 0, 'int');
-        if ($comment_id == 0) {
-            response::error('参数(comment_id)缺失！');
-        }
-
-        $service_article = be::get_service('article');
-        if (!$service_article->comment_like($comment_id)) {
-            response::error($service_article->get_error());
-        }
-
-        response::success('提交成功！');
-    }
-
-    // 踩
-    public function ajax_comment_dislike()
-    {
-        $comment_id = request::get('comment_id', 0, 'int');
-        if ($comment_id == 0) {
-            response::error('参数(comment_id)缺失！');
-        }
-
-        $service_article = be::get_service('article');
-        if (!$service_article->comment_dislike($comment_id)) {
-            response::error($service_article->get_error());
-        }
-
-        response::success('提交成功！');
-    }
-
-    public function user()
-    {
-        $user_id = request::get('user_id', 0, 'int');
-        if ($user_id == 0) response::end('参数(user_id)缺失！');
-
-        $user = be::get_user($user_id);
-        if ($user->block == 1) response::end('该用户账号已被停用！');
-
-        $service_article = be::get_service('article');
-
-        $option = ['user_id' => $user_id, 'order_by' => 'create_time', 'order_by_dir' => 'DESC', 'limit' => 30];
-        $articles = $service_article->get_articles($option);
-        $article_count = $service_article->get_article_count($option);
-
-        $option = ['user_id' => $user_id, 'order_by' => 'create_time', 'order_by_dir' => 'DESC', 'limit' => 30];
-        $comments = $service_article->get_comments($option);
-        foreach ($comments as $comment) {
-            $row_article = be::get_row('article');
-            $row_article->load($comment->article_id);
-            $comment->article = $row_article;
-        }
-        $comment_count = $service_article->get_comment_count($option);
-
-        response::set_title($user->name . ' 的动态');
-        response::set_meta_keywords($user->name . ' 的动态');
-        response::set_meta_description($user->name . ' 的动态');
-        response::set('user', $user);
-        response::set('articles', $articles);
-        response::set('article_count', $article_count);
-        response::set('comments', $comments);
-        response::set('comment_count', $comment_count);
         response::display();
     }
 

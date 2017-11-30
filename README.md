@@ -2,7 +2,7 @@
 
 伪静态页配置：
 
-默认使用 Apache 栩置
+默认使用 Apache 配置
 将以下内容存为 .htaccess, 放在网站根目录下
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f

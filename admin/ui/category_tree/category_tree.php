@@ -1,7 +1,7 @@
 <?php
-namespace admin\ui;
+namespace admin\ui\category_tree;
 
-class category_tree extends \ui
+class category_tree extends \system\ui
 {
 	private $actions = array();
 

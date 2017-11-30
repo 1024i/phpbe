@@ -61,88 +61,70 @@ class article extends \system\app
 
 	public function get_permissions()
 	{
-		return array(
-			'home'=>array('查看文章系统首页','article.home'),
-			'articles'=>array('查看文章列表','article.articles'),
-			'detail'=>array('查看文章详情','article.detail'),
-
-			'vote'=>array(
-				'对文章内容表态（喜欢/不喜欢）',
-				array(
-					'article.ajax_like',
-					'article.ajax_dislike'
-				)
-			),
-
-			'comment'=>array('发表评论','article.ajax_comment'),
-
-			'comment_vote'=>array(
-				'对评论内容表态（顶/踩）',
-				array(
-					'article.ajax_comment_like',
-					'article.ajax_comment_dislike'
-				)
-			),
-
-			'user'=>array('作者资料', 'article.user')
-		);
+		return [
+		    '查看文章系统首页' => [
+                'article.home',
+            ],
+            '查看文章列表' => [
+                'article.articles',
+            ],
+            '查看文章详情' => [
+                'article.detail',
+            ],
+            '对文章内容表态（喜欢/不喜欢）' => [
+                'article.ajax_like',
+                'article.ajax_dislike',
+            ],
+            '发表评论' => [
+                'article.ajax_comment',
+            ],
+            '对评论内容表态（顶/踩）' => [
+                'article.ajax_comment_like',
+                'article.ajax_comment_dislike',
+            ],
+            '作者资料' => [
+                'article.user',
+            ],
+		];
 	}
-
 
 
 	public function get_admin_permissions()
 	{
-		return array(
-			'-'=>array(
-				'不检查权限',
-				array(
-					'article.ajax_get_summary',
-					'article.ajax_get_meta_keywords',
-					'article.ajax_get_meta_description'
-				)
-			),
-
-			'articles'=>array('查看文章列表', 'article.articles'),
-
-			'edit'=>array(
-				'添加/修改文章',
-				array(
-					'article.edit',
-					'article.edit_save',
-					'article.unblock',
-					'article.block'
-				)
-			),
-
-			'delete'=>array('删除文章', 'article.delete'),
-
-			'categories'=>array(
-				'管理文章分类',
-				array(
-					'article.categories',
-					'article.save_categories',
-					'article.ajax_delete_category'
-				)
-			),
-
-            'comments'=>array(
-				'管理用户评论',
-				array(
-					'article.comments',
-					'article.comments_unblock',
-					'article.comments_block',
-					'article.comments_delete'
-				)
-			),
-
-			'setting'=>array(
-				'设置文章系统参数',
-				array(
-					'article.setting',
-					'article.setting_save'
-				)
-			)
-		);
+		return [
+			'-' => [
+                'article.ajax_get_summary',
+                'article.ajax_get_meta_keywords',
+                'article.ajax_get_meta_description',
+			],
+            '查看文章列表' => [
+                'article.articles',
+            ],
+            '添加/修改文章' => [
+                'article.edit',
+                'article.edit_save',
+                'article.unblock',
+                'article.block',
+            ],
+            '删除文章' => [
+                'article.delete',
+            ],
+            '管理文章分类' => [
+                'article.categories',
+                'article.save_categories',
+                'article.ajax_delete_category',
+            ],
+            '管理用户评论' => [
+                'article.comments',
+                'article.comments_unblock',
+                'article.comments_block',
+                'article.comments_delete'
+            ],
+            '设置文章系统参数' => [
+                'article.setting',
+                'article.setting_save',
+            ],
+		];
 	}
 
 }

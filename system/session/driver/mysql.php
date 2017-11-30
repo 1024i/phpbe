@@ -1,6 +1,9 @@
 <?php
 namespace system\session\driver;
 
+use system\response;
+use system\be;
+
 /**
  * mysql session
  *
@@ -39,7 +42,7 @@ class mysql extends \SessionHandler
         if (isset($config_session->mysql)) {
             $this->options = $config_session->mysql;
         } else {
-            be_exit('SESSION 配置 mysql 参数错误！');
+            response::end('SESSION 配置 mysql 参数错误！');
         }
         $this->expire = $config_session->expire;
     }
@@ -57,12 +60,13 @@ class mysql extends \SessionHandler
 
         if (isset($options['host'])) {
             $this->handler = new \PDO('mysql:dbname='.$options['name'].';host='.$options['host'].';port='.$options['port'].';charset=utf8', $options['user'], $options['pass']);
-            if (!$this->handler) be_exit('连接 数据库'.$options['name'].'（'.$options['host'].'） 失败！');
+            if (!$this->handler) response::end('连接 数据库'.$options['name'].'（'.$options['host'].'） 失败！');
 
             // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
             $this->handler->query('SET NAMES utf8');
         } else {
-            $this->handler = \system\db::get_connection();
+            $db = be::get_db();
+            $this->handler = $db->get_connection();
         }
 
         $this->table = $options['table'];

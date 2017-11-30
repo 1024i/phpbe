@@ -1,6 +1,8 @@
 <?php
 namespace system\session\driver;
 
+use system\response;
+
 /**
  * redis session
  */
@@ -22,7 +24,7 @@ class redis extends \SessionHandler
 	 */
 	public function __construct($config_session)
 	{
-		if (!extension_loaded('redis')) be_exit('SESSION 初始化失败：服务器未安装 redis 扩展！');
+		if (!extension_loaded('redis')) response::end('SESSION 初始化失败：服务器未安装 redis 扩展！');
 
 		if (isset($config_session->redis)) {
 			$this->options = $config_session->redis;

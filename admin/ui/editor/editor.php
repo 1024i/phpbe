@@ -1,7 +1,9 @@
 <?php
-namespace admin\ui;
+namespace admin\ui\editor;
 
-class editor extends \ui
+use system\be;
+
+class editor extends \system\ui
 {
     
 	private $actions = array();

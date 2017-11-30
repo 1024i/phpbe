@@ -15,12 +15,12 @@ a:active{color:#006CD8;}
 .theme-north,
 .theme-middle,
 .theme-south{
-	width:1000px;text-align:left; margin:0px auto;
+	width:1000px;text-align:left; margin:0 auto;
 }
 
 .theme-north .login-form{ height:39px; line-height:39px; text-align:right; color:#FFFFFF;}
 .theme-north .login-form img{ vertical-align:top; height:30px; margin-top:5px;}
-.theme-north .login-form a{ color:#FFFFFF; padding:0px 10px;}
+.theme-north .login-form a{ color:#FFFFFF; padding:0 10px;}
 
 .theme-north .menu{ margin-top:10px;}
 .theme-north .menu ul{ padding:0;}
@@ -32,7 +32,7 @@ a:active{color:#006CD8;}
 .theme-north .menu li a:hover span,
 .theme-north .menu .active a span{ background:url(../images/menu_bg.gif) right; }
 
-.theme-south-container{ padding:0px; color:#888;}
+.theme-south-container{ padding:0; color:#888;}
 .theme-south{ text-align:center; } 
 .theme-south a{ color:#888; } 
 .theme-south a:hover, .theme-south a:focus, .theme-south a:active{color:#FF0000;}
@@ -57,4 +57,4 @@ a:active{color:#006CD8;}
 
 .theme-box-body{ padding:20px 0;}
 
-.theme-message{ margin:10px 0px;}
+.theme-message{ margin:10px 0;}

@@ -1,29 +1,19 @@
 <?php
-class template_user_register extends theme
-{
-
-	protected function head()
-	{
-	parent::head();
-	?>
+use system\be;
+?>
+<!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/user/css/register.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/template/user/js/register.js"></script>
-	<?php
-	}
-	
-	protected function middle($option=array())
-	{
-		parent::middle(array('west'=>0, 'east'=>0));  // 不需要左右边栏
-	}
-	
-	protected function center()
-	{
-		$config_user = be::get_config('user');
-		?>
-<?php $this->center_box_head(); ?>
+<!--{/head}-->
+
+<!--{middle}-->
+<!--{center}-->
+<?php
+$config_user = be::get_config('user');
+?>
 <div class="theme-box-container">
 	<div class="theme-box">
-		<div class="theme-box-title"><?php echo $this->get_title(); ?></div>
+		<div class="theme-box-title"><?php echo $this->title; ?></div>
 		<div class="theme-box-body">
 
 			<form id="form-register">
@@ -155,10 +145,5 @@ class template_user_register extends theme
 		</div>
 	</div>
 </div>
-<?php $this->center_box_foot(); ?>
-		<?php
-	}		
-		
-
-}
-?>
+<!--{/center}-->
+<!--{/middle}-->

@@ -9,7 +9,7 @@ table { border-collapse: collapse;border-spacing: 0;}
 .theme-north{border-bottom:#E33403 8px solid; background-color:#F8F8F8}
 .theme-north .logo{padding:20px 0 0 20px;width:240px; float:left;}
 .theme-north .menu{ margin-left:240px; height:30px;text-align:left; padding-top:68px;}
-.theme-north .menu ul{ margin-left:30px; margin:0; padding:0;}
+.theme-north .menu ul{ margin:0 0 0 30px; padding:0;}
 .theme-north .menu ul li{ float:left; height:30px;line-height:25px;padding-left:5px; padding-right:5px; list-style:none;}
 .theme-north .menu ul li a{
 	text-decoration:none; display:block;padding:0 8px;
@@ -27,7 +27,7 @@ table { border-collapse: collapse;border-spacing: 0;}
 
 
 .theme-west{float:left; width:254px;}
-.theme-west .wraper, .theme-center .wraper, .theme-east .wraper{padding:10px; padding-bottom:50px;}
+.theme-west .wrapper, .theme-center .wrapper, .theme-east .wrapper{padding:10px; padding-bottom:50px;}
 .theme-west h2{ border-bottom:1px solid #999999; font-size:14px; line-height:20px;}
 .theme-west .login-form{ padding:0; margin:10px 0 0 10px;}
 .theme-west .login-form label{display:inline-block;width:50px;}
@@ -46,7 +46,7 @@ table { border-collapse: collapse;border-spacing: 0;}
 
 
 
-.theme-message{padding-left:25px; margin:5px 0px; height:25px; line-height:25px;text-align:left;font-size:12px; color:#444444;}
+.theme-message{padding-left:25px; margin:5px 0; height:25px; line-height:25px;text-align:left;font-size:12px; color:#444444;}
 
 /* 普通提示信息 */
 .theme-message-notice{background:#C3D2E5 url(../images/notice.gif) 5px no-repeat;border-top:2px solid #84A7DB;border-bottom:2px solid #84A7DB;}

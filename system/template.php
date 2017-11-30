@@ -31,4 +31,13 @@ class template
         return $lib_css->lighter($this->colors[0], $index*10);
     }
 
+    public function get($key, $default = null) {
+        if (isset($this->$key)) return $this->$key;
+        return $default;
+    }
+
+    public function display() {
+
+    }
+
 }

@@ -50,9 +50,9 @@ class theme
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-			<meta name="description" content="<?php echo $template->get_meta_description();?>" />
-			<meta name="keywords" content="<?php echo $template->get_meta_keywords();?>" />
-			<title><?php echo $template->get_title().' - '.$config->site_name; ?></title>
+			<meta name="description" content="<?php echo response::get_meta_description();?>" />
+			<meta name="keywords" content="<?php echo response::get_meta_keywords();?>" />
+			<title><?php echo response::get_title().' - '.$config->site_name; ?></title>
 
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/theme/default/js/jquery-1.11.0.min.js"></script>
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/theme/default/js/jquery.validate.min.js"></script>
@@ -62,7 +62,7 @@ class theme
 			</script>
 
 			<?php $this->head(); ?>
-			<?php if (in_array('head', $template_methods)) $template->head(); ?>
+			<?php if (in_array('head', $template_methods)) response::head(); ?>
 
 		</head>
 		<body>
@@ -70,7 +70,7 @@ class theme
 				<div class="theme-body">
 				<?php
 				if (in_array('body', $template_methods)) {
-					$template->body();
+					response::body();
 				} else {
 					$this->body();
 				}
@@ -110,7 +110,7 @@ class theme
 			<div class="theme-north">
 				<?php
 				if (in_array('north', $template_methods)) {
-					$template->north();
+					response::north();
 				} else {
 					$this->north();
 				}
@@ -122,7 +122,7 @@ class theme
 			<div class="theme-middle">
 				<?php
 				if (in_array('middle', $template_methods)) {
-					$template->middle();
+					response::middle();
 				} else {
 					$this->middle();
 				}
@@ -134,7 +134,7 @@ class theme
 			<div class="theme-south">
 				<?php
 				if (in_array('south', $template_methods)) {
-					$template->south();
+					response::south();
 				} else {
 					$this->south();
 				}
@@ -181,7 +181,7 @@ class theme
 	<div class="col" style="width:<?php echo $west_width; ?>%;">
 		<div class="theme-west-container">
 			<div class="theme-west">
-				<?php $template->west(); ?>
+				<?php response::west(); ?>
 			</div>
 		</div>
 	</div>
@@ -196,7 +196,7 @@ class theme
 				<?php
 				$this->message();
 
-				$template->center();
+				response::center();
 				?>
 			</div>
 		</div>
@@ -210,7 +210,7 @@ class theme
 		<div class="theme-east-container">
 			<div class="theme-east">
 				<?php
-				$template->east();
+				response::east();
 				?>
 			</div>
 		</div>

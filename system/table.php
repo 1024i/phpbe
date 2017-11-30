@@ -7,6 +7,7 @@ namespace system;
  */
 class table extends obj
 {
+    protected $db = 'master';
 
     protected $table_name = ''; // 表名
     protected $primary_key = 'id'; // 主键
@@ -29,6 +30,18 @@ class table extends obj
      * 缓存失效时间（单位：秒），0 为不使用缓存
      */
     protected $cache_expire = 0;
+
+    /**
+     * 切换库
+     *
+     * @param string $db db配置文件中的库名
+     * @return table
+     */
+    public function db($db)
+    {
+        $this->db = $db;
+        return $this;
+    }
 
     /**
      * 切换表名
@@ -164,6 +177,8 @@ class table extends obj
 
         // 如果第一个参数为数组，认定为一次传入多个条件
         if (is_array($field)) {
+
+            if (count($field) == 0) return $this;
 
             if ($n > 0 && (is_array($this->where[$n - 1]) || substr($this->where[$n - 1], -1) == ')')) {
                 $this->where[] = 'AND';
@@ -385,7 +400,7 @@ class table extends obj
      */
     public function get_key_arrays($key_field, $fields = null)
     {
-        return $this->query('get_arrays', $fields, $key_field);
+        return $this->query('get_key_arrays', $fields, $key_field);
     }
 
     /**
@@ -467,9 +482,10 @@ class table extends obj
             if ($cache !== false) return $cache;
         }
 
-        $result = $key_field === null ? db::$fn($sql, $sql_data[1]) : db::$fn($sql, $sql_data[1], $key_field);
+        $db = be::get_db($this->db);
+        $result = $key_field === null ? $db->$fn($sql, $sql_data[1]) : $db->$fn($sql, $sql_data[1], $key_field);
         if (false === $result) {
-            $this->set_error(db::get_error());
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -551,11 +567,12 @@ class table extends obj
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . intval($step);
         $sql .= $sql_data[0];
+        $this->last_sql = array($sql, $sql_data[1]);
 
-        db::execute($sql, $sql_data[1]);
-
-        if (db::has_error()) {
-            $this->set_error(db::get_error());
+        $db = be::get_db($this->db);
+        $db->execute($sql, $sql_data[1]);
+         if ($db->has_error()) {
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -578,11 +595,13 @@ class table extends obj
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . intval($step);
         $sql .= $sql_data[0];
+        $this->last_sql = array($sql, $sql_data[1]);
 
-        db::execute($sql, $sql_data[1]);
+        $db = be::get_db($this->db);
+        $db->execute($sql, $sql_data[1]);
 
-        if (db::has_error()) {
-            $this->set_error(db::get_error());
+        if ($db->has_error()) {
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -598,18 +617,19 @@ class table extends obj
     public function update($values = array())
     {
         $sql_data = $this->prepare_sql();
+
         $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . implode($this->quote . '=?,' . $this->quote, array_keys($values)) . $this->quote . '=?';
         $sql .= $sql_data[0];
+        $this->last_sql = array($sql, $sql_data[1]);
 
-        if (!db::execute($sql, array_merge(array_values($values), $sql_data[1]))) {
-            $this->set_error(db::get_error());
+        $db = be::get_db($this->db);
+        if (!$db->execute($sql, array_merge(array_values($values), $sql_data[1]))) {
             return false;
         }
-
         return true;
     }
 
@@ -626,9 +646,11 @@ class table extends obj
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= $sql_data[0];
+        $this->last_sql = array($sql, $sql_data[1]);
 
-        if (!db::execute($sql, $sql_data[1])) {
-            $this->set_error(db::get_error());
+        $db = be::get_db($this->db);
+        if (!$db->execute($sql, $sql_data[1])) {
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -643,8 +665,11 @@ class table extends obj
     public function truncate()
     {
         $sql = 'TRUNCATE TABLE ' . $this->quote . $this->table_name . $this->quote;
-        if (!db::execute($sql)) {
-            $this->set_error(db::get_error());
+        $this->last_sql = array($sql, []);
+
+        $db = be::get_db($this->db);
+        if (!$db->execute($sql)) {
+            $this->set_error($db->get_error());
             return false;
         }
         return true;
@@ -658,8 +683,11 @@ class table extends obj
     public function drop()
     {
         $sql = 'DROP TABLE ' . $this->quote . $this->table_name . $this->quote;
-        if (!db::execute($sql)) {
-            $this->set_error(db::get_error());
+        $this->last_sql = array($sql, []);
+
+        $db = be::get_db($this->db);
+        if (!$db->execute($sql)) {
+            $this->set_error($db->get_error());
             return false;
         }
         return true;

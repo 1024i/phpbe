@@ -7,7 +7,7 @@ namespace system;
  */
 abstract class row extends obj
 {
-
+    protected $db = 'master';
     protected $table_name = '';
     protected $primary_key = '';
 
@@ -28,6 +28,18 @@ abstract class row extends obj
     {
         $this->table_name = $row_name;
         $this->primary_key = $primary_key;
+    }
+
+    /**
+     * 切换库
+     *
+     * @param string $db db配置文件中的库名
+     * @return row
+     */
+    public function db($db)
+    {
+        $this->db = $db;
+        return $this;
     }
 
     /**
@@ -100,10 +112,11 @@ abstract class row extends obj
         }
 
         if ($row === null) {
-            $row = db::get_object($sql, $values);
+            $db = be::get_db($this->db);
+            $row = $db->get_object($sql, $values);
 
-            if (db::has_error()) {
-                $this->set_error(db::get_error());
+            if ($db->has_error()) {
+                $this->set_error($db->get_error());
                 return false;
             }
         }
@@ -129,17 +142,19 @@ abstract class row extends obj
     {
         $success = null;
 
+        $db = be::get_db($this->db);
+
         $primary_key = $this->primary_key;
         if ($this->$primary_key) {
-            $success = db::update($this->table_name, $this, $this->primary_key);
+            $success = $db->update($this->table_name, $this, $this->primary_key);
         } else {
-            $success = db::insert($this->table_name, $this);
+            $success = $db->insert($this->table_name, $this);
 
-            $this->$primary_key = db::get_insert_id();
+            $this->$primary_key = $db->get_last_insert_id();
         }
 
         if (!$success) {
-            $this->set_error(db::get_error());
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -162,10 +177,11 @@ abstract class row extends obj
             return false;
         }
 
-        db::execute('DELETE FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?', array($id));
+        $db = be::get_db($this->db);
+        $db->execute('DELETE FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?', array($id));
 
-        if (db::has_error()) {
-            $this->set_error(db::get_error());
+        if ($db->has_error()) {
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -195,10 +211,12 @@ abstract class row extends obj
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
         $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
-        db::execute($sql, array($id));
 
-        if (db::has_error()) {
-            $this->set_error(db::get_error());
+        $db = be::get_db($this->db);
+        $db->execute($sql, array($id));
+
+        if ($db->has_error()) {
+            $this->set_error($db->get_error());
             return false;
         }
 
@@ -217,10 +235,12 @@ abstract class row extends obj
         $primary_key = $this->primary_key;
         $id = $this->$primary_key;
         $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
-        db::execute($sql, array($id));
 
-        if (db::has_error()) {
-            $this->set_error(db::get_error());
+        $db = be::get_db($this->db);
+        $db->execute($sql, array($id));
+
+        if ($db->has_error()) {
+            $this->set_error($db->get_error());
             return false;
         }
 

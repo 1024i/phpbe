@@ -12,6 +12,9 @@ require PATH_ROOT . DS . 'system' . DS . 'tool.php';
 $config_system = be::get_config('system');
 if ($config_system->offline === '1') response::end($config_system->offline_message);
 
+// 默认时区
+date_default_timezone_set($config_system->timezone);
+
 try {
 
     // 启动 session
@@ -77,68 +80,11 @@ try {
 
     if ($task == '') $task = 'index';
     if (method_exists($instance, $task)) {
-        /*
-        $permission_key = $controller.'.'.$task;
-
-        $app_name = $controller;
-        $pos = strpos($controller, '_');
-        if ($pos!== false) $app_name = substr($controller, 0, $pos);
-
-        $app = be::get_app($app_name);
 
         // 检查用户权限
-        $role = be::get_role($my->role_id);
-        $role_permissions = $role->get_permissions();
-
-        if (isset($config_user_group->$permissions_field_name)) {
-            $permissions = $config_user_group->$permissions_field_name;
-            if (is_array($permissions)) {
-                if ($app) {
-                    $matched_app_permission = null;
-                    $app_permissions = $app->get_permissions();
-                    foreach ($app_permissions as $app_permission) {
-                        if (in_array($permission_key, $app_permission[1])) {
-                            $matched_app_permission = $app_permission;
-                            break;
-                        }
-                    }
-
-                    if ($matched_app_permission === null) {
-                        $permission_text = '您没有权限（该功能未加入权限管理系统）！';
-                    } else {
-
-
-                    }
-
-
-                    if (isset($app_permission_maps[$permission_key])) {
-                        $app_permission_key = $app_permission_maps[$permission_key];
-                        if ($app_permission_key == '-' || in_array($app_permission_key, $permissions)) {
-                            $permission = true;
-                        } else {
-                            $app_permissions = $app->get_permissions();
-                            $permission_text = '您没有权限：' . $app_permissions[$app_permission_key];
-                        }
-                    }
-                } else {
-                    $permission_text = '您没有权限（该功能未加入权限管理系统）！';
-                }
-            } else {
-                // 1: 所有权限 0或其它值:没有任何权限
-                if ($permissions == '1') $permission = true;
-            }
-        }
-
-
-        if (!$permission && $app) {
-            $app_permission_maps = $app->get_permission_maps();
-            if (isset($app_permission_maps[$permission_key]) && $app_permission_maps[$permission_key] == '-') $permission = true;
-        }
-
-
-        if (!$permission) {
-            if ($permission_text == '') $permission_text = '您没有权限！';
-
+        $role = be::get_user_role($my->role_id);
+        if (!$role->has_permission($controller, $task)) {
+            $permission_text = '您没有权限操作该功能！';
             if (request::is_ajax()) {
                 $response = new \stdClass();
                 $response->error = -1024;
@@ -146,10 +92,9 @@ try {
                 echo json_encode($response);
                 exit();
             } else {
-                be_exit($permission_text);
+                response::end($permission_text);
             }
         }
-        */
 
         $instance->$task();
 
@@ -160,11 +105,10 @@ try {
             response::end('未定义的任务：' . $task);
         }
     }
-
-} catch (Throwable $e) {
+} catch (\throwable $e) {
     \system\error_log::log($e);
-
-    if (\system\db::in_transaction()) \system\db::rollback();
+    $db = be::get_db();
+    if ($db->in_transaction()) $db->rollback();
 
     if (request::is_ajax()) {
         if ($config_system->debug) {

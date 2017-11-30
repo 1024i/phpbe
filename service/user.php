@@ -10,12 +10,16 @@ use system\cookie;
 class user extends \system\service
 {
 
-
-    // 登陆
+    /**
+     * 登录
+     *
+     * @param string $username 用户名
+     * @param string $password 密码
+     * @param bool $remember_me 记住我
+     * @return bool|mixed|\system\row
+     */
     public function login($username, $password, $remember_me = false)
     {
-        $password = $this->encrypt_password($password);
-
         $ip = $_SERVER["REMOTE_ADDR"];
         $times = session::get($ip);
         if (!$times) $times = 0;
@@ -30,6 +34,9 @@ class user extends \system\service
         $row_user->load(['username' => $username]);
 
         if ($row_user->id > 0) {
+
+            $password = $this->encrypt_password($password, $row_user->salt);
+
             if ($row_user->password == $password) {
                 if ($row_user->block == 1) {
                     $this->set_error('用户账号已被停用！');
@@ -44,7 +51,7 @@ class user extends \system\service
 
                 if ($remember_me) {
                     $config_user = be::get_config('user');
-                    $remember_me = $username . '|||' . $this->encrypt_password($row_user->password);
+                    $remember_me = $username . '|||' . $this->encrypt_password($password, $row_user->salt);
                     $remember_me = $this->rc4($remember_me, $config_user->remember_me_key);
                     $remember_me = base64_encode($remember_me);
                     cookie::set_expire(time() + 30 * 86400);
@@ -60,8 +67,11 @@ class user extends \system\service
         return false;
     }
 
-
-    // 记住我
+    /**
+     * 记住我 自动登录
+     *
+     * @return bool|mixed|\system\row
+     */
     public function remember_me()
     {
         if (cookie::has('_remember_me')) {
@@ -78,7 +88,7 @@ class user extends \system\service
                     $row_user = be::get_row('user');
                     $row_user->load(['username' => $username]);
 
-                    if ($row_user->id > 0 && $this->encrypt_password($row_user->password) == $password && $row_user->block == 0) {
+                    if ($row_user->id > 0 && $this->encrypt_password($row_user->password, $row_user->salt) == $password && $row_user->block == 0) {
                         session::set('_user', be::get_user($row_user->id));
 
                         $row_user->last_login_time = time();
@@ -93,7 +103,11 @@ class user extends \system\service
         return true;
     }
 
-    // 退出
+    /**
+     * 退出
+     *
+     * @return bool
+     */
     public function logout()
     {
         session::delete('_user');
@@ -101,14 +115,21 @@ class user extends \system\service
         return true;
     }
 
-
-    // 注册
+    /**
+     * 注册
+     *
+     * @param string $username 用户名
+     * @param string $email 邮箱
+     * @param string $password 密码
+     * @param string $name 名称
+     * @return mixed|\system\row
+     */
     public function register($username, $email, $password, $name = '')
     {
         $row_user = be::get_row('user');
         $row_user->load(['username' => $username]);
 
-        if ($row_user->id >0) {
+        if ($row_user->id > 0) {
             $this->set_error('用户名(' . $username . ')已被占用！');
             return false;
         }
@@ -116,7 +137,7 @@ class user extends \system\service
         $row_user = be::get_row('user');
         $row_user->load(['email' => $email]);
 
-        if ($row_user->id >0) {
+        if ($row_user->id > 0) {
             $this->set_error('邮箱(' . $email . ')已被占用！');
             return false;
         }
@@ -127,12 +148,15 @@ class user extends \system\service
 
         $config_user = be::get_config('user');
 
+        $salt = $this->getRandomString(32);
+
         $row_user = be::get_row('user');
         $row_user->username = $username;
         $row_user->email = $email;
         $row_user->name = $name;
-        $row_user->password = $this->encrypt_password($password);
-        $row_user->token = md5(rand());
+        $row_user->password = $this->encrypt_password($password, $salt);
+        $row_user->salt = $salt;
+        $row_user->token = $this->getRandomString(32);
         $row_user->register_time = $t;
         $row_user->last_login_time = $t;
         $row_user->is_admin = 0;
@@ -140,7 +164,6 @@ class user extends \system\service
         $row_user->save();
 
         $config_system = be::get_config('system');
-
 
         $config_user = be::get_config('user');
         if ($config_user->email_valid == '1') {
@@ -207,8 +230,30 @@ class user extends \system\service
         return $row_user;
     }
 
+    /**
+     * 生成随机字符串
+     *
+     * @param int $n 生成的字符串长度
+     * @return string
+     */
+    private function getRandomString($n) {
+        $seeds = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $return = '';
+        $length = strlen($seeds) - 1;
+        for ($i = 0; $i < $n; $i++){
+            // $return .= substr($seeds, rand(0, $length, 1);
+            $return .= $seeds[rand(0, $length)];
+        }
+        return $return;
+    }
 
-    // 忘记密码
+    /**
+     * 忘记密码
+     * 向用户邮箱发送一封重置密码的邮件
+     *
+     * @param string $username 用户名
+     * @return bool
+     */
     public function forgot_password($username)
     {
         if ($username == '') {
@@ -229,7 +274,7 @@ class user extends \system\service
             return false;
         }
 
-        $row_user->token = md5(rand());
+        $row_user->token = $this->getRandomString(32);
         $row_user->save();
 
         $config_system = be::get_config('system');
@@ -255,6 +300,14 @@ class user extends \system\service
         return true;
     }
 
+    /**
+     * 忘记密码重置
+     *
+     * @param int $user_id 用户ID
+     * @param string $token 邮件发送的 token
+     * @param string $password 新密码
+     * @return bool
+     */
     public function forgot_password_reset($user_id, $token, $password)
     {
         $row_user = be::get_row('user');
@@ -267,8 +320,9 @@ class user extends \system\service
                 $this->set_error('重设密码链接已失效！');
             return false;
         }
-
-        $row_user->password = $this->encrypt_password($password);
+        $salt = $this->getRandomString(32);
+        $row_user->password = $this->encrypt_password($password, $salt);
+        $row_user->salt = $salt;
         $row_user->token = '';
         $row_user->save();
 
@@ -295,12 +349,24 @@ class user extends \system\service
     }
 
 
-    public function encrypt_password($password)
+    /**
+     * 密码 Hash
+     *
+     * @param string $password 密码
+     * @param string $salt 盐值
+     * @return string
+     */
+    public function encrypt_password($password, $salt)
     {
-        // return sha1($password.sha1('BE'));
-        return sha1($password . '3472ff5765a2d9cb8605e9b928f61808c7010096');
+        return sha1(sha1($password) . $salt);
     }
 
+    /**
+     * 校验邮箱是否合法
+     *
+     * @param string $email 邮箱
+     * @return int
+     */
     public function is_email($email)
     {
         return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);

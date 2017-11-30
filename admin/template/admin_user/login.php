@@ -1,27 +1,21 @@
 <?php
-namespace admin\template\admin_user;
-
-class login extends \admin\theme
-{
-
-	
-	protected function head()
-	{
-	?>
+use system\be;
+use system\request;
+?>
+<!--{head}-->
 <link type="text/css" rel="stylesheet" href="template/admin_user/css/login.css">
 <script type="text/javascript" language="javascript" src="template/admin_user/js/login.js"></script>
-	<?php
-	}
+<!--{/head}-->
 
-	protected function body()
-	{
-	    $config = be::get_config('system');
-		?>
+<!--{body}-->
+<?php
+$config = be::get_config('system');
+?>
 <div class="body">
 	
 	<div class="logo"></div>
 
-	<?php $this->message(); ?>
+    <!--{message}--><!--{/message}-->
 	
 	<div class="login-box">
 
@@ -64,9 +58,4 @@ class login extends \admin\theme
 	</div>
 
 </div>
-		<?php
-	}		
-		
-
-}
-?>
+<!--{/body}-->

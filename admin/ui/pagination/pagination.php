@@ -1,7 +1,7 @@
 <?php
-namespace admin\ui;
+namespace admin\ui\pagination;
 
-class pagination extends \ui
+class pagination extends \system\ui
 {
 
     private $total = 0; // 总记录数

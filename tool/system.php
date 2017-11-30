@@ -63,7 +63,7 @@ class system
      * @param string $etc 结层符号
      * @return string
      */
-    public static function limit($string, $length = 50, $etc = ' .  .  . ')
+    public static function limit($string, $length = 50, $etc = '...')
     {
         $string = strip_tags($string);
         $length *= 2; //按中文时宽度应加倍

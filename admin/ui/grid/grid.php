@@ -1,7 +1,7 @@
 <?php
-namespace admin\ui;
+namespace admin\ui\grid;
 
-class grid extends \ui
+class grid extends \system\ui
 {
     private $actions = array();
     

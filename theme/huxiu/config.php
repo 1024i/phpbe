@@ -23,4 +23,6 @@ class config
   public $thumbnail_l = 'l.jpg';  // 缩略图大图 800 x 800 px
   public $thumbnail_m = 'm.jpg';  // 缩略图中图 400 x 400 px
   public $thumbnail_s = 's.jpg';  // 缩略图小图 200 x 200 px
+
+    public $colors = array('#2D2D2D');		// 主题 主色
 }

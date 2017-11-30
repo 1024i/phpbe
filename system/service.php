@@ -8,14 +8,5 @@ namespace system;
 abstract class service extends obj
 {
 
-    protected $db = 'master';
-
-    /**
-     * 获取数据库连接
-     */
-    protected function db($db = null) {
-        if ($db === null ) $db = $this->db;
-        return db\factory::get_instance($db);
-    }
 
 }

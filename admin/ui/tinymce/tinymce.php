@@ -1,7 +1,7 @@
 <?php
-namespace admin\ui;
+namespace admin\ui\tinymce;
 
-class tinymce extends \ui\tinymce
+class tinymce extends \ui\tinymce\tinymce
 {
 
 	public function head()
@@ -15,6 +15,7 @@ class tinymce extends \ui\tinymce
 	$().ready(function() {
 		$('textarea.tinymce').tinymce({
 			script_url : '<?php echo URL_ROOT; ?>/ui/tinymce/4.1.5/tinymce.min.js',
+            language : "zh_CN",
             forced_root_block : false,
             force_p_newlines : false,
 			plugins : 'advlist link filemanager charmap preview code adminimage table textcolor colorpicker textpattern',

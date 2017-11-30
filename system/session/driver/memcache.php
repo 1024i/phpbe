@@ -1,6 +1,7 @@
 <?php
 namespace system\session\driver;
 
+use system\response;
 
 /**
  * memcache session
@@ -23,7 +24,7 @@ class memcache extends \SessionHandler
 	 */
 	public function __construct($config_session)
 	{
-		if (!extension_loaded('memcache')) be_exit('SESSION 初始化失败：服务器未安装 memcache 扩展！');
+		if (!extension_loaded('memcache')) response::end('SESSION 初始化失败：服务器未安装 memcache 扩展！');
 
 		if (isset($config_session->memcache)) {
 			$this->options = $config_session->memcache;
@@ -41,7 +42,7 @@ class memcache extends \SessionHandler
 	public function open($save_path, $session_id) {
 		$options = $this->options;
 		if ($options === null) {
-			be_exit('SESSION 初始化失败：memcache 配置参数错误！');
+			response::end('SESSION 初始化失败：memcache 配置参数错误！');
 		} else {
 			$this->handler = new \Memcache;
 			foreach ($options as $option) {

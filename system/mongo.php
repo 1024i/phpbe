@@ -4,7 +4,7 @@ namespace system;
 /**
  * MongoDB
  */
-class mongodb
+class mongo
 {
 
     private static $connection = null; // mongodb 数据库连接

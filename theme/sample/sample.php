@@ -1,10 +1,12 @@
 <?php
 use system\be;
 use system\request;
+?>
 
+<!--{html}-->
+<?php
 $config = be::get_config('system');
 ?>
-<!--{html}-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -95,7 +97,7 @@ $config = be::get_config('system');
     <div class="theme-middle">
         <!--{middle}-->
         <div class="theme-west">
-            <div class="wraper">
+            <div class="wrapper">
                 <!--{west}-->
                 <?php
                 $my = be::get_user();
@@ -135,7 +137,7 @@ $config = be::get_config('system');
         </div>
 
         <div class="theme-center">
-            <div class="wraper">
+            <div class="wrapper">
                 <!--{message}-->
                 <?php
                 if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->_message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->_message->body . '</div>';

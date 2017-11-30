@@ -1,6 +1,8 @@
 <?php
 namespace app;
 
+use system\be;
+
 class system extends \system\app
 {
 
@@ -31,10 +33,10 @@ class system extends \system\app
 	{
 		return array(
 			array(
-				'name'=>'公告',
-				'url'=>'./?controller=system_announcement&task=announcements',
-				'icon'=>'template/system_announcement/images/announcement.png'
-			),
+                'name'=>'公告',
+                'url'=>'./?controller=system_announcement&task=announcements',
+                'icon'=>'template/system_announcement/images/announcement.png'
+            ),
 			array(
 				'name'=>'友情链接',
 				'url'=>'./?controller=system_link&task=links',
@@ -49,115 +51,114 @@ class system extends \system\app
 	}
 	
 
-	public function get_permission_maps()
+	public function get_permissions()
 	{
-		return array(
-			'system.terms_and_conditions'=>'-',
-			'system.privacy_policy'=>'-',
-			'system.ajax_change_language'=>'-'
-		);
+		return [
+		    '-' => [
+                'system.terms_and_conditions',
+                'system.privacy_policy',
+                'system.ajax_change_language',
+            ]
+        ];
 	}
     
 	public function get_admin_permissions()
 	{
-		return array(
-			'menus'=>'管理菜单',
-			'menu_groups'=>'管理菜单分组',
-			'apps'=>'管理应用',
-			'themes'=>'管理主题',
-			'config'=>'配置系统参数',
-			'config_mail'=>'配置邮件参数',
-			'config_watermark'=>'水印设置',
-			'logs'=>'查看系统日志',
-			'delete_logs'=>'删除系统日志',
-			'browser_file'=>'文件管理器：查看已上传的文件',
-			'upload_file'=>'文件管理器：上传文件',
-			'delete_file'=>'文件管理器：删除文件或文件夹',
-			'edit_file'=>'文件管理器：重命名文件或文件夹',
-			'download_file'=>'文件管理器：下载文件',
-			'announcements'=>'管理公告',
-			'links'=>'管理友情链接',
-			'htmls'=>'管理自定义模块'
-		);
-	}
-
-	public function get_admin_permission_maps()
-	{
-		return array(
-            
-            'system.dashboard'=>'-',
-            
-			'system.menus'=>'menus',
-            'system.menus_save'=>'menus',
-            'system.ajax_menu_delete'=>'menus',
-            'system.menu_set_link'=>'menus',
-            'system.ajax_menu_set_home'=>'menus',
-
-			'system.menu_groups'=>'menu_groups',
-            'system.menu_group_edit'=>'menu_groups',
-            'system.menu_group_edit_save'=>'menu_groups',
-            'system.menu_group_delete'=>'menu_groups',
-            
-			'system.apps'=>'apps',
-            'system.ajax_uninstall_app'=>'apps',
-            'system.remote_apps'=>'apps',
-            'system.ajax_install_app'=>'apps',
-            
-			'system.themes'=>'themes',
-            'system.ajax_theme_set_default'=>'themes',
-            'system.remote_themes'=>'themes',
-            'system.ajax_install_theme'=>'themes',
-            'system.ajax_uninstall_theme'=>'themes',
-            
-			'system.config'=>'config',
-            'system.config_save'=>'config',
-            
-			'system.config_mail'=>'config_mail',
-            'system.config_mail_save'=>'config_mail',
-            'system.config_mail_test'=>'config_mail',
-            'system.config_mail_test_save'=>'config_mail',
-              
-			'system.config_watermark'=>'config_watermark',
-            'system.config_watermark_save'=>'config_watermark',
-            'system.config_watermark_test'=>'config_watermark',
-
-			'system.logs'=>'logs',
-			'system.ajax_delete_logs'=>'delete_logs',
-            
-            'system.history_back'=>'-',
-            
-            'system.ajax_change_language'=>'-',
-            
-            'system_filemanager.browser'=>'browser_file',
-            'system_filemanager.create_dir'=>'upload_file',
-            'system_filemanager.delete_dir'=>'delete_file',
-            'system_filemanager.edit_dir_name'=>'edit_file',
-            'system_filemanager.upload_file'=>'upload_file',
-            'system_filemanager.delete_file'=>'delete_file',
-            'system_filemanager.edit_file_name'=>'edit_file',
-            'system_filemanager.download_file'=>'download_file',
-            
-            'system_announcement.announcements'=>'announcements',
-            'system_announcement.edit'=>'announcements',
-            'system_announcement.edit_save'=>'announcements',
-            'system_announcement.unblock'=>'announcements',
-            'system_announcement.block'=>'announcements',
-            'system_announcement.delete'=>'announcements',
-            
-            'system_link.links'=>'links',
-            'system_link.edit'=>'links',
-            'system_link.edit_save'=>'links',
-            'system_link.unblock'=>'links',
-            'system_link.block'=>'links',
-            'system_link.delete'=>'links',
-            
-            'system_html.htmls'=>'htmls',
-            'system_html.edit'=>'htmls',
-            'system_html.edit_save'=>'htmls',
-            'system_html.unblock'=>'htmls',
-            'system_html.block'=>'htmls',
-            'system_html.delete'=>'htmls'
-		);
+		return [
+		    '-' => [
+		        'system.dashboard',
+                'system.history_back',
+            ],
+            '管理菜单' => [
+                'system.menus',
+                'system.menus_save',
+                'system.ajax_menu_delete',
+                'system.menu_set_link',
+                'system.ajax_menu_set_home',
+            ],
+            '管理菜单分组' => [
+                'system.menu_groups',
+                'system.menu_group_edit',
+                'system.menu_group_edit_save',
+                'system.menu_group_delete',
+            ],
+            '管理应用' => [
+                'system.apps',
+                'system.ajax_uninstall_app',
+                'system.remote_apps',
+                'system.ajax_install_app',
+            ],
+            '管理主题' => [
+                'system.themes',
+                'system.ajax_theme_set_default',
+                'system.remote_themes',
+                'system.ajax_install_theme',
+                'system.ajax_uninstall_theme',
+            ],
+            '配置系统参数' => [
+                'system.config',
+                'system.config_save',
+            ],
+            '配置邮件参数' => [
+                'system.config_mail',
+                'system.config_mail_save',
+                'system.config_mail_test',
+                'system.config_mail_test_save',
+            ],
+            '水印设置' => [
+                'system.config_watermark',
+                'system.config_watermark_save',
+                'system.config_watermark_test',
+            ],
+            '查看系统日志' => [
+                'system.logs',
+            ],
+            '删除系统日志' => [
+                'system.ajax_delete_logs',
+            ],
+            '文件管理器：查看已上传的文件' => [
+                'system_filemanager.browser',
+            ],
+            '文件管理器：上传文件' => [
+                'system_filemanager.create_dir',
+                'system_filemanager.upload_file',
+            ],
+            '文件管理器：删除文件或文件夹' => [
+                'system_filemanager.delete_dir',
+                'system_filemanager.delete_file',
+            ],
+            '文件管理器：重命名文件或文件夹' => [
+                'system_filemanager.edit_dir_name',
+                'system_filemanager.edit_file_name',
+            ],
+            '文件管理器：下载文件' => [
+                'system_filemanager.download_file',
+            ],
+            '管理公告' => [
+                'system_announcement.announcements',
+                'system_announcement.edit',
+                'system_announcement.edit_save',
+                'system_announcement.unblock',
+                'system_announcement.block',
+                'system_announcement.delete',
+            ],
+            '管理友情链接' => [
+                'system_link.links',
+                'system_link.edit',
+                'system_link.edit_save',
+                'system_link.unblock',
+                'system_link.block',
+                'system_link.delete',
+            ],
+            '管理自定义模块' => [
+                'system_html.htmls',
+                'system_html.edit',
+                'system_html.edit_save',
+                'system_html.unblock',
+                'system_html.block',
+                'system_html.delete'
+            ],
+		];
 	}
 
 	public function get_db_tables()
@@ -167,8 +168,9 @@ class system extends \system\app
     
 	public function install_db()
 	{
+        $db = be::get_db();
 
-		db::execute('
+		$db->execute('
 CREATE TABLE IF NOT EXISTS `be_system_menu_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(120) NOT NULL,
@@ -178,13 +180,13 @@ CREATE TABLE IF NOT EXISTS `be_system_menu_group` (
 		');
 
 
-		db::execute("
+		$db->execute("
 INSERT INTO `be_menu_group` (`id`, `name`, `class_name`) VALUES
 (1, '顶部菜单', 'north'),
 (2, '底部菜单', 'south')
 		");
 
-		db::execute('
+		$db->execute('
 CREATE TABLE IF NOT EXISTS `be_system_menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_id` int(11) NOT NULL,
@@ -200,14 +202,14 @@ CREATE TABLE IF NOT EXISTS `be_system_menu` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 		');
 
-		db::execute("
+		$db->execute("
 INSERT INTO `be_system_menu` (`id`, `group_id`, `parent_id`, `name`, `url`, `target`, `params`, `home`, `block`, `rank`) VALUES
 (1, 1, 0, '首页', 'controller=article&task=detail&id=1', '_self', '', 1, 0, 0)
 		");
 
 
 
-		db::execute('
+		$db->execute('
 CREATE TABLE IF NOT EXISTS `be_system_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,

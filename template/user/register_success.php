@@ -1,30 +1,20 @@
 <?php
-class template_user_register_success extends theme
-{
-	protected function head()
-	{
-	parent::head();
-	?>
+use system\be;
+?>
+<!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/template/user/css/register_success.css">
-	<?php
-	}
+<!--{/head}-->
 
-	protected function middle($option=array())
-	{
-		parent::middle(array('west'=>0, 'east'=>0));  // 不需要左右边栏
-	}
-	
-	protected function center()
-	{
-		$config_user = be::get_config('user');
-		$username = $this->get('username');
-		$email = $this->get('email');
-		?>
-
-<?php $this->center_box_head(); ?>
+<!--{middle}-->
+<!--{center}-->
+<?php
+$config_user = be::get_config('user');
+$username = $this->get('username');
+$email = $this->get('email');
+?>
 <div class="theme-box-container">
 	<div class="theme-box">
-		<div class="theme-box-title"><?php echo $this->get_title(); ?></div>
+		<div class="theme-box-title"><?php echo $this->title; ?></div>
 		<div class="theme-box-body">
 		
 			<div class="align-center">
@@ -71,11 +61,5 @@ class template_user_register_success extends theme
 		</div>
 	</div>
 </div>
-<?php $this->center_box_foot(); ?>
-
-		<?php
-	}		
-		
-
-}
-?>
+<!--{/center}-->
+<!--{/middle}-->

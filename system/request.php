@@ -65,25 +65,25 @@ class request
 
     private static function _stripslashes($value)
     {
-        return is_array($value) ? array_map(array('request', '_stripslashes'), $value) : stripslashes($value);
+        return is_array($value) ? array_map(array('\system\request', '_stripslashes'), $value) : stripslashes($value);
     }
 
 
     private static function _format_int($value)
     {
-        return is_array($value) ? array_map(array('request', '_format_int'), $value) : intval($value);
+        return is_array($value) ? array_map(array('\system\request', '_format_int'), $value) : intval($value);
     }
 
     private static function _format_float($value)
     {
-        return is_array($value) ? array_map(array('request', '_format_float'), $value) : floatval($value);
+        return is_array($value) ? array_map(array('\system\request', '_format_float'), $value) : floatval($value);
     }
 
     // 过滤  脚本,样式，框架
     private static function _format_html($value)
     {
         if (is_array($value)) {
-            return array_map(array('request', '_format_html'), $value);
+            return array_map(array('\system\request', '_format_html'), $value);
         } else {
             $value = preg_replace("@<script(.*?)</script>@is", '', $value);
             $value = preg_replace("@<style(.*?)</style>@is", '', $value);
@@ -95,7 +95,7 @@ class request
 
     private static function _format_string($value)
     {
-        return is_array($value) ? array_map(array('request', '_format_string'), $value) : htmlspecialchars($value);
+        return is_array($value) ? array_map(array('\system\request', '_format_string'), $value) : htmlspecialchars($value);
     }
 
     private static function _format_($value)

@@ -119,8 +119,9 @@ class response
     public static function success($message, $redirect_url = null, $code = 0)
     {
         if (request::is_ajax()) {
-            self::set('error', $code);
+            self::set('success', true);
             self::set('message', $message);
+            self::set('code', $code);
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
@@ -142,8 +143,9 @@ class response
     public static function error($message, $redirect_url = null, $code = 1)
     {
         if (request::is_ajax()) {
-            self::set('error', $code);
+            self::set('success', false);
             self::set('message', $message);
+            self::set('code', $code);
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
@@ -165,8 +167,8 @@ class response
     {
         $template_instance = null;
         if ($template === null) {
-            $controller = request::request('controller');
-            $task = request::request('task', 'index');
+            $controller = request::request('controller', 'admin_user');
+            $task = request::request('task', 'login');
             $template = $controller . '.' . $task;
 
             if (defined('IS_BACKEND') && IS_BACKEND) {
