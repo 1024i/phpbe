@@ -68,7 +68,6 @@ class request
         return is_array($value) ? array_map(array('\system\request', '_stripslashes'), $value) : stripslashes($value);
     }
 
-
     private static function _format_int($value)
     {
         return is_array($value) ? array_map(array('\system\request', '_format_int'), $value) : intval($value);
@@ -77,6 +76,16 @@ class request
     private static function _format_float($value)
     {
         return is_array($value) ? array_map(array('\system\request', '_format_float'), $value) : floatval($value);
+    }
+
+    private static function _format_bool($value)
+    {
+        return is_array($value) ? array_map(array('\system\request', '_format_bool'), $value) : boolval($value);
+    }
+
+    private static function _format_string($value)
+    {
+        return is_array($value) ? array_map(array('\system\request', '_format_string'), $value) : htmlspecialchars($value);
     }
 
     // 过滤  脚本,样式，框架
@@ -91,11 +100,6 @@ class request
 
             return $value;
         }
-    }
-
-    private static function _format_string($value)
-    {
-        return is_array($value) ? array_map(array('\system\request', '_format_string'), $value) : htmlspecialchars($value);
     }
 
     private static function _format_($value)
