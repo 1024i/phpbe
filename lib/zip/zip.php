@@ -2,6 +2,8 @@
 
 namespace lib\zip;
 
+use \system\be;
+
 /*
 @版本日期: 2010年08月28日
 */

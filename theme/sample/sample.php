@@ -17,17 +17,17 @@ $config = be::get_config('system');
     <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
 
-    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery-1.12.4.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery.validate.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/jquery.cookie.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/jquery.validate.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
 
-    <script src="<?php echo URL_ROOT; ?>/theme/sample/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/sample/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/sample/css/theme.css"/>
-    <script src="<?php echo URL_ROOT; ?>/theme/sample/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/sample/css/theme.css"/>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/theme.js"></script>
 
     <script>
         var URL_ROOT = '<?php echo URL_ROOT; ?>';
@@ -47,7 +47,7 @@ $config = be::get_config('system');
         <!--{north}-->
         <div class="logo">
             <a href="<?php echo URL_ROOT; ?>" title="<?php echo $config->site_name; ?>">
-                <img src="<?php echo URL_ROOT; ?>/theme/sample/images/logo.gif" alt="<?php echo $config->site_name; ?>"/>
+                <img src="<?php echo URL_ROOT; ?>/system/theme/sample/images/logo.gif" alt="<?php echo $config->site_name; ?>"/>
             </a>
         </div>
 
@@ -107,7 +107,7 @@ $config = be::get_config('system');
                 <?php
                 if ($my->id == 0) {
                     ?>
-                    <form action="./" method="post"
+                    <form action="" method="post"
                           onSubmit="return ($('#west-username').val()!='' && $('#west-password').val()!='');">
                         <ul class="login-form">
                         <li><label>用户名: </label><input title="用户名" type="text" name="username" id="west-username"/></li>

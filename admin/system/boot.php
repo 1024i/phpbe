@@ -7,7 +7,7 @@ use system\response;
 require PATH_ROOT . DS . 'system' . DS . 'loader.php';
 spl_autoload_register(array('\\system\\loader', 'autoload'));
 
-require PATH_ROOT.DS.'system'.DS.'tool.php';
+require PATH_ROOT . DS . 'system' . DS . 'tool.php';
 require PATH_ADMIN.DS.'system'.DS.'tool.php';
 
 $config_system = be::get_config('system');

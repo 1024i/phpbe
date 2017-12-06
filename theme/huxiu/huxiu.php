@@ -16,15 +16,15 @@ $config = be::get_config('system');
     <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
 
-    <script src="<?php echo URL_ROOT; ?>/theme/huxiu/js/jquery-1.12.4.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/huxiu/js/jquery.validate.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/theme/huxiu/js/jquery.cookie.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery.validate.min.js"></script>
+    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/huxiu/css/be.css" />
-    <script src="<?php echo URL_ROOT; ?>/theme/huxiu/js/be.js"></script>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/huxiu/css/be.css" />
+    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/be.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/theme/huxiu/css/theme.css" />
-    <script src="<?php echo URL_ROOT; ?>/theme/huxiu/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/huxiu/css/theme.css" />
+    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/theme.js"></script>
 
     <!--{head}-->
     <!--{/head}-->
@@ -49,7 +49,7 @@ $config = be::get_config('system');
         ?>
         <div class="row">
             <div class="col-3">
-                <img src="<?php echo URL_ROOT; ?>/theme/huxiu/images/logo.gif" alt="<?php echo $config_system->site_name; ?>" />
+                <img src="<?php echo URL_ROOT; ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $config_system->site_name; ?>" />
             </div>
             <div class="col-17">
 

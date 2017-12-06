@@ -27,14 +27,8 @@ abstract class app
 		$this->label = $label;
 		$this->version = $version;
         $this->icon = $icon;
-        
+        $this->name = __CLASS__;
     }
-
-	public function set_name($name)
-	{
-		$this->name = $name;
-	}
-
 
     /**
      * 获取所有前台菜单项
@@ -46,7 +40,6 @@ abstract class app
         return array();
     }
 
-
     /**
      * 获取所有后台菜单项
      * 
@@ -57,8 +50,6 @@ abstract class app
         return array();
     }
 
-
-
     /**
      * 获取所有前台权限项
      * 
@@ -68,7 +59,6 @@ abstract class app
     {
         return array();
     }
-
 
     /**
      * 获取所有后台权限项
@@ -86,6 +76,7 @@ abstract class app
 	{
 		$this->install_file();
 		$this->install_db();
+        $this->install_config();
 	}
 	public function install_file()
 	{	
@@ -158,6 +149,7 @@ abstract class app
 	{
 		$this->uninstall_file();
 		$this->uninstall_db();
+        $this->uninstall_config();
 	}
 
 	public function uninstall_file()
@@ -167,6 +159,17 @@ abstract class app
 	public function uninstall_db()
 	{
 	}
+
+    public function install_config()
+    {
+    }
+
+    public function uninstall_config()
+    {
+        $db = be::get_db();
+        $sql = 'DELECT * FROM be_config WHERE `app`=\''.$this->name.'\'';
+        $db->execute($sql);
+    }
 
 	protected function copy_dir($src, $dst)
 	{
@@ -217,5 +220,39 @@ abstract class app
 		unlink($file);
 		return true;
 	}
+
+    /**
+     * 添加配置项
+     *
+     * @param $name
+     * @param $key
+     * @param $value
+     * @param string $value_type int, float, string, bool, array
+     * @param string $option_type text, number, date, datetime, range, radio, checkbox, file
+     * @param array $option_values
+     */
+    protected function add_config($name, $key, $value, $value_type = 'string', $option_type = null, $option_values = array()) {
+        if ($option_type == null) {
+            switch ($value_type) {
+                case 'int':
+                case 'float':
+                    $option_type = 'number';
+                    break;
+                case 'string':
+                    $option_type = 'text';
+                    break;
+            }
+        }
+
+        $row = be::get_row('config');
+        $row->app = $this->name;
+        $row->name = $name;
+        $row->key = $key;
+        $row->value = $value;
+        $row->value_type = $value_type;
+        $row->option_type = $option_type;
+        $row->option_values = json_encode($option_values);
+        $row->save();
+    }
 
 }

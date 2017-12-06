@@ -9,11 +9,7 @@ namespace system;
  *
  * @method mixed get_lib(string $lib) static 获取指定的类库
  * @method mixed get_ui(string $ui)  static 获取指定的UI
- * @method mixed get_admin_ui(string $ui)  static 获取指定的UI
  * @method controller get_controller(string $controller)  static 获取控制器
- * @method controller get_admin_controller(string $controller)  static 获取后台控制器
- * @method mixed get_service(string $service)  static 获取服务
- * @method mixed get_admin_service(string $service)  static 获取后台服务
  *
  */
 abstract class be
@@ -34,12 +30,15 @@ abstract class be
             $key = $instance . '-' . $args[0];
             if (isset(self::$cache[$key])) return self::$cache[$key];
 
-            if (in_array($instance, array('lib', 'ui', 'admin_ui'))) {
-                $class_name = '\\' . str_replace('_', '\\', $instance) . '\\' . $args[0] . '\\' . $args[0];
+            if (in_array($instance, array('lib', 'ui'))) {
+                $class = '\\' . str_replace('_', '\\', $instance) . '\\' . $args[0] . '\\' . $args[0];
             } else {
-                $class_name = '\\' . str_replace('_', '\\', $instance) . '\\' . $args[0];
+                $class = '\\' . str_replace('_', '\\', $instance) . '\\' . $args[0];
             }
-            self::$cache[$key] = new $class_name();
+
+            if (!class_exists($class)) throw new \exception('资源' . $class . '不存在！');
+
+            self::$cache[$key] = new $class();
             return self::$cache[$key];
         }
 
@@ -47,11 +46,11 @@ abstract class be
     }
 
     /**
-     * 获取数据库连接对象
+     * 获取数据库对象
      *
-     * @param string $config 配置文件名
-     * @return \object
-     * @throws \Exception
+     * @param string $db 数据库名
+     * @return \system\db\driver
+     * @throws \exception
      */
     public static function get_db($db = 'master')
     {
@@ -60,18 +59,15 @@ abstract class be
 
         $config = be::get_config('db');
         if (!isset($config->$db)) {
-            throw new \exception('数据库配置项（'.$db.'）不存在！');
+            throw new \exception('数据库配置项（' . $db . '）不存在！');
         }
 
         $config = $config->$db;
-        switch ($config['driver']) {
-            case 'mysql':
-                self::$cache[$key] = new \system\db\driver\mysql($config);
-                break;
-            default:
-                throw new \exception('数据库配置项（'.$db.'）指定的数据库驱动'.$config['driver'].'不支持！');
-        }
 
+        $class = '\\system\\db\\driver\\' . $config['driver'];
+        if (!class_exists($class)) throw new \exception('数据库配置项（' . $db . '）指定的数据库驱动' . $config['driver'] . '不支持！');
+
+        self::$cache[$key] = new $class($config);
         return self::$cache[$key];
     }
 
@@ -80,45 +76,42 @@ abstract class be
      *
      * @param string $config 配置文件名
      * @return \object
+     * @throws \exception
      */
     public static function get_config($config)
     {
-        $class = '\\data\\config\\' . $config;
-        if (isset(self::$cache[$class])) return self::$cache[$class];
+        $key = 'config:' . $config;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
+
+        $pos = strpos($config, '.');
+        if ($pos === false) throw new \exception('配置文件参数 ' . $config . ' 无效！');
+
+        $app = substr($config, 0, $pos);
+        $config_suffix = substr($config, $pos + 1);
 
         if (defined('ENVIRONMENT')) {
-            $path = PATH_DATA . DS . 'config' . DS . $config . '.' . ENVIRONMENT . '.php';
-            if (file_exists($path)) {
-                include_once $path;
-            }
+            $path = PATH_ROOT . DS . 'app' . DS . $app . DS . 'config' . DS . $config_suffix . '.' . ENVIRONMENT . '.php';
+            if (file_exists($path)) include_once $path;
         }
 
-        $instance = new $class();
-        self::$cache[$class] = $instance;
-        return self::$cache[$class];
-    }
-
-    /**
-     * 获取指定的后台配置文件
-     *
-     * @param string $config 配置文件名
-     * @return \object
-     */
-    public static function get_admin_config($config)
-    {
-        $class = '\\data\\admin_config\\' . $config;
-        if (isset(self::$cache[$class])) return self::$cache[$class];
-
-        if (defined('ENVIRONMENT')) {
-            $path = PATH_DATA . DS . 'admin_config' . DS . $config . '.' . ENVIRONMENT . '.php';
-            if (file_exists($path)) {
-                include_once $path;
-            }
+        $class = '\\app\\' . $app . '\\config\\' . $config_suffix;
+        if (class_exists($class)) {
+            self::$cache[$key] = new $class();;
+            return self::$cache[$key];
         }
 
-        $instance = new $class();
-        self::$cache[$class] = $instance;
-        return self::$cache[$class];
+        // 缓存类的配置文件
+        $path = PATH_DATA . DS . 'cache' . DS . 'config' . DS . $app . DS . $config_suffix . '.php';
+        if (be::get_config('system')->debug || !file_exists($path)) {
+            $service_system = be::get_service('system.cache');
+            $service_system->update_config($app, $config_suffix);
+        }
+
+        $class = '\\data\\cache\\config\\' . $app . '\\' . $config_suffix;
+        if (!class_exists($class)) throw new \exception('配置文件 ' . $config . ' 不存在！');
+
+        self::$cache[$key] = new $class();;
+        return self::$cache[$key];
     }
 
     /**
@@ -126,43 +119,79 @@ abstract class be
      *
      * @param string $app 应用名
      * @return app
+     * @throws \exception
      */
     public static function get_app($app)
     {
         $class = '\\app\\' . $app;
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
+        if (!class_exists($class)) throw new \exception('应用 ' . $app . ' 不存在！');
+
         $instance = new $class();
-        $instance->set_name($app);
         self::$cache[$class] = $instance;
         return self::$cache[$class];
     }
 
     /**
+     * 获取指定的一个服务
+     *
+     * @param string $service 服务名
+     * @return service | mixed
+     * @throws \exception
+     */
+    public static function get_service($service)
+    {
+        $key = 'service:' . $service;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
+
+        $pos = strpos($service, '.');
+        if ($pos === false) throw new \exception('服务参数 ' . $service . ' 无效！');
+
+        $app = substr($service, 0, $pos);
+        $service_suffix = substr($service, $pos + 1);
+
+        $class = '\\app\\' . $app . '\\service\\' . $service_suffix;
+
+        if (!class_exists($class)) throw new \exception('服务 ' . $service . ' 不存在！');
+
+        self::$cache[$key] = new $class();
+        return self::$cache[$key];
+    }
+
+    /**
      * 获取指定的一个数据库行记灵对象
      *
-     * @param string $row 据库行记灵对象名
+     * @param string $row 数据库行记灵对象名
      * @return row | mixed
-     * @throws \Exception
+     * @throws \exception
      */
     public static function get_row($row)
     {
-        $path = PATH_ROOT . DS . 'row' . DS . $row . '.php';
+        $pos = strpos($row, '.');
+        if ($pos === false) throw new \exception('行记灵对象 ' . $row . ' 无效！');
+
+        $app = substr($row, 0, $pos);
+        $row_suffix = substr($row, $pos + 1);
+
+        $path = PATH_ROOT . DS . 'app' . DS . $app . DS . 'row' . DS . $row_suffix . '.php';
         if (file_exists($path)) {
-            $class_name = '\\row\\' . $row;
-            return (new $class_name());
+            $class = '\\app\\' . $app . '\\row\\' . $row_suffix;
+            if (class_exists($class)) return (new $class());
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'row' . DS . $row . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'row' . DS . $app . DS . $row_suffix . '.php';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_row($row);
-            if (!file_exists($path)) {
-                throw new \exception('row '.$row.' 不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_row($app, $row_suffix);
         }
-        $class_name = '\\data\\system\\cache\\row\\' . $row;
-        return (new $class_name());
+
+        $class = '\\data\\system\\cache\\row\\' . $app . '\\' . $row_suffix;
+        if (!class_exists($class)) {
+            throw new \exception('行记灵对象 ' . $row . ' 不存在！');
+        }
+
+        return (new $class());
     }
 
 
@@ -171,28 +200,36 @@ abstract class be
      *
      * @param string $table 表名
      * @return table
-     * @throws \Exception
+     * @throws \exception
      */
     public static function get_table($table = null)
     {
         if ($table === null) return new table();
 
-        $path = PATH_ROOT . DS . 'table' . DS . $table . '.php';
+        $pos = strpos($table, '.');
+        if ($pos === false) throw new \exception('表对象 ' . $table . ' 无效！');
+
+        $app = substr($table, 0, $pos);
+        $table_suffix = substr($table, $pos + 1);
+
+        $path = PATH_ROOT . DS . 'app' . DS . $app . DS . 'table' . DS . $table_suffix . '.php';
         if (file_exists($path)) {
-            $class_name = '\\table\\' . $table;
-            return (new $class_name());
+            $class = '\\app\\' . $app . '\\table\\' . $table_suffix;
+            return (new $class());
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'table' . DS . $table . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'table' . DS . $app . DS . $table_suffix . '.php';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_table($table);
-            if (!file_exists($path)) {
-                throw new \exception('table '.$table.' 不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_table($app, $table_suffix);
         }
-        $class_name = '\\data\\system\\cache\\table\\' . $table;
-        return (new $class_name());
+
+        $class = '\\data\\system\\cache\\table\\' . $app . '\\' . $table_suffix;
+        if (!class_exists($class)) {
+            throw new \exception('表对象 ' . $table . ' 不存在！');
+        }
+
+        return (new $class());
     }
 
     /**
@@ -200,20 +237,21 @@ abstract class be
      *
      * @param string $menu 菜单名
      * @return menu
-     * @throws \Exception
+     * @throws \exception
      */
     public static function get_menu($menu)
     {
         $class = '\\data\\system\\cache\\menu\\' . $menu;
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $menu . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'menu' . DS . $menu . '.php';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_menu($menu);
-            if (!file_exists($path)) {
-                throw new \exception('菜单 '.$menu.' 不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_menu($menu);
+        }
+
+        if (!class_exists($class)) {
+            throw new \exception('菜单 ' . $menu . ' 不存在！');
         }
 
         self::$cache[$class] = new $class();
@@ -225,24 +263,22 @@ abstract class be
      *
      * @param int $role_id 角色ID
      * @return object
-     * @throws \Exception
+     * @throws \exception
      */
     public static function get_user_role($role_id)
     {
         $class = '\\data\\system\\cache\\user_role\\user_role_' . $role_id;
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'user_role' . DS . 'user_role_'. $role_id . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'user_role' . DS . 'user_role_' . $role_id . '.php';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_user_role($role_id);
-            if (!file_exists($path)) {
-                throw new \exception('前台用户角色 #'.$role_id.' 不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_user_role($role_id);
         }
-        include_once $path;
 
-        if (!class_exists($class)) return null;
+        if (!class_exists($class)) {
+            throw new \exception('前台用户角色 #' . $role_id . ' 不存在！');
+        }
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];
@@ -253,24 +289,22 @@ abstract class be
      *
      * @param int $role_id 角色ID
      * @return object
-     * @throws \Exception
+     * @throws \exception
      */
     public static function get_admin_user_role($role_id)
     {
         $class = '\\data\\system\\cache\\admin_user_role\\admin_user_role_' . $role_id;
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_admin_user_role($role_id);
-            if (!file_exists($path)) {
-                throw new \exception('后台管理员角色 #'.$role_id.' 不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_admin_user_role($role_id);
         }
-        include_once $path;
 
-        if (!class_exists($class)) return null;
+        if (!class_exists($class)) {
+            throw new \exception('后台管理员角色 #' . $role_id . ' 不存在！');
+        }
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];
@@ -287,13 +321,18 @@ abstract class be
         $key = 'html-' . $class;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html' . DS . $class . '.html';
+        $path = PATH_DATA . DS . 'cache' . DS . 'html' . DS . $class . '.html';
         if (be::get_config('system')->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_html($class);
-            if (!file_exists($path)) return '';
+            $service_system = be::get_service('system.cache');
+            $service_system->update_html($class);
         }
-        self::$cache[$key] = file_get_contents($path);
+
+        $html = '';
+        if (file_exists($path)) {
+            $html = file_get_contents($path);
+        }
+
+        self::$cache[$key] = $html;
         return self::$cache[$key];
     }
 
@@ -303,67 +342,27 @@ abstract class be
      * @param string $template 模板名
      * @param string $theme 主题名
      * @return template
-     * @throws \Exception
+     * @throws \exception
      */
-    public static function get_template($template, $theme = null)
+    public static function get_template($template)
     {
-        $config = be::get_config('system');
-        if ($theme === null) {
-            $theme = $config->theme;
-        }
+        $class = '\\data\\system\\cache\\template\\' . str_replace('.', '\\', $template);
+        if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $key = 'template-' . $theme . '-' . $template;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
+        $config = be::get_config('system.system');
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_DATA . DS . 'cache' . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
         if ($config->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_template($theme, $template);
-            if (!file_exists($path)) {
-                throw new \exception('模板（'.$template.'）不存在！');
-            }
+            $service_system = be::get_service('system.cache');
+            $service_system->update_template($template);
         }
 
-        $template_class_name = '\\data\\system\\cache\\template\\' . $theme . '\\' . str_replace('.', '\\', $template);
-        $template_instance = new $template_class_name();
-
-        self::$cache[$key] = $template_instance;
-        return self::$cache[$key];
-    }
-
-
-    /**
-     * 获取指定的一个后台模板
-     *
-     * @param string $template 模板名
-     * @param string $theme 主题名
-     * @return template
-     * @throws \Exception
-     */
-    public static function get_admin_template($template, $theme = null)
-    {
-        $config = be::get_admin_config('system');
-        if ($theme === null) {
-            $theme = $config->theme;
+        if (!class_exists($class)) {
+            throw new \exception('模板（' . $template . '）不存在！');
         }
 
-        $key = 'admin_template-' . $theme . '-' . $template;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_template' . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
-        if ($config->debug || !file_exists($path)) {
-            $service_system = be::get_service('system');
-            $service_system->update_cache_admin_template($theme, $template);
-            if (!file_exists($path)) {
-                throw new \exception('后台模板（'.$template.'）不存在！');
-            };
-        }
-
-        $template_class_name = '\\data\\system\\cache\\admin_template\\' . $theme . '\\' . str_replace('.', '\\', $template);
-        $template_instance = new $template_class_name();
-
-        self::$cache[$key] = $template_instance;
-        return self::$cache[$key];
+        self::$cache[$class] = new $class();
+        return self::$cache[$class];
     }
 
     /**
@@ -371,13 +370,20 @@ abstract class be
      *
      * @param string $router 路由名
      * @return router
+     * @throws \exception
      */
     public static function get_router($router)
     {
         $key = 'router-' . $router;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = PATH_ROOT . DS . 'router' . DS . $router . '.php';
+        $pos = strpos($router, '.');
+        if ($pos === false) throw new \exception('router 参数 ' . $router . ' 无效！');
+
+        $app = substr($router, 0, $pos);
+        $router_suffix = substr($router, $pos + 1);
+
+        $path = PATH_ROOT . DS . 'app' . DS . $app . DS . 'router' . DS . $router_suffix . '.php';
         if (file_exists($path)) {
             $class_name = '\\router\\' . $router;
             self::$cache[$key] = new $class_name();

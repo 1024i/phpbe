@@ -1,10 +1,3 @@
 /.idea
-/data/system/cache/*
-/data/system/error_log/*
-/data/article/*
-/data/admin_user/avatar/*.jpg
-/data/admin_user/avatar/*.gif
-/data/admin_user/avatar/*.png
-/data/user/avatar/*.jpg
-/data/user/avatar/*.gif
-/data/user/avatar/*.png
+/cache/*
+/data/*

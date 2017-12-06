@@ -579,7 +579,6 @@ class article extends \admin\system\controller
 
     public function setting()
     {
-        $template = be::get_admin_template('article.setting');
         response::set_title('设置文章系统参数');
         response::set('config_article', be::get_config('article'));
         response::display();
@@ -658,5 +657,3 @@ class article extends \admin\system\controller
     }
 
 }
-
-?>

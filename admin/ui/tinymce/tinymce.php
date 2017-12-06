@@ -9,7 +9,7 @@ class tinymce extends \ui\tinymce\tinymce
 		if (!$this->head) {
 			$this->head = true;
 ?>
-<script type="text/javascript" src="<?php echo URL_ROOT; ?>/ui/tinymce/4.1.5/jquery.tinymce.min.js"></script>
+<script type="text/javascript" src="<?php echo URL_ROOT; ?>/system/ui/tinymce/4.1.5/jquery.tinymce.min.js"></script>
 
 <script type="text/javascript">
 	$().ready(function() {

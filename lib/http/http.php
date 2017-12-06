@@ -137,6 +137,11 @@ class http extends \system\lib
         curl_setopt($handle, CURLOPT_TIMEOUT, $this->options['timeout']);
         curl_setopt($handle, CURLOPT_MAXREDIRS, $this->options['redirection']);
 
+        if (isset($this->options['userpwd'])) {
+            // 是否权限认证，用户名：密码
+            curl_setopt($handle, CURLOPT_USERPWD, $this->options['userpwd']);
+        }
+
         if ($this->options['method'] == 'POST' && count($this->data)) {
             curl_setopt($handle, CURLOPT_POST, true);
             curl_setopt($handle, CURLOPT_POSTFIELDS, http_build_query($this->data));

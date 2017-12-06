@@ -245,6 +245,11 @@ CREATE TABLE IF NOT EXISTS `be_user_connect_sina` (
         return false;
     }
 
-}
+    public function install_config() {
 
-?>
+        $this->add_config('是否开启注册功能', 'register', true, 'bool');
+
+
+
+    }
+}

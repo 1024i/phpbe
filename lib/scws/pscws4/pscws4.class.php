@@ -39,7 +39,7 @@
 \* ----------------------------------------------------------------------- */
 
 /** 词典读取代码 (xdb_r) */
-require_once (dirname(__FILE__) . '/xdb_r.class.php');
+require_once(dirname(__FILE__) . '/xdb_r.class.php');
 
 /** defines for ruleset */
 define ('PSCWS4_RULE_MAX',		31);	// just 31, PHP do not support unsigined Int
