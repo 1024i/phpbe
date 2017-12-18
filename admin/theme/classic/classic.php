@@ -5,7 +5,7 @@ use system\session;
 
 <!--{html}-->
 <?php
-$config = be::get_config('system');
+$config = be::get_config('system.system');
 $my = be::get_admin_user();
 ?>
 <!DOCTYPE html>
@@ -40,7 +40,7 @@ $my = be::get_admin_user();
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $admin_config_admin_user = be::get_admin_config('admin_user');
+        $admin_config_admin_user = be::get_config('system.admin_user');
         ?>
         <div class="theme-north-header">
             <?php echo '您好： '; ?><img src="../<?php echo DATA.'/admin_user/avatar/'.($my->avatar_s == ''?('default/'.$admin_config_admin_user->default_avatar_s):$my->avatar_s); ?>" style="max-width:24px;max-height:24px;" /> <?php echo $my->name; ?> &nbsp; &nbsp; <a href="./?controller=admin_user&task=logout" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
@@ -69,7 +69,7 @@ $my = be::get_admin_user();
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">应用<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <?php
-                        $service_app = be::get_admin_service('app');
+                        $service_app = be::get_service('system.app');
                         $apps = $service_app->get_apps();
                         ?>
                         <li><a href="./?controller=system&task=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
@@ -150,7 +150,7 @@ $my = be::get_admin_user();
         <div class="theme-west">
             <!--{west}-->
             <?php
-            $service_app = be::get_admin_service('app');
+            $service_app = be::get_service('system.app');
             $apps = $service_app->get_apps();
             ?>
             <div class="west-title"><div class="title-icon">已安装的应用</div></div>

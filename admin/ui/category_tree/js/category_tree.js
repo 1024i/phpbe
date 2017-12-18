@@ -1,11 +1,11 @@
 
 $(function(){
-    admin_ui_category_tree.init();
+    ui_category_tree.init();
 });
 
 
 
-var admin_ui_category_tree = {
+var ui_category_tree = {
 
     m_oChain: new Object(),
     m_iChainHead: 0,
@@ -45,13 +45,13 @@ var admin_ui_category_tree = {
 	
     init: function(){
 		
-	    $(".admin_ui_category_tree .ui-row").hover(function(){
+	    $(".ui_category_tree .ui-row").hover(function(){
             $(this).addClass("hover");
         }, function(){
             $(this).removeClass("hover");
         });
 	
-        admin_ui_category_tree.update();
+        ui_category_tree.update();
     },
     
     update: function(){
@@ -64,8 +64,8 @@ var admin_ui_category_tree = {
         var oCurrentCategory = oCategory;
         while (oCurrentCategory.next_id != 0) {
         
-            var $eOrderUp = $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .up");
-            var $eOrderDown = $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .down");
+            var $eOrderUp = $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .up");
+            var $eOrderDown = $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .down");
             
             if (oCurrentCategory.pre_id != 0) {
                 if (this.m_oChain[oCurrentCategory.pre_id].level < oCurrentCategory.level) 
@@ -82,7 +82,7 @@ var admin_ui_category_tree = {
                 $eOrderDown.removeClass("disable");
             
             if (oCurrentCategory.children == 0) { // 有子分类时禁止删除
-				$("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeIn();
+				$("#ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeIn();
 			}
 			else
 			{
@@ -94,43 +94,43 @@ var admin_ui_category_tree = {
                     $eOrderDown.addClass("disable");
                 }
 				
-				$("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeOut();
+				$("#ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeOut();
             }
             
             oCurrentCategory = this.m_oChain[oCurrentCategory.next_id];
         }
         
         if (oCurrentCategory.pre_id == 0) 
-            $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
+            $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
         else {
             if (this.m_oChain[oCurrentCategory.pre_id].level >= oCurrentCategory.level) 
-                $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .up").removeClass("disable");
+                $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .up").removeClass("disable");
             else 
-                $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
+                $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
         }
 
-        $("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .order .down").addClass("disable");
+        $("#ui_category_tree_row_" + oCurrentCategory.id + " .order .down").addClass("disable");
         
         if (oCurrentCategory.level != 0) {
             while (oCurrentCategory.level != 0) {
                 oCurrentCategory = this.m_oChain[oCurrentCategory.pre_id];
             }
             
-            $("#admin_ui_category_tree_row_tree_" + oCurrentCategory.id + " .order .down").addClass("disable");
+            $("#ui_category_tree_row_tree_" + oCurrentCategory.id + " .order .down").addClass("disable");
         }
 		
 		// 有子分类时禁止删除
 		if (oCurrentCategory.children == 0)
-			$("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeIn();
+			$("#ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeIn();
 		else
-			$("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeOut();
+			$("#ui_category_tree_row_" + oCurrentCategory.id + " .delete").fadeOut();
     },
     
     
     
     // 打开/合上子节点
     toggle: function(id){
-        var $e = $("#admin_ui_category_tree_row_" + id + " .toggle a");
+        var $e = $("#ui_category_tree_row_" + id + " .toggle a");
         
         if ($e.hasClass("ui-close")) 
             $e.removeClass("ui-close");
@@ -145,12 +145,12 @@ var admin_ui_category_tree = {
             if (oCurrentCategory.level > oCategory.level) {
                 if ($e.hasClass("ui-close"))
 				{
-                    $("#admin_ui_category_tree_row_" + oCurrentCategory.id).hide();
+                    $("#ui_category_tree_row_" + oCurrentCategory.id).hide();
                 }
                 else
 				{
-                    $("#admin_ui_category_tree_row_" + oCurrentCategory.id).show();
-					$("#admin_ui_category_tree_row_" + oCurrentCategory.id + " .toggle a").removeClass("ui-close");
+                    $("#ui_category_tree_row_" + oCurrentCategory.id).show();
+					$("#ui_category_tree_row_" + oCurrentCategory.id + " .toggle a").removeClass("ui-close");
                 }
             }
             else 
@@ -165,7 +165,7 @@ var admin_ui_category_tree = {
     orderUp: function(id)
 	{
 		
-		if( $("#admin_ui_category_tree_row_" + id + " .order .up").hasClass("disable") ) return;
+		if( $("#ui_category_tree_row_" + id + " .order .up").hasClass("disable") ) return;
 		
 		var oCategory = this.m_oChain[id];
 		
@@ -181,8 +181,8 @@ var admin_ui_category_tree = {
 	
 		oCategory.pre_id = oPreCategoryHead.pre_id;
 	
-		$("#admin_ui_category_tree_row_"+oPreCategoryHead.id).before($("#admin_ui_category_tree_row_"+oCategory.id));
-		$("#admin_ui_category_tree_row_"+oCategory.id).mouseout();
+		$("#ui_category_tree_row_"+oPreCategoryHead.id).before($("#ui_category_tree_row_"+oCategory.id));
+		$("#ui_category_tree_row_"+oCategory.id).mouseout();
 		
 		
 		var oLastMovedCategory;
@@ -195,14 +195,14 @@ var admin_ui_category_tree = {
 			oLastMovedCategory = this.m_oChain[oCategory.next_id];
 			while(oLastMovedCategory.next_id!=0 && oLastMovedCategory.level>oCategory.level)
 			{
-				$("#admin_ui_category_tree_row_"+oPreCategoryHead.id).before($("#admin_ui_category_tree_row_"+oLastMovedCategory.id));
+				$("#ui_category_tree_row_"+oPreCategoryHead.id).before($("#ui_category_tree_row_"+oLastMovedCategory.id));
 				oLastMovedCategory =  this.m_oChain[oLastMovedCategory.next_id];
 			}
 			
 			if(oLastMovedCategory.next_id==0)
 			{
 				if(oLastMovedCategory.level>oCategory.level)
-					$("#admin_ui_category_tree_row_"+oPreCategoryHead.id).before($("#admin_ui_category_tree_row_"+oLastMovedCategory.id));
+					$("#ui_category_tree_row_"+oPreCategoryHead.id).before($("#ui_category_tree_row_"+oLastMovedCategory.id));
 				else
 					oLastMovedCategory = this.m_oChain[oLastMovedCategory.pre_id];
 			}
@@ -223,7 +223,7 @@ var admin_ui_category_tree = {
     // 下移
     orderDown: function(id)
 	{
-		if( $("#admin_ui_category_tree_row_" + id + " .order .down").hasClass("disable") ) return;
+		if( $("#ui_category_tree_row_" + id + " .order .down").hasClass("disable") ) return;
 
 		var oCategory = this.m_oChain[id];
 	
@@ -244,11 +244,11 @@ var admin_ui_category_tree = {
 		oLastMovedCategory = oCategory;
 		while(oLastMovedCategory.next_id != oNextCategoryHead.id)
 		{
-			$("#admin_ui_category_tree_row_"+oLastMovedCategory.pre_id).after($("#admin_ui_category_tree_row_"+oLastMovedCategory.id));
+			$("#ui_category_tree_row_"+oLastMovedCategory.pre_id).after($("#ui_category_tree_row_"+oLastMovedCategory.id));
 			oLastMovedCategory = this.m_oChain[oLastMovedCategory.next_id];
 		}
-		$("#admin_ui_category_tree_row_"+oLastMovedCategory.pre_id).after($("#admin_ui_category_tree_row_"+oLastMovedCategory.id));
-		$("#admin_ui_category_tree_row_"+oCategory.id).mouseout();
+		$("#ui_category_tree_row_"+oLastMovedCategory.pre_id).after($("#ui_category_tree_row_"+oLastMovedCategory.id));
+		$("#ui_category_tree_row_"+oCategory.id).mouseout();
 		
 		if(oNextCategoryTail.next_id!=0)
 			this.m_oChain[oNextCategoryTail.next_id].pre_id = oLastMovedCategory.id;
@@ -271,7 +271,7 @@ var admin_ui_category_tree = {
 		}
 		this.m_iNewID++;
 		
-		var str = '<tr id="admin_ui_category_tree_row_'+this.m_iNewID+'" class="ui-row new'+(iParentID==0?' top':' sub')+'" onMouseOver="javascript:$(this).addClass(\'hover\');" onMouseOut="javascript:$(this).removeClass(\'hover\');">'
+		var str = '<tr id="ui_category_tree_row_'+this.m_iNewID+'" class="ui-row new'+(iParentID==0?' top':' sub')+'" onMouseOver="javascript:$(this).addClass(\'hover\');" onMouseOut="javascript:$(this).removeClass(\'hover\');">'
 		str += '<td></td>'
 		str += '<td></td>'
 		str += '<td>';
@@ -290,9 +290,9 @@ var admin_ui_category_tree = {
 		
 		str += this.m_sTemplate;
 
-        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.orderUp('+this.m_iNewID+')" class="icon up"></a></td>';
-        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.orderDown('+this.m_iNewID+')" class="icon down"></a></td>';
-        str += '<td align="center"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.remove('+this.m_iNewID+')" class="icon delete"></a></td>';
+        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderUp('+this.m_iNewID+')" class="icon up"></a></td>';
+        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderDown('+this.m_iNewID+')" class="icon down"></a></td>';
+        str += '<td align="center"><a href="javascript:;" onclick="javascript:ui_category_tree.remove('+this.m_iNewID+')" class="icon delete"></a></td>';
 
 		str += '</tr>';
 		
@@ -306,13 +306,13 @@ var admin_ui_category_tree = {
 	
 				oCurrentCategory.next_id = this.m_iNewID;
 				this.addChain(this.m_iNewID, "", 0, oCurrentCategory.id, 0, 0, 0);
-				$("#admin_ui_category_tree_row_"+oCurrentCategory.id).after(str);
+				$("#ui_category_tree_row_"+oCurrentCategory.id).after(str);
 			}
 			else
 			{
 				this.m_iChainHead = this.m_iNewID;
 				this.addChain(this.m_iNewID, "", 0, 0, 0, 0, 0);
-				$("#admin_ui_category_tree_rows").append(str);
+				$("#ui_category_tree_rows").append(str);
 			}
 		}
 		else
@@ -351,9 +351,9 @@ var admin_ui_category_tree = {
 				this.addChain(this.m_iNewID, "", iParentID, oCurrentCategory.id, oNextCategory.id, oParentCategory.level+1, 0);
 			}
 
-			$("#admin_ui_category_tree_row_"+oCurrentCategory.id).after(str);
+			$("#ui_category_tree_row_"+oCurrentCategory.id).after(str);
 			
-			var $e = $("#admin_ui_category_tree_row_" + oParentCategory.id + " .toggle a");
+			var $e = $("#ui_category_tree_row_" + oParentCategory.id + " .toggle a");
 			if(oParentCategory.children)
 			{
 				// 添加新节点时， 如果父节点是合上的， 则自动打开
@@ -377,7 +377,7 @@ var admin_ui_category_tree = {
 		var oCurrentCategory = this.m_oChain[id]; // 获取当前操作的节点
 		if(oCurrentCategory.children>0) return;
 		
-		var $e = $("#admin_ui_category_tree_row_" + id);
+		var $e = $("#ui_category_tree_row_" + id);
 		if (!$e.hasClass("new") && !confirm(LANG_UI_CATEGORY_TREE_DELETE_CONFIRM)) return;
 
 		if(oCurrentCategory.pre_id)
@@ -397,8 +397,8 @@ var admin_ui_category_tree = {
 			oParentCategory.children--;
 			
 			if (oParentCategory.children == 0) {
-				$("#admin_ui_category_tree_row_" + oParentCategory.id + " .toggle a").fadeOut();
-				$("#admin_ui_category_tree_row_" + oParentCategory.id + " .delete").fadeIn();
+				$("#ui_category_tree_row_" + oParentCategory.id + " .toggle a").fadeOut();
+				$("#ui_category_tree_row_" + oParentCategory.id + " .delete").fadeIn();
 			}
 		}
 
@@ -411,20 +411,20 @@ var admin_ui_category_tree = {
 		}
 		else 
 		{
-			$("#admin_ui_category_tree_row_" + id + " .add, #admin_ui_category_tree_row_" + id + " .delete").fadeOut();
-			$("#admin_ui_category_tree_row_" + id + " .name").append(" &nbsp; " + g_sLoadingImage + LANG_UI_CATEGORY_TREE_DELETING);
+			$("#ui_category_tree_row_" + id + " .add, #ui_category_tree_row_" + id + " .delete").fadeOut();
+			$("#ui_category_tree_row_" + id + " .name").append(" &nbsp; " + g_sLoadingImage + LANG_UI_CATEGORY_TREE_DELETING);
 
 			// 提交服务器删除操作
 			$.ajax({
 				type: 'POST',
-				url: admin_ui_category_tree.m_sDeleteAction,
+				url: ui_category_tree.m_sDeleteAction,
 				data: "id=" + id,
 				dataType : 'json',
 				success: function(json){
 					//if(json.error=="0")
 					//{
 						$e.remove();
-						admin_ui_category_tree.update();
+						ui_category_tree.update();
 					//}
 					//else
 					//{

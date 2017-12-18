@@ -14,6 +14,7 @@ class http extends \system\lib
     protected $options = null;
     protected $url = null;
     protected $data = null;
+    protected $header = [];
 
     /**
      * 构造函数
@@ -50,6 +51,7 @@ class http extends \system\lib
         ];
         $this->url = null;
         $this->data = [];
+        $this->header = [];
     }
 
     /**
@@ -61,6 +63,26 @@ class http extends \system\lib
     public function option($name, $value)
     {
         $this->options[$name] = $value;
+    }
+
+    /**
+     * 设置头信息
+     *
+     * @param $value
+     */
+    public function header($value)
+    {
+        $this->header[] = $value;
+    }
+
+    /**
+     * 验证身份
+     *
+     * @param $user
+     * @param $pass
+     */
+    public function authorization($user, $pass) {
+        $this->header[] = 'Authorization: Basic '.base64_encode($user.':'.$pass);
     }
 
     /**
@@ -96,8 +118,8 @@ class http extends \system\lib
      */
     public function get($url)
     {
-        $this->option('method', 'GET');
-        $this->set_url($url);
+        $this->options['method'] = 'GET';
+        $this->url = $url;
         return $this->request();
     }
 
@@ -110,9 +132,25 @@ class http extends \system\lib
      */
     public function post($url, $data = [])
     {
-        $this->option('method', 'POST');
-        $this->set_url($url);
-        $this->set_data($data);
+        $this->options['method'] = 'POST';
+        $this->url = $url;
+        $this->data = http_build_query($data);
+        return $this->request();
+    }
+
+    /**
+     * POST 请求，数据为JSON
+     *
+     * @param $url
+     * @param mixed $data
+     * @return bool|mixed
+     */
+    public function postJson($url, $data)
+    {
+        $this->options['method'] = 'POST';
+        $this->header[] = 'Content-Type: application/json; charset=utf-8';
+        $this->url = $url;
+        $this->data = json_encode($data);
         return $this->request();
     }
 
@@ -137,6 +175,10 @@ class http extends \system\lib
         curl_setopt($handle, CURLOPT_TIMEOUT, $this->options['timeout']);
         curl_setopt($handle, CURLOPT_MAXREDIRS, $this->options['redirection']);
 
+        if (count($this->header)) {
+            curl_setopt($handle, CURLOPT_HTTPHEADER, $this->header);
+        }
+
         if (isset($this->options['userpwd'])) {
             // 是否权限认证，用户名：密码
             curl_setopt($handle, CURLOPT_USERPWD, $this->options['userpwd']);
@@ -144,7 +186,7 @@ class http extends \system\lib
 
         if ($this->options['method'] == 'POST' && count($this->data)) {
             curl_setopt($handle, CURLOPT_POST, true);
-            curl_setopt($handle, CURLOPT_POSTFIELDS, http_build_query($this->data));
+            curl_setopt($handle, CURLOPT_POSTFIELDS, $this->data);
         }
 
         if ($this->options['http_version'] == '1.0')

@@ -1,6 +1,7 @@
 <?php
-
 namespace system;
+
+use system\db\exception;
 
 /**
  * 数据库表行记录
@@ -47,12 +48,12 @@ abstract class row extends obj
      *
      * @param string | array | object $data 要绑定的数据对象
      * @return \system\row | bool
+     * @throws exception
      */
     public function bind($data)
     {
         if (!is_object($data) && !is_array($data)) {
-            $this->set_error('绑定失败，不合法的数据源！');
-            return false;
+            throw new exception('绑定失败，不合法的数据源！');
         }
 
         if (is_object($data)) $data = get_object_vars($data);
@@ -75,6 +76,7 @@ abstract class row extends obj
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
      * @return \system\row | false
+     * @throws exception
      */
     public function load($field, $value = null)
     {
@@ -96,8 +98,7 @@ abstract class row extends obj
             }
         } else {
             if (is_array($field)) {
-                $this->set_error('row->load() 方法参数错误！');
-                return false;
+                throw new exception('row->load() 方法参数错误！');
             }
             $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $field . $this->quote . '=?';
             $values[] = $value;
@@ -114,16 +115,10 @@ abstract class row extends obj
         if ($row === null) {
             $db = be::get_db($this->db);
             $row = $db->get_object($sql, $values);
-
-            if ($db->has_error()) {
-                $this->set_error($db->get_error());
-                return false;
-            }
         }
 
-        if (empty($row)) {
-            $this->set_error('未找到指定数据记录！');
-            return false;
+        if (!$row) {
+            throw new exception('未找到指定数据记录！');
         }
 
         if ($this->cache_expire > 0) {
@@ -140,22 +135,14 @@ abstract class row extends obj
      */
     public function save()
     {
-        $success = null;
-
         $db = be::get_db($this->db);
 
         $primary_key = $this->primary_key;
         if ($this->$primary_key) {
-            $success = $db->update($this->table_name, $this, $this->primary_key);
+            $db->update($this->table_name, $this, $this->primary_key);
         } else {
-            $success = $db->insert($this->table_name, $this);
-
+            $db->insert($this->table_name, $this);
             $this->$primary_key = $db->get_last_insert_id();
-        }
-
-        if (!$success) {
-            $this->set_error($db->get_error());
-            return false;
         }
 
         return true;
@@ -166,6 +153,7 @@ abstract class row extends obj
      *
      * @param int $id 主键值
      * @return bool
+     * @throws exception
      */
     public function delete($id = null)
     {
@@ -173,17 +161,11 @@ abstract class row extends obj
         if ($id === null) $id = $this->$primary_key;
 
         if ($id === null) {
-            $this->set_error('参数缺失, 请指定要删除记录的编号！');
-            return false;
+            throw new exception('参数缺失, 请指定要删除记录的编号！');
         }
 
         $db = be::get_db($this->db);
         $db->execute('DELETE FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?', array($id));
-
-        if ($db->has_error()) {
-            $this->set_error($db->get_error());
-            return false;
-        }
 
         return true;
     }
@@ -215,11 +197,6 @@ abstract class row extends obj
         $db = be::get_db($this->db);
         $db->execute($sql, array($id));
 
-        if ($db->has_error()) {
-            $this->set_error($db->get_error());
-            return false;
-        }
-
         return true;
     }
 
@@ -238,11 +215,6 @@ abstract class row extends obj
 
         $db = be::get_db($this->db);
         $db->execute($sql, array($id));
-
-        if ($db->has_error()) {
-            $this->set_error($db->get_error());
-            return false;
-        }
 
         return true;
     }

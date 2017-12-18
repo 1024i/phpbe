@@ -13,7 +13,7 @@ PATH_ADMIN: 后台绝对路径
 define('DS', DIRECTORY_SEPARATOR);
 define('PATH_ROOT', __DIR__);
 define('ADMIN', 'admin');
-define('PATH_ADMIN', PATH_ROOT.DS.ADMIN);
+define('PATH_ADMIN', PATH_ROOT . DS . ADMIN);
 
 /*
  * URL_ROOT: 网站网址
@@ -24,19 +24,22 @@ define('PATH_ADMIN', PATH_ROOT.DS.ADMIN);
  * define('URL_ROOT', 'http://www.phpbe.com/xxx/xxx');
 */
 if (!defined('URL_ROOT')) { // 后台管理
-	$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-	$url .= isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']));
-	$url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/index.php'));
-	define('URL_ROOT', $url);
+    $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
+    $url .= isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']));
+    $url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/index.php'));
+    define('URL_ROOT', $url);
 }
 
 define('URL_ADMIN', URL_ROOT . '/' . ADMIN);
 
+// 可写文件存储路径
+define('PATH_CACHE', PATH_ROOT . DS . 'cache');
+
 // 可写文件存储 目录名
 define('DATA', 'data');
 
-// 可写文件存储路径 
-define('PATH_DATA', PATH_ROOT.DS.DATA);
+// 可写文件存储路径
+define('PATH_DATA', PATH_ROOT . DS . DATA);
 
 // 可写文件存储 网址
 define('URL_DATA', URL_ROOT . '/' . DATA);

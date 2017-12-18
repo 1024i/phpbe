@@ -77,7 +77,7 @@ class category_tree extends \system\ui
     public function display()
     {
 		if ($this->actions['save'] ===false || $this->actions['delete'] ===false) {
-			echo 'Please set (admin_ui_category_tree->set_action)';
+			echo 'Please set (ui_category_tree->set_action)';
 			return;
 		}
 		
@@ -94,16 +94,16 @@ class category_tree extends \system\ui
                     $pre_id = $current_id;
                     $current_id = $category->id;
                     $next_id = $cat->id;
-                    echo 'admin_ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $pre_id . ',' . $next_id . ',' . $category->level . ',' . $category->children . ');';
+                    echo 'ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $pre_id . ',' . $next_id . ',' . $category->level . ',' . $category->children . ');';
                 }
                 else
-                    echo 'admin_ui_category_tree.setChainHead(' . $cat->id . ');';
+                    echo 'ui_category_tree.setChainHead(' . $cat->id . ');';
                 $category = $cat;
             }
-            echo 'admin_ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $current_id . ',0,' . $category->level . ',' . $category->children . ');';
+            echo 'ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $current_id . ',0,' . $category->level . ',' . $category->children . ');';
             
-			echo 'admin_ui_category_tree.setSaveAction("' . $this->actions['save']['url'] . '");';
-            echo 'admin_ui_category_tree.setDeleteAction("' . $this->actions['delete']['url'] . '");';
+			echo 'ui_category_tree.setSaveAction("' . $this->actions['save']['url'] . '");';
+            echo 'ui_category_tree.setDeleteAction("' . $this->actions['delete']['url'] . '");';
         }
         
         $template = '';
@@ -116,11 +116,11 @@ class category_tree extends \system\ui
         }
         $template = str_replace('"', '\"', $template);
         
-        echo 'admin_ui_category_tree.setTemplate("' . $template . '");';
+        echo 'ui_category_tree.setTemplate("' . $template . '");';
         echo '</script>';
         
-        echo '<div class="admin_ui_category_tree">';
-        echo '<form action="'.$this->actions['save']['url'].'" id="admin_ui_category_tree_form" method="post">';
+        echo '<div class="ui_category_tree">';
+        echo '<form action="'.$this->actions['save']['url'].'" id="ui_category_tree_form" method="post">';
         echo $this->header;
         echo '<table>';
         echo '<thead>';
@@ -144,16 +144,16 @@ class category_tree extends \system\ui
         echo '</tr>';
         echo '</thead>';
         
-        echo '<tbody id="admin_ui_category_tree_rows">';
+        echo '<tbody id="ui_category_tree_rows">';
         
         $n = count($this->fields) + 6;
         
         if (count($this->data)) {
             foreach ($this->data as $obj) {
-                echo '<tr id="admin_ui_category_tree_row_' . $obj->id . '" class="ui-row'.(($obj->level == 0)?' top':' sub').'">';
-                echo '<td align="right"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.add(' . $obj->id . ')" class="icon add" title="'.'在此分类下添加子分类'.'" data-toggle="tooltip"></a></td>';
+                echo '<tr id="ui_category_tree_row_' . $obj->id . '" class="ui-row'.(($obj->level == 0)?' top':' sub').'">';
+                echo '<td align="right"><a href="javascript:;" onclick="javascript:ui_category_tree.add(' . $obj->id . ')" class="icon add" title="'.'在此分类下添加子分类'.'" data-toggle="tooltip"></a></td>';
                 echo '<td align="center" class="toggle">';
-                echo '<a class="icon" href="javascript:;" onclick="javascript:admin_ui_category_tree.toggle(' . $obj->id . ')"';
+                echo '<a class="icon" href="javascript:;" onclick="javascript:ui_category_tree.toggle(' . $obj->id . ')"';
                 if ($obj->children == 0) echo ' style="display:none;"';
                 echo '></a>';
                 echo '</td>';
@@ -192,9 +192,9 @@ class category_tree extends \system\ui
                     }
                 }
                 
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
-                echo '<td align="center" width="20"><a href="javascript:;" onclick="javascript:admin_ui_category_tree.remove(' . $obj->id . ')" class="icon delete"';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
+                echo '<td align="center" width="20"><a href="javascript:;" onclick="javascript:ui_category_tree.remove(' . $obj->id . ')" class="icon delete"';
                 if ($obj->children!=0) echo ' style="display:none;"';
                 echo '></a></td>';
                 
@@ -207,7 +207,7 @@ class category_tree extends \system\ui
         echo '<tr>';
         echo '<td colspan="' . $n . '">';
         
-        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:admin_ui_category_tree.add(0)"/> &nbsp;';
+        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:ui_category_tree.add(0)"/> &nbsp;';
         echo '<input type="submit" class="btn btn-primary" value="'.$this->actions['save']['label'].'" />';
         
         echo '</td>';
@@ -256,4 +256,3 @@ class category_tree extends \system\ui
     
 
 }
-?>

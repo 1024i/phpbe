@@ -14,7 +14,7 @@ class user_connect_sina extends \system\service
     // 构造函数
     public function __construct()
     {
-		$config = be::get_config('user');
+		$config = be::get_config('system.user');
         $this->app_key = $config->connect_sina_app_key;
 		$this->app_secret = $config->connect_sina_app_secret;
     }
@@ -110,10 +110,10 @@ class user_connect_sina extends \system\service
 
 	public function register($user_info)
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 
 		$t = time();
-		$row_user = be::get_row('user');
+		$row_user = be::get_row('system.user');
 		$row_user->connect = 'sina';
 		$row_user->name = $user_info->name;
 		$row_user->register_time = $t;

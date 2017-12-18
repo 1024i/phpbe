@@ -116,7 +116,7 @@ class response
      * @param string $redirect_url 跳转网址
      * @param int $code 错误码
      */
-    public static function success($message, $redirect_url = null, $code = 0)
+    public static function success($message, $redirect_url = 'referer', $code = 0)
     {
         if (request::is_ajax()) {
             self::set('success', true);
@@ -125,11 +125,14 @@ class response
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
-            self::set_message($message, 'success');
-
-            if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
-            header('location:' . $redirect_url);
-            exit();
+            if ($redirect_url === null) {
+                self::end($message);
+            } else {
+                self::set_message($message, 'success');
+                if ($redirect_url == 'referer') $redirect_url = $_SERVER['HTTP_REFERER'];
+                header('location:' . $redirect_url);
+                exit();
+            }
         }
     }
 
@@ -140,7 +143,7 @@ class response
      * @param string $redirect_url 跳转网址
      * @param int $code 错误码
      */
-    public static function error($message, $redirect_url = null, $code = 1)
+    public static function error($message, $redirect_url = 'referer', $code = 1)
     {
         if (request::is_ajax()) {
             self::set('success', false);
@@ -149,11 +152,14 @@ class response
             if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
             self::ajax();
         } else {
-            self::set_message($message, 'error');
-
-            if ($redirect_url === null) $redirect_url = $_SERVER['HTTP_REFERER'];
-            header('location:' . $redirect_url);
-            exit();
+            if ($redirect_url === null) {
+                self::end($message);
+            } else {
+                self::set_message($message, 'error');
+                if ($redirect_url == 'referer') $redirect_url = $_SERVER['HTTP_REFERER'];
+                header('location:' . $redirect_url);
+                exit();
+            }
         }
     }
 

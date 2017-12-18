@@ -8,7 +8,7 @@ use system\be;
 <!--{middle}-->
 <!--{center}-->
 <?php
-$config_user = be::get_config('user');
+$config_user = be::get_config('system.user');
 $username = $this->get('username');
 $email = $this->get('email');
 ?>

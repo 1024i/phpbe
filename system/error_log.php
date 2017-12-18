@@ -15,7 +15,7 @@ class error_log
      */
     public static function log(\Throwable $e)
     {
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
         if ($config_system->error_log & $e->getCode()) return;
 
         $type = null;

@@ -2,8 +2,9 @@
 
 namespace service;
 
+use app\system\tool\random;
+use app\system\tool\validator;
 use system\be;
-use system\db;
 use system\session;
 use system\cookie;
 
@@ -30,7 +31,7 @@ class user extends \system\service
         }
         session::set($ip, $times);
 
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load(['username' => $username]);
 
         if ($row_user->id > 0) {
@@ -50,7 +51,7 @@ class user extends \system\service
                 $row_user->save();
 
                 if ($remember_me) {
-                    $config_user = be::get_config('user');
+                    $config_user = be::get_config('system.user');
                     $remember_me = $username . '|||' . $this->encrypt_password($password, $row_user->salt);
                     $remember_me = $this->rc4($remember_me, $config_user->remember_me_key);
                     $remember_me = base64_encode($remember_me);
@@ -77,7 +78,7 @@ class user extends \system\service
         if (cookie::has('_remember_me')) {
             $remember_me = cookie::get('_remember_me', '');
             if ($remember_me) {
-                $config_user = be::get_config('user');
+                $config_user = be::get_config('system.user');
                 $remember_me = base64_decode($remember_me);
                 $remember_me = $this->rc4($remember_me, $config_user->remember_me_key);
                 $remember_me = explode('|||', $remember_me);
@@ -85,7 +86,7 @@ class user extends \system\service
                     $username = $remember_me[0];
                     $password = $remember_me[0];
 
-                    $row_user = be::get_row('user');
+                    $row_user = be::get_row('system.user');
                     $row_user->load(['username' => $username]);
 
                     if ($row_user->id > 0 && $this->encrypt_password($row_user->password, $row_user->salt) == $password && $row_user->block == 0) {
@@ -126,7 +127,7 @@ class user extends \system\service
      */
     public function register($username, $email, $password, $name = '')
     {
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load(['username' => $username]);
 
         if ($row_user->id > 0) {
@@ -134,7 +135,7 @@ class user extends \system\service
             return false;
         }
 
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load(['email' => $email]);
 
         if ($row_user->id > 0) {
@@ -146,28 +147,28 @@ class user extends \system\service
 
         $t = time();
 
-        $config_user = be::get_config('user');
+        $config_user = be::get_config('system.user');
 
-        $salt = $this->getRandomString(32);
+        $salt = random::complex(32);
 
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->username = $username;
         $row_user->email = $email;
         $row_user->name = $name;
         $row_user->password = $this->encrypt_password($password, $salt);
         $row_user->salt = $salt;
-        $row_user->token = $this->getRandomString(32);
+        $row_user->token = random::complex(32);
         $row_user->register_time = $t;
         $row_user->last_login_time = $t;
         $row_user->is_admin = 0;
         $row_user->block = ($config_user->email_valid == '1' ? 1 : 0);
         $row_user->save();
 
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
 
-        $config_user = be::get_config('user');
+        $config_user = be::get_config('system.user');
         if ($config_user->email_valid == '1') {
-            $activation_url = url('controller=user&task=forget_password_reset&user_id=' . $row_user->id . '&token=' . $row_user->token);
+            $activation_url = url('app=system&controller=user&task=forget_password_reset&user_id=' . $row_user->id . '&token=' . $row_user->token);
 
             $data = array(
                 'site_name' => $config_system->site_name,
@@ -207,7 +208,7 @@ class user extends \system\service
         }
 
         if ($config_user->email_register_admin != '') {
-            if ($this->is_email($config_user->email_register_admin)) {
+            if (validator::is_email($config_user->email_register_admin)) {
                 $data = array(
                     'site_name' => $config_system->site_name,
                     'username' => $row_user->username,
@@ -231,23 +232,6 @@ class user extends \system\service
     }
 
     /**
-     * 生成随机字符串
-     *
-     * @param int $n 生成的字符串长度
-     * @return string
-     */
-    private function getRandomString($n) {
-        $seeds = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $return = '';
-        $length = strlen($seeds) - 1;
-        for ($i = 0; $i < $n; $i++){
-            // $return .= substr($seeds, rand(0, $length, 1);
-            $return .= $seeds[rand(0, $length)];
-        }
-        return $return;
-    }
-
-    /**
      * 忘记密码
      * 向用户邮箱发送一封重置密码的邮件
      *
@@ -261,7 +245,7 @@ class user extends \system\service
             return false;
         }
 
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load('username', $username);
 
         if ($row_user->id == 0) {
@@ -274,10 +258,10 @@ class user extends \system\service
             return false;
         }
 
-        $row_user->token = $this->getRandomString(32);
+        $row_user->token = random::complex(32);
         $row_user->save();
 
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
 
         $activation_url = url('controller=user&task=forgot_password_reset&user_id=' . $row_user->id . '&token=' . $row_user->token);
 
@@ -285,7 +269,7 @@ class user extends \system\service
             'site_name' => $config_system->site_name,
             'activation_url' => $activation_url
         );
-        $config_user = be::get_config('user');
+        $config_user = be::get_config('system.user');
 
         $lib_mail = be::get_lib('mail');
 
@@ -310,7 +294,7 @@ class user extends \system\service
      */
     public function forgot_password_reset($user_id, $token, $password)
     {
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load($user_id);
 
         if ($row_user->token != $token) {
@@ -320,20 +304,20 @@ class user extends \system\service
                 $this->set_error('重设密码链接已失效！');
             return false;
         }
-        $salt = $this->getRandomString(32);
+        $salt = random::complex(32);
         $row_user->password = $this->encrypt_password($password, $salt);
         $row_user->salt = $salt;
         $row_user->token = '';
         $row_user->save();
 
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
 
         $data = array(
             'site_name' => $config_system->site_name,
             'site_url' => URL_ROOT
         );
 
-        $config_user = be::get_config('user');
+        $config_user = be::get_config('system.user');
 
         $lib_mail = be::get_lib('mail');
 
@@ -360,18 +344,6 @@ class user extends \system\service
     {
         return sha1(sha1($password) . $salt);
     }
-
-    /**
-     * 校验邮箱是否合法
-     *
-     * @param string $email 邮箱
-     * @return int
-     */
-    public function is_email($email)
-    {
-        return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
-    }
-
 
     /**
      * 文本加密与解密
@@ -423,4 +395,293 @@ class user extends \system\service
         return $result;
     }
 
+
+    /**
+     * 获取指定条件的用户列表
+     *
+     * @param array $conditions 查询条件
+     * @return array
+     */
+    public function get_users($conditions = [])
+    {
+        $table_user = be::get_table('system.user');
+
+        $where = $this->create_user_where($conditions);
+        $table_user->where($where);
+
+        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
+            $table_user->order_by($conditions['order_by_string']);
+        } else {
+            $order_by = 'id';
+            $order_by_dir = 'DESC';
+            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
+            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
+            $table_user->order_by($order_by, $order_by_dir);
+        }
+
+        if (isset($conditions['offset']) && $conditions['offset']) $table_user->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $table_user->limit($conditions['limit']);
+
+        return $table_user->get_objects();
+    }
+
+    /**
+     * 获取指定条件的用户总数
+     *
+     * @param array $conditions 查询条件
+     * @return int
+     */
+    public function get_user_count($conditions = [])
+    {
+        return be::get_table('system.user')
+            ->where($this->create_user_where($conditions))
+            ->count();
+    }
+
+    /**
+     * 生成查询条件 where
+     *
+     * @param array $conditions 查询条件
+     * @return array
+     */
+    private function create_user_where($conditions = [])
+    {
+        $where = [];
+
+        if (isset($conditions['key']) && $conditions['key']) {
+            $where[] = '(';
+            $where[] = ['username', 'like', '%' . $conditions['key'] . '%'];
+            $where[] = 'OR';
+            $where[] = ['name', 'like', '%' . $conditions['key'] . '%'];
+            $where[] = 'OR';
+            $where[] = ['email', 'like', '%' . $conditions['key'] . '%'];
+            $where[] = ')';
+        }
+
+        if (isset($conditions['status']) && is_numeric($conditions['status']) && $conditions['status'] != -1) {
+            $where[] = ['block', $conditions['status']];
+        }
+
+        if (isset($conditions['role_id']) && is_numeric($conditions['role_id']) && $conditions['role_id'] > 0) {
+            $where[] = ['role_id', $conditions['role_id']];
+        }
+
+        return $where;
+    }
+
+    /**
+     * 屏蔽用户账号
+     *
+     * @param string $ids 以逗号分隔的多个用户ID
+     * @return bool
+     */
+    public function unblock($ids)
+    {
+        $db = be::get_db();
+        try {
+            $db->begin_transaction();
+
+            $table = be::get_table('system.user');
+            if (!$table->where('id', 'in', explode(',', $ids))
+                ->update(['block' => 0])
+            ) {
+                throw new \exception($table->get_error());
+            }
+
+            $db->commit();
+        } catch (\exception $e) {
+            $db->rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 启用用户账号
+     *
+     * @param string $ids 以逗号分隔的多个用户ID
+     * @return bool
+     */
+    public function block($ids)
+    {
+        $db = be::get_db();
+        try {
+            $db->begin_transaction();
+
+            $table = be::get_table('system.user');
+            if (!$table->where('id', 'in', explode(',', $ids))
+                ->update(['block' => 1])
+            ) {
+                throw new \exception($table->get_error());
+            }
+
+            $db->commit();
+        } catch (\exception $e) {
+            $db->rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 删除用户账号
+     *
+     * @param string $ids 以逗号分隔的多个用户ID
+     * @return bool
+     */
+    public function delete($ids)
+    {
+        $db = be::get_db();
+        try {
+            $db->begin_transaction();
+
+            $files = [];
+
+            $array = explode(',', $ids);
+            foreach ($array as $id) {
+
+                $row_user = be::get_row('system.user');
+                $row_user->load($id);
+
+                if ($row_user->avatar_s != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_s;
+                if ($row_user->avatar_m != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_m;
+                if ($row_user->avatar_l != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_l;
+
+                if (!$row_user->delete()) {
+                    throw new \exception($row_user->get_error());
+                }
+            }
+
+            $db->commit();
+
+            foreach ($files as $file) {
+                if (file_exists($file)) @unlink($file);
+            }
+
+        } catch (\exception $e) {
+            $db->rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 初始化用户头像
+     *
+     * @param int $user_id 用户ID
+     * @return bool
+     */
+    public function init_avatar($user_id)
+    {
+        $db = be::get_db();
+        try {
+            $db->begin_transaction();
+
+            $row_user = be::get_row('system.user');
+            $row_user->load($user_id);
+
+            $files = [];
+            if ($row_user->avatar_s != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_s;
+            if ($row_user->avatar_m != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_m;
+            if ($row_user->avatar_l != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $row_user->avatar_l;
+
+            $row_user->avatar_s = '';
+            $row_user->avatar_m = '';
+            $row_user->avatar_l = '';
+
+            if (!$row_user->save()) {
+                throw new \exception($row_user->get_error());
+            }
+
+            $db->commit();
+
+            foreach ($files as $file) {
+                if (file_exists($file)) @unlink($file);
+            }
+
+        } catch (\exception $e) {
+            $db->rollback();
+
+            $this->set_error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 检测用户名是否可用
+     *
+     * @param $username
+     * @param int $user_id
+     * @return bool
+     */
+    public function is_username_available($username, $user_id = 0)
+    {
+        $table = be::get_table('system.user');
+        if ($user_id > 0) {
+            $table->where('id', '!=', $user_id);
+        }
+        $table->where('username', $username);
+        return $table->count() == 0;
+    }
+
+    /**
+     * 检测邮箱是否可用
+     *
+     * @param $email
+     * @param int $user_id
+     * @return bool
+     */
+    public function is_email_available($email, $user_id = 0)
+    {
+        $table = be::get_table('system.user');
+        if ($user_id > 0) {
+            $table->where('id', '!=', $user_id);
+        }
+        $table->where('email', $email);
+        return $table->count() == 0;
+    }
+
+    /**
+     * 获取角色列表
+     *
+     * @return array
+     */
+    public function get_roles()
+    {
+        return be::get_table('user_role')->order_by('rank', 'asc')->get_objects();
+    }
+
+    /**
+     * 更新所有角色缓存
+     */
+    public function update_user_roles()
+    {
+        $roles = $this->get_roles();
+        $service_system = be::get_service('system');
+        foreach ($roles as $role) {
+            $service_system->update_cache_user_role($role->id);
+        }
+    }
+
+    /**
+     * 更新指定角色缓存
+     *
+     * @param int $role_id 角色ID
+     */
+    public function update_user_role($role_id)
+    {
+        $service_system = be::get_service('system');
+        $service_system->update_cache_user_role($role_id);
+    }
 }

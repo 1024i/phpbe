@@ -484,10 +484,6 @@ class table extends obj
 
         $db = be::get_db($this->db);
         $result = $key_field === null ? $db->$fn($sql, $sql_data[1]) : $db->$fn($sql, $sql_data[1], $key_field);
-        if (false === $result) {
-            $this->set_error($db->get_error());
-            return false;
-        }
 
         if ($this->cache_expire > 0) {
             cache::set($cache_key, $result, $this->cache_expire);
@@ -571,10 +567,6 @@ class table extends obj
 
         $db = be::get_db($this->db);
         $db->execute($sql, $sql_data[1]);
-         if ($db->has_error()) {
-            $this->set_error($db->get_error());
-            return false;
-        }
 
         return true;
     }
@@ -600,11 +592,6 @@ class table extends obj
         $db = be::get_db($this->db);
         $db->execute($sql, $sql_data[1]);
 
-        if ($db->has_error()) {
-            $this->set_error($db->get_error());
-            return false;
-        }
-
         return true;
     }
 
@@ -627,9 +614,8 @@ class table extends obj
         $this->last_sql = array($sql, $sql_data[1]);
 
         $db = be::get_db($this->db);
-        if (!$db->execute($sql, array_merge(array_values($values), $sql_data[1]))) {
-            return false;
-        }
+        $db->execute($sql, array_merge(array_values($values), $sql_data[1]));
+
         return true;
     }
 
@@ -649,10 +635,7 @@ class table extends obj
         $this->last_sql = array($sql, $sql_data[1]);
 
         $db = be::get_db($this->db);
-        if (!$db->execute($sql, $sql_data[1])) {
-            $this->set_error($db->get_error());
-            return false;
-        }
+        $db->execute($sql, $sql_data[1]);
 
         return true;
     }
@@ -668,10 +651,8 @@ class table extends obj
         $this->last_sql = array($sql, []);
 
         $db = be::get_db($this->db);
-        if (!$db->execute($sql)) {
-            $this->set_error($db->get_error());
-            return false;
-        }
+        $db->execute($sql);
+
         return true;
     }
 
@@ -686,10 +667,8 @@ class table extends obj
         $this->last_sql = array($sql, []);
 
         $db = be::get_db($this->db);
-        if (!$db->execute($sql)) {
-            $this->set_error($db->get_error());
-            return false;
-        }
+        $db->execute($sql);
+
         return true;
     }
 

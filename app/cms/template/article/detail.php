@@ -1,6 +1,6 @@
 <?php
 use system\be;
-$config = be::get_config('system');
+$config = be::get_config('system.system');
 $config_article = be::get_config('article');
 ?>
 <!--{head}-->
@@ -19,7 +19,7 @@ $similar_articles = $this->similar_articles;
 $comments = $this->comments;
 
 $config_article = be::get_config('article');
-$config_user = be::get_config('user');
+$config_user = be::get_config('system.user');
 
 $my = be::get_user();
 ?>

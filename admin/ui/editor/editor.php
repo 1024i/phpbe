@@ -273,7 +273,7 @@ class editor extends \system\ui
                         echo '</textarea>';
                         break;
                     case 'richtext':
-                        $ui_tinymce = be::get_admin_ui('tinymce');
+                        $ui_tinymce = be::get_ui('tinymce');
                         $ui_tinymce->set_name($field['name']);
                         if (isset($field['width'])) $ui_tinymce->set_width($field['width']);
                         if (isset($field['height'])) $ui_tinymce->set_height($field['height']);

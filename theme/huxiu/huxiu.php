@@ -4,7 +4,7 @@ use system\request;
 ?>
 <!--{html}-->
 <?php
-$config = be::get_config('system');
+$config = be::get_config('system.system');
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,8 +40,8 @@ $config = be::get_config('system');
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $config_system = be::get_config('system');
-        $config_user = be::get_config('user');
+        $config_system = be::get_config('system.system');
+        $config_user = be::get_config('system.user');
 
         $menu_id = request::get('menu_id', 0, 'int');
 

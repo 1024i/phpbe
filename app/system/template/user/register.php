@@ -9,7 +9,7 @@ use system\be;
 <!--{middle}-->
 <!--{center}-->
 <?php
-$config_user = be::get_config('user');
+$config_user = be::get_config('system.user');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">

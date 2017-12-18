@@ -8,7 +8,7 @@ class article extends \system\router
 
     public function encode_url($controller, $task, $params = [])
     {
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
 
         if ($task == 'articles') {
             if (isset($params['category_id'])) {

@@ -6,9 +6,20 @@ use system\be;
 use system\request;
 use system\response;
 
+/**
+ *
+ *
+ * @router article
+ * @permission 文章
+ */
 class article extends \system\controller
 {
 
+    /**
+     *
+     *
+     * @permission 首页
+     */
     public function home()
     {
         $service_article = be::get_service('article');
@@ -57,7 +68,7 @@ class article extends \system\controller
             ]);
         }
 
-        $config_system = be::get_config('system');
+        $config_system = be::get_config('system.system');
         response::set_title($config_system->home_title);
         response::set_meta_keywords($config_system->home_meta_keywords);
         response::set_meta_description($config_system->home_meta_description);
@@ -69,6 +80,12 @@ class article extends \system\controller
         response::display();
     }
 
+
+    /**
+     *
+     *
+     * @permission 文章列表
+     */
     public function articles()
     {
         $config_article = be::get_config('article');
@@ -124,7 +141,7 @@ class article extends \system\controller
         $pagination->set_limit($limit);
         $pagination->set_total($service_article->get_article_count($option));
         $pagination->set_page(request::get('page', 1, 'int'));
-        $pagination->set_url('controller=article&task=articles&category_id=' . $category_id);
+        $pagination->set_url('app=cms&controller=article&task=articles&category_id=' . $category_id);
         response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->get_offset();
@@ -151,7 +168,9 @@ class article extends \system\controller
         response::display('article.articles');
     }
 
-
+    /**
+     * @permission 文章明细
+     */
     public function detail()
     {
         $config_article = be::get_config('article');
@@ -159,7 +178,7 @@ class article extends \system\controller
         $article_id = request::get('article_id', 0, 'int');
         if ($article_id == 0) response::end('参数(article_id)缺失！');
 
-        $row_article = be::get_row('article');
+        $row_article = be::get_row('cms.article');
         $row_article->cache($config_article->cache_expire);
         $row_article->load($article_id);
         $row_article->increment('hits', 1); // 点击量加 1

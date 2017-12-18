@@ -29,8 +29,8 @@ class cache extends \system\service
         }
 
         $lib_fso = be::get_lib('fso');
-        if ($file === null) return $lib_fso->rm_dir(PATH_DATA . DS . 'system' . DS . 'cache' . DS . $dir);
-        return $lib_fso->rm_dir(PATH_DATA . DS . 'system' . DS . 'cache' . DS . $dir . DS . $file);
+        if ($file === null) return $lib_fso->rm_dir(PATH_CACHE. DS . $dir);
+        return $lib_fso->rm_dir(PATH_CACHE. DS . $dir . DS . $file);
     }
 
     /**
@@ -95,7 +95,7 @@ class cache extends \system\service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'row' . DS . $name . '.php';
+        $path = PATH_CACHE. DS . 'row' . DS . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -145,7 +145,7 @@ class cache extends \system\service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'table' . DS . $name . '.php';
+        $path = PATH_CACHE. DS . 'table' . DS . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -163,7 +163,7 @@ class cache extends \system\service
      */
     public function update_menu($menu_name)
     {
-        $group = be::get_row('system_menu_group');
+        $group = be::get_row('system.menu_group');
         $group->load(array('class_name' => $menu_name));
         if (!$group->id) {
             $this->set_error('未找到调用类名为 ' . $menu_name . ' 的菜单！');
@@ -174,7 +174,7 @@ class cache extends \system\service
         $menus = $db->get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `rank` ASC');;
 
         $code = '<?php' . "\n";
-        $code .= 'namespace data\system\cache\menu;' . "\n";
+        $code .= 'namespace cache\menu;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $group->class_name . ' extends \system\menu' . "\n";
         $code .= '{' . "\n";
@@ -195,7 +195,7 @@ class cache extends \system\service
                     }
                 }
 
-                $config_system = be::get_config('system');
+                $config_system = be::get_config('system.system');
                 if (serialize($config_system->home_params) != serialize($home_params)) {
                     $config_system->home_params = $home_params;
                     $this->update_config($config_system, PATH_ROOT . DS . 'config' . DS . 'system.php');
@@ -229,7 +229,7 @@ class cache extends \system\service
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'menu' . DS . $group->class_name . '.php';
+        $path = PATH_CACHE. DS . 'menu' . DS . $group->class_name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -255,7 +255,7 @@ class cache extends \system\service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace data\system\cache\user_role;' . "\n";
+        $code .= 'namespace cache\user_role;' . "\n";
         $code .= "\n";
         $code .= 'class user_role_' . $role_id . ' extends \system\role' . "\n";
         $code .= '{' . "\n";
@@ -264,7 +264,7 @@ class cache extends \system\service
         $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'user_role' . DS . 'user_role_' . $role_id . '.php';
+        $path = PATH_CACHE. DS . 'user_role' . DS . 'user_role_' . $role_id . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -290,7 +290,7 @@ class cache extends \system\service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace data\system\cache\admin_user_role;' . "\n";
+        $code .= 'namespace cache\admin_user_role;' . "\n";
         $code .= "\n";
         $code .= 'class admin_user_role_' . $role_id . ' extends \system\role' . "\n";
         $code .= '{' . "\n";
@@ -299,7 +299,7 @@ class cache extends \system\service
         $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
+        $path = PATH_CACHE. DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -324,7 +324,7 @@ class cache extends \system\service
             return false;
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html' . DS . $class . '.html';
+        $path = PATH_CACHE. DS . 'html' . DS . $class . '.html';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -356,7 +356,7 @@ class cache extends \system\service
             return false;
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . ($admin ? 'admin_template' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_CACHE. DS . ($admin ? 'admin_template' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

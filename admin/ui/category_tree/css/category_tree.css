@@ -1,43 +1,43 @@
-.admin_ui_category_tree{}
+.ui_category_tree{}
 
 
 
-.admin_ui_category_tree table{
+.ui_category_tree table{
 	width:100%;
 	border-spacing:0px;
 }
-.admin_ui_category_tree th,
-.admin_ui_category_tree td{padding:4px 3px;}
-.admin_ui_category_tree thead th{background-color:#F0F0F0; border-bottom:1px solid #ccc;}
+.ui_category_tree th,
+.ui_category_tree td{padding:4px 3px;}
+.ui_category_tree thead th{background-color:#F0F0F0; border-bottom:1px solid #ccc;}
 
 
-.admin_ui_category_tree tbody tr{background-color:#fff;}
-.admin_ui_category_tree tbody tr.top{background-color:#F5F5F5;}
-.admin_ui_category_tree tbody tr.hover{background-color:#FFFFDD;}
-.admin_ui_category_tree tbody tr.top td{border-top:1px solid #ddd;}
-.admin_ui_category_tree tbody tr.sub .name{ background:url(../images/line.gif) no-repeat; }
-.admin_ui_category_tree tbody input{border: 1px solid #BBB;}
-
-
-
-.admin_ui_category_tree tfoot td{background-color:#F0F0F0; border-top:1px solid #ccc;padding-left:6px;}
+.ui_category_tree tbody tr{background-color:#fff;}
+.ui_category_tree tbody tr.top{background-color:#F5F5F5;}
+.ui_category_tree tbody tr.hover{background-color:#FFFFDD;}
+.ui_category_tree tbody tr.top td{border-top:1px solid #ddd;}
+.ui_category_tree tbody tr.sub .name{ background:url(../images/line.gif) no-repeat; }
+.ui_category_tree tbody input{border: 1px solid #BBB;}
 
 
 
-.admin_ui_category_tree a.icon{display:block; width:16px; height:16px;}
+.ui_category_tree tfoot td{background-color:#F0F0F0; border-top:1px solid #ccc;padding-left:6px;}
 
-.admin_ui_category_tree a.add{background:url(../images/add.gif) no-repeat; }
-.admin_ui_category_tree a.add:hover{ background-position:0px -16px;}
 
-.admin_ui_category_tree a.delete{background:url(../images/delete.gif) no-repeat; }
-.admin_ui_category_tree a.delete:hover{ background-position:0px -16px;}
 
-.admin_ui_category_tree .order a.up{background:url(../images/order_up.gif) no-repeat;}
-.admin_ui_category_tree .order a.down{background:url(../images/order_down.gif) no-repeat}
-.admin_ui_category_tree .order a.disable{ background-position:0px -16px;cursor:default;}
+.ui_category_tree a.icon{display:block; width:16px; height:16px;}
 
-.admin_ui_category_tree .toggle a{background:url(../images/toggle.gif) top no-repeat;cursor:pointer;}
-.admin_ui_category_tree .toggle a.close{ background-position:bottom;}
+.ui_category_tree a.add{background:url(../images/add.gif) no-repeat; }
+.ui_category_tree a.add:hover{ background-position:0px -16px;}
+
+.ui_category_tree a.delete{background:url(../images/delete.gif) no-repeat; }
+.ui_category_tree a.delete:hover{ background-position:0px -16px;}
+
+.ui_category_tree .order a.up{background:url(../images/order_up.gif) no-repeat;}
+.ui_category_tree .order a.down{background:url(../images/order_down.gif) no-repeat}
+.ui_category_tree .order a.disable{ background-position:0px -16px;cursor:default;}
+
+.ui_category_tree .toggle a{background:url(../images/toggle.gif) top no-repeat;cursor:pointer;}
+.ui_category_tree .toggle a.close{ background-position:bottom;}
 
 
 

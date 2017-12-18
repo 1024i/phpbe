@@ -1,16 +1,11 @@
 <?php
-
 namespace system\db;
-
-use system\be;
 
 /**
  * 数据库类
  */
 class driver
 {
-    protected $errors = array(); // 保存错误信息
-
     /**
      * @var \PDO
      */
@@ -21,7 +16,7 @@ class driver
      */
     protected $statement = null; // 预编译 sql
 
-    protected $config = array();
+    protected $config = [];
 
     public function __construct($config)
     {
@@ -57,7 +52,7 @@ class driver
      * @return \PDOStatement SQL预编译结果对象
      * @throws
      */
-    public function prepare($sql, array $driver_options = array())
+    public function prepare($sql, array $driver_options = [])
     {
         if (!isset($this->connection)) $this->connect();
 
@@ -75,15 +70,14 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 占位参数
-     * @return bool 执行成功/执行失败
-     * @throws
+     * @return true 执行成功
+     * @throws exception
      */
-    public function execute($sql = null, $bind = array())
+    public function execute($sql = null, $bind = [])
     {
         if ($sql === null) {
             if ($this->statement == null) {
-                $this->set_error('没有预编译SQL！');
-                return false;
+                throw new exception('没有预编译SQL！');
             }
 
             if (!$this->statement->execute($bind)) {
@@ -101,7 +95,6 @@ class driver
                 return $this->execute(null, $bind);
             } else {
                 if (!isset($this->connection)) $this->connect();
-                if (!isset($this->connection)) return false;
 
                 $statement = $this->connection->query($sql);
                 if ($statement === false) {
@@ -141,12 +134,12 @@ class driver
     /**
      * 最后一次查询影响到的记录条数
      * @return int | bool 条数/失败
+     * @throws exception
      */
     public function row_count()
     {
         if ($this->statement == null) {
-            $this->set_error('没有预编译SQL！');
-            return false;
+            throw new exception('没有预编译SQL！');
         }
         return $this->statement->rowCount();
     }
@@ -156,17 +149,13 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return string | false
+     * @return string
      */
-    public function get_value($sql = null, $bind = array())
+    public function get_value($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $row = $this->statement->fetch(\PDO::FETCH_NUM);
-            if ($row) $result = $row[0];
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        $row = $this->statement->fetch(\PDO::FETCH_NUM);
+        return $row[0];
     }
 
     /**
@@ -174,16 +163,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return array | false
+     * @return array
      */
-    public function get_values($sql = null, $bind = array())
+    public function get_values($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetchAll(\PDO::FETCH_COLUMN);
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**
@@ -193,7 +178,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_values($sql = null, $bind = array())
+    public function get_yield_values($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($row = $this->statement->fetch(\PDO::FETCH_NUM)) {
@@ -208,16 +193,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return array | false
+     * @return array
      */
-    public function get_key_values($sql = null, $bind = array())
+    public function get_key_values($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
     }
 
     /**
@@ -225,16 +206,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return array | false
+     * @return array
      */
-    public function get_array($sql = null, $bind = array())
+    public function get_array($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetch(\PDO::FETCH_ASSOC);
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -242,16 +219,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return array | false
+     * @return array
      */
-    public function get_arrays($sql = null, $bind = array())
+    public function get_arrays($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -261,7 +234,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_arrays($sql = null, $bind = array())
+    public function get_yield_arrays($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($result = $this->statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -276,18 +249,16 @@ class driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @param string $key 作为下标索引的字段名
-     * @return array | false
+     * @return array
      */
-    public function get_key_arrays($sql = null, $bind = array(), $key)
+    public function get_key_arrays($sql = null, $bind = [], $key)
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $arrays = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+        $this->execute($sql, $bind);
+        $arrays = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
 
-            $result = [];
-            foreach ($arrays as $array) {
-                $result[$array[$key]] = $array;
-            }
+        $result = [];
+        foreach ($arrays as $array) {
+            $result[$array[$key]] = $array;
         }
 
         return $result;
@@ -298,16 +269,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return object | false
+     * @return object
      */
-    public function get_object($sql = null, $bind = array())
+    public function get_object($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetchObject();
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetchObject();
     }
 
     /**
@@ -315,16 +282,12 @@ class driver
      *
      * @param string $sql 查询语句
      * @param array $bind 参数
-     * @return array(object) | false
+     * @return array(object)
      */
-    public function get_objects($sql = null, $bind = array())
+    public function get_objects($sql = null, $bind = [])
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $result = $this->statement->fetchAll(\PDO::FETCH_OBJ);
-        }
-
-        return $result;
+        $this->execute($sql, $bind);
+        return $this->statement->fetchAll(\PDO::FETCH_OBJ);
     }
 
     /**
@@ -334,7 +297,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_objects($sql = null, $bind = array())
+    public function get_yield_objects($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($result = $this->statement->fetchObject()) {
@@ -349,19 +312,16 @@ class driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @param string $key 作为下标索引的字段名
-     * @return array(object) | false
+     * @return array(object)
      */
-    public function get_key_objects($sql = null, $bind = array(), $key)
+    public function get_key_objects($sql = null, $bind = [], $key)
     {
-        $result = false;
-        if ($this->execute($sql, $bind)) {
-            $objects = $this->statement->fetchAll(\PDO::FETCH_OBJ);
-            $result = [];
-            foreach ($objects as $object) {
-                $result[$object->$key] = $object;
-            }
+        $this->execute($sql, $bind);
+        $objects = $this->statement->fetchAll(\PDO::FETCH_OBJ);
+        $result = [];
+        foreach ($objects as $object) {
+            $result[$object->$key] = $object;
         }
-
         return $result;
     }
 
@@ -383,13 +343,13 @@ class driver
                 $vars = get_object_vars($o);
                 $this->execute(null, array_values($vars));
             }
-            return true;
         } else {
             $vars = get_object_vars($obj);
             $sql = 'INSERT INTO ' . $table . '(' . implode(',', array_keys($vars)) . ') VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-            if (!$this->execute($sql, array_values($vars))) return false;
-            return true;
+            $this->execute($sql, array_values($vars));
         }
+
+        return true;
     }
 
     /**
@@ -399,11 +359,12 @@ class driver
      * @param object $obj 要插入数据库的对象，对象属性需要和该表字段一致
      * @param string $primary_key 主键
      * @return bool
+     * @throws exception
      */
     public function update($table, $obj, $primary_key)
     {
-        $fields = array();
-        $field_values = array();
+        $fields = [];
+        $field_values = [];
 
         $where = null;
         $where_value = null;
@@ -428,8 +389,7 @@ class driver
         }
 
         if ($where == null) {
-            $this->set_error('更新数据时未指定条件！');
-            return false;
+            throw new exception('更新数据时未指定条件！');
         }
 
         $sql = 'UPDATE ' . $table . ' SET ' . implode(',', $fields) . ' WHERE ' . $where;
@@ -483,7 +443,7 @@ class driver
     {
         $fields = $this->get_objects('SHOW FIELDS FROM ' . $table);
 
-        $data = array();
+        $data = [];
         foreach ($fields as $field) {
             $data[$field->Field] = $field;
         }
@@ -575,33 +535,5 @@ class driver
         if (!isset($this->connection)) $this->connect();
         if (!isset($this->connection)) return '';
         return $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
-    }
-
-    public function set_error($error)
-    {
-        $this->errors[] = $error;
-    }
-
-    public function get_error()
-    {
-        if (count($this->errors) > 0) {
-            return $this->errors[0];
-        }
-        return false;
-    }
-
-    public function get_errors()
-    {
-        return $this->errors;
-    }
-
-    public function has_error()
-    {
-        return count($this->errors) > 0 ? true : false;
-    }
-
-    public function clear_errors()
-    {
-        $this->errors = array();
     }
 }

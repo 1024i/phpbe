@@ -29,8 +29,8 @@ use system\be;
 
         <!--{center}-->
         <?php
-        $config_system = be::get_config('system');
-        $config_user = be::get_config('user');
+        $config_system = be::get_config('system.system');
+        $config_user = be::get_config('system.user');
         $my = be::get_user();
         ?>
         <div class="theme-box-container">
@@ -47,7 +47,7 @@ use system\be;
                                 <div class="val">
                                     <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatar_l == ''?('default/'.$config_user->default_avatar_l):$my->avatar_l); ?>" />
                                     <?php
-                                    $config_user = be::get_config('user');
+                                    $config_user = be::get_config('system.user');
                                     if ($my->avatar_l != '') {
                                         ?>
                                         <a href="<?php echo url('controller=user_profile&task=init_avatar'); ?>" style="font-size:18px;">&times;</a>

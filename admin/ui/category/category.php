@@ -76,7 +76,7 @@ class category extends \system\ui
     public function display()
     {
 		if ($this->actions['save'] ===false || $this->actions['delete'] ===false) {
-			echo 'Please set (admin_ui_category->set_action)';
+			echo 'Please set (ui_category->set_action)';
 			return;
 		}
 		
@@ -93,16 +93,16 @@ class category extends \system\ui
                     $pre_id = $current_id;
                     $current_id = $category->id;
                     $next_id = $cat->id;
-                    echo 'admin_ui_category.addChain(' . $category->id . ',"' . $category->name . '",' . $pre_id . ',' . $next_id .');';
+                    echo 'ui_category.addChain(' . $category->id . ',"' . $category->name . '",' . $pre_id . ',' . $next_id .');';
                 }
                 else
-                    echo 'admin_ui_category.setChainHead(' . $cat->id . ');';
+                    echo 'ui_category.setChainHead(' . $cat->id . ');';
                 $category = $cat;
             }
-            echo 'admin_ui_category.addChain(' . $category->id . ',"' . $category->name . '",' . $current_id . ',0'. ');';
+            echo 'ui_category.addChain(' . $category->id . ',"' . $category->name . '",' . $current_id . ',0'. ');';
             
-			echo 'admin_ui_category.setSaveAction("' . $this->actions['save']['url'] . '");';
-            echo 'admin_ui_category.setDeleteAction("' . $this->actions['delete']['url'] . '");';
+			echo 'ui_category.setSaveAction("' . $this->actions['save']['url'] . '");';
+            echo 'ui_category.setDeleteAction("' . $this->actions['delete']['url'] . '");';
         }
         
         $template = '';
@@ -115,11 +115,11 @@ class category extends \system\ui
         }
         $template = str_replace('"', '\"', $template);
         
-        echo 'admin_ui_category.setTemplate("' . $template . '");';
+        echo 'ui_category.setTemplate("' . $template . '");';
         echo '</script>';
         
-        echo '<div class="admin_ui_category">';
-        echo '<form action="'.$this->actions['save']['url'].'" id="admin_ui_category_form" method="post">';
+        echo '<div class="ui_category">';
+        echo '<form action="'.$this->actions['save']['url'].'" id="ui_category_form" method="post">';
         echo $this->header;
         echo '<table class="table table-striped table-hover">';
         echo '<thead>';
@@ -139,13 +139,13 @@ class category extends \system\ui
         echo '</tr>';
         echo '</thead>';
         
-        echo '<tbody id="admin_ui_category_rows">';
+        echo '<tbody id="ui_category_rows">';
         
         $n = count($this->fields) + 6;
         
         if (count($this->data)) {
             foreach ($this->data as $obj) {
-                echo '<tr id="admin_ui_category_row_' . $obj->id . '" class="ui-row">';
+                echo '<tr id="ui_category_row_' . $obj->id . '" class="ui-row">';
                 echo '<td>';                
                 echo '<input type="hidden" name="id[]" value="' . $obj->id . '" />';
                 echo '<input type="text" name="name[]" value="' . $obj->name . '" size="30" maxlength="120" />';
@@ -175,9 +175,9 @@ class category extends \system\ui
                     }
                 }
                 
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
-                echo '<td align="center"><a href="javascript:;" onclick="javascript:admin_ui_category.remove(' . $obj->id . ')" class="icon delete"';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
+                echo '<td align="center"><a href="javascript:;" onclick="javascript:ui_category.remove(' . $obj->id . ')" class="icon delete"';
                 echo '></a></td>';
                 
                 echo '</tr>';
@@ -189,7 +189,7 @@ class category extends \system\ui
         echo '<tr>';
         echo '<td colspan="' . $n . '">';
         
-        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:admin_ui_category.add(0)"/> &nbsp;';
+        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:ui_category.add(0)"/> &nbsp;';
         echo '<input type="submit" class="btn btn-primary" value="'.$this->actions['save']['label'].'" />';
         
         echo '</td>';

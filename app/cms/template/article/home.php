@@ -4,7 +4,7 @@ use system\be;
 
 <!--{head}-->
 <?php
-$config = be::get_config('system');
+$config = be::get_config('system.system');
 $config_article = be::get_config('article');
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/cms/template/article/css/bjqs.css">
@@ -174,7 +174,7 @@ $month_hottest_articles = $this->month_hottest_articles;
 $config_article = be::get_config('article');
 
 if (count($active_users)) {
-$config_user = be::get_config('user');
+$config_user = be::get_config('system.user');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">

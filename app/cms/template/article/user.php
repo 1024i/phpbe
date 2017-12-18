@@ -23,7 +23,7 @@ $article_count = $this->get('article_count');
 $comments = $this->get('comments');
 $comment_count = $this->get('comment_count');
 
-$config_user = be::get_config('user');
+$config_user = be::get_config('system.user');
 $config_article = be::get_config('article');
 ?>
 <div style="border:#eee 1px solid; border-left:<?php echo $this->primary_color; ?> 5px solid;  background-color:#FFFFFF; padding:20px; box-shadow:1px 1px 3px #ccc;">

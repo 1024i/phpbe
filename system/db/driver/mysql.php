@@ -49,13 +49,12 @@ class mysql extends driver
                 $vars = get_object_vars($o);
                 $this->execute(null, array_values($vars));
             }
-            return true;
         } else {
             $vars = get_object_vars($obj);
             $sql = 'INSERT INTO `' . $table . '`(`' . implode('`,`', array_keys($vars)) . '`) VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-            if (!$this->execute($sql, array_values($vars))) return false;
-            return true;
+            $this->execute($sql, array_values($vars));
         }
+        return true;
     }
 
     /**
@@ -65,6 +64,7 @@ class mysql extends driver
      * @param object $obj 要插入数据库的对象，对象属性需要和该表字段一致
      * @param string $primary_key 主键
      * @return bool
+     * @throws exception
      */
     public function update($table, $obj, $primary_key)
     {
@@ -94,8 +94,7 @@ class mysql extends driver
         }
 
         if ($where == null) {
-            $this->set_error('更新数据时未指定条件！');
-            return false;
+            throw new exception('更新数据时未指定条件！');
         }
 
         $sql = 'UPDATE `' . $table . '` SET ' . implode(',', $fields) . ' WHERE ' . $where;

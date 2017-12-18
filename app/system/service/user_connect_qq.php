@@ -14,7 +14,7 @@ class user_connect_qq extends \system\service
     // 构造函数
     public function __construct()
     {
-		$config = be::get_config('user');
+		$config = be::get_config('system.user');
         $this->app_id = $config->connect_qq_app_id;
 		$this->app_key = $config->connect_qq_app_key;
     }
@@ -128,10 +128,10 @@ class user_connect_qq extends \system\service
 
 	public function register($user_info)
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 
 		$t = time();
-		$row_user = be::get_row('user');
+		$row_user = be::get_row('system.user');
 		$row_user->connect = 'qq';
 		$row_user->name = $user_info->nickname;
 		$row_user->register_time = $t;

@@ -33,7 +33,7 @@ use system\be;
 
         <!--{center}-->
         <?php
-        $config_user = be::get_config('user');
+        $config_user = be::get_config('system.user');
         $my = be::get_user();
         ?>
         <div class="theme-box-container">

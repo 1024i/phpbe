@@ -69,14 +69,14 @@ class user extends \system\controller
             response::error('密码不能为空！', $error_return);
         }
         
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if ($config_user->captcha_login) {
 			if (request::post('captcha', '') != session::get('captcha_login')) {
                 response::error('验证码错误！', $error_return);
 			}
 		}
         
-        $service_user = be::get_service('user');
+        $service_user = be::get_service('system.user');
         if ($service_user->login($username, $password, $remember_me)) {
 			if ($config_user->captcha_login) session::delete('captcha_login');
 
@@ -95,7 +95,7 @@ class user extends \system\controller
 
 	public function qq_login()
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
 
 		$service_user_connect_qq = be::get_service('user_connect_qq');
@@ -104,7 +104,7 @@ class user extends \system\controller
 
 	public function qq_login_callback()
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
 
 		$service_user_connect_qq = be::get_service('user_connect_qq');
@@ -142,7 +142,7 @@ class user extends \system\controller
 
 	public function sina_login()
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
 
 		$service_user_connect_sina = be::get_service('user_connect_sina');
@@ -151,7 +151,7 @@ class user extends \system\controller
 
 	public function sina_login_callback()
 	{
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
 
 		$service_user_connect_sina = be::get_service('user_connect_sina');
@@ -190,7 +190,7 @@ class user extends \system\controller
     // 注册新用户
     public function register()
     {
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 		if (!$config_user->register) response::end('注册功能已禁用！');
 
         response::set_title('注册新账号');
@@ -220,7 +220,7 @@ class user extends \system\controller
     // 保存新注册用户
     public function ajax_register_save()
     {
-		$config_user = be::get_config('user');
+		$config_user = be::get_config('system.user');
 
 		if (!$config_user->register) {
             response::error('注册功能已禁用！');
@@ -232,7 +232,7 @@ class user extends \system\controller
         $password = request::post('password', '');
         $password2 = request::post('password2', '');
 
-		$service_user = be::get_service('user');
+		$service_user = be::get_service('system.user');
         
         
         if ($username == '') {
@@ -298,7 +298,7 @@ class user extends \system\controller
             response::error('参数(username)缺失！');
         }
         
-        $model = be::get_service('user');
+        $model = be::get_service('system.user');
         if ($model->forgot_password($username)) {
             response::success('找回密码链接已发送到您的邮箱。');
         } else {
@@ -313,7 +313,7 @@ class user extends \system\controller
         $token = request::get('token','');
         if ($user_id == 0 || $token == '') response::end('找回密码链接已失效！');
         
-        $row_user = be::get_row('user');
+        $row_user = be::get_row('system.user');
         $row_user->load($user_id);
         
         if ($row_user->token == '') response::end('您的密码已重设！');
@@ -341,7 +341,7 @@ class user extends \system\controller
             response::error('两次输入的密码不匹配！');
         }
         
-        $model = be::get_service('user');
+        $model = be::get_service('system.user');
         if ($model->forgot_password_reset($user_id, $token, $password)) {
             response::success('重设密码成功！');
         } else {
@@ -353,7 +353,7 @@ class user extends \system\controller
     // 退出登陆
     public function logout()
     {
-        $model = be::get_service('user');
+        $model = be::get_service('system.user');
         $model->logout();
 
         response::success('成功退出！', url('controller=user&task=login'));

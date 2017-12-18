@@ -1,11 +1,11 @@
 
 $(function(){
-    admin_ui_category.init();
+    ui_category.init();
 });
 
 
 
-var admin_ui_category = {
+var ui_category = {
 
     m_oChain: new Object(),
     m_iChainHead: 0,
@@ -41,7 +41,7 @@ var admin_ui_category = {
     },
 	
     init: function(){
-        admin_ui_category.update();
+        ui_category.update();
     },
     
     update: function(){
@@ -55,8 +55,8 @@ var admin_ui_category = {
 		
         while (oCurrentCategory.next_id != 0) {
         
-            var $eOrderUp = $("#admin_ui_category_row_" + oCurrentCategory.id + " .order .up");
-            var $eOrderDown = $("#admin_ui_category_row_" + oCurrentCategory.id + " .order .down");
+            var $eOrderUp = $("#ui_category_row_" + oCurrentCategory.id + " .order .up");
+            var $eOrderDown = $("#ui_category_row_" + oCurrentCategory.id + " .order .down");
             
 			// 是否可上移
             if (oCurrentCategory.pre_id != 0)
@@ -73,12 +73,12 @@ var admin_ui_category = {
 		// =================================处理最后一个结点，
 		// 是否可上移
         if (oCurrentCategory.pre_id == 0) 
-            $("#admin_ui_category_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
+            $("#ui_category_row_" + oCurrentCategory.id + " .order .up").addClass("disable");
         else
-            $("#admin_ui_category_row_" + oCurrentCategory.id + " .order .up").removeClass("disable");
+            $("#ui_category_row_" + oCurrentCategory.id + " .order .up").removeClass("disable");
 
 		// 不可下移
-        $("#admin_ui_category_row_" + oCurrentCategory.id + " .order .down").addClass("disable");
+        $("#ui_category_row_" + oCurrentCategory.id + " .order .down").addClass("disable");
     },
     
     
@@ -87,7 +87,7 @@ var admin_ui_category = {
     // 上移
     orderUp: function(id)
 	{
-		if( $("#admin_ui_category_row_" + id + " .order .up").hasClass("disable") ) return;
+		if( $("#ui_category_row_" + id + " .order .up").hasClass("disable") ) return;
 		
 		var oCategory = this.m_oChain[id];
 		var oPreCategory = this.m_oChain[oCategory.pre_id];
@@ -106,8 +106,8 @@ var admin_ui_category = {
 		oCategory.next_id = oPreCategory.id;
 
 		
-		$("#admin_ui_category_row_"+oPreCategory.id).before($("#admin_ui_category_row_"+oCategory.id));
-		$("#admin_ui_category_row_"+oCategory.id).mouseout();
+		$("#ui_category_row_"+oPreCategory.id).before($("#ui_category_row_"+oCategory.id));
+		$("#ui_category_row_"+oCategory.id).mouseout();
 		
 		this.update();
     },
@@ -115,7 +115,7 @@ var admin_ui_category = {
     // 下移
     orderDown: function(id)
 	{
-		if( $("#admin_ui_category_row_" + id + " .order .down").hasClass("disable") ) return;
+		if( $("#ui_category_row_" + id + " .order .down").hasClass("disable") ) return;
 
 		var oCategory = this.m_oChain[id];
 		var oNextCategory = this.m_oChain[oCategory.next_id];
@@ -133,8 +133,8 @@ var admin_ui_category = {
 		oCategory.next_id = oNextCategory.next_id;
 		oNextCategory.next_id = oCategory.id;
 
-		$("#admin_ui_category_row_"+oNextCategory.id).after($("#admin_ui_category_row_"+oCategory.id));
-		$("#admin_ui_category_row_"+oCategory.id).mouseout();
+		$("#ui_category_row_"+oNextCategory.id).after($("#ui_category_row_"+oCategory.id));
+		$("#ui_category_row_"+oCategory.id).mouseout();
 		
 		this.update();
     },
@@ -151,7 +151,7 @@ var admin_ui_category = {
 		}
 		this.m_iNewID++;
 		
-		var str = '<tr id="admin_ui_category_row_'+this.m_iNewID+'" class="ui-row new">'
+		var str = '<tr id="ui_category_row_'+this.m_iNewID+'" class="ui-row new">'
 		str += '<td>';
 		str += '<input type="hidden" name="id[]" value="0" />';
 		str += '<input type="text" name="name[]" value="" size="30" maxlength="120" />';
@@ -159,9 +159,9 @@ var admin_ui_category = {
 		
 		str += this.m_sTemplate;
 
-        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category.orderUp('+this.m_iNewID+')" class="icon up"></a></td>';
-        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:admin_ui_category.orderDown('+this.m_iNewID+')" class="icon down"></a></td>';
-        str += '<td align="center"><a href="javascript:;" onclick="javascript:admin_ui_category.remove('+this.m_iNewID+')" class="icon delete"></a></td>';
+        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category.orderUp('+this.m_iNewID+')" class="icon up"></a></td>';
+        str += '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category.orderDown('+this.m_iNewID+')" class="icon down"></a></td>';
+        str += '<td align="center"><a href="javascript:;" onclick="javascript:ui_category.remove('+this.m_iNewID+')" class="icon delete"></a></td>';
 
 		str += '</tr>';
 		
@@ -174,13 +174,13 @@ var admin_ui_category = {
 
 			oCurrentCategory.next_id = this.m_iNewID;
 			this.addChain(this.m_iNewID, "", oCurrentCategory.id, 0);
-			$("#admin_ui_category_row_"+oCurrentCategory.id).after(str);
+			$("#ui_category_row_"+oCurrentCategory.id).after(str);
 		}
 		else
 		{
 			this.m_iChainHead = this.m_iNewID;
 			this.addChain(this.m_iNewID, "", 0, 0);
-			$("#admin_ui_category_rows").append(str);
+			$("#ui_category_rows").append(str);
 		}
 
 		this.update();
@@ -191,7 +191,7 @@ var admin_ui_category = {
     	
 		var oCurrentCategory = this.m_oChain[id]; // 获取当前操作的节点
 		
-		var $e = $("#admin_ui_category_row_" + id);
+		var $e = $("#ui_category_row_" + id);
 		if (!$e.hasClass("new") && !confirm(LANG_UI_CATEGORY_DELETE_CONFIRM)) return;
 
 
@@ -217,12 +217,12 @@ var admin_ui_category = {
 		{
 			var _this = this;
 			
-			$("#admin_ui_category_row_" + id + " .delete").fadeOut();
+			$("#ui_category_row_" + id + " .delete").fadeOut();
 
 			// 提交服务器删除操作
 			$.ajax({
 				type: 'POST',
-				url: admin_ui_category.m_sDeleteAction,
+				url: ui_category.m_sDeleteAction,
 				data: "id=" + id,
 				dataType : 'json',
 				success: function(json){
@@ -243,11 +243,11 @@ var admin_ui_category = {
 						
 						$e.remove();
 			
-						admin_ui_category.update();
+						ui_category.update();
 					}
 					else
 					{
-						$("#admin_ui_category_row_" + id + " .delete").fadeIn();
+						$("#ui_category_row_" + id + " .delete").fadeIn();
 						
 						alert(json.message);
 					}
