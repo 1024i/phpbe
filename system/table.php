@@ -1,6 +1,7 @@
 <?php
 
 namespace system;
+use system\db\exception;
 
 /**
  * 数据库表 查询器
@@ -349,9 +350,10 @@ class table extends obj
     }
 
     /**
-     * 查询单个字段的所有记录
+     * 查询键值对
      *
-     * @param string $field 查询的字段
+     * @param string $key_field 键字段
+     * @param string $value_field 值字段
      * @return array 数组
      */
     public function get_key_values($key_field, $value_field)
@@ -693,7 +695,8 @@ class table extends obj
     /**
      * 准备查询的 sql
      *
-     * @return array()
+     * @return array
+     * @throws exception
      */
     public function prepare_sql()
     {
@@ -709,13 +712,32 @@ class table extends obj
                         $sql .= ' ' . $where[0];
                         $values = array_merge($values, $where[1]);
                     } else {
-                        $sql .= $this->quote . $where[0] . $this->quote . ' ' . strtoupper($where[1]);
-                        if (is_array($where[2])) {
-                            $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
-                            $values = array_merge($values, $where[2]);
-                        } else {
-                            $sql .= ' ?';
-                            $values[] = $where[2];
+                        $sql .= $this->quote . $where[0] . $this->quote . ' ';
+                        $op = strtoupper($where[1]);
+                        $sql .= $op;
+
+                        switch ($op) {
+                            case 'IN':
+                            case 'NOT IN':
+                                if (is_array($where[2]) && count($where[2])>0) {
+                                    $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
+                                    $values = array_merge($values, $where[2]);
+                                } else {
+                                    throw new exception('IN 查询条件异常！');
+                                }
+                                break;
+                            case 'BETWEEN':
+                            case 'NOT BETWEEN':
+                                if (is_array($where[2]) && count($where[2]) == 2) {
+                                    $sql .= ' ? AND ?';
+                                    $values = array_merge($values, $where[2]);
+                                } else {
+                                    throw new exception('BETWEEN 查询条件异常！');
+                                }
+                                break;
+                            default:
+                                $sql .= ' ?';
+                                $values[] = $where[2];
                         }
                     }
                 } else {
