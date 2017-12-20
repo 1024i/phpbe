@@ -11,7 +11,7 @@ class link extends \system\admin_controller
 
     public function links()
     {
-        $order_by = request::post('order_by', 'rank');
+        $order_by = request::post('order_by', 'ordering');
         $order_by_dir = request::post('order_by_dir', 'ASC');
 
         $key = request::post('key', '');

@@ -16,7 +16,7 @@ class link extends \system\service
         if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
             $table_system_link->order_by($conditions['order_by_string']);
         } else {
-            $order_by = 'rank';
+            $order_by = 'ordering';
             $order_by_dir = 'ASC';
             if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
             if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
@@ -127,7 +127,7 @@ class link extends \system\service
     {
         $links = be::get_table('system_link')
             ->where('block', 0)
-            ->order_by('rank', 'desc')
+            ->order_by('ordering', 'desc')
             ->get_objects();
 
         $config_system_link = be::get_config('system_link');

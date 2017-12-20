@@ -66,11 +66,11 @@ $ui_list->set_fields(
         'align'=>'left'
     ),
     array(
-        'name'=>'rank',
-        'label'=>'权重',
+        'name'=>'ordering',
+        'label'=>'排序',
         'align'=>'center',
         'width'=>'40',
-        'order_by'=>'rank'
+        'order_by'=>'ordering'
     )
 );
 

@@ -197,13 +197,13 @@ CREATE TABLE IF NOT EXISTS `be_system_menu` (
   `params` varchar(240) NOT NULL,
   `home` tinyint(1) NOT NULL,
   `block` tinyint(1) NOT NULL,
-  `rank` int(11) NOT NULL,
+  `ordering` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 		');
 
 		$db->execute("
-INSERT INTO `be_system_menu` (`id`, `group_id`, `parent_id`, `name`, `url`, `target`, `params`, `home`, `block`, `rank`) VALUES
+INSERT INTO `be_system_menu` (`id`, `group_id`, `parent_id`, `name`, `url`, `target`, `params`, `home`, `block`, `ordering`) VALUES
 (1, 1, 0, '首页', 'controller=article&task=detail&id=1', '_self', '', 1, 0, 0)
 		");
 

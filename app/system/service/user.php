@@ -659,7 +659,7 @@ class user extends \system\service
      */
     public function get_roles()
     {
-        return be::get_table('user_role')->order_by('rank', 'asc')->get_objects();
+        return be::get_table('user_role')->order_by('ordering', 'asc')->get_objects();
     }
 
     /**

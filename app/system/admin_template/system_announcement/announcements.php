@@ -72,11 +72,11 @@ $ui_list->set_fields(
         'order_by'=>'create_time'
     ),
     array(
-        'name'=>'rank',
-        'label'=>'权重',
+        'name'=>'ordering',
+        'label'=>'排序',
         'align'=>'center',
         'width'=>'40',
-        'order_by'=>'rank'
+        'order_by'=>'ordering'
     )
 );
 

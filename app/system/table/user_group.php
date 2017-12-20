@@ -11,7 +11,7 @@ class user_group extends \system\table
 	public $permission = 0;	// 0 û���κ�Ȩ�� 1:����Ȩ�� -1:��ϸ����Ȩ��
 	public $permissions = '';  // �Զ���Ȩ���Զ��ŷָ�
 	public $default = 0;	// Ĭ��ע���û�����
-	public $rank = 0;
+	public $ordering = 0;
 
 	public function __construct()
 	{

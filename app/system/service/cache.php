@@ -171,7 +171,7 @@ class cache extends \system\service
         }
 
         $db = be::get_db();
-        $menus = $db->get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `rank` ASC');;
+        $menus = $db->get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `ordering` ASC');;
 
         $code = '<?php' . "\n";
         $code .= 'namespace cache\menu;' . "\n";

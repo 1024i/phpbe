@@ -146,7 +146,7 @@ class article extends \system\controller
 
         $option['offset'] = $pagination->get_offset();
         $option['limit'] = $limit;
-        $option['order_by_string'] = '`top` DESC, `rank` DESC, `create_time` DESC';
+        $option['order_by_string'] = '`top` DESC, `ordering` DESC, `create_time` DESC';
 
         $articles = $service_article->get_articles($option);
         response::set('articles', $articles);

@@ -41,7 +41,7 @@ class category extends \system\admin_controller
                     $row_article_category->id = $ids[$i];
                     $row_article_category->parent_id = $parent_ids[$i];
                     $row_article_category->name = $names[$i];
-                    $row_article_category->rank = $i;
+                    $row_article_category->ordering = $i;
                     $row_article_category->save();
                 }
             }

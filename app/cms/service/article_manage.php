@@ -22,7 +22,7 @@ class article_manage extends \system\service
         if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
             $table_article->order_by($conditions['order_by_string']);
         } else {
-            $order_by = 'rank';
+            $order_by = 'ordering';
             $order_by_dir = 'DESC';
             if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
             if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
@@ -333,7 +333,7 @@ class article_manage extends \system\service
      */
     public function get_categories()
     {
-        return be::get_table('article_category')->order_by('rank', 'asc')->get_objects();
+        return be::get_table('article_category')->order_by('ordering', 'asc')->get_objects();
     }
 
 

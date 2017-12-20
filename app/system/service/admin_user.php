@@ -132,7 +132,7 @@ class admin_user extends \system\service
         if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
             $table_admin_user->order_by($conditions['order_by_string']);
         } else {
-            $order_by = 'rank';
+            $order_by = 'ordering';
             $order_by_dir = 'DESC';
             if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
             if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
@@ -401,7 +401,7 @@ class admin_user extends \system\service
      */
     public function get_roles()
     {
-        return be::get_table('admin_user_role')->order_by('rank', 'asc')->get_objects();
+        return be::get_table('admin_user_role')->order_by('ordering', 'asc')->get_objects();
     }
 
     /**

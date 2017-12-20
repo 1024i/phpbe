@@ -46,9 +46,9 @@ $ui_editor->set_fields(
    ),
     array(
         'type'=>'text',
-        'name'=>'rank',
-        'label'=>'权重',
-        'value'=>$system_announcement->rank,
+        'name'=>'ordering',
+        'label'=>'排序',
+        'value'=>$system_announcement->ordering,
         'width'=>'60px',
         'validate'=>array(
             'digits'=>true

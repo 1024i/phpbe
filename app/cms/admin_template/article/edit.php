@@ -122,9 +122,9 @@ $ui_editor->add_fields(
    ),
     array(
         'type'=>'text',
-        'name'=>'rank',
-        'label'=>'权重',
-        'value'=>$article->rank,
+        'name'=>'ordering',
+        'label'=>'排序',
+        'value'=>$article->ordering,
         'width'=>'60px',
         'validate'=>array(
             'digits'=>true

@@ -16,7 +16,7 @@ class menu extends \system\service
     {
         return be::get_table('system_menu')
             ->where('group_id', $group_id)
-            ->order_by('rank', 'asc')
+            ->order_by('ordering', 'asc')
             ->get_objects();
     }
 

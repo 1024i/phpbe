@@ -85,7 +85,7 @@ foreach ($articles as $article) {
     }
 
     $article->comment = '<a href="./?controller=article&task=comments&article_id='.$article->id.'" class="label'.($article->comment_count>0?' label-info':'').'">'.$article->comment_count.'</a>';
-    $article->rank = '<span class="label'.($article->rank>0?' label-success':'').'">'.$article->rank.'</span>';
+    $article->ordering = '<span class="label'.($article->ordering>0?' label-success':'').'">'.$article->ordering.'</span>';
     $article->top = '<span class="label'.($article->top>0?' label-warning':'').'">'.$article->top.'</span>';
 }
 
@@ -130,11 +130,11 @@ $ui_list->set_fields(
         'width'=>'40'
     ),
     array(
-        'name'=>'rank',
-        'label'=>'权重',
+        'name'=>'ordering',
+        'label'=>'排序',
         'align'=>'center',
         'width'=>'40',
-        'order_by'=>'rank'
+        'order_by'=>'ordering'
     ),
     array(
         'name'=>'top',

@@ -313,7 +313,7 @@ class user extends \system\admin_controller
                 if ($id != 0) $row_user_role->load($id);
                 $row_user_role->name = $names[$i];
                 $row_user_role->note = $notes[$i];
-                $row_user_role->rank = $i;
+                $row_user_role->ordering = $i;
                 $row_user_role->save();
             }
         }

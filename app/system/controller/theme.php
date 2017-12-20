@@ -77,7 +77,7 @@ class theme extends \system\admin_controller
                 $row_system_menu->url = $urls[$i];
                 $row_system_menu->target = $targets[$i];
                 $row_system_menu->params = $params[$i];
-                $row_system_menu->rank = $i;
+                $row_system_menu->ordering = $i;
                 $row_system_menu->save();
             }
         }

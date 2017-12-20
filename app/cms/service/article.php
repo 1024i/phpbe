@@ -22,7 +22,7 @@ class article extends \system\service
         if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
             $table_article->order_by($conditions['order_by_string']);
         } else {
-            $order_by = 'rank';
+            $order_by = 'ordering';
             $order_by_dir = 'DESC';
             if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
             if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];

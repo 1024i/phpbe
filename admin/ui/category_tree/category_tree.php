@@ -34,7 +34,7 @@ class category_tree extends \system\ui
 
    /**
     * 设置分类数据
-    * 传递的数据项必须包含 parent_id, name, rank 属性
+    * 传递的数据项必须包含 parent_id, name, ordering 属性
     * @param array $objs
     */
     public function set_data($objs)
