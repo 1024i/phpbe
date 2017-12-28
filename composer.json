@@ -1,0 +1,13 @@
+{
+    "name": "phpbe/phpbe",
+    "description": "PHP Be Easy Framework.",
+    "keywords": ["phpbe", "framework"],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0"
+    }
+}
