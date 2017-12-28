@@ -1,7 +1,7 @@
 <?php
-namespace app\system\config;
+namespace App\System\Config;
 
-class db
+class Db
 {
     public $master = [
         'driver' => 'mysql',

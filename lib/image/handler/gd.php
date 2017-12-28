@@ -10,7 +10,7 @@ namespace lib\image\handler;
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com)
 */
 
-class gd extends \system\lib
+class Gd extends \system\Lib
 {
     private $image = null;
     private $type = null;
@@ -32,12 +32,12 @@ class gd extends \system\lib
     // 载入图像
     public function open($path)
     {
-        $image_info = getimagesize($path);
+        $imageInfo = getimagesize($path);
 
-        if ($image_info && is_array($image_info)) {
-            $this->type = $image_info['mime'];
-            $this->width = $image_info[0];
-            $this->height = $image_info[1];
+        if ($imageInfo && is_array($imageInfo)) {
+            $this->type = $imageInfo['mime'];
+            $this->width = $imageInfo[0];
+            $this->height = $imageInfo[1];
             $this->image = $this->load($path, $this->type);
         }
         return false;
@@ -60,28 +60,28 @@ class gd extends \system\lib
             $height = $this->height - $y;
         }
 
-        $new_image = imagecreatetruecolor($width, $height);
+        $newImage = imagecreatetruecolor($width, $height);
         if ($this->type == 'image/gif') {
             $color = imagecolortransparent($this->image);
-            imagepalettecopy($this->image, $new_image);
-            imagefill($new_image, 0, 0, $color);
-            imagecolortransparent($new_image, $color);
-            imagetruecolortopalette($new_image, true, 255);
-            imagecopyresized($new_image, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
+            imagepalettecopy($this->image, $newImage);
+            imagefill($newImage, 0, 0, $color);
+            imagecolortransparent($newImage, $color);
+            imagetruecolortopalette($newImage, true, 255);
+            imagecopyresized($newImage, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
         } elseif ($this->type == 'image/png' || $this->type == 'image/x-png') {
-            imagealphablending($new_image, false);
-            imagesavealpha($new_image, true);
-            $color = imagecolorallocatealpha($new_image, 255, 255, 255, 127);
-            imagefilledrectangle($new_image, 0, 0, $width, $height, $color);
-            imagecopyresampled($new_image, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+            $color = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+            imagefilledrectangle($newImage, 0, 0, $width, $height, $color);
+            imagecopyresampled($newImage, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
         } else {
-            imagealphablending($new_image, false);
-            imagecopyresampled($new_image, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
+            imagealphablending($newImage, false);
+            imagecopyresampled($newImage, $this->image, 0, 0, $x, $y, $width, $height, $width, $height);
         }
 
         imagedestroy($this->image);
 
-        $this->image = $new_image;
+        $this->image = $newImage;
         $this->width = $width;
         $this->height = $height;
     }
@@ -104,125 +104,125 @@ class gd extends \system\lib
     southwest    south    southeast
 
     */
-    public function resize($width = 100, $height = 100, $fit = 'center', $fill_color = array(255, 255, 255, 127))
+    public function resize($width = 100, $height = 100, $fit = 'center', $fillColor = array(255, 255, 255, 127))
     {
         if (!$this->image) return false;
 
-        $src_x = 0;
-        $src_y = 0;
-        $dest_x = 0;
-        $dest_y = 0;
-        $src_w = $this->width;
-        $src_h = $this->height;
-        $dest_w = $new_width = $width;
-        $dest_h = $new_height = $height;
+        $srcX = 0;
+        $srcY = 0;
+        $destX = 0;
+        $destY = 0;
+        $srcW = $this->width;
+        $srcH = $this->height;
+        $destW = $newWidth = $width;
+        $destH = $newHeight = $height;
 
         switch ($fit) {
             case 'force':
                 break;
             case 'scale':
                 if ($this->width * $height > $this->height * $width) {
-                    $dest_h = $new_height = intval($this->height * $width / $this->width);
+                    $destH = $newHeight = intval($this->height * $width / $this->width);
                 } else {
-                    $dest_w = $new_width = intval($this->width * $height / $this->height);
+                    $destW = $newWidth = intval($this->width * $height / $this->height);
                 }
                 break;
             case 'scale_fill':
                 if ($this->width * $height > $this->height * $width) {
-                    $dest_h = intval($this->height * $width / $this->width);
-                    $dest_y = intval(($height - $dest_h) / 2);
+                    $destH = intval($this->height * $width / $this->width);
+                    $destY = intval(($height - $destH) / 2);
                 } else {
-                    $dest_w = intval($this->width * $height / $this->height);
-                    $dest_x = intval(($width - $dest_w) / 2);
+                    $destW = intval($this->width * $height / $this->height);
+                    $destX = intval(($width - $destW) / 2);
                 }
                 break;
             default:
 
                 if ($this->width * $height > $this->height * $width) {
-                    $src_w = $width * $this->height / $height;
+                    $srcW = $width * $this->height / $height;
                 } else {
-                    $src_h = $height * $this->width / $width;
+                    $srcH = $height * $this->width / $width;
                 }
 
                 switch ($fit) {
                     case 'northwest':
-                        $src_x = 0;
-                        $src_y = 0;
+                        $srcX = 0;
+                        $srcY = 0;
                         break;
                     case 'north':
-                        $src_x = intval(($this->width - $src_w) / 2);
-                        $src_y = 0;
+                        $srcX = intval(($this->width - $srcW) / 2);
+                        $srcY = 0;
                         break;
                     case 'northeast':
-                        $src_x = $this->width - $src_w;
-                        $src_y = 0;
+                        $srcX = $this->width - $srcW;
+                        $srcY = 0;
                         break;
                     case 'west':
-                        $src_x = 0;
-                        $src_y = intval(($this->height - $src_h) / 2);
+                        $srcX = 0;
+                        $srcY = intval(($this->height - $srcH) / 2);
                         break;
                     case 'center':
-                        $src_x = intval(($this->width - $src_w) / 2);
-                        $src_y = intval(($this->height - $src_h) / 2);
+                        $srcX = intval(($this->width - $srcW) / 2);
+                        $srcY = intval(($this->height - $srcH) / 2);
                         break;
                     case 'east':
-                        $src_x = $this->width - $src_w;
-                        $src_y = intval(($this->height - $src_h) / 2);
+                        $srcX = $this->width - $srcW;
+                        $srcY = intval(($this->height - $srcH) / 2);
                         break;
                     case 'southwest':
-                        $src_x = 0;
-                        $src_y = $this->height - $src_h;
+                        $srcX = 0;
+                        $srcY = $this->height - $srcH;
                         break;
                     case 'south':
-                        $src_x = intval(($this->width - $src_w) / 2);
-                        $src_y = $this->height - $src_h;
+                        $srcX = intval(($this->width - $srcW) / 2);
+                        $srcY = $this->height - $srcH;
                         break;
                     case 'southeast':
-                        $src_x = $this->width - $src_w;
-                        $src_y = $this->height - $src_h;
+                        $srcX = $this->width - $srcW;
+                        $srcY = $this->height - $srcH;
                         break;
                     default:
-                        $src_x = intval(($this->width - $src_w) / 2);
-                        $src_y = intval(($this->height - $src_h) / 2);
+                        $srcX = intval(($this->width - $srcW) / 2);
+                        $srcY = intval(($this->height - $srcH) / 2);
                 }
 
                 break;
         }
 
-        $new_image = imagecreatetruecolor($new_width, $new_height);
+        $newImage = imagecreatetruecolor($newWidth, $newHeight);
 
         if ($this->type == 'image/gif') {
-            imagepalettecopy($this->image, $new_image);
-            if ($fill_color[3]) {
-                $color = imagecolorallocatealpha($new_image, $fill_color[0], $fill_color[1], $fill_color[2], $fill_color[3]);
-                imagefill($new_image, 0, 0, $color);
-                imagecolortransparent($new_image, $color);
+            imagepalettecopy($this->image, $newImage);
+            if ($fillColor[3]) {
+                $color = imagecolorallocatealpha($newImage, $fillColor[0], $fillColor[1], $fillColor[2], $fillColor[3]);
+                imagefill($newImage, 0, 0, $color);
+                imagecolortransparent($newImage, $color);
             } else {
-                $color = imagecolorallocate($new_image, $fill_color[0], $fill_color[1], $fill_color[2]);
-                imagefill($new_image, 0, 0, $color);
+                $color = imagecolorallocate($newImage, $fillColor[0], $fillColor[1], $fillColor[2]);
+                imagefill($newImage, 0, 0, $color);
             }
-            imagetruecolortopalette($new_image, true, 255);
-            imagecopyresized($new_image, $this->image, $dest_x, $dest_y, $src_x, $src_y, $dest_w, $dest_h, $src_w, $src_h);
+            imagetruecolortopalette($newImage, true, 255);
+            imagecopyresized($newImage, $this->image, $destX, $destY, $srcX, $srcY, $destW, $destH, $srcW, $srcH);
         } elseif ($this->type == 'image/png' || $this->type == 'image/x-png') {
-            imagealphablending($new_image, false);
-            imagesavealpha($new_image, true);
-            $color = imagecolorallocatealpha($new_image, $fill_color[0], $fill_color[1], $fill_color[2], $fill_color[3]);
-            imagefilledrectangle($new_image, 0, 0, $new_width, $new_height, $color);
-            imagecopyresampled($new_image, $this->image, $dest_x, $dest_y, $src_x, $src_y, $dest_w, $dest_h, $src_w, $src_h);
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+            $color = imagecolorallocatealpha($newImage, $fillColor[0], $fillColor[1], $fillColor[2], $fillColor[3]);
+            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $color);
+            imagecopyresampled($newImage, $this->image, $destX, $destY, $srcX, $srcY, $destW, $destH, $srcW, $srcH);
         } else {
-            imagealphablending($new_image, false);
+            imagealphablending($newImage, false);
             if ($fit == 'scale_fill') {
-                $color = imagecolorallocate($new_image, $fill_color[0], $fill_color[1], $fill_color[2]);
-                imagefill($new_image, 0, 0, $color);
+                $color = imagecolorallocate($newImage, $fillColor[0], $fillColor[1], $fillColor[2]);
+                imagefill($newImage, 0, 0, $color);
             }
-            imagecopyresampled($new_image, $this->image, $dest_x, $dest_y, $src_x, $src_y, $dest_w, $dest_h, $src_w, $src_h);
+            imagecopyresampled($newImage, $this->image, $destX, $destY, $srcX, $srcY, $destW, $destH, $srcW, $srcH);
         }
 
         imagedestroy($this->image);
 
-        $this->image = $new_image;
-        $this->width = $new_width;
-        $this->height = $new_height;
+        $this->image = $newImage;
+        $this->width = $newWidth;
+        $this->height = $newHeight;
     }
 
 
@@ -231,12 +231,12 @@ class gd extends \system\lib
     {
         if (!$this->image) return false;
 
-        $image_info = getimagesize($path);
+        $imageInfo = getimagesize($path);
 
-        if ($image_info && is_array($image_info)) {
-            $type = $image_info['mime'];
-            $width = $image_info[0];
-            $height = $image_info[1];
+        if ($imageInfo && is_array($imageInfo)) {
+            $type = $imageInfo['mime'];
+            $width = $imageInfo[0];
+            $height = $imageInfo[1];
             $image = $this->load($path, $type);
 
             if (!$image) return false;
@@ -284,12 +284,12 @@ class gd extends \system\lib
         }
     }
 
-    public function get_width()
+    public function getWidth()
     {
         return $this->width;
     }
 
-    public function get_height()
+    public function getHeight()
     {
         return $this->height;
     }

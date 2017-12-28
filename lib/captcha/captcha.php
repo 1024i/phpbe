@@ -1,5 +1,6 @@
 <?php
-namespace lib\captcha;
+
+namespace lib\Captcha;
 /*
 @版本日期: 2011年4月3日
 @更新日期: 2016年9月14日
@@ -9,26 +10,26 @@ namespace lib\captcha;
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com)
 */
 
-class captcha extends \system\lib
+class Captcha extends \system\Lib
 {
 
     private $image = null;        // 画布
     private $width = 0;            // 宽度
     private $height = 0;        // 高度
 
-    private $font_family = '';    // 字体
-    private $font_size = 16;        // 大小
-    private $font_color = array(0, 0, 0);        // 颜色
+    private $fontFamily = '';    // 字体
+    private $fontSize = 16;        // 大小
+    private $fontColor = array(0, 0, 0);        // 颜色
 
-    private $bg_color = array(255, 255, 255);        // 背景颜色
+    private $bgColor = array(255, 255, 255);        // 背景颜色
 
     private $text;            // 输出的字符
-    private $text_length = 4;    // 输出的字符长度
+    private $textLength = 4;    // 输出的字符长度
 
     // 构造函数
     public function __construct()
     {
-        $this->font_family = PATH_ROOT . DS . 'libs' . DS . 'captcha' . DS . 'verdana.ttf';
+        $this->fontFamily = PATH_ROOT . DS . 'libs' . DS . 'captcha' . DS . 'verdana.ttf';
     }
 
 
@@ -38,71 +39,71 @@ class captcha extends \system\lib
         if ($this->image) imagedestroy($this->image);
     }
 
-    public function set_size($width, $height)
+    public function setSize($width, $height)
     {
         $this->width = $width;
         $this->height = $height;
     }    // 设置图片大小
 
-    public function set_width($width)
+    public function setWidth($width)
     {
         $this->width = $width;
     }    // 设置图片宽度
 
-    public function set_height($height)
+    public function setHeight($height)
     {
         $this->height = $height;
     }    // 设置图片高度
 
-    public function set_font_family($font_family)
+    public function setFontFamily($fontFamily)
     {
-        $this->font_family = $font_family;
+        $this->fontFamily = $fontFamily;
     }    // 设置字体 绝对路径
 
-    public function set_font_size($font_size)
+    public function setFontSize($fontSize)
     {
-        $this->font_size = $font_size;
+        $this->fontSize = $fontSize;
     }    // 设置字体大小
 
-    public function set_font_color($font_color)
+    public function setFontColor($fontColor)
     {
-        $this->font_color = $font_color;
+        $this->fontColor = $fontColor;
     }    // 设置字体颜色
 
-    public function set_bg_color($bg_color)
+    public function setBgColor($bgColor)
     {
-        $this->bg_color = $bg_color;
+        $this->bgColor = $bgColor;
     }    // 设置背景颜色
 
-    public function set_text_length($text_length)
+    public function setTextLength($textLength)
     {
-        $this->text_length = $text_length;
+        $this->textLength = $textLength;
     }    // 设置字符长度
 
 
     public function init()
     {
         if ($this->width == 0) {
-            $this->width = floor($this->font_size * 1.3) * $this->text_length + 10;
+            $this->width = floor($this->fontSize * 1.3) * $this->textLength + 10;
         }
         if ($this->height == 0) {
-            $this->height = $this->font_size * 2;
+            $this->height = $this->fontSize * 2;
         }
 
         $this->image = imagecreatetruecolor($this->width, $this->height);
-        imagefill($this->image, 0, 0, imagecolorallocate($this->image, $this->bg_color[0], $this->bg_color[1], $this->bg_color[2]));
+        imagefill($this->image, 0, 0, imagecolorallocate($this->image, $this->bgColor[0], $this->bgColor[1], $this->bgColor[2]));
 
         $str = 'abcdefghijkmnpqrstuvwxy3456789';
         $len = strlen($str) - 1;
-        for ($i = 0; $i < $this->text_length; $i++) {
+        for ($i = 0; $i < $this->textLength; $i++) {
             $this->text[] = $str[rand(0, $len)];
         }
 
-        $font_color = imagecolorallocate($this->image, $this->font_color[0], $this->font_color[1], $this->font_color[2]);
+        $fontColor = imagecolorallocate($this->image, $this->fontColor[0], $this->fontColor[1], $this->fontColor[2]);
 
-        for ($i = 0; $i < $this->text_length; $i++) {
+        for ($i = 0; $i < $this->textLength; $i++) {
             $angle = rand(-1, 1) * rand(1, 30);
-            imagettftext($this->image, $this->font_size, $angle, 5 + $i * floor($this->font_size * 1.3), floor($this->height * 0.75), $font_color, $this->font_family, $this->text[$i]);
+            imagettftext($this->image, $this->fontSize, $angle, 5 + $i * floor($this->fontSize * 1.3), floor($this->height * 0.75), $fontColor, $this->fontFamily, $this->text[$i]);
         }
     }
 
@@ -110,7 +111,7 @@ class captcha extends \system\lib
     {
         if ($this->image == null) $this->init();
 
-        if (!$color) $color = $this->font_color;
+        if (!$color) $color = $this->fontColor;
         $color = imagecolorallocate($this->image, $color[0], $color[1], $color[2]);
         for ($i = 0; $i < $n; $i++) {
             imagesetpixel($this->image, rand(0, $this->width), rand(0, $this->height), $color);
@@ -122,7 +123,7 @@ class captcha extends \system\lib
     {
         if ($this->image == null) $this->init();
 
-        if (!$color) $color = $this->font_color;
+        if (!$color) $color = $this->fontColor;
         $color = imagecolorallocate($this->image, $color[0], $color[1], $color[2]);
         for ($i = 0; $i < $n; $i++) {
             imageline($this->image, 0, rand(0, $this->width), $this->width, rand(0, $this->height), $color);
@@ -134,7 +135,7 @@ class captcha extends \system\lib
         if ($this->image == null) $this->init();
 
         $image = imagecreatetruecolor($this->width, $this->height);
-        imagefill($image, 0, 0, imagecolorallocate($this->image, $this->bg_color[0], $this->bg_color[1], $this->bg_color[2]));
+        imagefill($image, 0, 0, imagecolorallocate($this->image, $this->bgColor[0], $this->bgColor[1], $this->bgColor[2]));
         for ($x = 0; $x < $this->width; $x++) {
             for ($y = 0; $y < $this->height; $y++) {
                 $color = imagecolorat($this->image, $x, $y);
@@ -149,7 +150,7 @@ class captcha extends \system\lib
     {
         if ($this->image == null) $this->init();
 
-        if (!$color) $color = $this->font_color;
+        if (!$color) $color = $this->fontColor;
         $color = imagecolorallocate($this->image, $color[0], $color[1], $color[2]);
         for ($i = 0; $i < $n; $i++) {
             imagerectangle($this->image, $i, $i, $this->width - $i - 1, $this->height - $i - 1, $color);
@@ -164,7 +165,7 @@ class captcha extends \system\lib
         switch ($type) {
             case 'gif':
                 header("Content-type: image/gif");
-                imagegif ($this->image);
+                imagegif($this->image);
                 break;
             case 'jpg':
             case 'jpeg':
@@ -181,18 +182,16 @@ class captcha extends \system\lib
                 break;
             default:
                 header("Content-type: image/gif");
-                imagegif ($this->image);
+                imagegif($this->image);
                 break;
 
         }
     }
 
 
-    public function to_string()        //获取输出的字符
+    public function toString()        //获取输出的字符
     {
         return is_array($this->text) ? implode('', $this->text) : '';
     }
 
 }
-
-?>

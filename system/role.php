@@ -4,7 +4,7 @@ namespace system;
 /**
  * 角色基类
  */
-abstract class role
+abstract class Role
 {
     public $name = '';
     public $permission = -1;
@@ -17,7 +17,7 @@ abstract class role
      * @param $task
      * @return bool
      */
-    public function has_permission($controller, $task) {
+    public function hasPermission($controller, $task) {
         if ($this->permission == 1) return true;
         if ($this->permission == 0) return false;
 

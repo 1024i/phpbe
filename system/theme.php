@@ -7,7 +7,7 @@ namespace system;
  * 主题和模板里只放控制界面的代码，如数据格式，页面布局，不要有业务代码， 更不要操作数据库 
  *
  */
-class theme
+class Theme
 {
 	/*
 	网站主色调
@@ -21,15 +21,15 @@ class theme
 	protected $colors = array('#333333');
 
 	protected $template = null;
-	protected $template_methods = null;
+	protected $templateMethods = null;
 
 	/*
 	 * @param object $template 模板
 	 */
-	public function set_template($template)
+	public function setTemplate($template)
 	{
 		$this->template = $template;
-		$this->template_methods = get_class_methods($template);
+		$this->templateMethods = get_class_methods($template);
 	}
 
 	/**
@@ -41,18 +41,18 @@ class theme
     {
 		if ($this->template === null) return;
 		$template = $this->template;
-		$template_methods = $this->template_methods;
+		$templateMethods = $this->templateMethods;
 
-		$config = be::get_config('system.system');
+		$config = Be::getConfig('System.System');
 		?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml">
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-			<meta name="description" content="<?php echo response::get_meta_description();?>" />
-			<meta name="keywords" content="<?php echo response::get_meta_keywords();?>" />
-			<title><?php echo response::get_title().' - '.$config->site_name; ?></title>
+			<meta name="description" content="<?php echo Response::getMetaDescription();?>" />
+			<meta name="keywords" content="<?php echo Response::getMetaKeywords();?>" />
+			<title><?php echo Response::getTitle().' - '.$config->siteName; ?></title>
 
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/system/theme/default/js/jquery-1.11.0.min.js"></script>
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/system/theme/default/js/jquery.validate.min.js"></script>
@@ -62,15 +62,15 @@ class theme
 			</script>
 
 			<?php $this->head(); ?>
-			<?php if (in_array('head', $template_methods)) response::head(); ?>
+			<?php if (in_array('head', $templateMethods)) Response::head(); ?>
 
 		</head>
 		<body>
 			<div class="theme-body-container">
 				<div class="theme-body">
 				<?php
-				if (in_array('body', $template_methods)) {
-					response::body();
+				if (in_array('body', $templateMethods)) {
+					Response::body();
 				} else {
 					$this->body();
 				}
@@ -104,13 +104,13 @@ class theme
 	protected function body()
 	{
 		$template = $this->template;
-		$template_methods = $this->template_methods;
+		$templateMethods = $this->templateMethods;
 		?>
 		<div class="theme-north-container">
 			<div class="theme-north">
 				<?php
-				if (in_array('north', $template_methods)) {
-					response::north();
+				if (in_array('north', $templateMethods)) {
+					Response::north();
 				} else {
 					$this->north();
 				}
@@ -121,8 +121,8 @@ class theme
 		<div class="theme-middle-container">
 			<div class="theme-middle">
 				<?php
-				if (in_array('middle', $template_methods)) {
-					response::middle();
+				if (in_array('middle', $templateMethods)) {
+					Response::middle();
 				} else {
 					$this->middle();
 				}
@@ -133,8 +133,8 @@ class theme
 		<div class="theme-south-container">
 			<div class="theme-south">
 				<?php
-				if (in_array('south', $template_methods)) {
-					response::south();
+				if (in_array('south', $templateMethods)) {
+					Response::south();
 				} else {
 					$this->south();
 				}
@@ -156,21 +156,21 @@ class theme
 	protected function middle()
 	{
 		$template = $this->template;
-		$template_methods = $this->template_methods;
+		$templateMethods = $this->templateMethods;
 
-		$west = in_array('west', $template_methods);
-		$east = in_array('east', $template_methods);
+		$west = in_array('west', $templateMethods);
+		$east = in_array('east', $templateMethods);
 
-		$west_width = 25;
-		$center_width = 50;
-		$east_width = 25;
+		$westWidth = 25;
+		$centerWidth = 50;
+		$eastWidth = 25;
 
 		if (!$west || !$east) {
 			if (!$west && !$east) {
-				$center_width = 100;
+				$centerWidth = 100;
 			} else {
-				$center_width = 70;
-				$west_width = $east_width = 30;
+				$centerWidth = 70;
+				$westWidth = $eastWidth = 30;
 			}
 		}
 	?>
@@ -178,10 +178,10 @@ class theme
 	<?php
 	if ($west) {
 	?>
-	<div class="col" style="width:<?php echo $west_width; ?>%;">
+	<div class="col" style="width:<?php echo $westWidth; ?>%;">
 		<div class="theme-west-container">
 			<div class="theme-west">
-				<?php response::west(); ?>
+				<?php Response::west(); ?>
 			</div>
 		</div>
 	</div>
@@ -189,14 +189,14 @@ class theme
 	}
 	?>
 	
-	<div class="col" style="width:<?php echo $center_width; ?>%;">
+	<div class="col" style="width:<?php echo $centerWidth; ?>%;">
 	
 		<div class="theme-center-container">
 			<div class="theme-center">
 				<?php
 				$this->message();
 
-				response::center();
+				Response::center();
 				?>
 			</div>
 		</div>
@@ -206,11 +206,11 @@ class theme
 	<?php
 	if ($east) {
 	?>
-	<div class="col" style="width:<?php echo $east_width; ?>%;">
+	<div class="col" style="width:<?php echo $eastWidth; ?>%;">
 		<div class="theme-east-container">
 			<div class="theme-east">
 				<?php
-				response::east();
+				Response::east();
 				?>
 			</div>
 		</div>
@@ -232,13 +232,13 @@ class theme
     }
 
 
-    public function get_color($index = 0)
+    public function getColor($index = 0)
     {
 		if ($index == 0) return $this->colors[0];
 		if (array_key_exists($index, $this->colors)) return $this->colors[$index];
 		
-		$lib_css = be::get_lib('css');
-		return $lib_css->lighter($this->colors[0], $index*10);
+		$libCss = Be::getLib('css');
+		return $libCss->lighter($this->colors[0], $index*10);
     }
 
 
@@ -248,8 +248,8 @@ class theme
      */
     protected function message()
     {
-        if (session::has('_message')) {
-			$message = session::delete('_message');
+        if (session::has('Message')) {
+			$message = session::delete('Message');
 
 			//$message->type: success:成功 / error:错误 / warning:警告 / info:普通信息 
 

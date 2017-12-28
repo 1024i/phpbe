@@ -1,11 +1,11 @@
 <?php
-use system\be;
-use system\request;
+use System\Be;
+use System\Request;
 ?>
 
 <!--{html}-->
 <?php
-$config = be::get_config('system.system');
+$config = Be::getConfig('System.System');
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,9 +13,9 @@ $config = be::get_config('system.system');
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="<?php echo $this->meta_description; ?>"/>
-    <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
-    <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
+    <meta name="description" content="<?php echo $this->metaDescription; ?>"/>
+    <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
+    <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
     <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/jquery-1.12.4.min.js"></script>
     <script src="<?php echo URL_ROOT; ?>/system/theme/sample/js/jquery.validate.min.js"></script>
@@ -46,34 +46,34 @@ $config = be::get_config('system.system');
 
         <!--{north}-->
         <div class="logo">
-            <a href="<?php echo URL_ROOT; ?>" title="<?php echo $config->site_name; ?>">
-                <img src="<?php echo URL_ROOT; ?>/system/theme/sample/images/logo.gif" alt="<?php echo $config->site_name; ?>"/>
+            <a href="<?php echo URL_ROOT; ?>" title="<?php echo $config->siteName; ?>">
+                <img src="<?php echo URL_ROOT; ?>/system/theme/sample/images/logo.gif" alt="<?php echo $config->siteName; ?>"/>
             </a>
         </div>
 
         <div class="menu">
             <ul>
                 <?php
-                $menu_id = request::get('menu_id', 0, 'int');
+                $menuId = Request::get('menuId', 0, 'int');
 
-                $north_menu = be::get_menu('north');
-                $north_menu_tree = $north_menu->get_menu_tree();
+                $northMenu = Be::getMenu('north');
+                $northMenuTree = $northMenu->getMenuTree();
 
-                if (count($north_menu_tree)) {
-                    foreach ($north_menu_tree as $menu) {
+                if (count($northMenuTree)) {
+                    foreach ($northMenuTree as $menu) {
 
-                        $menu_on = true;
+                        $menuOn = true;
                         if (count($menu->params)) {
                             foreach ($menu->params as $key => $val) {
-                                if (request::get($key) != $val) {
-                                    $menu_on = false;
+                                if (Request::get($key) != $val) {
+                                    $menuOn = false;
                                 }
                             }
                         } else {
-                            $menu_on = false;
+                            $menuOn = false;
                         }
 
-                        if ($menu_on)
+                        if ($menuOn)
                             echo '<li class="menu-on">';
                         else
                             echo '<li class="menu-off">';
@@ -100,7 +100,7 @@ $config = be::get_config('system.system');
             <div class="wrapper">
                 <!--{west}-->
                 <?php
-                $my = be::get_user();
+                $my = Be::getUser();
                 ?>
                 <h2>用户登陆</h2>
 
@@ -115,18 +115,18 @@ $config = be::get_config('system.system');
                             <li><label>记住我: </label><input title="记住我" type="checkbox" name="rememberme" value="1"></li>
                             <li><label>&nbsp;</label><input type="submit" value="登陆"/>
                                 <a href="<?php echo url('controller=user&task=register'); ?>">注册</a>
-                                <a href="<?php echo url('controller=user&task=forget_password'); ?>">忘记密码?</a></li>
+                                <a href="<?php echo url('controller=user&task=forgetPassword'); ?>">忘记密码?</a></li>
 
                         </ul>
                         <input type="hidden" name="controller" value="user"/>
-                        <input type="hidden" name="task" value="login_check"/>
+                        <input type="hidden" name="task" value="loginCheck"/>
                     </form>
                     <?php
                 } else {
                     ?>
                     <p>你好, <?php echo $my->username; ?></p>
                     <p><a href="<?php echo url('controller=user&task=edit'); ?>">修改资料</a> <a
-                                href="<?php echo url('controller=user&task=reset_password'); ?>">修改密码</a></p>
+                                href="<?php echo url('controller=user&task=resetPassword'); ?>">修改密码</a></p>
                     <p><input type="button" value="退出"
                               onClick="window.location.href='<?php echo url('controller=user&task=logout'); ?>';"/></p>
                     <?php
@@ -140,7 +140,7 @@ $config = be::get_config('system.system');
             <div class="wrapper">
                 <!--{message}-->
                 <?php
-                if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->_message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->_message->body . '</div>';
+                if ($this->Message !== null) echo '<div class="theme-message theme-message-' . $this->Message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->Message->body . '</div>';
                 ?>
                 <!--{/message}-->
 
@@ -159,14 +159,14 @@ $config = be::get_config('system.system');
     <div class="theme-south">
         <!--{south}-->
         <?php
-        $south_menu = be::get_menu('south');
-        $south_menu_tree = $south_menu->get_menu_tree();
-        if (count($south_menu_tree)) {
+        $southMenu = Be::getMenu('south');
+        $southMenuTree = $southMenu->getMenuTree();
+        if (count($southMenuTree)) {
             echo '<div class="foot-menu">';
             echo '<ul>';
             $i = 1;
-            $n = count($south_menu_tree);
-            foreach ($south_menu_tree as $menu) {
+            $n = count($southMenuTree);
+            foreach ($southMenuTree as $menu) {
                 echo '<li><a href="';
                 if ($menu->home)
                     echo URL_ROOT;
@@ -182,8 +182,8 @@ $config = be::get_config('system.system');
         }
         ?>
         <div class="copyright clr">
-            &copy;2017 版权所有: <?php echo $config->site_name; ?> &nbsp;
-            使用 <a href="http://www.phpbe.com" target="_blank" title="访问BE官网">BEV<?php echo be::get_version(); ?></a> 开发
+            &copy;2017 版权所有: <?php echo $config->siteName; ?> &nbsp;
+            使用 <a href="http://www.phpbe.com" target="Blank" title="访问BE官网">BEV<?php echo Be::getVersion(); ?></a> 开发
         </div>
         <!--{/south}-->
     </div>

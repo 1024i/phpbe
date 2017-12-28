@@ -2,16 +2,16 @@
 
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
 
-class theme extends \system\service
+class theme extends \System\Service
 {
-    private $be_api = 'http://api.phpbe.com/';
+    private $beApi = 'http://api.phpbe.com/';
 
     private $theme = null;
 
-    public function get_themes()
+    public function getThemes()
     {
         if ($this->theme === null) {
             $this->theme = array();
@@ -21,9 +21,9 @@ class theme extends \system\service
                 if ($file != '.' && $file != '..' && is_dir(PATH_ROOT . DS . 'theme' . DS . $file)) {
                     if (file_exists(PATH_ROOT . DS . 'theme' . DS . $file . DS . 'config.php')) {
                         include(PATH_ROOT . DS . 'theme' . DS . $file . DS . 'config.php');
-                        $class_name = 'config_theme_' . $file;
-                        if (class_exists($class_name)) {
-                            $this->theme[$file] = new $class_name();
+                        $className = 'configTheme_' . $file;
+                        if (class_exists($className)) {
+                            $this->theme[$file] = new $className();
                         }
                     }
                 }
@@ -34,60 +34,60 @@ class theme extends \system\service
         return $this->theme;
     }
 
-    public function get_theme_count()
+    public function getThemeCount()
     {
-        return count($this->get_themes());
+        return count($this->getThemes());
     }
 
-    public function set_default_theme($theme)
+    public function setDefaultTheme($theme)
     {
-        $config_system = be::get_config('system.system');
-        $config_system->theme = $theme;
+        $configSystem = Be::getConfig('System.System');
+        $configSystem->theme = $theme;
 
-        be::get_service('system')->update_config($config_system, PATH_ROOT . DS . 'configs' . DS . 'system.php');
+        Be::getService('system')->updateConfig($configSystem, PATH_ROOT . DS . 'Config' . DS . 'system.php');
 
         return true;
     }
 
 
-    public function get_remote_themes($option = array())
+    public function getRemoteThemes($option = array())
     {
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->post($this->be_api . 'theme/', $option);
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->post($this->beApi . 'theme/', $option);
 
-        $theme = json_decode($response);
+        $theme = jsonDecode($Response);
         return $theme;
     }
 
-    public function get_remote_theme($theme_id)
+    public function getRemoteTheme($themeId)
     {
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->get($this->be_api . 'theme/' . $theme_id);
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->get($this->beApi . 'theme/' . $themeId);
 
-        $theme = json_decode($response);
+        $theme = jsonDecode($Response);
         return $theme;
     }
 
 
     // 安装应用文件
-    public function install_theme($theme)
+    public function installTheme($theme)
     {
         $dir = PATH_ROOT . DS . 'theme' . DS . $theme->name;
         if (file_exists($dir)) {
-            $this->set_error('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
+            $this->setError('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
             return false;
         }
 
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->get($this->be_api . 'theme_download/' . $theme->id . '/');
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->get($this->beApi . 'themeDownload/' . $theme->id . '/');
 
         $zip = PATH_ADMIN . DS . 'tmp' . DS . 'theme_' . $theme->name . '.zip';
-        file_put_contents($zip, $response);
+        file_put_contents($zip, $Response);
 
-        $lib_zip = be::get_lib('zip');
-        $lib_zip->open($zip);
-        if (!$lib_zip->extract_to($dir)) {
-            $this->set_error($lib_zip->get_error());
+        $libZip = Be::getLib('zip');
+        $libZip->open($zip);
+        if (!$libZip->extractTo($dir)) {
+            $this->setError($libZip->getError());
             return false;
         }
 
@@ -98,19 +98,19 @@ class theme extends \system\service
     }
 
     // 删除主题
-    public function uninstall_theme($theme)
+    public function uninstallTheme($theme)
     {
-        $config_system = be::get_config('system.system');
+        $configSystem = Be::getConfig('System.System');
 
-        if ($config_system->theme == $theme) {
-            $this->set_error('正在使用的默认主题不能删除');
+        if ($configSystem->theme == $theme) {
+            $this->setError('正在使用的默认主题不能删除');
             return false;
         }
 
-        $theme_path = PATH_ROOT . DS . 'theme' . DS . $theme;
+        $themePath = PATH_ROOT . DS . 'theme' . DS . $theme;
 
-        $lib_fso = be::get_lib('fso');
-        $lib_fso->rm_dir($theme_path);
+        $libFso = Be::getLib('fso');
+        $libFso->rmDir($themePath);
 
         return true;
     }

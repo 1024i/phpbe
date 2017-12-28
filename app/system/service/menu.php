@@ -1,54 +1,54 @@
 <?php
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class menu extends \system\service
+class menu extends \System\Service
 {
 
     /**
      * 获取菜单项列表
      *
-     * @param int $group_id 菜单组编号
+     * @param int $groupId 菜单组编号
      * @return array
      */
-    public function get_menus($group_id)
+    public function getMenus($groupId)
     {
-        return be::get_table('system_menu')
-            ->where('group_id', $group_id)
-            ->order_by('ordering', 'asc')
-            ->get_objects();
+        return Be::getTable('systemMenu')
+            ->where('groupId', $groupId)
+            ->orderBy('ordering', 'asc')
+            ->getObjects();
     }
 
     /**
      * 删除菜单
      *
-     * @param int $menu_id 菜单编号
+     * @param int $menuId 菜单编号
      * @return bool
      */
-    public function delete_menu($menu_id)
+    public function deleteMenu($menuId)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_menu');
-            if (!$table->where('parent_id', $menu_id)
-                ->update(['parent_id' => 0])
+            $table = Be::getTable('systemMenu');
+            if (!$table->where('parentId', $menuId)
+                ->update(['parentId' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
-            $row = be::get_row('system.menu');
-            if (!$row->delete($menu_id)) {
-                throw new \exception($row->get_error());
+            $row = Be::getRow('System.menu');
+            if (!$row->delete($menuId)) {
+                throw new \Exception($row->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -58,33 +58,33 @@ class menu extends \system\service
     /**
      * 将某项菜单设置为首页
      *
-     * @param $menu_id
+     * @param $menuId
      * @return bool
      */
-    public function set_home_menu($menu_id)
+    public function setHomeMenu($menuId)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_menu');
+            $table = Be::getTable('systemMenu');
             if (!$table->where('home', 1)
                 ->update(['home' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
-            $table = be::get_table('system_menu');
-            if (!$table->where('id', $menu_id)
+            $table = Be::getTable('systemMenu');
+            if (!$table->where('id', $menuId)
                 ->update(['home' => 1])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -96,9 +96,9 @@ class menu extends \system\service
      *
      * @return array
      */
-    public function get_menu_groups()
+    public function getMenuGroups()
     {
-        return be::get_table('system_menu_group')->order_by('id', 'asc')->get_objects();
+        return Be::getTable('systemMenuGroup')->orderBy('id', 'asc')->getObjects();
     }
 
     /**
@@ -106,39 +106,39 @@ class menu extends \system\service
      *
      * @return int
      */
-    public function get_menu_group_sum()
+    public function getMenuGroupSum()
     {
-        return be::get_table('system_menu_group')->count();
+        return Be::getTable('systemMenuGroup')->count();
     }
 
     /**
      * 删除菜单组
      *
-     * @param $group_id
+     * @param $groupId
      * @return bool
      */
-    public function delete_menu_group($group_id)
+    public function deleteMenuGroup($groupId)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_menu');
-            if (!$table->where('group_id', $group_id)
+            $table = Be::getTable('systemMenu');
+            if (!$table->where('groupId', $groupId)
                 ->delete()
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
-            $row = be::get_row('system.menu_group');
-            if (!$row->delete($group_id)) {
-                throw new \exception($row->get_error());
+            $row = Be::getRow('System.menuGroup');
+            if (!$row->delete($groupId)) {
+                throw new \Exception($row->getError());
             }
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 

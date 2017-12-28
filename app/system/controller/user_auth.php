@@ -1,17 +1,17 @@
 <?php
 namespace controller;
 
-use system\be;
-use system\request;
-use system\response;
+use System\Be;
+use System\Request;
+use System\Response;
 
-class user_auth extends \system\controller
+class userAuth extends \System\Controller
 {
     public function __construct()
     {
-		$my = be::get_user();
+		$my = Be::getUser();
         if ($my->id == 0) {
-            response::error('登陆超时，请重新登陆！', url('controller=user&task=login&return=http_referer'), -1);
+            Response::error('登陆超时，请重新登陆！', url('controller=user&task=login&return=httpReferer'), -1);
 		}
     }
 }

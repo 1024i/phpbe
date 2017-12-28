@@ -1,34 +1,34 @@
 <?php
 namespace system;
 
-use system\db\exception;
+use System\Db\Exception;
 
 /**
  * 数据库表行记录
  */
-abstract class row extends obj
+abstract class Row extends Obj
 {
     protected $db = 'master';
-    protected $table_name = '';
-    protected $primary_key = '';
+    protected $tableName = '';
+    protected $primaryKey = '';
 
     protected $quote = '`'; // 字段或表名转义符 mysql: `
 
     /**
      * 缓存失效时间（单位：秒），0 为不使用缓存
      */
-    protected $cache_expire = 0;
+    protected $cacheExpire = 0;
 
     /**
      * 构造函数
      *
-     * @param string $row_name 表名
-     * @param string $primary_key 主键名
+     * @param string $rowName 表名
+     * @param string $primaryKey 主键名
      */
-    public function __construct($row_name, $primary_key = 'id')
+    public function __construct($rowName, $primaryKey = 'id')
     {
-        $this->table_name = $row_name;
-        $this->primary_key = $primary_key;
+        $this->tableName = $rowName;
+        $this->primaryKey = $primaryKey;
     }
 
     /**
@@ -48,12 +48,12 @@ abstract class row extends obj
      *
      * @param string | array | object $data 要绑定的数据对象
      * @return \system\row | bool
-     * @throws exception
+     * @throws Exception
      */
     public function bind($data)
     {
         if (!is_object($data) && !is_array($data)) {
-            throw new exception('绑定失败，不合法的数据源！');
+            throw new Exception('绑定失败，不合法的数据源！');
         }
 
         if (is_object($data)) $data = get_object_vars($data);
@@ -76,7 +76,7 @@ abstract class row extends obj
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
      * @return \system\row | false
-     * @throws exception
+     * @throws Exception
      */
     public function load($field, $value = null)
     {
@@ -85,44 +85,44 @@ abstract class row extends obj
 
         if ($value === null) {
             if (is_array($field)) {
-                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE';
+                $sql = 'SELECT * FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE';
                 foreach ($field as $key => $val) {
                     $sql .= ' ' . $this->quote . $key . $this->quote . '=? AND';
                     $values[] = $val;
                 }
                 $sql = substr($sql, 0, -4);
             } elseif (is_numeric($field)) {
-                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . ' = \'' . intval($field) . '\'';
+                $sql = 'SELECT * FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE ' . $this->quote . $this->primaryKey . $this->quote . ' = \'' . intval($field) . '\'';
             } elseif (is_string($field)) {
-                $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $field;
+                $sql = 'SELECT * FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE ' . $field;
             }
         } else {
             if (is_array($field)) {
-                throw new exception('row->load() 方法参数错误！');
+                throw new Exception('row->load() 方法参数错误！');
             }
-            $sql = 'SELECT * FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $field . $this->quote . '=?';
+            $sql = 'SELECT * FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE ' . $this->quote . $field . $this->quote . '=?';
             $values[] = $value;
         }
 
         $row = null;
-        $cache_key = null;
-        if ($this->cache_expire > 0) {
-            $cache_key = 'row:load:' . sha1($sql . serialize($values));
-            $cache = cache::get($cache_key);
+        $cacheKey = null;
+        if ($this->cacheExpire > 0) {
+            $cacheKey = 'row:load:' . sha1($sql . serialize($values));
+            $cache = cache::get($cacheKey);
             if ($cache !== false) $row = $cache;
         }
 
         if ($row === null) {
-            $db = be::get_db($this->db);
-            $row = $db->get_object($sql, $values);
+            $db = Be::getDb($this->db);
+            $row = $db->getObject($sql, $values);
         }
 
         if (!$row) {
-            throw new exception('未找到指定数据记录！');
+            throw new Exception('未找到指定数据记录！');
         }
 
-        if ($this->cache_expire > 0) {
-            cache::set($cache_key, $row, $this->cache_expire);
+        if ($this->cacheExpire > 0) {
+            cache::set($cacheKey, $row, $this->cacheExpire);
         }
 
         return $this->bind($row);
@@ -135,14 +135,14 @@ abstract class row extends obj
      */
     public function save()
     {
-        $db = be::get_db($this->db);
+        $db = Be::getDb($this->db);
 
-        $primary_key = $this->primary_key;
-        if ($this->$primary_key) {
-            $db->update($this->table_name, $this, $this->primary_key);
+        $primaryKey = $this->primaryKey;
+        if ($this->$primaryKey) {
+            $db->update($this->tableName, $this, $this->primaryKey);
         } else {
-            $db->insert($this->table_name, $this);
-            $this->$primary_key = $db->get_last_insert_id();
+            $db->insert($this->tableName, $this);
+            $this->$primaryKey = $db->getLastInsertId();
         }
 
         return true;
@@ -153,19 +153,19 @@ abstract class row extends obj
      *
      * @param int $id 主键值
      * @return bool
-     * @throws exception
+     * @throws Exception
      */
     public function delete($id = null)
     {
-        $primary_key = $this->primary_key;
-        if ($id === null) $id = $this->$primary_key;
+        $primaryKey = $this->primaryKey;
+        if ($id === null) $id = $this->$primaryKey;
 
         if ($id === null) {
-            throw new exception('参数缺失, 请指定要删除记录的编号！');
+            throw new Exception('参数缺失, 请指定要删除记录的编号！');
         }
 
-        $db = be::get_db($this->db);
-        $db->execute('DELETE FROM ' . $this->quote . $this->table_name . $this->quote . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?', array($id));
+        $db = Be::getDb($this->db);
+        $db->execute('DELETE FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE ' . $this->quote . $this->primaryKey . $this->quote . '=?', array($id));
 
         return true;
     }
@@ -178,7 +178,7 @@ abstract class row extends obj
      */
     public function cache($expire = 60)
     {
-        $this->cache_expire = $expire;
+        $this->cacheExpire = $expire;
     }
 
     /**
@@ -190,11 +190,11 @@ abstract class row extends obj
      */
     public function increment($field, $step = 1)
     {
-        $primary_key = $this->primary_key;
-        $id = $this->$primary_key;
-        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
+        $primaryKey = $this->primaryKey;
+        $id = $this->$primaryKey;
+        $sql = 'UPDATE ' . $this->quote . $this->tableName . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . $step . ' WHERE ' . $this->quote . $this->primaryKey . $this->quote . '=?';
 
-        $db = be::get_db($this->db);
+        $db = Be::getDb($this->db);
         $db->execute($sql, array($id));
 
         return true;
@@ -209,11 +209,11 @@ abstract class row extends obj
      */
     public function decrement($field, $step = 1)
     {
-        $primary_key = $this->primary_key;
-        $id = $this->$primary_key;
-        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . $step . ' WHERE ' . $this->quote . $this->primary_key . $this->quote . '=?';
+        $primaryKey = $this->primaryKey;
+        $id = $this->$primaryKey;
+        $sql = 'UPDATE ' . $this->quote . $this->tableName . $this->quote . ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . $step . ' WHERE ' . $this->quote . $this->primaryKey . $this->quote . '=?';
 
-        $db = be::get_db($this->db);
+        $db = Be::getDb($this->db);
         $db->execute($sql, array($id));
 
         return true;
@@ -224,9 +224,9 @@ abstract class row extends obj
      *
      * @return string
      */
-    public function get_table_name()
+    public function getTableName()
     {
-        return $this->table_name;
+        return $this->tableName;
     }
 
     /**
@@ -234,9 +234,9 @@ abstract class row extends obj
      *
      * @return string
      */
-    public function get_primary_key()
+    public function getPrimaryKey()
     {
-        return $this->primary_key;
+        return $this->primaryKey;
     }
 
 }

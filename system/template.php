@@ -4,12 +4,12 @@ namespace system;
 /**
  * 模板基类
  */
-class template
+class Template
 {
     public $title = ''; // 标题
-    public $meta_keywords = ''; // meta keywords
-    public $meta_description = '';  // meta description
-    public $_message = null;  // 消息
+    public $metaKeywords = ''; // meta keywords
+    public $metaDescription = '';  // meta description
+    public $message = null;  // 消息
 
     /*
     网站主色调
@@ -22,13 +22,13 @@ class template
     */
     public $colors = array('#333333');
 
-    public function get_color($index = 0)
+    public function getColor($index = 0)
     {
         if ($index == 0) return $this->colors[0];
         if (array_key_exists($index, $this->colors)) return $this->colors[$index];
 
-        $lib_css = be::get_lib('css');
-        return $lib_css->lighter($this->colors[0], $index*10);
+        $libCss = Be::getLib('css');
+        return $libCss->lighter($this->colors[0], $index*10);
     }
 
     public function get($key, $default = null) {

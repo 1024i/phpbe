@@ -1,20 +1,18 @@
 <?php
-namespace controller;
+namespace App\System\Controller;
 
-use system\be;
-use system\response;
+use System\Be;
+use System\Response;
+use System\Controller;
 
-class home extends \system\controller
+class Home extends Controller
 {
-
 	public function home()
 	{
-		$config_system = be::get_config('system.system');
-		response::set_title($config_system->home_title);
-        response::set_meta_keywords($config_system->home_meta_keywords);
-        response::set_meta_description($config_system->home_meta_description);
-        response::display();
+		$configSystem = Be::getConfig('System.System');
+		Response::setTitle($configSystem->homeTitle);
+        Response::setMetaKeywords($configSystem->homeMetaKeywords);
+        Response::setMetaDescription($configSystem->homeMetaDescription);
+        Response::display();
 	}
-
 }
-?>

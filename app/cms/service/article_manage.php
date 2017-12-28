@@ -1,9 +1,9 @@
 <?php
 namespace app\cms\service;
 
-use system\be;
+use System\Be;
 
-class article_manage extends \system\service
+class articleManage extends \System\Service
 {
 
     /**
@@ -12,27 +12,27 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    public function get_articles($conditions = array())
+    public function getArticles($conditions = array())
     {
-        $table_article = be::get_table('cms.article');
+        $tableArticle = Be::getTable('Cms.article');
 
-        $where = $this->create_article_where($conditions);
-        $table_article->where($where);
+        $where = $this->createArticleWhere($conditions);
+        $tableArticle->where($where);
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_article->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableArticle->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'ordering';
-            $order_by_dir = 'DESC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_article->order_by($order_by, $order_by_dir);
+            $orderBy = 'ordering';
+            $orderByDir = 'DESC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableArticle->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_article->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_article->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableArticle->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableArticle->limit($conditions['limit']);
 
-        return $table_article->get_objects();
+        return $tableArticle->getObjects();
     }
 
     /**
@@ -41,10 +41,10 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return int
      */
-    public function get_article_count($conditions = array())
+    public function getArticleCount($conditions = array())
     {
-        return be::get_table('cms.article')
-            ->where($this->create_article_where($conditions))
+        return Be::getTable('Cms.article')
+            ->where($this->createArticleWhere($conditions))
             ->count();
     }
 
@@ -54,21 +54,21 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    private function create_article_where($conditions = [])
+    private function createArticleWhere($conditions = [])
     {
         $where = [];
 
-        if (isset($conditions['category_id']) && $conditions['category_id'] != -1) {
-            if ($conditions['category_id'] == 0)
-                $where[] = ['category_id', 0];
-            elseif ($conditions['category_id'] > 0) {
-                $service_article = be::get_service('article');
-                $ids = $service_article->get_sub_category_ids($conditions['category_id']);
+        if (isset($conditions['categoryId']) && $conditions['categoryId'] != -1) {
+            if ($conditions['categoryId'] == 0)
+                $where[] = ['categoryId', 0];
+            elseif ($conditions['categoryId'] > 0) {
+                $serviceArticle = Be::getService('Cms.Article');
+                $ids = $serviceArticle->getSubCategoryIds($conditions['categoryId']);
                 if (count($ids) > 0) {
-                    $ids[] = $conditions['category_id'];
-                    $where[] = ['category_id', 'in', $ids];
+                    $ids[] = $conditions['categoryId'];
+                    $where[] = ['categoryId', 'in', $ids];
                 } else {
-                    $where[] = ['category_id', $conditions['category_id']];
+                    $where[] = ['categoryId', $conditions['categoryId']];
                 }
             }
         }
@@ -86,22 +86,22 @@ class article_manage extends \system\service
 
     public function unblock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('cms.article');
+            $table = Be::getTable('Cms.article');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -110,22 +110,22 @@ class article_manage extends \system\service
 
     public function block($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('cms.article');
+            $table = Be::getTable('Cms.article');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -134,42 +134,42 @@ class article_manage extends \system\service
 
     public function delete($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
             $files = [];
 
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $article_comment_ids = be::get_table('article_comment')->where('article_id', $id)->get_array('id');
-                if (count($article_comment_ids)) {
-                    $table = be::get_table('article_vote_log');
-                    if (!$table->where('comment_id', 'in', $article_comment_ids)->delete()) {
-                        throw new \exception($table->get_error());
+                $articleCommentIds = Be::getTable('articleComment')->where('articleId', $id)->getArray('id');
+                if (count($articleCommentIds)) {
+                    $table = Be::getTable('articleVoteLog');
+                    if (!$table->where('commentId', 'in', $articleCommentIds)->delete()) {
+                        throw new \Exception($table->getError());
                     }
 
-                    $table = be::get_table('article_vote_log');
-                    if (!$table->where('article_id', $id)->delete()) {
-                        throw new \exception($table->get_error());
+                    $table = Be::getTable('articleVoteLog');
+                    if (!$table->where('articleId', $id)->delete()) {
+                        throw new \Exception($table->getError());
                     }
 
-                    $table = be::get_table('article_comment');
-                    if (!$table->where('article_id', $id)->delete()) {
-                        throw new \exception($table->get_error());
+                    $table = Be::getTable('articleComment');
+                    if (!$table->where('articleId', $id)->delete()) {
+                        throw new \Exception($table->getError());
                     }
                 }
 
-                $row_article = be::get_row('cms.article');
-                $row_article->load($id);
+                $rowArticle = Be::getRow('Cms.article');
+                $rowArticle->load($id);
 
-                if ($row_article->thumbnail_l != '') $files[] = PATH_DATA . DS . 'cms' . DS . 'article' . DS . 'thumbnail' . DS . $row_article->thumbnail_l;
-                if ($row_article->thumbnail_m != '') $files[] = PATH_DATA . DS . 'cms' . DS . 'article' . DS . 'thumbnail' . DS . $row_article->thumbnail_m;
-                if ($row_article->thumbnail_s != '') $files[] = PATH_DATA . DS . 'cms' . DS . 'article' . DS . 'thumbnail' . DS . $row_article->thumbnail_s;
+                if ($rowArticle->thumbnailL != '') $files[] = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail' . DS . $rowArticle->thumbnailL;
+                if ($rowArticle->thumbnailM != '') $files[] = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail' . DS . $rowArticle->thumbnailM;
+                if ($rowArticle->thumbnailS != '') $files[] = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail' . DS . $rowArticle->thumbnailS;
 
-                if (!$row_article->delete()) {
-                    throw new \exception($row_article->get_error());
+                if (!$rowArticle->delete()) {
+                    throw new \Exception($rowArticle->getError());
                 }
             }
 
@@ -178,10 +178,10 @@ class article_manage extends \system\service
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -194,25 +194,25 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    public function get_comments($conditions = array())
+    public function getComments($conditions = array())
     {
-        $table_article_comment = be::get_table('article_comment');
-        $table_article_comment->where($this->create_comment_where($conditions));
+        $tableArticleComment = Be::getTable('articleComment');
+        $tableArticleComment->where($this->createCommentWhere($conditions));
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_article_comment->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableArticleComment->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'create_time';
-            $order_by_dir = 'DESC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_article_comment->order_by($order_by, $order_by_dir);
+            $orderBy = 'createTime';
+            $orderByDir = 'DESC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableArticleComment->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_article_comment->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_article_comment->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableArticleComment->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableArticleComment->limit($conditions['limit']);
 
-        return $table_article_comment->get_objects();
+        return $tableArticleComment->getObjects();
     }
 
     /**
@@ -221,10 +221,10 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return int
      */
-    public function get_comment_count($conditions = array())
+    public function getCommentCount($conditions = array())
     {
-        return be::get_table('article_comment')
-            ->where($this->create_comment_where($conditions))
+        return Be::getTable('articleComment')
+            ->where($this->createCommentWhere($conditions))
             ->count();
     }
 
@@ -234,13 +234,13 @@ class article_manage extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    private function create_comment_where($conditions = [])
+    private function createCommentWhere($conditions = [])
     {
         $where = [];
         $where[] = ['block', 0];
 
-        if (isset($conditions['article_id']) && is_numeric($conditions['article_id']) && $conditions['article_id'] > 0) {
-            $where[] = ['article_id', $conditions['article_id']];
+        if (isset($conditions['articleId']) && is_numeric($conditions['articleId']) && $conditions['articleId'] > 0) {
+            $where[] = ['articleId', $conditions['articleId']];
         }
 
         if (isset($conditions['key']) && $conditions['key']) {
@@ -255,72 +255,72 @@ class article_manage extends \system\service
     }
 
 
-    public function comments_unblock($ids)
+    public function commentsUnblock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('article_comment');
+            $table = Be::getTable('articleComment');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
         return true;
     }
 
-    public function comments_block($ids)
+    public function commentsBlock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('article_comment');
+            $table = Be::getTable('articleComment');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
         return true;
     }
 
-    public function comments_delete($ids)
+    public function commentsDelete($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('article_comment');
+            $table = Be::getTable('articleComment');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -331,43 +331,43 @@ class article_manage extends \system\service
     /**
      * 获取分类列表
      */
-    public function get_categories()
+    public function getCategories()
     {
-        return be::get_table('article_category')->order_by('ordering', 'asc')->get_objects();
+        return Be::getTable('articleCategory')->orderBy('ordering', 'asc')->getObjects();
     }
 
 
     /**
      * 删除分类
-     * @param int $category_id 分类编号
+     * @param int $categoryId 分类编号
      * @return bool
      */
-    public function delete_category($category_id)
+    public function deleteCategory($categoryId)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('cms.article');
-            if (!$table->where('category_id', $category_id)->update(['category_id' => 0])) {
-                throw new \exception($table->get_error());
+            $table = Be::getTable('Cms.article');
+            if (!$table->where('categoryId', $categoryId)->update(['categoryId' => 0])) {
+                throw new \Exception($table->getError());
             }
 
-            $table = be::get_table('article_category');
-            if (!$table->where('parent_id', $category_id)->update(['parent_id' => 0])) {
-                throw new \exception($table->get_error());
+            $table = Be::getTable('articleCategory');
+            if (!$table->where('parentId', $categoryId)->update(['parentId' => 0])) {
+                throw new \Exception($table->getError());
             }
 
-            $row = be::get_row('article_category');
-            if (!$row->delete($category_id)) {
-                throw new \exception($row->get_error());
+            $row = Be::getRow('articleCategory');
+            if (!$row->delete($categoryId)) {
+                throw new \Exception($row->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 

@@ -1,11 +1,11 @@
 <?php
-use system\be;
-use system\request;
+use System\Be;
+use System\Request;
 ?>
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/forgot_password_reset.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/forgot_password_reset.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/forgotPasswordReset.css">
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/forgotPasswordReset.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -17,7 +17,7 @@ $user = $this->user;
 	<div class="theme-box">
 		<div class="theme-box-title"><?php echo $this->title; ?></div>
 		<div class="theme-box-body">
-			<form id="form-forgot_password_reset">
+			<form id="form-forgotPasswordReset">
 		
 		
 				<div class="row">
@@ -64,8 +64,8 @@ $user = $this->user;
 					</div>
 				</div>
 
-				<input type="hidden" name="user_id" value="<?php echo request::get('user_id', 0, 'int'); ?>" />
-				<input type="hidden" name="token" value="<?php echo request::get('token',''); ?>" />
+				<input type="hidden" name="userId" value="<?php echo Request::get('userId', 0, 'int'); ?>" />
+				<input type="hidden" name="token" value="<?php echo Request::get('token',''); ?>" />
 
 			</form>
 

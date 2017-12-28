@@ -1,14 +1,14 @@
 <?php
-namespace app\system\config;
+namespace App\System\Config;
 
-class session
+class Session
 {
 
     public $name = 'SSID'; // 用在 cookie 或者 URL 中的会话名称， 例如：PHPSESSID。 只能使用字母和数字，建议尽可能的短一些
 
     public $expire = 1440;  // 超时时间
 
-    public $driver = 'files';  // SESSION 驱动 files：系统默认/mysql/memcache/memcached/redis
+    public $driver = 'File';  // SESSION 驱动 File：系统默认/Mysql/Memcache/Memcached/Redis
 
     // mysql 配置项
     /*
@@ -17,7 +17,7 @@ class session
         'port' => '3306', // 端口号
         'user' => 'root', // 用户名
         'pass' => '', // 密码
-        'name' => 'be_v2', // 数据库名
+        'name' => 'beV2', // 数据库名
         'table' => 'session' // 存放session的表名
    );
     */

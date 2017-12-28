@@ -1,7 +1,7 @@
 <?php
 namespace system;
 
-class router
+class Router
 {
 	/**
 	 * 搜索引警友好的网址格式:
@@ -12,36 +12,36 @@ class router
 	 * @return string
 	 * @sample
 	 * <pre>
-	 * echo url('controller=article&task=detail&id=1'); // 输出：http://www.yourdomain.com/article/detail/1.html
+	 * echo url('app=Cms&controller=Article&task=detail&id=1'); // 输出：http://www.yourdomain.com/article/detail/1.html
 	 * </pre>
 	 */
-	public function encode_url($app, $controller, $task, $params=array())
+	public function encodeUrl($app, $controller, $task, $params=array())
 	{
-		$config_system = be::get_config('system.system');
+		$configSystem = Be::getConfig('System.System');
 
-		$url_params = '';
+		$urlParams = '';
 		if (count($params)) {
 			foreach ($params as $key=>$val) {
-				$url_params .= '/' . $key . '-' . $val;
+				$urlParams .= '/' . $key . '-' . $val;
 			}
 		}
-		echo URL_ROOT . '/' . $app . '/' . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
-		return URL_ROOT . '/' . $app . '/' . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
+		echo URL_ROOT . '/' . $app . '/' . $controller . '/' . $task . $urlParams . $configSystem->sefSuffix;
+		return URL_ROOT . '/' . $app . '/' . $controller . '/' . $task . $urlParams . $configSystem->sefSuffix;
 	}
 
 
-    public function encode_admin_url($app, $controller, $task, $params=array())
+    public function encodeAdminUrl($app, $controller, $task, $params=array())
     {
-        $config_system = be::get_config('system.system');
+        $configSystem = Be::getConfig('System.System');
 
-        $url_params = '';
+        $urlParams = '';
         if (count($params)) {
             foreach ($params as $key=>$val) {
-                $url_params .= '/' . $key . '-' . $val;
+                $urlParams .= '/' . $key . '-' . $val;
             }
         }
-        echo URL_ROOT . '/' . ADMIN . '/'  . $app . '/' . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
-        return URL_ROOT . '/' . ADMIN . '/' . $app . '/'  . $controller . '/' . $task . $url_params . $config_system->sef_suffix;
+        echo URL_ROOT . '/' . ADMIN . '/'  . $app . '/' . $controller . '/' . $task . $urlParams . $configSystem->sefSuffix;
+        return URL_ROOT . '/' . ADMIN . '/' . $app . '/'  . $controller . '/' . $task . $urlParams . $configSystem->sefSuffix;
     }
 
     /**
@@ -50,7 +50,7 @@ class router
 	 * @params array() $urls 网址按 "/" 拆分成的数组 $urls = explode('/', '/{controller}/{task}......');
 	 * @return bool
 	 */
-	public function decode_url($urls)
+	public function decodeUrl($urls)
 	{
 		$len = count($urls);
 		if ($len >= 3) {
@@ -84,7 +84,7 @@ class router
      * @params array() $urls 网址按 "/" 拆分成的数组 $urls = explode('/', '/{controller}/{task}......');
      * @return bool
      */
-    public function decode_admin_url($urls)
+    public function decodeAdminUrl($urls)
     {
         $len = count($urls);
         if ($len >= 3) {

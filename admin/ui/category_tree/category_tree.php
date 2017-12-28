@@ -1,7 +1,7 @@
 <?php
-namespace admin\ui\category_tree;
+namespace admin\ui\categoryTree;
 
-class category_tree extends \system\ui
+class categoryTree extends \system\ui
 {
 	private $actions = array();
 
@@ -17,7 +17,7 @@ class category_tree extends \system\ui
 		$this->actions['delete'] = false;
     }
 
-    public function set_action($type, $url = null, $label = null)
+    public function setAction($type, $url = null, $label = null)
     {
 		if ($label == null) {
 			switch($type)
@@ -34,25 +34,25 @@ class category_tree extends \system\ui
 
    /**
     * 设置分类数据
-    * 传递的数据项必须包含 parent_id, name, ordering 属性
+    * 传递的数据项必须包含 parentId, name, ordering 属性
     * @param array $objs
     */
-    public function set_data($objs)
+    public function setData($objs)
     {
-        $this->data = $this->_create_categories($this->_create_categoy_tree($objs));
+        $this->data = $this->CreateCategories($this->CreateCategoyTree($objs));
     }
 
-    public function set_fields()
+    public function setFields()
     {
         $this->fields = func_get_args();
     }
     
-    public function set_header($header)
+    public function setHeader($header)
     {
         $this->header = $header;
     }
     
-    public function set_footer($footer)
+    public function setFooter($footer)
     {
         $this->footer = $footer;
     }
@@ -63,12 +63,12 @@ class category_tree extends \system\ui
 		if (!$this->head) {
 			$this->head = true;
 			?>
-<link type="text/css" rel="stylesheet" href="ui/category_tree/css/category_tree.css" />
+<link type="text/css" rel="stylesheet" href="ui/categoryTree/css/categoryTree.css" />
 <script type="text/javascript" language="javascript">
 	var LANG_UI_CATEGORY_TREE_DELETE_CONFIRM = '<?php echo '该操作不可恢复， 确认删除吗?'; ?>';
 	var LANG_UI_CATEGORY_TREE_DELETING = '<?php echo '删除中...'; ?>';
 </script>
-<script type="text/javascript" language="javascript" src="ui/category_tree/js/category_tree.js"></script>
+<script type="text/javascript" language="javascript" src="ui/categoryTree/js/categoryTree.js"></script>
 			<?php
 		}
 	}
@@ -77,33 +77,33 @@ class category_tree extends \system\ui
     public function display()
     {
 		if ($this->actions['save'] ===false || $this->actions['delete'] ===false) {
-			echo 'Please set (ui_category_tree->set_action)';
+			echo 'Please set (uiCategoryTree->setAction)';
 			return;
 		}
 		
         $this->head();
         echo '<script type="text/javascript" language="javascript">';
         if (count($this->data)) {
-            $pre_id = 0;
-            $current_id = 0;
-            $next_id = 0;
+            $preId = 0;
+            $currentId = 0;
+            $nextId = 0;
             
             $category = null;
             foreach ($this->data as $cat) {
                 if ($category) {
-                    $pre_id = $current_id;
-                    $current_id = $category->id;
-                    $next_id = $cat->id;
-                    echo 'ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $pre_id . ',' . $next_id . ',' . $category->level . ',' . $category->children . ');';
+                    $preId = $currentId;
+                    $currentId = $category->id;
+                    $nextId = $cat->id;
+                    echo 'uiCategoryTree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parentId . ',' . $preId . ',' . $nextId . ',' . $category->level . ',' . $category->children . ');';
                 }
                 else
-                    echo 'ui_category_tree.setChainHead(' . $cat->id . ');';
+                    echo 'uiCategoryTree.setChainHead(' . $cat->id . ');';
                 $category = $cat;
             }
-            echo 'ui_category_tree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parent_id . ',' . $current_id . ',0,' . $category->level . ',' . $category->children . ');';
+            echo 'uiCategoryTree.addChain(' . $category->id . ',"' . $category->name . '",' . $category->parentId . ',' . $currentId . ',0,' . $category->level . ',' . $category->children . ');';
             
-			echo 'ui_category_tree.setSaveAction("' . $this->actions['save']['url'] . '");';
-            echo 'ui_category_tree.setDeleteAction("' . $this->actions['delete']['url'] . '");';
+			echo 'uiCategoryTree.setSaveAction("' . $this->actions['save']['url'] . '");';
+            echo 'uiCategoryTree.setDeleteAction("' . $this->actions['delete']['url'] . '");';
         }
         
         $template = '';
@@ -116,11 +116,11 @@ class category_tree extends \system\ui
         }
         $template = str_replace('"', '\"', $template);
         
-        echo 'ui_category_tree.setTemplate("' . $template . '");';
+        echo 'uiCategoryTree.setTemplate("' . $template . '");';
         echo '</script>';
         
-        echo '<div class="ui_category_tree">';
-        echo '<form action="'.$this->actions['save']['url'].'" id="ui_category_tree_form" method="post">';
+        echo '<div class="uiCategoryTree">';
+        echo '<form action="'.$this->actions['save']['url'].'" id="uiCategoryTreeForm" method="post">';
         echo $this->header;
         echo '<table>';
         echo '<thead>';
@@ -144,16 +144,16 @@ class category_tree extends \system\ui
         echo '</tr>';
         echo '</thead>';
         
-        echo '<tbody id="ui_category_tree_rows">';
+        echo '<tbody id="uiCategoryTreeRows">';
         
         $n = count($this->fields) + 6;
         
         if (count($this->data)) {
             foreach ($this->data as $obj) {
-                echo '<tr id="ui_category_tree_row_' . $obj->id . '" class="ui-row'.(($obj->level == 0)?' top':' sub').'">';
-                echo '<td align="right"><a href="javascript:;" onclick="javascript:ui_category_tree.add(' . $obj->id . ')" class="icon add" title="'.'在此分类下添加子分类'.'" data-toggle="tooltip"></a></td>';
+                echo '<tr id="uiCategoryTreeRow_' . $obj->id . '" class="ui-row'.(($obj->level == 0)?' top':' sub').'">';
+                echo '<td align="right"><a href="javascript:;" onclick="javascript:uiCategoryTree.add(' . $obj->id . ')" class="icon add" title="'.'在此分类下添加子分类'.'" data-toggle="tooltip"></a></td>';
                 echo '<td align="center" class="toggle">';
-                echo '<a class="icon" href="javascript:;" onclick="javascript:ui_category_tree.toggle(' . $obj->id . ')"';
+                echo '<a class="icon" href="javascript:;" onclick="javascript:uiCategoryTree.toggle(' . $obj->id . ')"';
                 if ($obj->children == 0) echo ' style="display:none;"';
                 echo '></a>';
                 echo '</td>';
@@ -163,7 +163,7 @@ class category_tree extends \system\ui
                 if ($obj->level > 0) echo ' style="padding-left:' . ($obj->level*40) . 'px;background-position:' . ($obj->level*40-20) . 'px 0px;"';
                 echo '>';
                 echo '<input type="hidden" name="id[]" value="' . $obj->id . '" />';
-                echo '<input type="hidden" name="parent_id[]" value="' . $obj->parent_id . '" />';
+                echo '<input type="hidden" name="parentId[]" value="' . $obj->parentId . '" />';
                 echo '<input type="text" name="name[]" value="' . $obj->name . '" size="30" maxlength="120" />';
                 echo '</div>';
                 echo '</td>';
@@ -192,9 +192,9 @@ class category_tree extends \system\ui
                     }
                 }
                 
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
-                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:ui_category_tree.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
-                echo '<td align="center" width="20"><a href="javascript:;" onclick="javascript:ui_category_tree.remove(' . $obj->id . ')" class="icon delete"';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:uiCategoryTree.orderUp(' . $obj->id . ')" class="icon up"></a></td>';
+                echo '<td align="center" width="20" class="order"><a href="javascript:;" onclick="javascript:uiCategoryTree.orderDown(' . $obj->id . ')" class="icon down"></a></td>';
+                echo '<td align="center" width="20"><a href="javascript:;" onclick="javascript:uiCategoryTree.remove(' . $obj->id . ')" class="icon delete"';
                 if ($obj->children!=0) echo ' style="display:none;"';
                 echo '></a></td>';
                 
@@ -207,7 +207,7 @@ class category_tree extends \system\ui
         echo '<tr>';
         echo '<td colspan="' . $n . '">';
         
-        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:ui_category_tree.add(0)"/> &nbsp;';
+        echo '<input type="button" class="btn btn-success" value="'.'添加'.'" onclick="javascript:uiCategoryTree.add(0)"/> &nbsp;';
         echo '<input type="submit" class="btn btn-primary" value="'.$this->actions['save']['label'].'" />';
         
         echo '</td>';
@@ -222,32 +222,32 @@ class category_tree extends \system\ui
     }
     
 
-    private function _create_categories($category_tree = null, &$categories = array())
+    private function CreateCategories($categoryTree = null, &$categories = array())
     {
-        if (count($category_tree)) {
-            foreach ($category_tree as $category) {
-                $sub_category = null;
-                if (isset($category->sub_category)) {
-                    $sub_category = $category->sub_category;
-                    unset($category->sub_category);
+        if (count($categoryTree)) {
+            foreach ($categoryTree as $category) {
+                $subCategory = null;
+                if (isset($category->subCategory)) {
+                    $subCategory = $category->subCategory;
+                    unset($category->subCategory);
                 }
                 $categories[] = $category;
                 
-                if ($sub_category !== null) $this->_create_categories($sub_category, $categories);
+                if ($subCategory !== null) $this->CreateCategories($subCategory, $categories);
             }
         }
         return $categories;
     }
 
-    private function _create_categoy_tree(&$categories = null, $parent_id = 0, $level = 0)
+    private function CreateCategoyTree(&$categories = null, $parentId = 0, $level = 0)
     {
         $tree = array();
         foreach ($categories as $category) {
-            if ($category->parent_id == $parent_id) {
+            if ($category->parentId == $parentId) {
                 $category->level = $level;
-                $sub_category = $this->_create_categoy_tree($categories, $category->id, $level + 1);
-                if (count($sub_category)) $category->sub_category = $sub_category;
-                $category->children = count($sub_category);
+                $subCategory = $this->CreateCategoyTree($categories, $category->id, $level + 1);
+                if (count($subCategory)) $category->subCategory = $subCategory;
+                $category->children = count($subCategory);
                 $tree[] = $category;
             }
         }

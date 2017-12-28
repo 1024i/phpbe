@@ -8,7 +8,7 @@ use \system\be;
 @版本日期: 2010年08月28日
 */
 
-class zip extends \system\lib
+class Zip extends \system\Lib
 {
 
     private $path = null; // 压缩包路径
@@ -39,34 +39,34 @@ class zip extends \system\lib
     }
 
     // 加载压缩包数据
-    public function load_data()
+    public function loadData()
     {
         $this->data = file_get_contents($this->path);
     }
 
     // 设置压缩包数据
-    public function set_data($data)
+    public function setData($data)
     {
         $this->data = $data;
     }
 
     // 解压缩到
-    public function extract_to($folder)
+    public function extractTo($folder)
     {
         if (!file_exists($folder)) mkdir($folder);
 
-        if (!$this->data) $this->load_data();
-        if (!$this->info) $this->load_info();
+        if (!$this->data) $this->loadData();
+        if (!$this->info) $this->loadInfo();
 
         if (!extension_loaded('zlib')) {
-            $this->set_error('你的服务器不支持 Zlib');
+            $this->setError('你的服务器不支持 Zlib');
             return false;
         }
 
-        $fso = be::get_lib('fso');
+        $fso = Be::getLib('fso');
         for ($i = 0, $n = count($this->info); $i < $n; $i++) {
             if (substr($this->info[$i]['name'], -1, 1) != '/' && substr($this->info[$i]['name'], -1, 1) != '\\') {
-                $buffer = $this->get_file_data($i);
+                $buffer = $this->getFileData($i);
                 $extract_to_path = $folder . DS . str_replace(array('/', '\\'), DS, $this->info[$i]['name']);
                 $extract_to_folder = dirname($extract_to_path);
 
@@ -77,7 +77,7 @@ class zip extends \system\lib
         return true;
     }
 
-    function get_file_data($key)
+    function getFileData($key)
     {
         if ($this->info[$key]['_method'] == 0x8) {
             if (extension_loaded('zlib')) {
@@ -93,9 +93,9 @@ class zip extends \system\lib
         return '';
     }
 
-    public function load_info()
+    public function loadInfo()
     {
-        if (!$this->data) $this->load_data();
+        if (!$this->data) $this->loadData();
 
         $entries = array();
 
@@ -113,7 +113,7 @@ class zip extends \system\lib
         $start = strpos($this->data, $this->dir_header, $offset);
         do {
             if (strlen($this->data) < $start + 31) {
-                $this->set_error('ZIP文件数据错误');
+                $this->setError('ZIP文件数据错误');
                 return false;
             }
             $info = unpack('vMethod/VTime/VCRC32/VCompressed/VUncompressed/vLength', substr($this->data, $start + 10, 20));
@@ -123,7 +123,7 @@ class zip extends \system\lib
             $entries[$name]['date'] = mktime((($info['Time'] >> 11) & 0x1f), (($info['Time'] >> 5) & 0x3f), (($info['Time'] << 1) & 0x3e), (($info['Time'] >> 21) & 0x07), (($info['Time'] >> 16) & 0x1f), ((($info['Time'] >> 25) & 0x7f) + 1980));
 
             if (strlen($this->data) < $start + 43) {
-                $this->set_error('ZIP文件数据错误');
+                $this->setError('ZIP文件数据错误');
                 return false;
             }
             $info = unpack('vInternal/VExternal', substr($this->data, $start + 36, 6));
@@ -135,7 +135,7 @@ class zip extends \system\lib
         $start = strpos($this->data, $this->file_header);
         do {
             if (strlen($this->data) < $start + 34) {
-                $this->set_error('ZIP文件数据错误');
+                $this->setError('ZIP文件数据错误');
                 return false;
             }
             $info = unpack('vMethod/VTime/VCRC32/VCompressed/VUncompressed/vLength/vExtraLength', substr($this->data, $start + 8, 25));
@@ -150,7 +150,7 @@ class zip extends \system\lib
     // 检测压缩包是否合法
     public function valid()
     {
-        if (!$this->data) $this->load_data();
+        if (!$this->data) $this->loadData();
         if (strpos($this->data, $this->file_header) !== false) return true;
         return false;
     }

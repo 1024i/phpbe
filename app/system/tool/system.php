@@ -11,8 +11,8 @@ class system
      */
     public static function url($url)
     {
-        $config_system = \system\be::get_config('system.system');
-        if ($config_system->sef) {
+        $configSystem = \system\Be::getConfig('System.System');
+        if ($configSystem->sef) {
             $urls = explode('&', $url);
 
             if (count($urls) == 0) return URL_ROOT;
@@ -42,11 +42,11 @@ class system
             }
 
             if ($app === null) return URL_ROOT;
-            if ($controller === null) return URL_ROOT . '/' . $app . $config_system->sef_suffix;
-            if ($task == null) return URL_ROOT . '/' . $controller . $config_system->sef_suffix;
+            if ($controller === null) return URL_ROOT . '/' . $app . $configSystem->sefSuffix;
+            if ($task == null) return URL_ROOT . '/' . $controller . $configSystem->sefSuffix;
 
-            $router = \system\be::get_router($app, $controller);
-            return $router->encode_url($app, $controller, $task, $params);
+            $router = \system\Be::getRouter($app, $controller);
+            return $router->encodeUrl($app, $controller, $task, $params);
         }
 
         return URL_ROOT . '/?' . $url;
@@ -58,16 +58,16 @@ class system
      * @param string $url 要处理的网址，启用 SEF 时生成伪静态页， 为空时返回网站网址
      * @return string
      */
-    public static function admin_url($url)
+    public static function adminUrl($url)
     {
-        $config_system = \system\be::get_config('system.system');
-        if ($config_system->sef) {
+        $configSystem = \system\Be::getConfig('System.System');
+        if ($configSystem->sef) {
             $urls = explode('&', $url);
 
             if (count($urls) == 0) return URL_ADMIN;
 
             $app = null;
-            $admin_controller = null;
+            $adminController = null;
             $task = null;
             $params = array();
 
@@ -80,8 +80,8 @@ class system
 
                     if ($key == 'app') {
                         $app = $val;
-                     } elseif ($key == 'admin_controller') {
-                        $admin_controller = $val;
+                     } elseif ($key == 'adminController') {
+                        $adminController = $val;
                     } elseif ($key == 'task') {
                         $task = $val;
                     } else {
@@ -91,11 +91,11 @@ class system
             }
 
             if ($app === null) return URL_ADMIN;
-            if ($admin_controller === null) return URL_ADMIN . '/' . $app . $config_system->sef_suffix;
-            if ($task == null) return URL_ADMIN . '/' . $admin_controller . $config_system->sef_suffix;
+            if ($adminController === null) return URL_ADMIN . '/' . $app . $configSystem->sefSuffix;
+            if ($task == null) return URL_ADMIN . '/' . $adminController . $configSystem->sefSuffix;
 
-            $router = \system\be::get_admin_router($app, $admin_controller);
-            return $router->encode_url($app, $admin_controller, $task, $params);
+            $router = \system\Be::getAdminRouter($app, $adminController);
+            return $router->encodeUrl($app, $adminController, $task, $params);
         }
 
         return URL_ADMIN . '/?' . $url;

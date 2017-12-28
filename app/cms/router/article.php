@@ -1,47 +1,47 @@
 <?php
 namespace router;
 
-use system\be;
+use System\Be;
 
-class article extends \system\router
+class Article extends \system\router
 {
 
-    public function encode_url($controller, $task, $params = [])
+    public function encodeUrl($app, $controller, $task, $params = [])
     {
-        $config_system = be::get_config('system.system');
+        $configSystem = Be::getConfig('System.System');
 
         if ($task == 'articles') {
-            if (isset($params['category_id'])) {
+            if (isset($params['categoryId'])) {
                 if (isset($params['page'])) {
-                    return URL_ROOT . '/article/c' . $params['category_id'] . '/p' . $params['page'] . '/';
+                    return URL_ROOT . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
                 }
-                return URL_ROOT . '/article/c' . $params['category_id'] . '/';
+                return URL_ROOT . '/Cms/Article/c' . $params['categoryId'] . '/';
             }
         } elseif ($task == 'detail') {
-            if (isset($params['article_id'])) {
-                return URL_ROOT . '/article/' . $params['article_id'] . $config_system->sef_suffix;
+            if (isset($params['articleId'])) {
+                return URL_ROOT . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
             }
         } elseif ($task == 'user') {
-            if (isset($params['user_id'])) {
-                return URL_ROOT . '/article/user/' . $params['user_id'] . $config_system->sef_suffix;
+            if (isset($params['userId'])) {
+                return URL_ROOT . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
             }
         }
 
-        return parent::encode_url($controller, $task, $params);
+        return parent::encodeUrl($app, $controller, $task, $params);
     }
 
-    public function decode_url($urls)
+    public function decodeUrl($urls)
     {
         $len = count($urls);
         if ($len > 2) {
             if (is_numeric($urls[2])) {
                 $_GET['task'] = $_REQUEST['task'] = 'detail';
-                $_GET['article_id'] = $_REQUEST['article_id'] = $urls[2];
+                $_GET['articleId'] = $_REQUEST['articleId'] = $urls[2];
 
                 return true;
             } elseif (substr($urls[2], 0, 1) == 'c') {
                 $_GET['task'] = $_REQUEST['task'] = 'articles';
-                $_GET['category_id'] = $_REQUEST['category_id'] = substr($urls[2], 1);
+                $_GET['categoryId'] = $_REQUEST['categoryId'] = substr($urls[2], 1);
 
                 if ($len > 3 && substr($urls[3], 0, 1) == 'p') {
                     $_GET['page'] = $_REQUEST['page'] = substr($urls[3], 1);
@@ -49,12 +49,12 @@ class article extends \system\router
                 return true;
             } elseif ($urls[2] == 'user') {
                 $_GET['task'] = $_REQUEST['task'] = 'user';
-                $_GET['user_id'] = $_REQUEST['user_id'] = $urls[3];
+                $_GET['userId'] = $_REQUEST['userId'] = $urls[3];
 
                 return true;
             }
         }
 
-        return parent::decode_url($urls);
+        return parent::decodeUrl($urls);
     }
 }

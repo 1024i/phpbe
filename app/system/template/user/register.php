@@ -1,5 +1,5 @@
 <?php
-use system\be;
+use System\Be;
 ?>
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/register.css">
@@ -9,7 +9,7 @@ use system\be;
 <!--{middle}-->
 <!--{center}-->
 <?php
-$config_user = be::get_config('system.user');
+$configUser = Be::getConfig('System.user');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">
@@ -69,7 +69,7 @@ $config_user = be::get_config('system.user');
 				</div>
 
 				<?php
-				if ($config_user->captcha_register == '1') {
+				if ($configUser->captchaRegister == '1') {
 				?>
 				<div class="row">
 					<div class="col-8">
@@ -78,7 +78,7 @@ $config_user = be::get_config('system.user');
 					<div class="col-12">
 						<div class="val">
 							<input type="text" name="captcha" class="input" style="width:90px;" />
-							<img src="<?php echo URL_ROOT; ?>/?controller=user&task=captcha_login" onclick="javascript:this.src='<?php echo URL_ROOT; ?>/?controller=user&task=captcha_login&_='+Math.random();" style="cursor:pointer;" />
+							<img src="<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin" onclick="javascript:this.src='<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -89,22 +89,22 @@ $config_user = be::get_config('system.user');
 				
 				
 				<?php
-				if ($config_user->connect_qq == '1' || $config_user->connect_sina == '1') {
+				if ($configUser->connectQq == '1' || $configUser->connectSina == '1') {
 				?>
 				<div class="row">
 					<div class="col-8"></div>
 					<div class="col-12">
 						<div class="val">
 						<?php
-						if ($config_user->connect_qq == '1') {
+						if ($configUser->connectQq == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=qq_login'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/qq_login.png" /></a> &nbsp;
+						<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/qqLogin.png" /></a> &nbsp;
 						<?php
 						}
 						
-						if ($config_user->connect_sina == '1') {
+						if ($configUser->connectSina == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=sina_login'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/sina_login.png" /></a>
+						<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/sinaLogin.png" /></a>
 						<?php
 						}
 						?>
@@ -118,12 +118,12 @@ $config_user = be::get_config('system.user');
 				
 				<div class="row">
 					<div class="col-8">
-						<div class="key"><input type="checkbox" name="terms_and_conditions" id="terms_and_conditions" class="checkbox" /></div>
+						<div class="key"><input type="checkbox" name="termsAndConditions" id="termsAndConditions" class="checkbox" /></div>
 					</div>
 					<div class="col-12">
 						<div class="val">
-							<label for="terms_and_conditions">我同意&nbsp;</label>
-							<a href="<?php echo url('controller=system&task=terms_and_conditions'); ?>" target="_blank">用户使用条款</a>
+							<label for="termsAndConditions">我同意&nbsp;</label>
+							<a href="<?php echo url('controller=system&task=termsAndConditions'); ?>" target="Blank">用户使用条款</a>
 						</div>
 					</div>
 					<div class="clear-left"></div>

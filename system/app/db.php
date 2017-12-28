@@ -38,35 +38,35 @@ abstract class db
     }
 
     // 查看应用是否已安装
-    public function is_installed()
+    public function isInstalled()
     {
-        return $this->is_created();
+        return $this->isCreated();
     }
 
-    public function get_db_tables()
+    public function getDbTables()
     {
         return array();
     }
 
-    public function get_info($rows = null)
+    public function getInfo($rows = null)
     {
         $info = new \stdClass();
         $info->total = 0;
         $info->created = 0;
         $info->tables = array();
 
-        if ($rows == null) $rows = $this->get_db_tables();
+        if ($rows == null) $rows = $this->getDbTables();
 
         if (!is_array($rows)) return $info;
 
         $info->total = count($rows);
 
-        $db = be::get_db();
-        $system_tables = $db->get_values('SHOW TABLES');
+        $db = Be::getDb();
+        $systemTables = $db->getValues('SHOW TABLES');
 
         $created = 0;
         foreach ($rows as $row) {
-            if (in_array($row, $system_tables)) {
+            if (in_array($row, $systemTables)) {
                 $info->tables[$row] = true;
                 $created++;
             } else {
@@ -78,18 +78,18 @@ abstract class db
     }
 
     // 判断应用相关的数据库表是否已创建
-    public function is_created($rows = null)
+    public function isCreated($rows = null)
     {
-        if ($rows == null) $rows = $this->get_db_tables();
+        if ($rows == null) $rows = $this->getDbTables();
 
         if (!is_array($rows)) return false;
 
-        $db = be::get_db();
-        $system_tables = $db->get_values('SHOW TABLES');
+        $db = Be::getDb();
+        $systemTables = $db->getValues('SHOW TABLES');
 
         $created = 0;
         foreach ($rows as $row) {
-            if (in_array($row, $system_tables)) $created++;
+            if (in_array($row, $systemTables)) $created++;
         }
 
         return count($rows) == $created;

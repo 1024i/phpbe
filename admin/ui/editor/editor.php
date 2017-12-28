@@ -1,7 +1,7 @@
 <?php
 namespace admin\ui\editor;
 
-use system\be;
+use System\Be;
 
 class editor extends \system\ui
 {
@@ -12,7 +12,7 @@ class editor extends \system\ui
     private $method = 'post';
     private $fields = null;
 	
-	private $left_width = null;
+	private $leftWidth = null;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class editor extends \system\ui
 		$this->actions['back'] = false;
     }
 	
-    public function set_action($type, $url = null, $label = null)
+    public function setAction($type, $url = null, $label = null)
     {
 		if ($label == null) {
 			switch($type)
@@ -34,18 +34,18 @@ class editor extends \system\ui
 		$this->actions[$type] = array('url'=>$url, 'label'=>$label);
     }
 
-    public function set_method($method)
+    public function setMethod($method)
     {
         $this->method = $method;
     }
 	
-	public function set_left_width($width)
+	public function setLeftWidth($width)
 	{
-		$this->left_width = $width;
+		$this->leftWidth = $width;
 	}
 
     /*
-	set_fields(
+	setFields(
 
 			array(
 				'type'=>'text',
@@ -120,37 +120,37 @@ class editor extends \system\ui
     (3)email:true 必须输入正确格式的电子邮件
     (4)url:true 必须输入正确格式的网址
     (5)date:true 必须输入正确格式的日期
-    (6)date_iso:true 必须输入正确格式的日期(ISO)，例如：2009-06-23，1998/01/22 只验证格式，不验证有效性
+    (6)dateIso:true 必须输入正确格式的日期(ISO)，例如：2009-06-23，1998/01/22 只验证格式，不验证有效性
     (7)number:true 必须输入合法的数字(负数，小数)
     (8)digits:true 必须输入整数
     (9)creditcard: 必须输入合法的信用卡号
-    (10)equal_to:'field' 输入值必须和#field相同
+    (10)equalTo:'field' 输入值必须和#field相同
     (11)accept:'jpg|jpeg|gif|png' 输入拥有合法后缀名的字符串（如上传文件的后缀）
-    (12)max_length:5 输入长度最多是5的字符串(汉字算一个字符)
-    (13)min_length:10 输入长度最小是10的字符串(汉字算一个字符)
-    (14)range_length:[5,10] 输入长度必须介于 5 和 10 之间的字符串")(汉字算一个字符)
+    (12)maxLength:5 输入长度最多是5的字符串(汉字算一个字符)
+    (13)minLength:10 输入长度最小是10的字符串(汉字算一个字符)
+    (14)rangeLength:[5,10] 输入长度必须介于 5 和 10 之间的字符串")(汉字算一个字符)
     (15)range:[5,10] 输入值必须介于 5 和 10 之间
     (16)max:5 输入值不能大于5
     (17)min:10 输入值不能小于10 
 		
 	*/
-    public function add_field($array)
+    public function addField($array)
     {
         $this->fields[] = $array;
     }
     
-    public function add_fields()
+    public function addFields()
     {
         $args = func_get_args();
         $this->fields = array_merge($this->fields, $args);
     }
     
-    public function set_fields()
+    public function setFields()
     {
         $this->fields = func_get_args();
     }
     
-    public function add_hidden($name, $value = null)
+    public function addHidden($name, $value = null)
     {
         $this->hidden[$name] = $value;
     }
@@ -163,12 +163,12 @@ class editor extends \system\ui
 			$this->head = true;
 			echo '<link type="text/css" rel="stylesheet" href="ui/editor/css/editor.css" />';
 			
-			if ($this->left_width !== null) {
+			if ($this->leftWidth !== null) {
 			?>
 <style type="text/css">
-.admin_ui_editor .form-horizontal .control-label{ width:<?php echo $this->left_width; ?>px;}
-.admin_ui_editor .form-horizontal .controls{ margin-left:<?php echo $this->left_width+20; ?>px;}
-.admin_ui_editor .form-horizontal .control-group{ background-position:<?php echo $this->left_width-590; ?>px;}
+.adminUiEditor .form-horizontal .control-label{ width:<?php echo $this->leftWidth; ?>px;}
+.adminUiEditor .form-horizontal .controls{ margin-left:<?php echo $this->leftWidth+20; ?>px;}
+.adminUiEditor .form-horizontal .control-group{ background-position:<?php echo $this->leftWidth-590; ?>px;}
 </style>
 			<?php
 			}
@@ -181,8 +181,8 @@ class editor extends \system\ui
 		 
         $this->head();
 		
-        echo '<div class="admin_ui_editor">';
-        echo '<form id="admin_ui_editor_form" class="form-horizontal" action="'.$this->actions['save']['url'].'" method="'.$this->method.'"';
+        echo '<div class="adminUiEditor">';
+        echo '<form id="adminUiEditorForm" class="form-horizontal" action="'.$this->actions['save']['url'].'" method="'.$this->method.'"';
         foreach ($this->fields as $field) {
             if (isset($field['type']) && $field['type'] == 'file') {
                 echo ' enctype="multipart/form-data"';
@@ -273,12 +273,12 @@ class editor extends \system\ui
                         echo '</textarea>';
                         break;
                     case 'richtext':
-                        $ui_tinymce = be::get_ui('tinymce');
-                        $ui_tinymce->set_name($field['name']);
-                        if (isset($field['width'])) $ui_tinymce->set_width($field['width']);
-                        if (isset($field['height'])) $ui_tinymce->set_height($field['height']);
-                        if (isset($field['value'])) $ui_tinymce->set_value($field['value']);
-                        $ui_tinymce->display();
+                        $uiTinymce = Be::getUi('tinymce');
+                        $uiTinymce->setName($field['name']);
+                        if (isset($field['width'])) $uiTinymce->setWidth($field['width']);
+                        if (isset($field['height'])) $uiTinymce->setHeight($field['height']);
+                        if (isset($field['value'])) $uiTinymce->setValue($field['value']);
+                        $uiTinymce->display();
                         break;
                 }
             echo '</div>';
@@ -291,7 +291,7 @@ class editor extends \system\ui
         if ($this->actions['reset'] !== false) echo '<input type="reset" class="btn btn-danger" value="'.$this->actions['reset']['label'].'" /> &nbsp;';
         if ($this->actions['back'] !== false) {
             echo '<input type="button" class="btn" value="'.$this->actions['back']['label'].'" onclick="javascript:';
-            echo  'window.location.href=\''.(($this->actions['back']['url'] === null)?'./?controller=system&task=history_back':$this->actions['back']['url']).'\'';
+            echo  'window.location.href=\''.(($this->actions['back']['url'] === null)?'./?app=System&controller=System&task=historyBack':$this->actions['back']['url']).'\'';
             echo ';" />';
         }
         echo '</div>';
@@ -305,8 +305,8 @@ class editor extends \system\ui
         echo '</form>';
         echo '</div>';
         
-        $validate_rules = array();
-        $validate_messages = array();
+        $validateRules = array();
+        $validateMessages = array();
         
         foreach ($this->fields as $field) {
             $rule = array();
@@ -320,28 +320,28 @@ class editor extends \system\ui
                         $message[] = 'required:"'.'请输入'.$field['label'].'"';
                 }
                 
-                if (isset($field['validate']['min_length'])) {
-                    $rule[] = 'minlength:'.$field['validate']['min_length'];
+                if (isset($field['validate']['minLength'])) {
+                    $rule[] = 'minlength:'.$field['validate']['minLength'];
                     
-                    if (isset($field['message']) && isset($field['message']['min_length']))
-                        $message[] = 'minlength:"'.htmlspecialchars($field['message']['min_length']).'"';
+                    if (isset($field['message']) && isset($field['message']['minLength']))
+                        $message[] = 'minlength:"'.htmlspecialchars($field['message']['minLength']).'"';
                     else
                         $message[] = 'minlength:"'.'至少需要输入{0}个字符'.'"';
                 }
                 
-                if (isset($field['validate']['max_length'])) {
-                    $rule[] = 'maxlength:'.$field['validate']['max_length'];
+                if (isset($field['validate']['maxLength'])) {
+                    $rule[] = 'maxlength:'.$field['validate']['maxLength'];
                     
-                    if (isset($field['message']) && isset($field['message']['max_length']))
-                        $message[] = 'maxlength:"'.htmlspecialchars($field['message']['max_length']).'"';
+                    if (isset($field['message']) && isset($field['message']['maxLength']))
+                        $message[] = 'maxlength:"'.htmlspecialchars($field['message']['maxLength']).'"';
                     else
                         $message[] = 'maxlength:"'.'最多可以输入{0}个字符'.'"';
                 }
-                if (isset($field['validate']['range_length'])) {
-                    $rule[] = 'rangelength:'.$field['validate']['range_length'];
+                if (isset($field['validate']['rangeLength'])) {
+                    $rule[] = 'rangelength:'.$field['validate']['rangeLength'];
                     
-                    if (isset($field['message']) && isset($field['message']['range_length']))
-                        $message[] = 'rangelength:"'.htmlspecialchars($field['message']['range_length']).'"';
+                    if (isset($field['message']) && isset($field['message']['rangeLength']))
+                        $message[] = 'rangelength:"'.htmlspecialchars($field['message']['rangeLength']).'"';
                     else
                         $message[] = 'rangelength:"'.'请输入{0}-{1}个字符'.'"';
                 }
@@ -417,11 +417,11 @@ class editor extends \system\ui
                         $message[] = 'date:"'.'请输入合法的日期'.'"';
                 }
                 
-                if (isset($field['validate']['date_iso']) && $field['validate']['date_iso']) {
+                if (isset($field['validate']['dateIso']) && $field['validate']['dateIso']) {
                     $rule[] = 'dateISO:true';
                     
-                    if (isset($field['message']) && isset($field['message']['date_iso']))
-                        $message[] = 'dateISO:"'.htmlspecialchars($field['message']['date_iso']).'"';
+                    if (isset($field['message']) && isset($field['message']['dateIso']))
+                        $message[] = 'dateISO:"'.htmlspecialchars($field['message']['dateIso']).'"';
                     else
                         $message[] = 'dateISO:"'.'请输入合法的日期'.'"';
                 }
@@ -435,11 +435,11 @@ class editor extends \system\ui
                         $message[] = 'creditcard:"'.'请输入合法的信用卡号'.'"';
                 }
                 
-                if (isset($field['validate']['equal_to'])) {
-                    $rule[] = 'equalTo:"#'.$field['validate']['equal_to'].'"';
+                if (isset($field['validate']['equalTo'])) {
+                    $rule[] = 'equalTo:"#'.$field['validate']['equalTo'].'"';
                     
-                    if (isset($field['message']) && isset($field['message']['equal_to']))
-                        $message[] = 'equalTo:"'.htmlspecialchars($field['message']['equal_to']).'"';
+                    if (isset($field['message']) && isset($field['message']['equalTo']))
+                        $message[] = 'equalTo:"'.htmlspecialchars($field['message']['equalTo']).'"';
                     else
                         $message[] = 'equalTo:"'.$field['label'].' 不正确'.'"';
                 }
@@ -463,19 +463,19 @@ class editor extends \system\ui
                 }
             }
             
-            if (count($rule)) $validate_rules[] = $field['name'].':{'.implode(',', $rule).'}';
-            if (count($message)) $validate_messages[] = $field['name'].':{'.implode(',', $message).'}';
+            if (count($rule)) $validateRules[] = $field['name'].':{'.implode(',', $rule).'}';
+            if (count($message)) $validateMessages[] = $field['name'].':{'.implode(',', $message).'}';
 
         }
         
         $js = '';
         $js .= '$(function(){';
-        $js .= '$("#admin_ui_editor_form").validate({';
+        $js .= '$("#adminUiEditorForm").validate({';
         $js .= 'rules: {';
-        $js .= implode(',', $validate_rules);
+        $js .= implode(',', $validateRules);
         $js .= '}';
         $js .= ',messages:{ ';
-        $js .= implode(',', $validate_messages);
+        $js .= implode(',', $validateMessages);
         $js .= '}';
 		$js .= ',highlight:function(element){ $(element).closest(".control-group").removeClass("success").addClass("error"); }';
 		$js .= ',success:function(element){ $(element).addClass("success").closest(".control-group").removeClass("error").addClass("success"); }';

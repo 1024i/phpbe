@@ -2,7 +2,7 @@
 
 namespace app;
 
-use system\be;
+use System\Be;
 
 class user extends \system\app
 {
@@ -13,7 +13,7 @@ class user extends \system\app
     }
 
     // 新建前台菜单时可用的链接项
-    public function get_menus()
+    public function getMenus()
     {
         return array(
             array(
@@ -26,12 +26,12 @@ class user extends \system\app
             ),
             array(
                 'name' => '找回密码页面',
-                'url' => 'controller=user&task=forget_password'
+                'url' => 'controller=user&task=forgetPassword'
             )
         );
     }
 
-    public function get_admin_menus()
+    public function getAdminMenus()
     {
         return array(
             array(
@@ -53,47 +53,47 @@ class user extends \system\app
     }
 
 
-    public function get_permissions()
+    public function getPermissions()
     {
         return [
             '-' => [
                 'user.index',
                 'user.login',
-                'user.captcha_login',
-                'user.login_check',
-                'user.ajax_login_check',
-                'user.qq_login',
-                'user.qq_login_callback',
-                'user.sina_login',
-                'user.sina_login_callback',
+                'user.captchaLogin',
+                'user.loginCheck',
+                'user.ajaxLoginCheck',
+                'user.qqLogin',
+                'user.qqLoginCallback',
+                'user.sinaLogin',
+                'user.sinaLoginCallback',
                 'user.register',
-                'user.captcha_register',
-                'user.ajax_register_save',
-                'user.register_success',
-                'user.forgot_password',
-                'user.ajax_forgot_password_save',
-                'user.forgot_password_reset',
-                'user.ajax_forgot_password_reset_save',
+                'user.captchaRegister',
+                'user.ajaxRegisterSave',
+                'user.registerSuccess',
+                'user.forgotPassword',
+                'user.ajaxForgotPasswordSave',
+                'user.forgotPasswordReset',
+                'user.ajaxForgotPasswordResetSave',
                 'user.logout',
 
-                'user_profile.home',
-                'user_profile.edit_avatar',
-                'user_profile.edit_avatar_save',
-                'user_profile.init_avatar',
-                'user_profile.edit',
-                'user_profile.ajax_edit_save',
-                'user_profile.edit_password',
-                'user_profile.ajax_edit_password_save',
+                'userProfile.home',
+                'userProfile.editAvatar',
+                'userProfile.editAvatarSave',
+                'userProfile.initAvatar',
+                'userProfile.edit',
+                'userProfile.ajaxEditSave',
+                'userProfile.editPassword',
+                'userProfile.ajaxEditPasswordSave',
             ]
         ];
     }
 
-    public function get_admin_permissions()
+    public function getAdminPermissions()
     {
         return [
             '-' => [
                 'user.login',
-                'user.ajax_login_check',
+                'user.ajaxLoginCheck',
                 'user.logout',
             ],
             '查看用户列表' => [
@@ -101,41 +101,41 @@ class user extends \system\app
             ],
             '添加/修改用户资料' => [
                 'user.edit',
-                'user.edit_save',
-                'user.check_username',
-                'user.check_email',
+                'user.editSave',
+                'user.checkUsername',
+                'user.checkEmail',
                 'user.unblock',
                 'user.block',
-                'user.ajax_init_avatar',
+                'user.ajaxInitAvatar',
             ],
             '删除用户' => [
                 'user.delete',
             ],
             '管理用户组及权限' => [
                 'user.roles',
-                'user.roles_save',
-                'user.ajax_set_default_role',
-                'user.ajax_delete_role',
-                'user.role_permissions',
-                'user.role_permissions_save',
+                'user.rolesSave',
+                'user.ajaxSetDefaultRole',
+                'user.ajaxDeleteRole',
+                'user.rolePermissions',
+                'user.rolePermissionsSave',
             ],
             '设置用户系统参数' => [
                 'user.setting',
-                'user.setting_save',
+                'user.settingSave',
             ],
         ];
     }
 
 
-    public function get_db_tables()
+    public function getDbTables()
     {
-        return array('be_user', 'be_user_admin_log');
+        return array('beUser', 'beUserAdminLog');
     }
 
 
-    public function install_db()
+    public function installDb()
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         $db->execute('
 CREATE TABLE IF NOT EXISTS `be_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -143,14 +143,14 @@ CREATE TABLE IF NOT EXISTS `be_user` (
   `password` char(32) NOT NULL,
   `key` char(32) NOT NULL,
   `avatar` varchar(60) NOT NULL,
-  `avatar_s` varchar(60) NOT NULL,
-  `avatar_l` varchar(60) NOT NULL,
+  `avatarS` varchar(60) NOT NULL,
+  `avatarL` varchar(60) NOT NULL,
   `email` varchar(120) NOT NULL,
   `name` varchar(120) NOT NULL,
-  `is_admin` tinyint(1) NOT NULL,
+  `isAdmin` tinyint(1) NOT NULL,
   `block` tinyint(1) NOT NULL,
-  `register_time` int(11) NOT NULL,
-  `last_visit_time` int(11) NOT NULL,
+  `registerTime` int(11) NOT NULL,
+  `lastVisitTime` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 		');
@@ -169,27 +169,27 @@ CREATE TABLE IF NOT EXISTS `be_user_admin_log` (
 
 
         $db->execute("
-INSERT INTO `be_user` (`id`, `username`, `password`, `key`, `avatar`, `avatar_s`, `avatar_l`, `email`, `name`, `is_admin`, `block`, `register_time`, `last_visit_time`) VALUES
-(1, 'admin', '52341be594af95eb94323a23ce48a010', '', 'template/user/images/avatar.png', 'template/user/images/avatar_s.png', 'template/user/images/avatar_l.png', '', '管理员', 1, 0, 946656000, 946656000);
+INSERT INTO `be_user` (`id`, `username`, `password`, `key`, `avatar`, `avatarS`, `avatarL`, `email`, `name`, `isAdmin`, `block`, `registerTime`, `lastVisitTime`) VALUES
+(1, 'admin', '52341be594af95eb94323a23ce48a010', '', 'template/user/images/avatar.png', 'template/user/images/avatarS.png', 'template/user/images/avatarL.png', '', '管理员', 1, 0, 946656000, 946656000);
 		");
 
 
         $db->execute("
 CREATE TABLE IF NOT EXISTS `be_user_connect_qq` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `access_token` varchar(60) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `accessToken` varchar(60) NOT NULL,
   `openid` varchar(60) NOT NULL,
   `nickname` varchar(60) NOT NULL,
   `figureurl` varchar(120) NOT NULL,
   `figureurl_1` varchar(120) NOT NULL,
   `figureurl_2` varchar(120) NOT NULL,
-  `figureurl_qq_1` varchar(120) NOT NULL,
-  `figureurl_qq_2` varchar(120) NOT NULL,
+  `figureurlQq_1` varchar(120) NOT NULL,
+  `figureurlQq_2` varchar(120) NOT NULL,
   `gender` varchar(4) NOT NULL,
-  `is_yellow_vip` int(11) NOT NULL,
+  `isYellowVip` int(11) NOT NULL,
   `vip` int(11) NOT NULL,
-  `yellow_vip_level` int(11) NOT NULL,
+  `yellowVipLevel` int(11) NOT NULL,
   `level` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -198,39 +198,39 @@ CREATE TABLE IF NOT EXISTS `be_user_connect_qq` (
         $db->execute("
 CREATE TABLE IF NOT EXISTS `be_user_connect_sina` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `access_token` varchar(60) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `accessToken` varchar(60) NOT NULL,
   `uid` varchar(30) NOT NULL,
-  `screen_name` varchar(60) NOT NULL,
+  `screenName` varchar(60) NOT NULL,
   `name` varchar(60) NOT NULL,
   `province` int(11) NOT NULL,
   `city` int(11) NOT NULL,
   `location` varchar(120) NOT NULL,
   `description` varchar(240) NOT NULL,
   `url` varchar(120) NOT NULL,
-  `profile_image_url` varchar(120) NOT NULL,
-  `profile_url` varchar(120) NOT NULL,
+  `profileImageUrl` varchar(120) NOT NULL,
+  `profileUrl` varchar(120) NOT NULL,
   `domain` varchar(60) NOT NULL,
   `weihao` varchar(60) NOT NULL,
   `gender` varchar(4) NOT NULL,
-  `followers_count` int(11) NOT NULL,
-  `friends_count` int(11) NOT NULL,
-  `statuses_count` int(11) NOT NULL,
-  `favourites_count` int(11) NOT NULL,
-  `created_at` varchar(30) NOT NULL,
+  `followersCount` int(11) NOT NULL,
+  `friendsCount` int(11) NOT NULL,
+  `statusesCount` int(11) NOT NULL,
+  `favouritesCount` int(11) NOT NULL,
+  `createdAt` varchar(30) NOT NULL,
   `following` tinyint(4) NOT NULL,
-  `allow_all_act_msg` tinyint(4) NOT NULL,
-  `geo_enabled` tinyint(4) NOT NULL,
+  `allowAllActMsg` tinyint(4) NOT NULL,
+  `geoEnabled` tinyint(4) NOT NULL,
   `verified` tinyint(4) NOT NULL,
-  `verified_type` tinyint(4) NOT NULL,
+  `verifiedType` tinyint(4) NOT NULL,
   `remark` varchar(240) NOT NULL,
-  `allow_all_comment` tinyint(4) NOT NULL,
-  `avatar_large` varchar(120) NOT NULL,
-  `avatar_hd` varchar(120) NOT NULL,
-  `verified_reason` varchar(60) NOT NULL,
-  `follow_me` tinyint(4) NOT NULL,
-  `online_status` tinyint(4) NOT NULL,
-  `bi_followers_count` int(11) NOT NULL,
+  `allowAllComment` tinyint(4) NOT NULL,
+  `avatarLarge` varchar(120) NOT NULL,
+  `avatarHd` varchar(120) NOT NULL,
+  `verifiedReason` varchar(60) NOT NULL,
+  `followMe` tinyint(4) NOT NULL,
+  `onlineStatus` tinyint(4) NOT NULL,
+  `biFollowersCount` int(11) NOT NULL,
   `lang` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -241,13 +241,13 @@ CREATE TABLE IF NOT EXISTS `be_user_connect_sina` (
 
     public function uninstall()
     {
-        $this->set_error('系统基本应用，不可删除');
+        $this->setError('系统基本应用，不可删除');
         return false;
     }
 
-    public function install_config() {
+    public function installConfig() {
 
-        $this->add_config('是否开启注册功能', 'register', true, 'bool');
+        $this->addConfig('是否开启注册功能', 'register', true, 'bool');
 
 
 

@@ -8,19 +8,19 @@ class date
      * 格式化时间
      *
      * @param int $time unix 时间戳
-     * @param int $max_days 多少天前或后以默认时间格式输出
-     * @param string $default_format 默认时间格式
+     * @param int $maxDays 多少天前或后以默认时间格式输出
+     * @param string $defaultFormat 默认时间格式
      * @return string
      */
-    public static function format_time($time, $max_days = 30, $default_format = 'Y-m-d')
+    public static function formatTime($time, $maxDays = 30, $defaultFormat = 'Y-m-d')
     {
         $t = time();
 
         $seconds = $t-$time;
 
-        // 如果是{$max_days}天前，直接输出日期
-        $max_seconds = $max_days*86400;
-        if ($seconds > $max_seconds || $seconds <- $max_seconds) return date($default_format, $time);
+        // 如果是{$maxDays}天前，直接输出日期
+        $maxSeconds = $maxDays*86400;
+        if ($seconds > $maxSeconds || $seconds <- $maxSeconds) return date($defaultFormat, $time);
 
         if ($seconds > 86400) {
             $days = intval($seconds / 86400);

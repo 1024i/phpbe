@@ -1,14 +1,14 @@
 <?php
 
-namespace system\db;
+namespace system\Table\Query;
 
-use system\be;
-use system\cache;
+use System\Be;
+use System\Cache;
 
 /**
  * 数据库类
  */
-class where
+class Where
 {
 
 

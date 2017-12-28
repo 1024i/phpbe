@@ -15,7 +15,7 @@ class pagination extends \system\ui
 	}
 	
     // 设置当前第几页
-    public function set_page($page)
+    public function setPage($page)
     {
         $page = intval($page);
         if ($page < 0) $page = 1;
@@ -25,7 +25,7 @@ class pagination extends \system\ui
     }
 
     // 设置总记录数
-    public function set_total($total)
+    public function setTotal($total)
     {
         $total = intval($total);
         if ($total < 0) $total = 0;
@@ -35,13 +35,13 @@ class pagination extends \system\ui
     }
 
     // 设置链接
-    public function set_url($url)
+    public function setUrl($url)
     {
         $this->url = $url;
     }
 
     // 设置第页显示多少条记录
-    public function set_limit($limit)
+    public function setLimit($limit)
     {
         $limit = intval($limit);
         if ($limit < 0) $limit = 10;
@@ -61,32 +61,32 @@ class pagination extends \system\ui
         if ($this->page < 1) $this->page = 1;
     }
 	
-    public function get_total()
+    public function getTotal()
     {
         return $this->total;
     }
 
-    public function get_pages()
+    public function getPages()
     {
         return $this->pages;
     }
 
-    public function get_limit()
+    public function getLimit()
     {
         return $this->limit;
     }
 
-    public function get_page()
+    public function getPage()
     {
         return $this->page;
     }
 
-    public function get_url()
+    public function getUrl()
     {
         return $this->url;
     }
 
-    public function get_offset()
+    public function getOffset()
     {
         return ($this->page - 1) * $this->limit;
     }
@@ -96,10 +96,10 @@ class pagination extends \system\ui
     {
         if ($this->pages <= 1) return;
         $window = 15;
-        $start_page = $this->page - intval($window / 2);
-        if ($start_page < 1) $start_page = 1;
-        $end_page = $start_page + $window - 1;
-        if ($end_page > $this->pages) $end_page = $this->pages;
+        $startPage = $this->page - intval($window / 2);
+        if ($startPage < 1) $startPage = 1;
+        $endPage = $startPage + $window - 1;
+        if ($endPage > $this->pages) $endPage = $this->pages;
 		
         echo '<div class="pagination">';
         echo '<ul>';
@@ -108,7 +108,7 @@ class pagination extends \system\ui
         } else {
             echo '<li class="prev"><a href="' . url($this->url.'&page='.($this->page - 1)) . '">&larr; 上一页</a></li>';
         }
-        for ($i = $start_page; $i <= $end_page; $i++)
+        for ($i = $startPage; $i <= $endPage; $i++)
         {
             if ($i == $this->page) {
                 echo '<li class="active"><a href="javascript:;">' . $i . '</a></li>';

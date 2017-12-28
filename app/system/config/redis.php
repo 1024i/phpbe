@@ -1,7 +1,7 @@
 <?php
-namespace app\system\config;
+namespace App\System\Config;
 
-class redis
+class Redis
 {
     public $host = '127.0.0.1'; // 主机名
     public $port = 6379; // 端口号

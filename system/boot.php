@@ -1,43 +1,43 @@
 <?php
-use system\be;
-use system\request;
-use system\response;
+use System\Be;
+use System\Request;
+use System\Response;
 
-require PATH_ROOT . DS . 'system' . DS . 'loader.php';
-spl_autoload_register(array('\\system\\loader', 'autoload'));
+require PATH_ROOT . DS . 'System' . DS . 'Loader.php';
+spl_autoload_register(array('\\System\\Loader', 'autoload'));
 
-require PATH_ROOT . DS . 'system' . DS . 'tool.php';
+require PATH_ROOT . DS . 'System' . DS . 'Tool.php';
 
 // 检查网站配置， 是否暂停服务
-$config_system = be::get_config('system.system');
-if ($config_system->offline === '1') response::end($config_system->offline_message);
+$configSystem = Be::getConfig('System.System');
+if ($configSystem->offline === '1') Response::end($configSystem->offlineMessage);
 
 // 默认时区
-date_default_timezone_set($config_system->timezone);
+date_default_timezone_set($configSystem->timezone);
 
 try {
 
     // 启动 session
     \system\session::start();
 
-    $my = be::get_user();
+    $my = Be::getUser();
     if (!isset($my->id) || $my->id == 0) {
-        $model = be::get_service('system.user');
-        $model->remember_me();
+        $model = Be::getService('System.User');
+        $model->rememberMe();
     }
 
-    //print_r($_SERVER);
+    //printR($_SERVER);
 
     $uri = $_SERVER['REQUEST_URI'];    // 返回值为: /{controller}/{task}......
-    $script_name = $_SERVER['SCRIPT_NAME'];
-    if ($script_name != '/index.php') $uri = substr($uri, strrpos($script_name, '/index.php'));
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+    if ($scriptName != '/index.php') $uri = substr($uri, strrpos($scriptName, '/index.php'));
 
-    if ($config_system->sef) {
+    if ($configSystem->sef) {
         if ($_SERVER['QUERY_STRING'] != '') $uri = substr($uri, 0, strrpos($uri, '?'));
 
-        $len_sef_suffix = strlen($config_system->sef_suffix);
-        if (substr($uri, -$len_sef_suffix, $len_sef_suffix) == $config_system->sef_suffix) {
-            $uri = substr($uri, 0, strrpos($uri, $config_system->sef_suffix));
+        $lenSefSuffix = strlen($configSystem->sefSuffix);
+        if (substr($uri, -$lenSefSuffix, $lenSefSuffix) == $configSystem->sefSuffix) {
+            $uri = substr($uri, 0, strrpos($uri, $configSystem->sefSuffix));
         }
 
         if (substr($uri, -1, 1) == '/') $uri = substr($uri, 0, -1);
@@ -51,20 +51,20 @@ try {
             $_GET['controller'] = $_REQUEST['controller'] = $controller;
 
             if ($len > 2) {
-                $router = be::get_router($app, $controller);
-                $router->decode_url($uris);
+                $router = Be::getRouter($app, $controller);
+                $router->decodeUrl($uris);
             }
         }
     }
 
-    $app = request::request('app', '');
-    $controller = request::request('controller', '');
-    $task = request::request('task', '');
+    $app = Request::request('app', '');
+    $controller = Request::request('controller', '');
+    $task = Request::request('task', '');
 
     // 默认首页时
     if ($app == '') {
-        $home_params = $config_system->home_params;
-        foreach ($home_params as $key => $val) {
+        $homeParams = $configSystem->homeParams;
+        foreach ($homeParams as $key => $val) {
             $_GET[$key] = $_REQUEST[$key] = $val;
             if ($key == 'app') $app = $val;
             if ($key == 'controller') $controller = $val;
@@ -72,41 +72,43 @@ try {
         }
     }
 
-    $instance = be::get_controller($app, $controller);
+
+
+    $instance = Be::getController($app, $controller);
     if ($task == '') $task = 'index';
     if (method_exists($instance, $task)) {
 
         // 检查用户权限
-        $role = be::get_user_role($my->role_id);
-        if (!$role->has_permission($app, $controller, $task)) {
-            response::error('您没有权限操作该功能！', null, -1024);
+        $role = Be::getUserRole($my->roleId);
+        if (!$role->hasPermission($app, $controller, $task)) {
+            Response::error('您没有权限操作该功能！', null, -1024);
         }
 
         $instance->$task();
 
     } else {
-        response::error('未定义的任务：' . $task, null, -404);
+        Response::error('未定义的任务：' . $task, null, -404);
     }
-} catch (\exception $e) { // 兼容 < php 7 版本
-    \system\error_log::log($e);
-    $db = be::get_db();
-    if ($db->in_transaction()) $db->rollback();
+} catch (\Exception $e) { // 兼容 < php 7 版本
+    \system\Log::log($e);
+    $db = Be::getDb();
+    if ($db->inTransaction()) $db->rollback();
 
-    $redirect_url = URL_ROOT . '/theme/' . $config_system->theme . '/404.html';
-    if ($config_system->debug) {
-        response::error('系统错误：' . $e->getMessage(), $redirect_url, -500);
+    $redirectUrl = URL_ROOT . '/Theme/' . $configSystem->theme . '/404.html';
+    if ($configSystem->debug) {
+        Response::error('系统错误：' . $e->getMessage(), $redirectUrl, -500);
     } else {
-        response::error('系统错误！', $redirect_url, -500);
+        Response::error('系统错误！', $redirectUrl, -500);
     }
 } catch (\throwable $e) {
-    \system\error_log::log($e);
-    $db = be::get_db();
-    if ($db->in_transaction()) $db->rollback();
+    \system\Log::log($e);
+    $db = Be::getDb();
+    if ($db->inTransaction()) $db->rollback();
 
-    $redirect_url = URL_ROOT . '/theme/' . $config_system->theme . '/404.html';
-    if ($config_system->debug) {
-        response::error('系统错误：' . $e->getMessage(), $redirect_url, -500);
+    $redirectUrl = URL_ROOT . '/Theme/' . $configSystem->theme . '/404.html';
+    if ($configSystem->debug) {
+        Response::error('系统错误：' . $e->getMessage(), $redirectUrl, -500);
     } else {
-        response::error('系统错误！', $redirect_url, -500);
+        Response::error('系统错误！', $redirectUrl, -500);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 namespace controller;
 
-use system\be;
-use system\request;
-use system\response;
-use system\session;
+use System\Be;
+use System\Request;
+use System\Response;
+use System\Session;
 
-class user extends \system\controller
+class user extends \System\Controller
 {
 
     public function index()
@@ -17,335 +17,335 @@ class user extends \system\controller
     // 登陆页面
     public function login()
     {
-        $my = be::get_user();
+        $my = Be::getUser();
         if ($my->id>0) {
-			response::redirect(url('controller=user_profile&task=home'));
+			Response::redirect(url('controller=userProfile&task=home'));
 		}
 
 		// 登陆成功后跳转到的网址
-		$return = request::get('return','');
-		if ($return == 'http_referer' && isset($_SERVER['HTTP_REFERER'])) $return = base64_encode($_SERVER['HTTP_REFERER']);
+		$return = Request::get('return','');
+		if ($return == 'httpReferer' && isset($_SERVER['HTTP_REFERER'])) $return = base64_encode($_SERVER['HTTP_REFERER']);
 
-        response::set_title('登陆');
-        response::set('return', $return);
-        response::display();
+        Response::setTitle('登陆');
+        Response::set('return', $return);
+        Response::display();
     }
 
 	// 登陆验证码
-    public function captcha_login()
+    public function captchaLogin()
     {
-		$template = be::get_template('user.login');
-		$color = response::get_color();
+		$template = Be::getTemplate('user.login');
+		$color = Response::getColor();
 
-		$lib_css = be::get_lib('css');
-		$rgb_color = $lib_css->hex_to_rgb($color);
+		$libCss = Be::getLib('css');
+		$rgbColor = $libCss->hexToRgb($color);
 
-        $captcha = be::get_lib('captcha');
-		$captcha->set_font_color($rgb_color);
+        $captcha = Be::getLib('captcha');
+		$captcha->setFontColor($rgbColor);
         $captcha->point(20); // 添加干扰点
         $captcha->line(3); // 添加干扰线
 		$captcha->distortion();	// 扭曲
-        $captcha->border(1, $rgb_color); // 添加边框
+        $captcha->border(1, $rgbColor); // 添加边框
         $captcha->output();
         
-        session::set('captcha_login', $captcha->to_string());
+        session::set('captchaLogin', $captcha->toString());
     }
 
     // 登陆检查
-    public function login_check()
+    public function loginCheck()
     {
-        $username = request::post('username', '');
-        $password = request::post('password', '');
-        $remember_me = request::post('remember_me', '0');
+        $username = Request::post('username', '');
+        $password = Request::post('password', '');
+        $rememberMe = Request::post('rememberMe', '0');
         
-        $return = request::post('return', '');
-        $error_return = url('controller=user&task=login&return=' . $return);
+        $return = Request::post('return', '');
+        $errorReturn = url('controller=user&task=login&return=' . $return);
 
         if ($username == '') {
-			response::error('用户名不能为空！', $error_return);
+			Response::error('用户名不能为空！', $errorReturn);
         }
         
         if ($password == '') {
-            response::error('密码不能为空！', $error_return);
+            Response::error('密码不能为空！', $errorReturn);
         }
         
-		$config_user = be::get_config('system.user');
-		if ($config_user->captcha_login) {
-			if (request::post('captcha', '') != session::get('captcha_login')) {
-                response::error('验证码错误！', $error_return);
+		$configUser = Be::getConfig('System.user');
+		if ($configUser->captchaLogin) {
+			if (Request::post('captcha', '') != session::get('captchaLogin')) {
+                Response::error('验证码错误！', $errorReturn);
 			}
 		}
         
-        $service_user = be::get_service('system.user');
-        if ($service_user->login($username, $password, $remember_me)) {
-			if ($config_user->captcha_login) session::delete('captcha_login');
+        $serviceUser = Be::getService('System.user');
+        if ($serviceUser->login($username, $password, $rememberMe)) {
+			if ($configUser->captchaLogin) session::delete('captchaLogin');
 
-			$redirect_url = null;
+			$redirectUrl = null;
 			if ($return == '') {
-				$redirect_url = url('controller=user_profile&task=home');
+				$redirectUrl = url('controller=userProfile&task=home');
 			} else {
-				$redirect_url = base64_decode($return);
+				$redirectUrl = base64_decode($return);
 			}
 
-            response::success('登陆成功！', $redirect_url);
+            Response::success('登陆成功！', $redirectUrl);
 		} else {
-            response::error($service_user->get_error(), $error_return);
+            Response::error($serviceUser->getError(), $errorReturn);
 		}
     }
 
-	public function qq_login()
+	public function qqLogin()
 	{
-		$config_user = be::get_config('system.user');
-		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
+		$configUser = Be::getConfig('System.user');
+		if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
-		$service_user_connect_qq = be::get_service('user_connect_qq');
-		$service_user_connect_qq->login();
+		$serviceUserConnectQq = Be::getService('userConnectQq');
+		$serviceUserConnectQq->login();
 	}
 
-	public function qq_login_callback()
+	public function qqLoginCallback()
 	{
-		$config_user = be::get_config('system.user');
-		if (!$config_user->connect_qq) response::end('使用QQ账号登陆未启用！');
+		$configUser = Be::getConfig('System.user');
+		if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
-		$service_user_connect_qq = be::get_service('user_connect_qq');
-		$access_token = $service_user_connect_qq->callback();
-		if ($access_token == false) response::end($service_user_connect_qq->get_error());
+		$serviceUserConnectQq = Be::getService('userConnectQq');
+		$accessToken = $serviceUserConnectQq->callback();
+		if ($accessToken == false) Response::end($serviceUserConnectQq->getError());
 
-		$openid = $service_user_connect_qq->get_openid($access_token);
-		if ($openid == false) response::end($service_user_connect_qq->get_error());
+		$openid = $serviceUserConnectQq->getOpenid($accessToken);
+		if ($openid == false) Response::end($serviceUserConnectQq->getError());
 
-		$user_info = $service_user_connect_qq->get_user_info($access_token, $openid);
-		if ($user_info == false) response::end($service_user_connect_qq->get_error());
+		$userInfo = $serviceUserConnectQq->getUserInfo($accessToken, $openid);
+		if ($userInfo == false) Response::end($serviceUserConnectQq->getError());
 
-		$row_user_connect_qq = be::get_row('user_connect_qq');
-		$row_user_connect_qq->load_by('openid', $openid);
-		if ($row_user_connect_qq->user_id>0) {
-			$service_user_connect_qq->system_login($row_user_connect_qq->user_id);
+		$rowUserConnectQq = Be::getRow('userConnectQq');
+		$rowUserConnectQq->loadBy('openid', $openid);
+		if ($rowUserConnectQq->userId>0) {
+			$serviceUserConnectQq->systemLogin($rowUserConnectQq->userId);
 		} else {
-			$user = $service_user_connect_qq->register($user_info);
-			$row_user_connect_qq->user_id = $user->id;
+			$user = $serviceUserConnectQq->register($userInfo);
+			$rowUserConnectQq->userId = $user->id;
 
-			$service_user_connect_qq->system_login($user->id);
+			$serviceUserConnectQq->systemLogin($user->id);
 		}
 
-		unset($user_info->id);
-		unset($user_info->user_id);
+		unset($userInfo->id);
+		unset($userInfo->userId);
 
-		$row_user_connect_qq->bind($user_info);
-		$row_user_connect_qq->access_token = $access_token;
-		$row_user_connect_qq->openid = $openid;
-		$row_user_connect_qq->save();
+		$rowUserConnectQq->bind($userInfo);
+		$rowUserConnectQq->accessToken = $accessToken;
+		$rowUserConnectQq->openid = $openid;
+		$rowUserConnectQq->save();
 
-        response::redirect(url('controller=user_profile&task=home'));
+        Response::redirect(url('controller=userProfile&task=home'));
 	}
 
 
-	public function sina_login()
+	public function sinaLogin()
 	{
-		$config_user = be::get_config('system.user');
-		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
+		$configUser = Be::getConfig('System.user');
+		if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
-		$service_user_connect_sina = be::get_service('user_connect_sina');
-		$service_user_connect_sina->login();
+		$serviceUserConnectSina = Be::getService('userConnectSina');
+		$serviceUserConnectSina->login();
 	}
 
-	public function sina_login_callback()
+	public function sinaLoginCallback()
 	{
-		$config_user = be::get_config('system.user');
-		if (!$config_user->connect_sina) response::end('使用新浪微博账号登陆未启用！');
+		$configUser = Be::getConfig('System.user');
+		if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
-		$service_user_connect_sina = be::get_service('user_connect_sina');
-		$access_token = $service_user_connect_sina->callback();
-		if ($access_token == false) response::end($service_user_connect_sina->get_error());
+		$serviceUserConnectSina = Be::getService('userConnectSina');
+		$accessToken = $serviceUserConnectSina->callback();
+		if ($accessToken == false) Response::end($serviceUserConnectSina->getError());
 
-		$uid = $service_user_connect_sina->get_uid($access_token);
-		if ($uid == false) response::end($service_user_connect_sina->get_error());
+		$uid = $serviceUserConnectSina->getUid($accessToken);
+		if ($uid == false) Response::end($serviceUserConnectSina->getError());
 
-		$user_info = $service_user_connect_sina->get_user_info($access_token, $uid);
-		if ($user_info == false) response::end($service_user_connect_sina->get_error());
+		$userInfo = $serviceUserConnectSina->getUserInfo($accessToken, $uid);
+		if ($userInfo == false) Response::end($serviceUserConnectSina->getError());
 
-		$row_user_connect_sina = be::get_row('user_connect_sina');
-		$row_user_connect_sina->load_by('uid', $uid);
-		if ($row_user_connect_sina->user_id>0) {
-			$service_user_connect_sina->system_login($row_user_connect_sina->user_id);
+		$rowUserConnectSina = Be::getRow('userConnectSina');
+		$rowUserConnectSina->loadBy('uid', $uid);
+		if ($rowUserConnectSina->userId>0) {
+			$serviceUserConnectSina->systemLogin($rowUserConnectSina->userId);
 		} else {
-			$user = $service_user_connect_sina->register($user_info);
-			$row_user_connect_sina->user_id = $user->id;
+			$user = $serviceUserConnectSina->register($userInfo);
+			$rowUserConnectSina->userId = $user->id;
 
-			$service_user_connect_sina->system_login($user->id);
+			$serviceUserConnectSina->systemLogin($user->id);
 		}
 
-		unset($user_info->id);
-		unset($user_info->user_id);
+		unset($userInfo->id);
+		unset($userInfo->userId);
 
-		$row_user_connect_sina->bind($user_info);
-		$row_user_connect_sina->access_token = $access_token;
-		$row_user_connect_sina->uid = $uid;
-		$row_user_connect_sina->save();
+		$rowUserConnectSina->bind($userInfo);
+		$rowUserConnectSina->accessToken = $accessToken;
+		$rowUserConnectSina->uid = $uid;
+		$rowUserConnectSina->save();
 
-        response::redirect(url('controller=user_profile&task=home'));
+        Response::redirect(url('controller=userProfile&task=home'));
 	}
 
 
     // 注册新用户
     public function register()
     {
-		$config_user = be::get_config('system.user');
-		if (!$config_user->register) response::end('注册功能已禁用！');
+		$configUser = Be::getConfig('System.user');
+		if (!$configUser->register) Response::end('注册功能已禁用！');
 
-        response::set_title('注册新账号');
-        response::display();
+        Response::setTitle('注册新账号');
+        Response::display();
     }
 
 	// 验证码
-    public function captcha_register()
+    public function captchaRegister()
     {
-		$template = be::get_template('user.register');
-		$color = response::get_color();
+		$template = Be::getTemplate('user.register');
+		$color = Response::getColor();
 
-		$lib_css = be::get_lib('css');
-		$rgb_color = $lib_css->hex_to_rgb($color);
+		$libCss = Be::getLib('css');
+		$rgbColor = $libCss->hexToRgb($color);
 
-        $captcha = be::get_lib('captcha');
-		$captcha->set_font_color($rgb_color);
+        $captcha = Be::getLib('captcha');
+		$captcha->setFontColor($rgbColor);
         $captcha->point(20); // 添加干扰点
         $captcha->line(3); // 添加干扰线
 		$captcha->distortion();	// 扭曲
-        $captcha->border(1, $rgb_color); // 添加边框
+        $captcha->border(1, $rgbColor); // 添加边框
         $captcha->output();
 
-        session::set('captcha_register', $captcha->to_string());
+        session::set('captchaRegister', $captcha->toString());
     }
 
     // 保存新注册用户
-    public function ajax_register_save()
+    public function ajaxRegisterSave()
     {
-		$config_user = be::get_config('system.user');
+		$configUser = Be::getConfig('System.user');
 
-		if (!$config_user->register) {
-            response::error('注册功能已禁用！');
+		if (!$configUser->register) {
+            Response::error('注册功能已禁用！');
         }
 
-        $username = request::post('username', '');
-        $email = request::post('email', '');
-        $name = request::post('name', '');
-        $password = request::post('password', '');
-        $password2 = request::post('password2', '');
+        $username = Request::post('username', '');
+        $email = Request::post('email', '');
+        $name = Request::post('name', '');
+        $password = Request::post('password', '');
+        $password2 = Request::post('password2', '');
 
-		$service_user = be::get_service('system.user');
+		$serviceUser = Be::getService('System.user');
         
         
         if ($username == '') {
-            response::error('用户名不能为空！');
+            Response::error('用户名不能为空！');
         }
         
         if ($email == '') {
-            response::error('邮箱不能为空！');
+            Response::error('邮箱不能为空！');
         }
         
-        if (!$service_user->is_email($email)) {
-            response::error('非法的邮箱格式！');
+        if (!$serviceUser->isEmail($email)) {
+            Response::error('非法的邮箱格式！');
         }
         
         if ($password == '') {
-            response::error('密码不能为空！');
+            Response::error('密码不能为空！');
         }
         
         if ($password != $password2) {
-            response::error('两次输入的密码不匹配！');
+            Response::error('两次输入的密码不匹配！');
         }
 
-		if ($config_user->captcha_register) {
-			if (request::post('captcha', '') != session::get('captcha_register')) {
-                response::error('验证码错误！');
+		if ($configUser->captchaRegister) {
+			if (Request::post('captcha', '') != session::get('captchaRegister')) {
+                Response::error('验证码错误！');
 			}
 		}
         
-        if ($service_user->register($username, $email, $password, $name)) {
-			if ($config_user->captcha_register) session::delete('captcha_register');
+        if ($serviceUser->register($username, $email, $password, $name)) {
+			if ($configUser->captchaRegister) session::delete('captchaRegister');
 
-            response::success('您的账号已成功创建！', url('controller=user&task=register_success&username='.$username.'&email='.$email));
+            Response::success('您的账号已成功创建！', url('controller=user&task=registerSuccess&username='.$username.'&email='.$email));
         } else {
-            response::error($service_user->get_error());
+            Response::error($serviceUser->getError());
         }
     }
 
     // 注册成功
-    public function register_success()
+    public function registerSuccess()
     {
-        $username = request::get('username','');
-        $email = request::get('email','');
+        $username = Request::get('username','');
+        $email = Request::get('email','');
 
-        response::set_title('注册成功');
-        response::set('username', $username);
-		response::set('email', $email);
-        response::display();
+        Response::setTitle('注册成功');
+        Response::set('username', $username);
+		Response::set('email', $email);
+        Response::display();
     }
 
 
     //找回密码表单
-    public function forgot_password()
+    public function forgotPassword()
     {
-        response::set_title('忘记密码');
-        response::display();
+        Response::setTitle('忘记密码');
+        Response::display();
     }
 
     //提交找回密码
-    public function ajax_forgot_password_save()
+    public function ajaxForgotPasswordSave()
     {
-        $username = request::post('username', '');
+        $username = Request::post('username', '');
         if ($username == '') {
-            response::error('参数(username)缺失！');
+            Response::error('参数(username)缺失！');
         }
         
-        $model = be::get_service('system.user');
-        if ($model->forgot_password($username)) {
-            response::success('找回密码链接已发送到您的邮箱。');
+        $model = Be::getService('System.user');
+        if ($model->forgotPassword($username)) {
+            Response::success('找回密码链接已发送到您的邮箱。');
         } else {
-            response::error($model->get_error());
+            Response::error($model->getError());
         }
     }
 
     // 重设密码
-    public function forgot_password_reset()
+    public function forgotPasswordReset()
     {
-        $user_id = request::get('user_id', 0, 'int');
-        $token = request::get('token','');
-        if ($user_id == 0 || $token == '') response::end('找回密码链接已失效！');
+        $userId = Request::get('userId', 0, 'int');
+        $token = Request::get('token','');
+        if ($userId == 0 || $token == '') Response::end('找回密码链接已失效！');
         
-        $row_user = be::get_row('system.user');
-        $row_user->load($user_id);
+        $rowUser = Be::getRow('System.user');
+        $rowUser->load($userId);
         
-        if ($row_user->token == '') response::end('您的密码已重设！');
-        if ($row_user->token != $token) response::end('找回密码链接非法！');
+        if ($rowUser->token == '') Response::end('您的密码已重设！');
+        if ($rowUser->token != $token) Response::end('找回密码链接非法！');
 
-        response::set_title('重设密码');
-        response::set('user', $row_user);
-        response::display();
+        Response::setTitle('重设密码');
+        Response::set('user', $rowUser);
+        Response::display();
     }
 
     // 重设密码保存
-    public function ajax_forgot_password_reset_save()
+    public function ajaxForgotPasswordResetSave()
     {
-        $user_id = request::post('user_id', 0, 'int');
-        $token = request::post('token', '');
+        $userId = Request::post('userId', 0, 'int');
+        $token = Request::post('token', '');
         
-        if ($user_id == 0 || $token == '') {
-            response::error('参数(user_id/token)缺失！');
+        if ($userId == 0 || $token == '') {
+            Response::error('参数(userId/token)缺失！');
         }
         
-        $password = request::post('password', '');
-        $password2 = request::post('password2', '');
+        $password = Request::post('password', '');
+        $password2 = Request::post('password2', '');
         
         if ($password != $password2) {
-            response::error('两次输入的密码不匹配！');
+            Response::error('两次输入的密码不匹配！');
         }
         
-        $model = be::get_service('system.user');
-        if ($model->forgot_password_reset($user_id, $token, $password)) {
-            response::success('重设密码成功！');
+        $model = Be::getService('System.user');
+        if ($model->forgotPasswordReset($userId, $token, $password)) {
+            Response::success('重设密码成功！');
         } else {
-            response::error($model->get_error());
+            Response::error($model->getError());
         }
     
     }
@@ -353,10 +353,10 @@ class user extends \system\controller
     // 退出登陆
     public function logout()
     {
-        $model = be::get_service('system.user');
+        $model = Be::getService('System.user');
         $model->logout();
 
-        response::success('成功退出！', url('controller=user&task=login'));
+        Response::success('成功退出！', url('controller=user&task=login'));
     }
 
 }

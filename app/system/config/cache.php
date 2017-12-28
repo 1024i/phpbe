@@ -1,7 +1,7 @@
 <?php
-namespace app\system\config;
+namespace App\System\Config;
 
-class cache
+class Cache
 {
     public $driver = 'file';  // 缓存类型 file：文件/memcache/memcached/redis
 

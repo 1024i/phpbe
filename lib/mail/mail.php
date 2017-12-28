@@ -1,5 +1,4 @@
 <?php
-
 namespace lib\mail;
 
 include PATH_ROOT . DS . 'lib' . DS . 'mail' . DS . 'phpmailer' . DS . 'class.phpmailer.php';
@@ -12,7 +11,7 @@ include PATH_ROOT . DS . 'lib' . DS . 'mail' . DS . 'phpmailer' . DS . 'class.ph
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com) 或登陆 http://www.liu12.com
 */
 
-class mail extends \system\lib
+class Mail extends \system\Lib
 {
 
     private $mailer = null;
@@ -23,7 +22,7 @@ class mail extends \system\lib
         $this->mailer = new \PHPMailer();
         $this->mailer->SetLanguage('zh_cn', PATH_ROOT . DS . 'libs' . DS . 'mail' . DS . 'phpmailer' . DS . 'language' . DS);
 
-        $config = \system\be::get_config('system_mail');
+        $config = \system\Be::getConfig('system_mail');
         if ($config->from_mail) $this->mailer->From = $config->from_mail;
         if ($config->from_name) $this->mailer->FromName = $config->from_name;
 
@@ -53,13 +52,13 @@ class mail extends \system\lib
     }
 
 
-    public function set_from($from_mail, $from_name = '')
+    public function setFrom($from_mail, $from_name = '')
     {
         $this->mailer->SetFrom($from_mail, $from_name);
     }
 
 
-    public function set_reply_to($reply_to_mail, $reply_to_name = '')
+    public function setReplyTo($reply_to_mail, $reply_to_name = '')
     {
         $this->mailer->AddReplyTo($reply_to_mail, $reply_to_name);
     }
@@ -69,7 +68,7 @@ class mail extends \system\lib
     public function to($email, $name = '')
     {
         if (!$this->mailer->AddAddress($email, $name)) {
-            $this->set_error($this->mailer->ErrorInfo);
+            $this->setError($this->mailer->ErrorInfo);
             return false;
         }
 
@@ -81,7 +80,7 @@ class mail extends \system\lib
     public function cc($email, $name = '')
     {
         if (!$this->mailer->AddCC($email, $name)) {
-            $this->set_error($this->mailer->ErrorInfo);
+            $this->setError($this->mailer->ErrorInfo);
             return false;
         }
 
@@ -93,7 +92,7 @@ class mail extends \system\lib
     public function bcc($email, $name = '')
     {
         if (!$this->mailer->AddBCC($email, $name)) {
-            $this->set_error($this->mailer->ErrorInfo);
+            $this->setError($this->mailer->ErrorInfo);
             return false;
         }
 
@@ -101,22 +100,22 @@ class mail extends \system\lib
     }
 
 
-    public function add_attachment($path)
+    public function addAttachment($path)
     {
         if (!$this->mailer->AddAttachment($path)) {
-            $this->set_error($this->mailer->ErrorInfo);
+            $this->setError($this->mailer->ErrorInfo);
             return false;
         }
 
         return true;
     }
 
-    public function set_subject($subject = '')
+    public function setSubject($subject = '')
     {
         $this->mailer->Subject = $subject;
     }
 
-    public function set_body($body = '')
+    public function setBody($body = '')
     {
         $this->mailer->Body = $body;
     }
@@ -144,7 +143,7 @@ class mail extends \system\lib
     public function send()
     {
         if (!$this->mailer->Send()) {
-            $this->set_error($this->mailer->ErrorInfo);
+            $this->setError($this->mailer->ErrorInfo);
             return false;
         }
 

@@ -1,33 +1,33 @@
 <?php
 namespace service;
 
-use system\be;
-use system\session;
-use system\request;
+use System\Be;
+use System\Session;
+use System\Request;
 
-class user_connect_sina extends \system\service
+class userConnectSina extends \System\Service
 {
 	
-	private $app_key = '';
-	private $app_secret = '';
+	private $appKey = '';
+	private $appSecret = '';
 
     // 构造函数
     public function __construct()
     {
-		$config = be::get_config('system.user');
-        $this->app_key = $config->connect_sina_app_key;
-		$this->app_secret = $config->connect_sina_app_secret;
+		$config = Be::getConfig('System.user');
+        $this->appKey = $config->connectSinaAppKey;
+		$this->appSecret = $config->connectSinaAppSecret;
     }
 
 	public function login()
 	{
 		$state = md5(uniqid(rand(), true));
-		session::set('user_connect_sina_state', $state);
+		session::set('userConnectSinaState', $state);
 
         $url = 'https://api.weibo.com/oauth2/authorize';
-		$url .= '?client_id='.$this->app_key;
-		$url .= '&response_type=code';
-		$url .= '&redirect_uri='.urlencode(URL_ROOT.'/?controller=user&task=sina_login_callback');
+		$url .= '?clientId='.$this->appKey;
+		$url .= '&ResponseType=code';
+		$url .= '&redirectUri='.urlencode(URL_ROOT.'/?controller=user&task=sinaLoginCallback');
 		$url .= '&state='.$state;
 
         header("Location:$url");
@@ -45,117 +45,117 @@ class user_connect_sina extends \system\service
 
 	public function callback()
 	{
-		if (request::get('state', '')!=session::get('user_connect_sina_state')) {
-			$this->set_error('返回信息被篡改！');
+		if (Request::get('state', '')!=session::get('userConnectSinaState')) {
+			$this->setError('返回信息被篡改！');
 			return false;
 		}
 
-        $url = 'https://api.weibo.com/oauth2/access_token';
+        $url = 'https://api.weibo.com/oauth2/accessToken';
 
 		$data = array();
-		$data['client_id'] = $this->app_key;
-		$data['client_secret'] = $this->app_secret;
-		$data['grant_type'] = 'authorization_code';
-		$data['redirect_uri'] = URL_ROOT.'/?controller=user&task=sina_login_callback';
-		$data['code'] = request::get('code','');
+		$data['clientId'] = $this->appKey;
+		$data['clientSecret'] = $this->appSecret;
+		$data['grantType'] = 'authorizationCode';
+		$data['redirectUri'] = URL_ROOT.'/?controller=user&task=sinaLoginCallback';
+		$data['code'] = Request::get('code','');
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->post($url, $data); // 本步骤比较特殊，用 POST 发送
-		$response = json_decode($response);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->post($url, $data); // 本步骤比较特殊，用 POST 发送
+		$Response = jsonDecode($Response);
 
-		if (isset($response->error)) {
-			$this->set_error($response->error_code.': '.$response->error);
+		if (isset($Response->error)) {
+			$this->setError($Response->errorCode.': '.$Response->error);
 			return false;
 		}
 
-		return $response->access_token;
+		return $Response->accessToken;
 	}
 
-	public function get_uid($access_token)
+	public function getUid($accessToken)
 	{
-		$url = 'https://api.weibo.com/2/account/get_uid.json';
-		$url .= '?access_token='.$access_token;
+		$url = 'https://api.weibo.com/2/account/getUid.json';
+		$url .= '?accessToken='.$accessToken;
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($url);
-        $response = json_decode($response);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($url);
+        $Response = jsonDecode($Response);
 
-        if (isset($response->error)) {
-			$this->set_error($response->error_code.': '.$response->error);
+        if (isset($Response->error)) {
+			$this->setError($Response->errorCode.': '.$Response->error);
 			return false;
         }
 
-        return $response->uid;
+        return $Response->uid;
 	}
 
 
-	public function get_user_info($access_token, $uid)
+	public function getUserInfo($accessToken, $uid)
 	{
 		$url = 'https://api.weibo.com/2/users/show.json';
-		$url .= '?access_token='.$access_token;
+		$url .= '?accessToken='.$accessToken;
 		$url .= '&uid='.$uid;
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($url);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($url);
 
-		$response = json_decode($response);
+		$Response = jsonDecode($Response);
 
-        if (isset($response->error)) {
-			$this->set_error($response->error_code.': '.$response->error);
+        if (isset($Response->error)) {
+			$this->setError($Response->errorCode.': '.$Response->error);
 			return false;
         }
 
-		return $response;	
+		return $Response;
 	}
 
-	public function register($user_info)
+	public function register($userInfo)
 	{
-		$config_user = be::get_config('system.user');
+		$configUser = Be::getConfig('System.user');
 
 		$t = time();
-		$row_user = be::get_row('system.user');
-		$row_user->connect = 'sina';
-		$row_user->name = $user_info->name;
-		$row_user->register_time = $t;
-		$row_user->last_visit_time = $t;
-		$row_user->is_admin = 0;
-		$row_user->block = 0;
-		$row_user->save();
+		$rowUser = Be::getRow('System.user');
+		$rowUser->connect = 'sina';
+		$rowUser->name = $userInfo->name;
+		$rowUser->registerTime = $t;
+		$rowUser->lastVisitTime = $t;
+		$rowUser->isAdmin = 0;
+		$rowUser->block = 0;
+		$rowUser->save();
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($user_info->avatar_large);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($userInfo->avatarLarge);
 
 		$t = date('YmdHis', $t);
 		
-        $tmp_avatar = PATH_DATA.DS.'system'.DS.'tmp'.DS.'user_connect_sina_'.$t.'_'.$row_user->id;
-        file_put_contents($tmp_avatar, $response);
+        $tmpAvatar = PATH_DATA.DS.'system'.DS.'tmp'.DS.'userConnectSina_'.$t.'_'.$rowUser->id;
+        file_put_contents($tmpAvatar, $Response);
 
-		$lib_image = be::get_lib('image');
-		$lib_image->open($tmp_avatar);
-		if ($lib_image->is_image()) {
-			$lib_image->resize($config_user->avatar_l_w, $config_user->avatar_l_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_l.'.$lib_image->get_type());
-			$row_user->avatar_l = $row_user->id.'_'.$t.'_l.'.$lib_image->get_type();
+		$libImage = Be::getLib('image');
+		$libImage->open($tmpAvatar);
+		if ($libImage->isImage()) {
+			$libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'L.'.$libImage->getType());
+			$rowUser->avatarL = $rowUser->id.'_'.$t.'L.'.$libImage->getType();
 
-			$lib_image->resize($config_user->avatar_m_w, $config_user->avatar_m_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_m.'.$lib_image->get_type());
-			$row_user->avatar_m = $row_user->id.'_'.$t.'_m.'.$lib_image->get_type();
+			$libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'M.'.$libImage->getType());
+			$rowUser->avatarM = $rowUser->id.'_'.$t.'M.'.$libImage->getType();
 
-			$lib_image->resize($config_user->avatar_s_w, $config_user->avatar_s_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_s.'.$lib_image->get_type());
-			$row_user->avatar_s = $row_user->id.'_'.$t.'_s.'.$lib_image->get_type();
+			$libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'S.'.$libImage->getType());
+			$rowUser->avatarS = $rowUser->id.'_'.$t.'S.'.$libImage->getType();
 
-			$row_user->save();
+			$rowUser->save();
 		}
 		
-		unlink($tmp_avatar);
+		unlink($tmpAvatar);
 
-		return $row_user;
+		return $rowUser;
 	}
 
-	public function system_login($user_id)
+	public function systemLogin($userId)
 	{
-		session::set('_user', be::get_user($user_id));
+		session::set('User', Be::getUser($userId));
 	}
 
 }

@@ -4,10 +4,10 @@ namespace system;
 /**
  * 菜单基类
  */
-abstract class menu
+abstract class Menu
 {
 	protected $menus = array();
-	protected $menu_tree = null;
+	protected $menuTree = null;
 
 	public function __construct()
 	{
@@ -17,38 +17,38 @@ abstract class menu
 	/**
 	 * 添加菜单项
 	 *
-	 * @param int $menu_id 菜单编号
-	 * @param int $parent_id 父级菜单编号， 等于0时为顶级菜单
+	 * @param int $menuId 菜单编号
+	 * @param int $parentId 父级菜单编号， 等于0时为顶级菜单
 	 * @param string $name 名称
 	 * @param string $url 网址
 	 * @param string $target 打开方式
 	 * @param array $params 参数
 	 */
-	public function add_menu($menu_id, $parent_id, $name, $url, $target='_self', $params=array(), $home=0)
+	public function addMenu($menuId, $parentId, $name, $url, $target='Self', $params=array(), $home=0)
 	{
 		$menu = new \stdClass();
-		$menu->id = $menu_id;
-		$menu->parent_id = $parent_id;
+		$menu->id = $menuId;
+		$menu->parentId = $parentId;
 		$menu->name = $name;
 		$menu->url = $url;
 		$menu->target = $target;
 		$menu->params = $params;
 		$menu->home = $home;
 
-		$this->menus[$menu_id] = $menu;
+		$this->menus[$menuId] = $menu;
 	}
 
 	/**
 	 * 获取一项菜单 或 整个菜单
 	 *
-	 * @param int $menu_id 菜单编号
+	 * @param int $menuId 菜单编号
 	 * @return object | false | array
 	 */
-	public function get_menu($menu_id=0)
+	public function getMenu($menuId=0)
 	{
-		if ($menu_id) {
-			if (array_key_exists($menu_id, $this->menus)) {
-				return $this->menus[$menu_id];
+		if ($menuId) {
+			if (array_key_exists($menuId, $this->menus)) {
+				return $this->menus[$menuId];
 			} else {
 				return false;
 			}
@@ -61,33 +61,33 @@ abstract class menu
 	 *
 	 * @return array()
 	 */
-	public function get_menu_tree()
+	public function getMenuTree()
 	{
-		if (!is_array($this->menu_tree)) {
-			$this->menu_tree = $this->create_menu_tree();
+		if (!is_array($this->menuTree)) {
+			$this->menuTree = $this->createMenuTree();
 		}
-		return $this->menu_tree;
+		return $this->menuTree;
 	}
 
 	/**
 	 * 获取当前位置
 	 *
-	 * @param int $menu_id
+	 * @param int $menuId
 	 * @return array
 	 */
-	public function get_pathway($menu_id=0)
+	public function getPathway($menuId=0)
 	{
 		$pathway = array();
-		if (array_key_exists($menu_id, $this->menus)) {
-			$pathway[] = $this->menus[$menu_id];
-			$parent_id = $this->menus[$menu_id]->parent_id;
-			while($parent_id)
+		if (array_key_exists($menuId, $this->menus)) {
+			$pathway[] = $this->menus[$menuId];
+			$parentId = $this->menus[$menuId]->parentId;
+			while($parentId)
 			{
-				if (array_key_exists($parent_id, $this->menus)) {
-					$pathway[] = $this->menus[$parent_id];
-					$parent_id = $this->menus[$parent_id]->parent_id;
+				if (array_key_exists($parentId, $this->menus)) {
+					$pathway[] = $this->menus[$parentId];
+					$parentId = $this->menus[$parentId]->parentId;
 				} else {
-					$parent_id = 0;
+					$parentId = 0;
 				}
 			}
 		}
@@ -97,20 +97,20 @@ abstract class menu
 
     /**
      * 创建菜单树
-     * @param int $menu_id
+     * @param int $menuId
      * @return array | false
      */
-	protected function create_menu_tree($menu_id=0)
+	protected function createMenuTree($menuId=0)
 	{
-		$sub_menus = array();
+		$subMenus = array();
 		foreach ($this->menus as $menu) {
-			if ($menu->parent_id == $menu_id) {
-				$menu->sub_menu = $this->create_menu_tree($menu->id);
-				$sub_menus[] = $menu;
+			if ($menu->parentId == $menuId) {
+				$menu->subMenu = $this->createMenuTree($menu->id);
+				$subMenus[] = $menu;
 			}
 		}
-		if (count($sub_menus))
-			return $sub_menus;
+		if (count($subMenus))
+			return $subMenus;
 		return false;
 	}
 

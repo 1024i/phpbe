@@ -1,10 +1,13 @@
 <?php
-namespace system\cache\driver;
+namespace system\cache\dDriver;
+
+use \system\Response;
+use \system\cache\Driver;
 
 /**
- * memcache 缓存类
+ * Memcache 缓存类
  */
-class memcached extends \system\cache\driver
+class Memcached extends Driver
 {
 
     /**
@@ -19,9 +22,9 @@ class memcached extends \system\cache\driver
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcached')) \system\response::end('服务器未安装 memcached 扩展！');
+        if (!extension_loaded('memcached')) Response::end('服务器未安装 memcached 扩展！');
 
-        if (empty($options)) \system\response::end('memcached 配置错误！');
+        if (empty($options)) Response::end('memcached 配置错误！');
 
         $this->handler = new \Memcached;
         $this->handler->addServers($options);
@@ -45,15 +48,15 @@ class memcached extends \system\cache\driver
      * @param array $keys 键名 数组
      * @return array()
      */
-    public function get_multi($keys)
+    public function getMulti($keys)
     {
-        $prefixed_keys = array();
+        $prefixedKeys = array();
         foreach ($keys as $key) {
-            $prefixed_keys[] = 'cache:'.$key;
+            $prefixedKeys[] = 'cache:'.$key;
         }
 
-        $cas_tokens = null;
-        $values = $this->handler->getMulti($prefixed_keys, $cas_tokens, \Memcached::GET_PRESERVE_ORDER);
+        $casTokens = null;
+        $values = $this->handler->getMulti($prefixedKeys, $casTokens, \Memcached::GET_PRESERVE_ORDER);
 
         if ($this->handler->getResultCode() != 0) {
             return array_fill_keys($keys, false);
@@ -86,14 +89,14 @@ class memcached extends \system\cache\driver
      * @param int $expire  有效时间（秒）
      * @return bool
      */
-    public function set_multi($values, $expire = 0)
+    public function setMulti($values, $expire = 0)
     {
-        $formatted_values = array();
+        $formattedValues = array();
         foreach ($values as $key=>$value) {
-            $formatted_values['cache:'.$key] = $value;
+            $formattedValues['cache:'.$key] = $value;
         }
 
-        return $this->handler->setMulti($formatted_values, $expire);
+        return $this->handler->setMulti($formattedValues, $expire);
     }
 
     /**

@@ -4,7 +4,7 @@ namespace system;
 /**
  * Redis 缓存类
  */
-class redis
+class Redis
 {
 
     private static $instance = null; // 数据库连接
@@ -17,9 +17,9 @@ class redis
     public static function connect()
     {
         if (self::$instance === null) {
-            if (!extension_loaded('redis')) be_exit('服务器未安装Redis扩展！');
+            if (!extension_loaded('Redis')) response::end('服务器未安装 Redis 扩展！');
 
-            $config = be::get_config('redis');
+            $config = Be::getConfig('System.Redis');
             $instance = new \redis();
             $fn = $config->persistent ? 'pconnect' : 'connect';
             if ($config->timeout > 0)
@@ -39,7 +39,7 @@ class redis
      *
      * @return \redis
      */
-    public static function get_instance()
+    public static function getInstance()
     {
         self::connect();
         return self::$instance;
@@ -52,7 +52,7 @@ class redis
      * @param array() $args 传入的参数
      * @return mixed
      */
-    public static function __callStatic($fn, $args)
+    public static function _CallStatic($fn, $args)
     {
         self::connect();
         return call_user_func_array(array(self::$instance,$fn), $args);

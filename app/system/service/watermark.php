@@ -2,83 +2,83 @@
 
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class watermark extends \system\service
+class watermark extends \System\Service
 {
 
     public function save($image)
     {
-        $lib_image = be::get_lib('image');
-        $lib_image->open($image);
+        $libImage = Be::getLib('image');
+        $libImage->open($image);
 
-        if (!$lib_image->is_image()) {
-            $this->set_error('不是合法的图片！');
+        if (!$libImage->isImage()) {
+            $this->setError('不是合法的图片！');
             return false;
         }
 
-        $width = $lib_image->get_width();
-        $height = $lib_image->get_height();
+        $width = $libImage->getWidth();
+        $height = $libImage->getHeight();
 
-        $config_watermark = be::get_config('watermark');
+        $configWatermark = Be::getConfig('System.Watermark');
 
         $x = 0;
         $y = 0;
-        switch ($config_watermark->position) {
+        switch ($configWatermark->position) {
             case 'north':
-                $x = $width / 2 + $config_watermark->offset_x;
-                $y = $config_watermark->offset_y;
+                $x = $width / 2 + $configWatermark->offsetX;
+                $y = $configWatermark->offsetY;
                 break;
             case 'northeast':
-                $x = $width + $config_watermark->offset_x;
-                $y = $config_watermark->offset_y;
+                $x = $width + $configWatermark->offsetX;
+                $y = $configWatermark->offsetY;
                 break;
             case 'east':
-                $x = $width + $config_watermark->offset_x;
-                $y = $height / 2 + $config_watermark->offset_y;
+                $x = $width + $configWatermark->offsetX;
+                $y = $height / 2 + $configWatermark->offsetY;
                 break;
             case 'southeast':
-                $x = $width + $config_watermark->offset_x;
-                $y = $height + $config_watermark->offset_y;
+                $x = $width + $configWatermark->offsetX;
+                $y = $height + $configWatermark->offsetY;
                 break;
             case 'south':
-                $x = $width / 2 + $config_watermark->offset_x;
-                $y = $height + $config_watermark->offset_y;
+                $x = $width / 2 + $configWatermark->offsetX;
+                $y = $height + $configWatermark->offsetY;
                 break;
             case 'southwest':
-                $x = $config_watermark->offset_x;
-                $y = $height + $config_watermark->offset_y;
+                $x = $configWatermark->offsetX;
+                $y = $height + $configWatermark->offsetY;
                 break;
             case 'west':
-                $x = $config_watermark->offset_x;
-                $y = $height / 2 + $config_watermark->offset_y;
+                $x = $configWatermark->offsetX;
+                $y = $height / 2 + $configWatermark->offsetY;
                 break;
             case 'northwest':
-                $x = $config_watermark->offset_x;
-                $y = $config_watermark->offset_y;
+                $x = $configWatermark->offsetX;
+                $y = $configWatermark->offsetY;
                 break;
             case 'center':
-                $x = $width / 2 + $config_watermark->offset_x;
-                $y = $height / 2 + $config_watermark->offset_y;
+                $x = $width / 2 + $configWatermark->offsetX;
+                $y = $height / 2 + $configWatermark->offsetY;
                 break;
         }
 
         $x = intval($x);
         $y = intval($y);
 
-        if ($config_watermark->type == 'text') {
+        if ($configWatermark->type == 'text') {
             $style = array();
-            $style['font_size'] = $config_watermark->text_size;
-            $style['color'] = $config_watermark->text_color;
+            $style['fontSize'] = $configWatermark->textSize;
+            $style['color'] = $configWatermark->textColor;
 
             // 添加文字水印
-            $lib_image->text($config_watermark->text, $x, $y, 0, $style);
+            $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
             // 添加图像水印
-            $lib_image->watermark(PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $config_watermark->image, $x, $y);
+            $libImage->watermark(PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $configWatermark->image, $x, $y);
         }
 
-        $lib_image->save($image);
+        $libImage->save($image);
 
         return true;
     }

@@ -1,16 +1,15 @@
 <?php
-
 namespace system;
 
 /**
- * response
+ * Response
  * @package system
  *
- * @method void set_title(string $title) static 设置 title
- * @method void set_meta_keywords(string $meta_keywords)  static 设置 meta keywords
- * @method void set_meta_description(string $meta_description)  static 设置 meta description
+ * @method void setTitle(string $title) static 设置 title
+ * @method void setMetaKeywords(string $metaKeywords)  static 设置 meta keywords
+ * @method void setMetaDescription(string $metaDescription)  static 设置 meta description
  */
-class response
+class Response
 {
     private static $data = array(); // 暂存数据
 
@@ -18,21 +17,21 @@ class response
     /**
      * 向客户机添加一个字符串值属性的响应头信息
      */
-    public static function add_header($name, $value)
+    public static function addHeader($name, $value)
     {
     }
 
     /**
      * 向客户机设置一个字符串值属性的响应头信息，已存在时覆盖
      */
-    public static function set_header($name, $value)
+    public static function setHeader($name, $value)
     {
     }
 
     /**
      * 判断是否含响应头信息
      */
-    public static function has_header($name)
+    public static function hasHeader($name)
     {
     }
 
@@ -40,16 +39,16 @@ class response
     /**
      * 设置响应码，比如：200,304,404等
      */
-    public static function set_status($status)
+    public static function setStatus($status)
     {
     }
 
     /**
      * 设置设置响应头content-type的内容
      */
-    public static function set_content_type($content_type)
+    public static function setContentType($contentType)
     {
-        header('Content-type: ' . $content_type);
+        header('Content-type: ' . $contentType);
     }
 
     /**
@@ -79,12 +78,12 @@ class response
      * @param string $message 消息内容
      * @param string $type 消息类型
      */
-    public static function set_message($message, $type = 'success')
+    public static function setMessage($message, $type = 'success')
     {
         $data = new \stdClass();
         $data->type = $type;
         $data->body = $message;
-        session::set('_message', $data);
+        session::set('Message', $data);
     }
 
     /**
@@ -113,24 +112,24 @@ class response
      * 成功
      *
      * @param string $message 消息
-     * @param string $redirect_url 跳转网址
+     * @param string $redirectUrl 跳转网址
      * @param int $code 错误码
      */
-    public static function success($message, $redirect_url = 'referer', $code = 0)
+    public static function success($message, $redirectUrl = 'referer', $code = 0)
     {
-        if (request::is_ajax()) {
+        if (Request::isAjax()) {
             self::set('success', true);
             self::set('message', $message);
             self::set('code', $code);
-            if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
+            if ($redirectUrl !== null) self::set('redirectUrl', $redirectUrl);
             self::ajax();
         } else {
-            if ($redirect_url === null) {
+            if ($redirectUrl === null) {
                 self::end($message);
             } else {
-                self::set_message($message, 'success');
-                if ($redirect_url == 'referer') $redirect_url = $_SERVER['HTTP_REFERER'];
-                header('location:' . $redirect_url);
+                self::setMessage($message, 'success');
+                if ($redirectUrl == 'referer') $redirectUrl = $_SERVER['HTTP_REFERER'];
+                header('location:' . $redirectUrl);
                 exit();
             }
         }
@@ -140,24 +139,24 @@ class response
      * 失败
      *
      * @param string $message 消息
-     * @param string $redirect_url 跳转网址
+     * @param string $redirectUrl 跳转网址
      * @param int $code 错误码
      */
-    public static function error($message, $redirect_url = 'referer', $code = 1)
+    public static function error($message, $redirectUrl = 'referer', $code = 1)
     {
-        if (request::is_ajax()) {
+        if (Request::isAjax()) {
             self::set('success', false);
             self::set('message', $message);
             self::set('code', $code);
-            if ($redirect_url !== null) self::set('redirect_url', $redirect_url);
+            if ($redirectUrl !== null) self::set('redirectUrl', $redirectUrl);
             self::ajax();
         } else {
-            if ($redirect_url === null) {
+            if ($redirectUrl === null) {
                 self::end($message);
             } else {
-                self::set_message($message, 'error');
-                if ($redirect_url == 'referer') $redirect_url = $_SERVER['HTTP_REFERER'];
-                header('location:' . $redirect_url);
+                self::setMessage($message, 'error');
+                if ($redirectUrl == 'referer') $redirectUrl = $_SERVER['HTTP_REFERER'];
+                header('location:' . $redirectUrl);
                 exit();
             }
         }
@@ -171,35 +170,35 @@ class response
      */
     public static function display($template = null, $theme = null)
     {
-        $template_instance = null;
+        $templateInstance = null;
         if ($template === null) {
-            $controller = request::request('controller', 'admin_user');
-            $task = request::request('task', 'login');
+            $controller = Request::request('controller', 'adminUser');
+            $task = Request::request('task', 'login');
             $template = $controller . '.' . $task;
 
             if (defined('IS_BACKEND') && IS_BACKEND) {
-                $template_instance = be::get_admin_template($template, $theme);
+                $templateInstance = Be::getAdminTemplate($template, $theme);
             } else {
-                $template_instance = be::get_template($template, $theme);
+                $templateInstance = Be::getTemplate($template, $theme);
             }
 
         } else {
             if (defined('IS_BACKEND') && IS_BACKEND) {
-                $template_instance = be::get_admin_template($template, $theme);
+                $templateInstance = Be::getAdminTemplate($template, $theme);
             } else {
-                $template_instance = be::get_template($template, $theme);
+                $templateInstance = Be::getTemplate($template, $theme);
             }
         }
 
         foreach (self::$data as $key => $val) {
-            $template_instance->$key = $val;
+            $templateInstance->$key = $val;
         }
 
-        if (session::has('_message')) {
-            $template_instance->_message = session::delete('_message');
+        if (session::has('Message')) {
+            $templateInstance->Message = session::delete('Message');
         }
 
-        $template_instance->display();
+        $templateInstance->display();
     }
 
     /**
@@ -227,8 +226,8 @@ class response
      */
     public static function end($string = null)
     {
-        if (session::has('_message')) {
-            session::delete('_message');
+        if (session::has('Message')) {
+            session::delete('Message');
         }
 
         if ($string === null) {
@@ -239,12 +238,12 @@ class response
     }
 
     /*
-     * 封装 set_xxx 方法
+     * 封装 setXxx 方法
      */
-    public static function __callStatic($fn, $args)
+    public static function __call_static($fn, $args)
     {
-        if (substr($fn, 0, 4) == 'set_' && count($args) == 1) {
-            self::$data[substr($fn, 4)] = $args[0];
+        if (substr($fn, 0, 3) == 'set' && count($args) == 1) {
+            self::$data[substr($fn, 3)] = $args[0];
         }
     }
 

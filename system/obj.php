@@ -1,35 +1,35 @@
 <?php
 namespace system;
 
-abstract class obj
+abstract class Obj
 {
-    protected $_errors = [];
+    protected $errors = [];
 
-    public function set_error($error)
+    public function setError($error)
     {
-        $this->_errors[] = $error;
+        $this->errors[] = $error;
     }
 
-    public function get_error()
+    public function getError()
     {
-        if (count($this->_errors) > 0) {
-            return $this->_errors[0];
+        if (count($this->errors) > 0) {
+            return $this->errors[0];
         }
         return false;
     }
 
-    public function get_errors()
+    public function getErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
     
-    public function has_error()
+    public function hasError()
     {
-        return count($this->_errors) > 0;
+        return count($this->errors) > 0;
     }
 
-    public function clear_errors()
+    public function clearErrors()
     {
-        $this->_errors = array();
+        $this->errors = array();
     }
 }

@@ -2,20 +2,20 @@
 
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class log extends \system\service
+class log extends \System\Service
 {
 
-    public function new_log($log)
+    public function newLog($log)
     {
-        $my = be::get_admin_user();
-        $row_system_log = be::get_row('system.log');
-        $row_system_log->user_id = $my->id;
-        $row_system_log->title = $log;
-        $row_system_log->ip = $_SERVER['REMOTE_ADDR'];
-        $row_system_log->create_time = time();
-        $row_system_log->save();
+        $my = Be::getAdminUser();
+        $rowSystemLog = Be::getRow('System.log');
+        $rowSystemLog->userId = $my->id;
+        $rowSystemLog->title = $log;
+        $rowSystemLog->ip = $_SERVER['REMOTE_ADDR'];
+        $rowSystemLog->createTime = time();
+        $rowSystemLog->save();
     }
 
     /**
@@ -24,27 +24,27 @@ class log extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    public function get_logs($conditions = array())
+    public function getLogs($conditions = array())
     {
-        $table_system_log = be::get_table('system.log');
+        $tableSystemLog = Be::getTable('system.log');
 
-        $where = $this->create_log_where($conditions);
-        $table_system_log->where($where);
+        $where = $this->createLogWhere($conditions);
+        $tableSystemLog->where($where);
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_system_log->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableSystemLog->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'id';
-            $order_by_dir = 'DESC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_system_log->order_by($order_by, $order_by_dir);
+            $orderBy = 'id';
+            $orderByDir = 'DESC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableSystemLog->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_system_log->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_system_log->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableSystemLog->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableSystemLog->limit($conditions['limit']);
 
-        return $table_system_log->get_objects();
+        return $tableSystemLog->getObjects();
     }
 
     /**
@@ -53,10 +53,10 @@ class log extends \system\service
      * @param array $conditions 查询条件
      * @return int
      */
-    public function get_log_count($conditions = array())
+    public function getLogCount($conditions = array())
     {
-        return be::get_table('system.log')
-            ->where($this->create_log_where($conditions))
+        return Be::getTable('system.log')
+            ->where($this->createLogWhere($conditions))
             ->count();
     }
 
@@ -66,7 +66,7 @@ class log extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    private function create_log_where($conditions = [])
+    private function createLogWhere($conditions = [])
     {
         $where = [];
 
@@ -74,8 +74,8 @@ class log extends \system\service
             $where[] = ['title', 'like', '%' . $conditions['key'] . '%'];
         }
 
-        if (isset($conditions['user_id']) && is_numeric($conditions['user_id']) && $conditions['user_id'] != 0) {
-            $where[] = ['user_id', $conditions['user_id']];
+        if (isset($conditions['userId']) && is_numeric($conditions['userId']) && $conditions['userId'] != 0) {
+            $where[] = ['userId', $conditions['userId']];
         }
 
         return $where;
@@ -87,9 +87,9 @@ class log extends \system\service
      *
      * @return bool
      */
-    public function delete_logs()
+    public function deleteLogs()
     {
-        return be::get_table('system.log')->where('create_time', '<', (time() - 90 * 86400))->delete();
+        return Be::getTable('system.log')->where('createTime', '<', (time() - 90 * 86400))->delete();
     }
 
 

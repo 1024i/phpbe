@@ -1,10 +1,10 @@
 <?php
 namespace app\system\service;
 
-use system\be;
-use system\db;
+use System\Be;
+use System\Db;
 
-class cache extends \system\service
+class cache extends \System\Service
 {
 
     /**
@@ -20,17 +20,17 @@ class cache extends \system\service
             return $this->clear('file')
                 && $this->clear('html')
                 && $this->clear('menu')
-                && $this->clear('user_role')
-                && $this->clear('admin_user_role')
+                && $this->clear('userRole')
+                && $this->clear('adminUserRole')
                 && $this->clear('row')
                 && $this->clear('table')
                 && $this->clear('template')
-                && $this->clear('admin_template');
+                && $this->clear('adminTemplate');
         }
 
-        $lib_fso = be::get_lib('fso');
-        if ($file === null) return $lib_fso->rm_dir(PATH_CACHE. DS . $dir);
-        return $lib_fso->rm_dir(PATH_CACHE. DS . $dir . DS . $file);
+        $libFso = Be::getLib('fso');
+        if ($file === null) return $libFso->rmDir(PATH_CACHE. DS . $dir);
+        return $libFso->rmDir(PATH_CACHE. DS . $dir . DS . $file);
     }
 
     /**
@@ -39,20 +39,20 @@ class cache extends \system\service
      * @param string $name 数据库行记灵对象名称
      * @return bool 是否更新成功
      */
-    public function update_row($app, $name)
+    public function updateRow($app, $name)
     {
-        $row_name = $name;
-        $db = be::get_db();
-        if (!$db->get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
-            $row_name = 'be_' . $row_name;
-            if (!$db->get_value('SHOW TABLES LIKE \'' . $row_name . '\'')) {
-                $this->set_error('未找到名称为 ' . $name . ' 的数据库表！');
+        $rowName = $name;
+        $db = Be::getDb();
+        if (!$db->getValue('SHOW TABLES LIKE \'' . $rowName . '\'')) {
+            $rowName = 'be_' . $rowName;
+            if (!$db->getValue('SHOW TABLES LIKE \'' . $rowName . '\'')) {
+                $this->setError('未找到名称为 ' . $name . ' 的数据库表！');
                 return false;
             }
         }
 
-        $primary_key = 'id';
-        $fields = $db->get_objects('SHOW FULL FIELDS FROM ' . $row_name);
+        $primaryKey = 'id';
+        $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $rowName);
 
         $code = '<?php' . "\n";
         $code .= 'namespace data\\system\\cache\\row;' . "\n";
@@ -62,21 +62,21 @@ class cache extends \system\service
 
         foreach ($fields as $field) {
             if ($field->Key == 'PRI') {
-                $primary_key = $field->Field;
+                $primaryKey = $field->Field;
             }
 
-            $number_types = array('int', 'tinyint', 'smallint', 'bigint', 'decimal', 'float', 'double', 'real', 'bit', 'boolean', 'serial');
+            $numberTypes = array('int', 'tinyint', 'smallint', 'bigint', 'decimal', 'float', 'double', 'real', 'bit', 'boolean', 'serial');
 
-            $is_number = 0;
-            foreach ($number_types as $number_type) {
-                if (substr($field->Type, 0, strlen($number_type)) == $number_type) {
-                    $is_number = 1;
+            $isNumber = 0;
+            foreach ($numberTypes as $numberType) {
+                if (substr($field->Type, 0, strlen($numberType)) == $numberType) {
+                    $isNumber = 1;
                     break;
                 }
             }
 
             $val = null;
-            if ($is_number) {
+            if ($isNumber) {
                 $val = $field->Default ? $field->Default : 0;
             } else {
                 $val = $field->Default ? ('\'' . addslashes($field->Default) . '\'') : '\'\'';
@@ -90,7 +90,7 @@ class cache extends \system\service
         $code .= "\n";
         $code .= '    public function __construct()' . "\n";
         $code .= '    {' . "\n";
-        $code .= '        parent::__construct(\'' . $row_name . '\', \'' . $primary_key . '\');' . "\n";
+        $code .= '        parent::__construct(\'' . $rowName . '\', \'' . $primaryKey . '\');' . "\n";
         $code .= '    }' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
@@ -111,27 +111,27 @@ class cache extends \system\service
      * @param string $name 要表新的表名
      * @return bool 是否更新成功
      */
-    public function update_table($app, $name)
+    public function updateTable($app, $name)
     {
-        $table_name = $name;
-        $db = be::get_db();
-        if (!$db->get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
-            $table_name = 'be_' . $table_name;
-            if (!$db->get_value('SHOW TABLES LIKE \'' . $table_name . '\'')) {
-                $this->set_error('未找到名称为 ' . $name . ' 的数据库表！');
+        $tableName = $name;
+        $db = Be::getDb();
+        if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
+            $tableName = 'be_' . $tableName;
+            if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
+                $this->setError('未找到名称为 ' . $name . ' 的数据库表！');
                 return false;
             }
         }
 
-        $fields = $db->get_objects('SHOW FULL FIELDS FROM ' . $table_name);
-        $primary_key = 'id';
-        $field_names = array();
+        $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
+        $primaryKey = 'id';
+        $fieldNames = array();
         foreach ($fields as $field) {
             if ($field->Key == 'PRI') {
-                $primary_key = $field->Field;
+                $primaryKey = $field->Field;
             }
 
-            $field_names[] = $field->Field;
+            $fieldNames[] = $field->Field;
         }
 
         $code = '<?php' . "\n";
@@ -139,9 +139,9 @@ class cache extends \system\service
         $code .= "\n";
         $code .= 'class ' . $name . ' extends \\system\\table' . "\n";
         $code .= '{' . "\n";
-        $code .= '    protected $table_name = \'' . $table_name . '\'; // 表名' . "\n";
-        $code .= '    protected $primary_key = \'' . $primary_key . '\'; // 主键' . "\n";
-        $code .= '    protected $fields = [\'' . implode('\', \'', $field_names) . '\']; // 字段列表' . "\n";
+        $code .= '    protected $tableName = \'' . $tableName . '\'; // 表名' . "\n";
+        $code .= '    protected $primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
+        $code .= '    protected $fields = [\'' . implode('\', \'', $fieldNames) . '\']; // 字段列表' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
 
@@ -158,60 +158,60 @@ class cache extends \system\service
     /**
      * 更新菜单
      *
-     * @param string $menu_name 菜单名
+     * @param string $menuName 菜单名
      * @return bool 是否更新成功
      */
-    public function update_menu($menu_name)
+    public function updateMenu($menuName)
     {
-        $group = be::get_row('system.menu_group');
-        $group->load(array('class_name' => $menu_name));
+        $group = Be::getRow('System.menuGroup');
+        $group->load(array('className' => $menuName));
         if (!$group->id) {
-            $this->set_error('未找到调用类名为 ' . $menu_name . ' 的菜单！');
+            $this->setError('未找到调用类名为 ' . $menuName . ' 的菜单！');
             return false;
         }
 
-        $db = be::get_db();
-        $menus = $db->get_objects('SELECT * FROM `be_system_menu` WHERE `group_id`=' . $group->id . ' ORDER BY `ordering` ASC');;
+        $db = Be::getDb();
+        $menus = $db->getObjects('SELECT * FROM `beSystemMenu` WHERE `groupId`=' . $group->id . ' ORDER BY `ordering` ASC');;
 
         $code = '<?php' . "\n";
         $code .= 'namespace cache\menu;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $group->class_name . ' extends \system\menu' . "\n";
+        $code .= 'class ' . $group->className . ' extends \system\menu' . "\n";
         $code .= '{' . "\n";
         $code .= '  public function __construct()' . "\n";
         $code .= '  {' . "\n";
         foreach ($menus as $menu) {
             if ($menu->home == 1) {
-                $home_params = array();
+                $homeParams = array();
 
-                $menu_params = $menu->params;
-                if ($menu_params == '') $menu_params = $menu->url;
+                $menuParams = $menu->params;
+                if ($menuParams == '') $menuParams = $menu->url;
 
-                if (strpos($menu_params, '=')) {
-                    $menu_params = explode('&', $menu_params);
-                    foreach ($menu_params as $menu_param) {
-                        $menu_param = explode('=', $menu_param);
-                        if (count($menu_param) == 2) $home_params[$menu_param[0]] = $menu_param[1];
+                if (strpos($menuParams, '=')) {
+                    $menuParams = explode('&', $menuParams);
+                    foreach ($menuParams as $menuParam) {
+                        $menuParam = explode('=', $menuParam);
+                        if (count($menuParam) == 2) $homeParams[$menuParam[0]] = $menuParam[1];
                     }
                 }
 
-                $config_system = be::get_config('system.system');
-                if (serialize($config_system->home_params) != serialize($home_params)) {
-                    $config_system->home_params = $home_params;
-                    $this->update_config($config_system, PATH_ROOT . DS . 'config' . DS . 'system.php');
+                $configSystem = Be::getConfig('System.System');
+                if (serialize($configSystem->homeParams) != serialize($homeParams)) {
+                    $configSystem->homeParams = $homeParams;
+                    $this->updateConfig($configSystem, PATH_ROOT . DS . 'config' . DS . 'system.php');
                 }
             }
 
             $params = array();
 
-            $menu_params = $menu->params;
-            if ($menu_params == '') $menu_params = $menu->url;
+            $menuParams = $menu->params;
+            if ($menuParams == '') $menuParams = $menu->url;
 
-            if (strpos($menu_params, '=')) {
-                $menu_params = explode('&', $menu_params);
-                foreach ($menu_params as $menu_param) {
-                    $menu_param = explode('=', $menu_param);
-                    if (count($menu_param) == 2) $params[] = '\'' . $menu_param[0] . '\'=>\'' . $menu_param[1] . '\'';
+            if (strpos($menuParams, '=')) {
+                $menuParams = explode('&', $menuParams);
+                foreach ($menuParams as $menuParam) {
+                    $menuParam = explode('=', $menuParam);
+                    if (count($menuParam) == 2) $params[] = '\'' . $menuParam[0] . '\'=>\'' . $menuParam[1] . '\'';
                 }
             }
 
@@ -224,12 +224,12 @@ class cache extends \system\service
                 $url = 'url(\'' . $url . '\')';
             }
 
-            $code .= '    $this->add_menu(' . $menu->id . ', ' . $menu->parent_id . ', \'' . $menu->name . '\', ' . $url . ', \'' . $menu->target . '\', ' . $param . ', ' . $menu->home . ');' . "\n";
+            $code .= '    $this->addMenu(' . $menu->id . ', ' . $menu->parentId . ', \'' . $menu->name . '\', ' . $url . ', \'' . $menu->target . '\', ' . $param . ', ' . $menu->home . ');' . "\n";
         }
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'menu' . DS . $group->class_name . '.php';
+        $path = PATH_CACHE. DS . 'menu' . DS . $group->className . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -242,29 +242,29 @@ class cache extends \system\service
     /**
      * 更新前台用户角色
      *
-     * @param int $role_id 用户角色ID
+     * @param int $roleId 用户角色ID
      * @return bool
      */
-    public function update_user_role($role_id)
+    public function updateUserRole($roleId)
     {
-        $row = be::get_row('user_role');
-        $row->load($role_id);
+        $row = Be::getRow('userRole');
+        $row->load($roleId);
         if (!$row->id) {
-            $this->set_error('未找到指定编号（#' . $role_id . '）的用户角色！');
+            $this->setError('未找到指定编号（#' . $roleId . '）的用户角色！');
             return false;
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace cache\user_role;' . "\n";
+        $code .= 'namespace cache\userRole;' . "\n";
         $code .= "\n";
-        $code .= 'class user_role_' . $role_id . ' extends \system\role' . "\n";
+        $code .= 'class userRole_' . $roleId . ' extends \system\role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \''.$row->name.'\';' . "\n";
         $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
         $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'user_role' . DS . 'user_role_' . $role_id . '.php';
+        $path = PATH_CACHE. DS . 'userRole' . DS . 'userRole_' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -277,29 +277,29 @@ class cache extends \system\service
     /**
      * 更新后台管理员角色
      *
-     * @param int $role_id 管理员角色ID
+     * @param int $roleId 管理员角色ID
      * @return bool
      */
-    public function update_admin_user_role($role_id)
+    public function updateAdminUserRole($roleId)
     {
-        $row = be::get_row('admin_user_role');
-        $row->load($role_id);
+        $row = Be::getRow('System.AdminUserRole');
+        $row->load($roleId);
         if (!$row->id) {
-            $this->set_error('未找到指定编号（#' . $role_id . '）的管理员角色！');
+            $this->setError('未找到指定编号（#' . $roleId . '）的管理员角色！');
             return false;
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace cache\admin_user_role;' . "\n";
+        $code .= 'namespace cache\adminUserRole;' . "\n";
         $code .= "\n";
-        $code .= 'class admin_user_role_' . $role_id . ' extends \system\role' . "\n";
+        $code .= 'class adminUserRole_' . $roleId . ' extends \system\role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \''.$row->name.'\';' . "\n";
         $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
         $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'admin_user_role' . DS . 'admin_user_role_' . $role_id . '.php';
+        $path = PATH_CACHE. DS . 'adminUserRole' . DS . 'adminUserRole_' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -315,12 +315,12 @@ class cache extends \system\service
      * @param string $class 调用类名
      * @return bool 是否更新成功
      */
-    public function update_html($class)
+    public function updateHtml($class)
     {
-        $row = be::get_row('system_html');
+        $row = Be::getRow('systemHtml');
         $row->load(array('class' => $class));
         if (!$row->id) {
-            $this->set_error('未找到调用类名为 ' . $class . ' 的 html 内容！');
+            $this->setError('未找到调用类名为 ' . $class . ' 的 html 内容！');
             return false;
         }
 
@@ -342,184 +342,184 @@ class cache extends \system\service
      * @param bool $admin 是否是后台模析
      * @return bool 是否更新成功
      */
-    public function update_template($theme, $template, $admin = false)
+    public function updateTemplate($theme, $template, $admin = false)
     {
-        $file_theme = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . $theme . '.php';
-        if (!file_exists($file_theme)) {
-            $this->set_error('主题 ' . $theme . ' 不存在！');
+        $fileTheme = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . $theme . '.php';
+        if (!file_exists($fileTheme)) {
+            $this->setError('主题 ' . $theme . ' 不存在！');
             return false;
         }
 
-        $file_template = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
-        if (!file_exists($file_template)) {
-            $this->set_error('模板 ' . $template . ' 不存在！');
+        $fileTemplate = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
+        if (!file_exists($fileTemplate)) {
+            $this->setError('模板 ' . $template . ' 不存在！');
             return false;
         }
 
-        $path = PATH_CACHE. DS . ($admin ? 'admin_template' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_CACHE. DS . ($admin ? 'adminTemplate' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
-        $content_theme = file_get_contents($file_theme);
-        $content_template = file_get_contents($file_template);
+        $contentTheme = file_get_contents($fileTheme);
+        $contentTemplate = file_get_contents($fileTemplate);
 
-        $code_pre = '';
-        $code_use = '';
-        $code_html = '';
+        $codePre = '';
+        $codeUse = '';
+        $codeHtml = '';
         $pattern = '/<!--{html}-->(.*?)<!--{\/html}-->/s';
-        if (preg_match($pattern, $content_template, $matches)) { // 查找替换 html
-            $code_html = trim($matches[1]);
+        if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 html
+            $codeHtml = trim($matches[1]);
 
-            if (preg_match_all('/use\s(.+);/', $content_template, $matches)) {
+            if (preg_match_all('/use\s(.+);/', $contentTemplate, $matches)) {
                 foreach ($matches[1] as $m) {
-                    $code_use .= 'use ' . $m . ';' . "\n";
+                    $codeUse .= 'use ' . $m . ';' . "\n";
                 }
             }
 
             $pattern = '/<\?php(.*?)\?>\s+<!--{html}-->/s';
-            if (preg_match($pattern, $content_template, $matches)) {
-                $code_pre = trim($matches[1]);
-                $code_pre = preg_replace('/use\s(.+);/', '', $code_pre);
-                $code_pre = preg_replace('/\s+$/m', '', $code_pre);
+            if (preg_match($pattern, $contentTemplate, $matches)) {
+                $codePre = trim($matches[1]);
+                $codePre = preg_replace('/use\s(.+);/', '', $codePre);
+                $codePre = preg_replace('/\s+$/m', '', $codePre);
             }
 
         } else {
 
-            if (preg_match($pattern, $content_theme, $matches)) {
-                $code_html = trim($matches[1]);
+            if (preg_match($pattern, $contentTheme, $matches)) {
+                $codeHtml = trim($matches[1]);
 
                 $pattern = '/<!--{head}-->(.*?)<!--{\/head}-->/s';
-                if (preg_match($pattern, $content_template, $matches)) { // 查找替换 head
-                    $code_head = $matches[1];
-                    $code_html = preg_replace($pattern, $code_head, $code_html);
+                if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 head
+                    $codeHead = $matches[1];
+                    $codeHtml = preg_replace($pattern, $codeHead, $codeHtml);
                 }
 
                 $pattern = '/<!--{body}-->(.*?)<!--{\/body}-->/s';
-                if (preg_match($pattern, $content_template, $matches)) { // 查找替换 body
-                    $code_body = $matches[1];
-                    $code_html = preg_replace($pattern, $code_body, $code_html);
+                if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 body
+                    $codeBody = $matches[1];
+                    $codeHtml = preg_replace($pattern, $codeBody, $codeHtml);
                 } else {
 
                     $pattern = '/<!--{north}-->(.*?)<!--{\/north}-->/s';
-                    if (preg_match($pattern, $content_template, $matches)) { // 查找替换 north
-                        $code_north = $matches[1];
-                        $code_html = preg_replace($pattern, $code_north, $code_html);
+                    if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
+                        $codeNorth = $matches[1];
+                        $codeHtml = preg_replace($pattern, $codeNorth, $codeHtml);
                     }
 
                     $pattern = '/<!--{middle}-->(.*?)<!--{\/middle}-->/s';
-                    if (preg_match($pattern, $content_template, $matches)) { // 查找替换 north
-                        $code_middle = $matches[1];
-                        $code_html = preg_replace($pattern, $code_middle, $code_html);
+                    if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
+                        $codeMiddle = $matches[1];
+                        $codeHtml = preg_replace($pattern, $codeMiddle, $codeHtml);
                     } else {
                         $pattern = '/<!--{west}-->(.*?)<!--{\/west}-->/s';
-                        if (preg_match($pattern, $content_template, $matches)) { // 查找替换 west
-                            $code_west = $matches[1];
-                            $code_html = preg_replace($pattern, $code_west, $code_html);
+                        if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 west
+                            $codeWest = $matches[1];
+                            $codeHtml = preg_replace($pattern, $codeWest, $codeHtml);
                         }
 
                         $pattern = '/<!--{center}-->(.*?)<!--{\/center}-->/s';
-                        if (preg_match($pattern, $content_template, $matches)) { // 查找替换 center
-                            $code_center = $matches[1];
-                            $code_html = preg_replace($pattern, $code_center, $code_html);
+                        if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 center
+                            $codeCenter = $matches[1];
+                            $codeHtml = preg_replace($pattern, $codeCenter, $codeHtml);
                         }
 
                         $pattern = '/<!--{east}-->(.*?)<!--{\/east}-->/s';
-                        if (preg_match($pattern, $content_template, $matches)) { // 查找替换 east
-                            $code_east = $matches[1];
-                            $code_html = preg_replace($pattern, $code_east, $code_html);
+                        if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 east
+                            $codeEast = $matches[1];
+                            $codeHtml = preg_replace($pattern, $codeEast, $codeHtml);
                         }
                     }
 
                     $pattern = '/<!--{message}-->(.*?)<!--{\/message}-->/s';
-                    if (preg_match($pattern, $content_template, $matches)) { // 查找替换 message
-                        $code_message = $matches[1];
-                        $code_html = preg_replace($pattern, $code_message, $code_html);
+                    if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 message
+                        $codeMessage = $matches[1];
+                        $codeHtml = preg_replace($pattern, $codeMessage, $codeHtml);
                     }
 
                     $pattern = '/<!--{south}-->(.*?)<!--{\/south}-->/s';
-                    if (preg_match($pattern, $content_template, $matches)) { // 查找替换 north
-                        $code_south = $matches[1];
-                        $code_html = preg_replace($pattern, $code_south, $code_html);
+                    if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
+                        $codeSouth = $matches[1];
+                        $codeHtml = preg_replace($pattern, $codeSouth, $codeHtml);
                     }
                 }
             }
 
             $pattern = '/use\s(.+);/';
             $uses =null;
-            if (preg_match_all($pattern, $content_theme, $matches)) {
+            if (preg_match_all($pattern, $contentTheme, $matches)) {
                 $uses = $matches[1];
                 foreach ($matches[1] as $m) {
-                    $code_use .= 'use ' . $m . ';' . "\n";
+                    $codeUse .= 'use ' . $m . ';' . "\n";
                 }
             }
 
-            if (preg_match_all($pattern, $content_template, $matches)) {
+            if (preg_match_all($pattern, $contentTemplate, $matches)) {
                 foreach ($matches[1] as $m) {
                     if ($uses !== null && !in_array($m, $uses)) {
-                        $code_use .= 'use ' . $m . ';' . "\n";
+                        $codeUse .= 'use ' . $m . ';' . "\n";
                     }
                 }
             }
 
             $pattern = '/<\?php(.*?)\?>\s+<!--{html}-->/s';
-            if (preg_match($pattern, $content_theme, $matches)) {
-                $code_pre_theme = trim($matches[1]);
-                $code_pre_theme = preg_replace('/use\s(.+);/', '', $code_pre_theme);
-                $code_pre_theme = preg_replace('/\s+$/m', '', $code_pre_theme);
-                $code_pre = $code_pre_theme . "\n" ;
+            if (preg_match($pattern, $contentTheme, $matches)) {
+                $codePreTheme = trim($matches[1]);
+                $codePreTheme = preg_replace('/use\s(.+);/', '', $codePreTheme);
+                $codePreTheme = preg_replace('/\s+$/m', '', $codePreTheme);
+                $codePre = $codePreTheme . "\n" ;
             }
 
             $pattern = '/<\?php(.*?)\?>\s+<!--{(?:html|head|body|north|middle|west|center|east|south|message)}-->/s';
-            if (preg_match($pattern, $content_template, $matches)) {
-                $code_pre_template = trim($matches[1]);
-                $code_pre_template = preg_replace('/use\s(.+);/', '', $code_pre_template);
-                $code_pre_template = preg_replace('/\s+$/m', '', $code_pre_template);
+            if (preg_match($pattern, $contentTemplate, $matches)) {
+                $codePreTemplate = trim($matches[1]);
+                $codePreTemplate = preg_replace('/use\s(.+);/', '', $codePreTemplate);
+                $codePreTemplate = preg_replace('/\s+$/m', '', $codePreTemplate);
 
-                $code_pre .= $code_pre_template . "\n";
+                $codePre .= $codePreTemplate . "\n";
             }
         }
 
         $templates = explode('.', $template);
-        $class_name = array_pop($templates);
+        $className = arrayPop($templates);
 
-        $namespace_suffix = '';
+        $namespaceSuffix = '';
         if (count($templates)) {
-            $namespace_suffix = '\\' . implode('\\', $templates);
+            $namespaceSuffix = '\\' . implode('\\', $templates);
         }
 
-        $code_vars = '';
-        $config_path = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . 'config.php';
-        if (file_exists($config_path)) {
-            include $config_path;
-            $theme_config_class_name = ($admin ? 'admin\\' : '') . 'theme\\' . $theme.'\\config';
-            if (class_exists($theme_config_class_name)) {
-                $theme_config = new $theme_config_class_name();
-                if (isset($theme_config->colors) && is_array($theme_config->colors)) {
-                    $code_vars .= '  public $colors = [\''.implode('\',\'', $theme_config->colors).'\'];' . "\n";
+        $codeVars = '';
+        $configPath = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . 'config.php';
+        if (file_exists($configPath)) {
+            include $configPath;
+            $themeConfigClassName = ($admin ? 'admin\\' : '') . 'theme\\' . $theme.'\\config';
+            if (class_exists($themeConfigClassName)) {
+                $themeConfig = new $themeConfigClassName();
+                if (isset($themeConfig->colors) && is_array($themeConfig->colors)) {
+                    $codeVars .= '  public $colors = [\''.implode('\',\'', $themeConfig->colors).'\'];' . "\n";
                 }
             }
         }
 
-        $code_php = '<?php' . "\n";
-        $code_php .= 'namespace data\\system\\cache\\' . ($admin ? 'admin_template' : 'template') . '\\' . $theme . $namespace_suffix . ';' . "\n";
-        $code_php .= "\n";
-        $code_php .= $code_use;
-        $code_php .= "\n";
-        $code_php .= 'class ' . $class_name . ' extends \\system\\template' . "\n";
-        $code_php .= '{' . "\n";
-        $code_php .= $code_vars;
-        $code_php .= "\n";
-        $code_php .= '  public function display()' . "\n";
-        $code_php .= '  {' . "\n";
-        $code_php .= $code_pre;
-        $code_php .= '    ?>' . "\n";
-        $code_php .= $code_html . "\n";
-        $code_php .= '    <?php' . "\n";
-        $code_php .= '  }' . "\n";
-        $code_php .= '}' . "\n";
-        $code_php .= "\n";
+        $codePhp = '<?php' . "\n";
+        $codePhp .= 'namespace data\\system\\cache\\' . ($admin ? 'adminTemplate' : 'template') . '\\' . $theme . $namespaceSuffix . ';' . "\n";
+        $codePhp .= "\n";
+        $codePhp .= $codeUse;
+        $codePhp .= "\n";
+        $codePhp .= 'class ' . $className . ' extends \\system\\template' . "\n";
+        $codePhp .= '{' . "\n";
+        $codePhp .= $codeVars;
+        $codePhp .= "\n";
+        $codePhp .= '  public function display()' . "\n";
+        $codePhp .= '  {' . "\n";
+        $codePhp .= $codePre;
+        $codePhp .= '    ?>' . "\n";
+        $codePhp .= $codeHtml . "\n";
+        $codePhp .= '    <?php' . "\n";
+        $codePhp .= '  }' . "\n";
+        $codePhp .= '}' . "\n";
+        $codePhp .= "\n";
 
-        file_put_contents($path, $code_php, LOCK_EX);
+        file_put_contents($path, $codePhp, LOCK_EX);
         chmod($path, 0755);
 
         return true;
@@ -532,9 +532,9 @@ class cache extends \system\service
      * @param string $template 模析名
      * @return bool 是否更新成功
      */
-    public function update_admin_template($theme, $template)
+    public function updateAdminTemplate($theme, $template)
     {
-        return $this->update_template($theme, $template, true);
+        return $this->updateTemplate($theme, $template, true);
     }
 
 
@@ -546,7 +546,7 @@ class cache extends \system\service
      *
      * @return bool 是否保存成功
      */
-    public function update_config($config, $path)
+    public function updateConfig($config, $path)
     {
         $comments = array();
         if (file_exists($path)) {
@@ -555,15 +555,15 @@ class cache extends \system\service
                 $line = fgets($f, 4096);
                 $line = trim($line);
                 if (strlen($line) > 8 && strtolower(substr($line, 0, 8)) == 'public $') {
-                    $key_start_pos = strpos($line, '$');
-                    $key_end_pos = strpos($line, '=');
-                    if ($key_start_pos !== false && $key_end_pos !== false) {
-                        $key = substr($line, $key_start_pos + 1, $key_end_pos - 1 - $key_start_pos);
+                    $keyStartPos = strpos($line, '$');
+                    $keyEndPos = strpos($line, '=');
+                    if ($keyStartPos !== false && $keyEndPos !== false) {
+                        $key = substr($line, $keyStartPos + 1, $keyEndPos - 1 - $keyStartPos);
                         $key = trim($key);
 
-                        $comment_pos = strrpos($line, '//');
-                        if ($comment_pos !== false) {
-                            $comment = substr($line, $comment_pos + 2);
+                        $commentPos = strrpos($line, '//');
+                        if ($commentPos !== false) {
+                            $comment = substr($line, $commentPos + 2);
                             $comment = trim($comment);
 
                             if (substr($comment, -1, 1) != ';') $comments[$key] = $comment;
@@ -579,11 +579,11 @@ class cache extends \system\service
         $class = get_class($config);
 
         $namespace = substr($class, 0, strrpos($class, '\\'));
-        $class_name = substr($class, strrpos($class, '\\') + 1);
+        $className = substr($class, strrpos($class, '\\') + 1);
 
         $buf = "<?php\n";
         $buf .= 'namespace '.$namespace.';'. "\n\n";
-        $buf .= 'class ' . $class_name . "\n";
+        $buf .= 'class ' . $className . "\n";
         $buf .= "{\r\n";
 
         foreach ($vars as $key => $val) {
@@ -611,9 +611,9 @@ class cache extends \system\service
                     }
                 }
                 $buf .= '  public $' . $key . ' = [' . implode(', ', $arr) . '];';
-            } elseif (is_bool($val)) {
+            } elseif (isBool($val)) {
                 $buf .= '  public $' . $key . ' = ' . ($val ? 'true' : 'false') . ';';
-            } elseif (is_int($val) || is_float($val)) {
+            } elseif (isInt($val) || isFloat($val)) {
                 $buf .= '  public $' . $key . ' = ' . $val . ';';
             } else {
                 $val = str_replace('\'', '&#039;', $val);

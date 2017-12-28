@@ -3,7 +3,7 @@ namespace lib\scws;
 
 require PATH_ROOT.DS.'lib'.DS.'scws'.DS.'pscws4'.DS.'pscws4.class.php';
 
-class scws extends \system\lib
+class Scws extends \system\Lib
 {
     
     private $handler = null;
@@ -19,13 +19,13 @@ class scws extends \system\lib
     }
 
 	
-	public function set_charset($charset='utf8')
+	public function setCharset($charset='utf8')
 	{
 		$this->handler->set_charset($charset);
 	}
 
 	// 设置词典
-	public function set_dict($path)
+	public function setDict($path)
 	{
 		$this->handler->set_dict($path);
 	}
@@ -38,43 +38,43 @@ class scws extends \system\lib
 
 
 	// 设置忽略符号与无用字符
-	public function set_ignore($ignore)
+	public function setIgnore($ignore)
 	{
 		$this->handler->set_ignore($ignore);
 	}
 
 	// 设置复合分词等级 ($level = 0,15)
-	public function set_multi($level)
+	public function setMulti($level)
 	{
 		$this->handler->set_multi($level);
 	}
 
 	// 设置是否显示分词调试信息
-	public function set_debug($bool)
+	public function setDebug($bool)
 	{
 		$this->handler->set_debug($bool);
 	}
 
 	// 设置是否自动将散字二元化
-	public function set_duality($bool)
+	public function setDuality($bool)
 	{
 		$this->handler->set_duality($bool);
 	}
 
 	// 设置要分词的文本字符串
-	public function send_text($text)
+	public function sendText($text)
 	{
 		$this->handler->send_text($text);
 	}
 
 	// 取回一批分词结果(需要多次调用, 直到返回 false)
-	public function get_value()
+	public function getValue()
 	{
 		return $this->handler->get_value();
 	}
 
 	// 取回频率和权重综合最大的前 N 个词
-	public function get_tops($limit = 10, $xattr = '')
+	public function getTops($limit = 10, $xattr = '')
 	{
 		return $this->handler->get_tops($limit, $xattr);
 	}

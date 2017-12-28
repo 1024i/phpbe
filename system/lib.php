@@ -4,7 +4,7 @@ namespace system;
 /**
  * 库基类
  */
-abstract class lib extends obj
+abstract class Lib extends Obj
 {
 
 }

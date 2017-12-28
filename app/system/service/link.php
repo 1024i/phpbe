@@ -1,42 +1,43 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
-use system\be;
+use System\Be;
+use System\Service;
 
-class link extends \system\service
+class Link extends Service
 {
 
-    public function get_system_links($conditions = array())
+    public function getSystemLinks($conditions = array())
     {
-        $table_system_link = be::get_table('system_link');
+        $tableSystemLink = Be::getTable('system_link');
 
-        $where = $this->create_system_link_where($conditions);
-        $table_system_link->where($where);
+        $where = $this->createSystemLinkWhere($conditions);
+        $tableSystemLink->where($where);
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_system_link->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableSystemLink->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'ordering';
-            $order_by_dir = 'ASC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_system_link->order_by($order_by, $order_by_dir);
+            $orderBy = 'ordering';
+            $orderByDir = 'ASC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableSystemLink->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_system_link->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_system_link->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableSystemLink->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableSystemLink->limit($conditions['limit']);
 
-        return $table_system_link->get_objects();
+        return $tableSystemLink->getObjects();
     }
 
-    public function get_system_link_count($conditions = array())
+    public function getSystemLinkCount($conditions = array())
     {
-        return be::get_table('system_link')
-            ->where($this->create_system_link_where($conditions))
+        return Be::getTable('system_link')
+            ->where($this->createSystemLinkWhere($conditions))
             ->count();
     }
 
-    private function create_system_link_where($conditions = array())
+    private function createSystemLinkWhere($conditions = array())
     {
         $where = array();
 
@@ -53,22 +54,22 @@ class link extends \system\service
 
     public function unblock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_link');
+            $table = Be::getTable('system_link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -77,22 +78,22 @@ class link extends \system\service
 
     public function block($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_link');
+            $table = Be::getTable('system_link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -101,22 +102,22 @@ class link extends \system\service
 
     public function delete($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_link');
+            $table = Be::getTable('system_link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -125,26 +126,26 @@ class link extends \system\service
 
     public function update()
     {
-        $links = be::get_table('system_link')
+        $links = Be::getTable('system_link')
             ->where('block', 0)
-            ->order_by('ordering', 'desc')
-            ->get_objects();
+            ->orderBy('ordering', 'desc')
+            ->getObjects();
 
-        $config_system_link = be::get_config('system_link');
-        $properties = get_object_vars($config_system_link);
+        $configSystemLink = Be::getConfig('systemLink');
+        $properties = get_object_vars($configSystemLink);
         foreach ($properties as $key => $val) {
-            unset($config_system_link->$key);
+            unset($configSystemLink->$key);
         }
 
         $i = 1;
         foreach ($links as $link) {
             $key = 'link_' . $i;
-            $config_system_link->$key = array('name' => $link->name, 'url' => $link->url);
+            $configSystemLink->$key = array('name' => $link->name, 'url' => $link->url);
             $i++;
         }
 
-        $service_system = be::get_service('system');
-        $service_system->update_config($config_system_link, PATH_DATA . DS . 'config' . DS . 'system_link.php');
+        $serviceSystem = Be::getService('system');
+        $serviceSystem->updateConfig($configSystemLink, PATH_DATA . DS . 'config' . DS . 'systemLink.php');
     }
 
 }

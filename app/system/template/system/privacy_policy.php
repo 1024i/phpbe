@@ -5,7 +5,7 @@
         <div class="theme-box-title"><?php echo $this->title; ?></div>
         <div class="theme-box-body">
 
-            <?php echo $this->privacy_policy->body; ?>
+            <?php echo $this->privacyPolicy->body; ?>
 
         </div>
     </div>

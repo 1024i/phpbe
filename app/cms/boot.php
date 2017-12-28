@@ -1,7 +1,12 @@
 <?php
-namespace app\cms;
+namespace App\Cms;
 
 
-class boot {
+class Boot {
+
+    public function execute($controller, $task) {
+
+    }
+
 }
 

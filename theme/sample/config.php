@@ -15,15 +15,15 @@ class config
     public $description = '示例主题'; // 主题描述
 
     public $author = 'Lou Barnes';  // 作者
-    public $author_email = 'lou@loubarnes.com'; // 作者邮箱
-    public $author_website = 'http://www.1024i.com'; // 作者网站
+    public $authorEmail = 'lou@loubarnes.com'; // 作者邮箱
+    public $authorWebsite = 'http://www.1024i.com'; // 作者网站
 
     public $colors = array('#333333');
 
     /*
      * 缩略图文件路径
      */
-    public $thumbnail_l = URL_ROOT . '/theme/sample/l.jpg';  // 缩略图大图 800 x 800 px
-    public $thumbnail_m = URL_ROOT . '/theme/sample/m.jpg';  // 缩略图中图 400 x 400 px
-    public $thumbnail_s = URL_ROOT . '/theme/sample/s.jpg';  // 缩略图小图 200 x 200 px
+    public $thumbnailL = URL_ROOT . '/theme/sample/l.jpg';  // 缩略图大图 800 x 800 px
+    public $thumbnailM = URL_ROOT . '/theme/sample/m.jpg';  // 缩略图中图 400 x 400 px
+    public $thumbnailS = URL_ROOT . '/theme/sample/s.jpg';  // 缩略图小图 200 x 200 px
 }

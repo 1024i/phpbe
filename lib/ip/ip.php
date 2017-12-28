@@ -2,30 +2,30 @@
 namespace lib\ip;
 
 
-class ip extends \system\lib
+class Ip extends \system\lib
 {
     
     private $db = null;
     
-    private $start_pos = 0;
-    private $end_pos = 0;
+    private $startPos = 0;
+    private $endPos = 0;
 
     // 构造函数
     public function __construct()
     {
         $this->db = @fopen(PATH_ROOT . DS . 'libs' . DS . 'ip' . DS . 'ip.dat', 'rb');
         if (!$this->db) {
-            $this->set_error('无法读取IP数据库');
+            $this->setError('无法读取IP数据库');
             return false;
         }
         
         $buffer = fread($this->db, 4);
-        $this->start_pos = implode('', unpack('L', $buffer));
-        if ($this->start_pos < 0) $this->start_pos += pow(2, 32);
+        $this->startPos = implode('', unpack('L', $buffer));
+        if ($this->startPos < 0) $this->startPos += pow(2, 32);
         
         $buffer = fread($this->db, 4);
         $this->end_pos = implode('', unpack('L', $buffer));
-        if ($this->end_pos < 0) $this->end_pos += pow(2, 32);
+        if ($this->endPos < 0) $this->endPos += pow(2, 32);
     }
 
     // 析构函数
@@ -36,21 +36,21 @@ class ip extends \system\lib
 
     public function convert($ip)
     {
-        if ($this->has_error()) return $this->get_error();
+        if ($this->hasError()) return $this->getError();
         if (!preg_match("/^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$/", $ip)) return 'IP 地址错误！';
         
         $ip = ip2long($ip);
         if ($ip < 0) $ip += 4294967296;
         
         $start_pos = 0;
-        $end_pos = ($this->end_pos - $this->start_pos) / 7 + 1;
+        $end_pos = ($this->endPos - $this->startPos) / 7 + 1;
         
         $ip1 = $ip2 = 0;
         while ($ip1 > $ip || $ip2 < $ip)
         {
             $middle_pos = intval(($end_pos + $start_pos) / 2);
             
-            fseek($this->db, $this->start_pos + 7 * $middle_pos);
+            fseek($this->db, $this->startPos + 7 * $middle_pos);
             
             $buffer = fread($this->db, 4);
             if (strlen($buffer) < 4) return '系统错误';
@@ -139,7 +139,7 @@ class ip extends \system\lib
         return $addr;
     }
 
-    public function to_string()
+    public function toString()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
         return $this->convert($ip);

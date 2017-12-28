@@ -2,9 +2,9 @@
 namespace system;
 
 /**
- * request
+ * Request
  */
-class request
+class Request
 {
 
     public static function method()
@@ -12,19 +12,19 @@ class request
         return $_SERVER['REQUEST_METHOD'];
     }
 
-    public static function is_get()
+    public static function isGet()
     {
         return 'GET' == $_SERVER['REQUEST_METHOD'] ? true : false;
     }
 
-    public static function is_post()
+    public static function isPost()
     {
         return 'POST' == $_SERVER['REQUEST_METHOD'] ? true : false;
     }
 
-    public static function is_ajax()
+    public static function isAjax()
     {
-        return ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHTTPREQUEST' == strtoupper($_SERVER['HTTP_X_REQUESTED_WITH'])) || !empty($_GET['is_ajax']) || !empty($_POST['is_ajax'])) ? true : false;
+        return ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHTTPREQUEST' == strtoupper($_SERVER['HTTP_X_REQUESTED_WITH'])) || !empty($_GET['isAjax']) || !empty($_POST['isAjax'])) ? true : false;
     }
 
     public static function get($name = null, $default = null, $format = 'string')
@@ -44,13 +44,13 @@ class request
 
     private static function _request($input, $name, $default, $format)
     {
-        $magic_quotes_gpc = false;
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) $magic_quotes_gpc = get_magic_quotes_gpc() ? true : false;
+        $magicQuotesGpc = false;
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) $magicQuotesGpc = get_magic_quotes_gpc() ? true : false;
 
-        $fnFormat = '_format_'.$format;
+        $fnFormat = 'Format_'.$format;
 
         if ($name === null) {
-            if ($magic_quotes_gpc) $input = self::_stripslashes($input);
+            if ($magicQuotesGpc) $input = self::_stripslashes($input);
             $input = self::$fnFormat($input);
             return $input;
         }
@@ -58,41 +58,41 @@ class request
         if (!isset($input[$name])) return $default;
 
         $value = $input[$name];
-        if ($magic_quotes_gpc) $value = self::_stripslashes($value);
+        if ($magicQuotesGpc) $value = self::_stripslashes($value);
 
         return self::$fnFormat($value);
     }
 
     private static function _stripslashes($value)
     {
-        return is_array($value) ? array_map(array('\system\request', '_stripslashes'), $value) : stripslashes($value);
+        return is_array($value) ? array_map(array('\system\Request', '_stripslashes'), $value) : stripslashes($value);
     }
 
-    private static function _format_int($value)
+    private static function formatInt($value)
     {
-        return is_array($value) ? array_map(array('\system\request', '_format_int'), $value) : intval($value);
+        return is_array($value) ? array_map(array('\system\Request', 'formatInt'), $value) : intval($value);
     }
 
-    private static function _format_float($value)
+    private static function formatFloat($value)
     {
-        return is_array($value) ? array_map(array('\system\request', '_format_float'), $value) : floatval($value);
+        return is_array($value) ? array_map(array('\system\Request', 'formatFloat'), $value) : floatval($value);
     }
 
-    private static function _format_bool($value)
+    private static function formatBool($value)
     {
-        return is_array($value) ? array_map(array('\system\request', '_format_bool'), $value) : boolval($value);
+        return is_array($value) ? array_map(array('\system\Request', 'formatBool'), $value) : boolval($value);
     }
 
-    private static function _format_string($value)
+    private static function formatString($value)
     {
-        return is_array($value) ? array_map(array('\system\request', '_format_string'), $value) : htmlspecialchars($value);
+        return is_array($value) ? array_map(array('\system\Request', 'formatString'), $value) : htmlspecialchars($value);
     }
 
     // 过滤  脚本,样式，框架
-    private static function _format_html($value)
+    private static function formatHtml($value)
     {
         if (is_array($value)) {
-            return array_map(array('\system\request', '_format_html'), $value);
+            return array_map(array('\system\Request', 'formatHtml'), $value);
         } else {
             $value = preg_replace("@<script(.*?)</script>@is", '', $value);
             $value = preg_replace("@<style(.*?)</style>@is", '', $value);
@@ -102,12 +102,12 @@ class request
         }
     }
 
-    private static function _format_($value)
+    private static function format($value)
     {
         return $value;
     }
 
-    private static function _format_null($value)
+    private static function formatNull($value)
     {
         return $value;
     }

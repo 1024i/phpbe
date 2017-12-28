@@ -2,65 +2,65 @@
 namespace app\system\service;
 
 
-class error_log extends \system\service
+class errorLog extends \System\Service
 {
 
-    public function get_years()
+    public function getYears()
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'error_log';
+        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog';
         $years = array();
         if (file_exists($dir) && is_dir($dir)) {
-            $file_names = scandir($dir);
-            foreach ($file_names as $file_name) {
-                if ($file_name != '.' && $file_name != '..' && is_dir($dir . DS . $file_name)) {
-                    $years[] = $file_name;
+            $fileNames = scandir($dir);
+            foreach ($fileNames as $fileName) {
+                if ($fileName != '.' && $fileName != '..' && is_dir($dir . DS . $fileName)) {
+                    $years[] = $fileName;
                 }
             }
         }
         return $years;
     }
 
-    public function get_months($year)
+    public function getMonths($year)
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year;
+        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year;
         $months = array();
         if (file_exists($dir) && is_dir($dir)) {
-            $file_names = scandir($dir);
-            foreach ($file_names as $file_name) {
-                if ($file_name != '.' && $file_name != '..' && is_dir($dir . DS . $file_name)) {
-                    $months[] = $file_name;
+            $fileNames = scandir($dir);
+            foreach ($fileNames as $fileName) {
+                if ($fileName != '.' && $fileName != '..' && is_dir($dir . DS . $fileName)) {
+                    $months[] = $fileName;
                 }
             }
         }
         return $months;
     }
 
-    public function get_days($year, $month)
+    public function getDays($year, $month)
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month;
+        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month;
         $days = array();
         if (file_exists($dir) && is_dir($dir)) {
-            $file_names = scandir($dir);
-            foreach ($file_names as $file_name) {
-                if (is_file($dir . DS . $file_name) && strrchr($file_name, '.') == '.data') {
-                    $days[] = substr($file_name, 0, strpos($file_name, '.'));
+            $fileNames = scandir($dir);
+            foreach ($fileNames as $fileName) {
+                if (is_file($dir . DS . $fileName) && strrchr($fileName, '.') == '.data') {
+                    $days[] = substr($fileName, 0, strpos($fileName, '.'));
                 }
             }
         }
         return $days;
     }
 
-    public function get_error_logs($options = array())
+    public function getErrorLogs($options = array())
     {
         if (!isset($options['year'])) return array();
         if (!isset($options['month'])) return array();
         if (!isset($options['day'])) return array();
 
-        $data_path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.data';
-        if (!is_file($data_path)) return array();
+        $dataPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.data';
+        if (!is_file($dataPath)) return array();
 
-        $index_path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
-        if (!is_file($index_path)) return array();
+        $indexPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
+        if (!is_file($indexPath)) return array();
 
         $offset = 0;
         $limit = 0;
@@ -69,7 +69,7 @@ class error_log extends \system\service
         if ($offset < 0) $offset = 0;
         if ($limit <= 0) $limit = 100;
 
-        $max = intval(filesize($index_path) / 4) - 1;
+        $max = intval(filesize($indexPath) / 4) - 1;
         if ($max < 0) return array();
 
         $from = $offset;
@@ -78,40 +78,40 @@ class error_log extends \system\service
         if ($from > $max) $from = $max;
         if ($to > $max) $to = $max;
 
-        $f_data = fopen($data_path, 'rb');
-        $f_index = fopen($index_path, 'rb');
-        if (!$f_data) return array();
-        if (!$f_index) return array();
+        $fData = fopen($dataPath, 'rb');
+        $fIndex = fopen($indexPath, 'rb');
+        if (!$fData) return array();
+        if (!$fIndex) return array();
 
-        $error_logs = array();
+        $errorLogs = array();
         for ($i = $from; $i <= $to; $i++) {
-            fseek($f_index, $i * 4);
-            $data_offset_from = intval(implode('', unpack('L', fread($f_index, 4))));
-            fseek($f_data, $data_offset_from);
+            fseek($fIndex, $i * 4);
+            $dataOffsetFrom = intval(implode('', unpack('L', fread($fIndex, 4))));
+            fseek($fData, $dataOffsetFrom);
 
-            $data_offset_to = null;
+            $dataOffsetTo = null;
             if ($i == $to) {
-                $data_offset_to = intval(filesize($data_path));
+                $dataOffsetTo = intval(filesize($dataPath));
             } else {
-                $data_offset_to = intval(implode('', unpack('L', fread($f_index, 4))));
+                $dataOffsetTo = intval(implode('', unpack('L', fread($fIndex, 4))));
             }
-            $data = fread($f_data, $data_offset_to - $data_offset_from);
+            $data = fread($fData, $dataOffsetTo - $dataOffsetFrom);
 
-            $error_logs[$i] = unserialize($data);
+            $errorLogs[$i] = unserialize($data);
         }
-        fclose($f_data);
-        fclose($f_index);
+        fclose($fData);
+        fclose($fIndex);
 
-        return $error_logs;
+        return $errorLogs;
     }
 
-    public function get_error_log_count($options = array())
+    public function getErrorLogCount($options = array())
     {
         if (!isset($options['year'])) return 0;
         if (!isset($options['month'])) return 0;
         if (!isset($options['day'])) return 0;
 
-        $path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
+        $path = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
         if (!is_file($path)) return 0;
 
         return filesize($path) / 4;
@@ -122,53 +122,53 @@ class error_log extends \system\service
      *
      *
      */
-    public function get_error_log($year, $month, $day, $index)
+    public function getErrorLog($year, $month, $day, $index)
     {
-        $data_path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month . DS . $day . '.data';
-        if (!is_file($data_path)) {
-            $this->set_error('打开日志数据文件不存在！');
+        $dataPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.data';
+        if (!is_file($dataPath)) {
+            $this->setError('打开日志数据文件不存在！');
             return false;
         }
 
-        $index_path = PATH_DATA . DS . 'system' . DS . 'error_log' . DS . $year . DS . $month . DS . $day . '.index';
-        if (!is_file($index_path)) {
-            $this->set_error('日志索引文件不存在！');
+        $indexPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.index';
+        if (!is_file($indexPath)) {
+            $this->setError('日志索引文件不存在！');
             return false;
         }
 
-        $f_data = fopen($data_path, 'rb');
-        $f_index = fopen($index_path, 'rb');
-        if (!$f_data) {
-            $this->set_error('打开日志数据文件出错！');
+        $fData = fopen($dataPath, 'rb');
+        $fIndex = fopen($indexPath, 'rb');
+        if (!$fData) {
+            $this->setError('打开日志数据文件出错！');
             return false;
         }
 
-        if (!$f_index) {
-            $this->set_error('打开日志索引文件出错！');
+        if (!$fIndex) {
+            $this->setError('打开日志索引文件出错！');
             return false;
         }
 
-        $max = intval(filesize($index_path) / 4) - 1;
+        $max = intval(filesize($indexPath) / 4) - 1;
         if ($index < 0 || $index > $max) {
-            $this->set_error('读取日志文件索引位置错误！');
+            $this->setError('读取日志文件索引位置错误！');
             return false;
         }
 
-        fseek($f_index, $index * 4);
-        $data_offset_from = intval(implode('', unpack('L', fread($f_index, 4))));
-        fseek($f_data, $data_offset_from);
+        fseek($fIndex, $index * 4);
+        $dataOffsetFrom = intval(implode('', unpack('L', fread($fIndex, 4))));
+        fseek($fData, $dataOffsetFrom);
 
-        $data_offset_to = null;
+        $dataOffsetTo = null;
         if ($index == $max) {
-            $data_offset_to = intval(filesize($data_path));
+            $dataOffsetTo = intval(filesize($dataPath));
         } else {
-            $data_offset_to = intval(implode('', unpack('L', fread($f_index, 4))));
+            $dataOffsetTo = intval(implode('', unpack('L', fread($fIndex, 4))));
         }
 
-        $data = fread($f_data, $data_offset_to - $data_offset_from);
+        $data = fread($fData, $dataOffsetTo - $dataOffsetFrom);
 
         $data = unserialize($data);
-        $data['data_length'] = $data_offset_to - $data_offset_from;
+        $data['dataLength'] = $dataOffsetTo - $dataOffsetFrom;
         return $data;
     }
 }

@@ -2,7 +2,7 @@
 namespace lib\ip2country;
 
 
-class ip2country extends \system\lib
+class Ip2country extends \system\lib
 {
 
     private $db = null;
@@ -267,7 +267,7 @@ class ip2country extends \system\lib
     {
         $this->db = @fopen(PATH_ROOT . DS . 'libs' . DS . 'ip2country' . DS . 'ip.dat', 'rb');
         if (!$this->db) {
-            $this->set_error('Can not open file: ip.dat');
+            $this->setError('Can not open file: ip.dat');
             return false;
         }
 
@@ -281,9 +281,9 @@ class ip2country extends \system\lib
         if ($this->db !== null && is_resource($this->db)) fclose($this->db);
     }
 
-    public function get_country($ip)
+    public function getCountry($ip)
     {
-        if ($this->has_error()) return $this->get_error();
+        if ($this->hasError()) return $this->getError();
         if (!preg_match("/^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$/", $ip)) return 'Invalid IP address';
 
         $ip = ip2long($ip);
@@ -333,21 +333,21 @@ class ip2country extends \system\lib
     }
 
 
-    public function get_country_full_name($ip)
+    public function getCountryFullName($ip)
     {
-        $country = $this->get_country($ip);
+        $country = $this->getCountry($ip);
         if (isset($this->countries[$country])) return $this->countries[$country];
         return 'Unknown';
     }
 
     public function convert($ip)
     {
-        return $this->get_country_full_name($ip);
+        return $this->getCountryFullName($ip);
     }
 
     public function to_string()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
-        return $this->get_country_full_name($ip);
+        return $this->getCountryFullName($ip);
     }
 }

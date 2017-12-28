@@ -1,8 +1,8 @@
 <?php
-use system\be;
+use System\Be;
 
-function system_log($log)
+function systemLog($log)
 {
-	$service_system = be::get_service('system.admin');
-	$service_system->new_log($log);
+	$serviceSystem = Be::getService('System.Admin');
+	$serviceSystem->newLog($log);
 }

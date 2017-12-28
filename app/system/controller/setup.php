@@ -1,22 +1,22 @@
 <?php
 namespace controller;
 
-use system\be;
-use system\request;
-use system\db;
+use System\Be;
+use System\Request;
+use System\Db;
 
-class setup extends \system\controller
+class Setup extends \System\Controller
 {
 
 	public function __construct()
 	{
-		$task = request::_('task');
+		$task = Request::_('task');
 		if ($task!='complete') {
 			db::connect();
-			if (!db::has_error()) {
-				$rows = db::get_tables();
-				//print_r($rows);
-				//if (in_array($rows, 'be_user')) $this->redirect(url('controller=setup&task=complete'));
+			if (!db::hasError()) {
+				$rows = db::getTables();
+				//printR($rows);
+				//if (in_array($rows, 'beUser')) $this->redirect(url('controller=setup&task=complete'));
 			}
 		}
 	}
@@ -29,29 +29,29 @@ class setup extends \system\controller
 
 	public function setting()	// 配置数据库
 	{
-		$template = be::get_template('setup.setting');
-		$template->set_title('配置数据库');
+		$template = Be::getTemplate('setup.setting');
+		$template->setTitle('配置数据库');
 		$template->display();
 	}
 
 
-	public function setting_save()	// 保存配置
+	public function settingSave()	// 保存配置
 	{
-		$config_db = be::get_config('db');
-		$config_db->db_host = request::post('db_host', '');
-		$config_db->db_user = request::post('db_user', '');
-		$config_db->db_pass = request::post('db_pass', '');
-		$config_db->db_name = request::post('db_name', '');
+		$configDb = Be::getConfig('db');
+		$configDb->dbHost = Request::post('dbHost', '');
+		$configDb->dbUser = Request::post('dbUser', '');
+		$configDb->dbPass = Request::post('dbPass', '');
+		$configDb->dbName = Request::post('dbName', '');
 
-		$service_setup = be::get_service('setup');
-		$service_setup->save_config($config_db, PATH_ROOT.DS.'configs'.DS.'db.php');
+		$serviceSetup = Be::getService('setup');
+		$serviceSetup->saveConfig($configDb, PATH_ROOT.DS.'configs'.DS.'db.php');
 
 		db::connect();
-		if (db::has_error()) {
-			$this->set_message(db::get_error(), 'error');
+		if (db::hasError()) {
+			$this->setMessage(db::getError(), 'error');
 			$this->redirect(url('controller=setup&task=setting'));
 		} else {
-			$service_setup->install();
+			$serviceSetup->install();
 			$this->redirect(url('controller=setup&task=complete'));
 		}
 	}
@@ -59,8 +59,8 @@ class setup extends \system\controller
 
 	public function complete()
 	{
-		$template = be::get_template('setup.complete');
-		$template->set_title('完成配置');
+		$template = Be::getTemplate('setup.complete');
+		$template->setTitle('完成配置');
 		$template->display();
 		
 		/*
@@ -69,8 +69,8 @@ class setup extends \system\controller
 
 		$path = BONE_ROOT.DS.'apps'.DS.'setup';
 		if (file_exists($path)) {
-			$fso = be::get_lib('fso');
-			$fso->rm_dir($path);
+			$fso = Be::getLib('fso');
+			$fso->rmDir($path);
 		}
 		*/
 

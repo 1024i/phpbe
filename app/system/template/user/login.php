@@ -6,7 +6,7 @@
 <!--{middle}-->
 <div class="theme-box-container">
 	<div class="theme-box">
-		<div class="theme-box-title"><?php echo $this->get_title(); ?></div>
+		<div class="theme-box-title"><?php echo $this->getTitle(); ?></div>
 		<div class="theme-box-body">
 		
 			<form id="form-login">
@@ -31,7 +31,7 @@
 				</div>
 				
 				<?php
-				if ($config_user->captcha_login == '1') {
+				if ($configUser->captchaLogin == '1') {
 				?>
 				<div class="row">
 					<div class="col-8">
@@ -40,7 +40,7 @@
 					<div class="col-12">
 						<div class="val">
 							<input type="text" name="captcha" class="input" style="width:90px;" />
-							<img src="<?php echo URL_ROOT; ?>/?controller=user&task=captcha_login" onclick="javascript:this.src='<?php echo URL_ROOT; ?>/?controller=user&task=captcha_login&_='+Math.random();" style="cursor:pointer;" />
+							<img src="<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin" onclick="javascript:this.src='<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -53,29 +53,29 @@
 					<div class="col-8"></div>
 					<div class="col-12">
 						<div class="val">
-							<a href="<?php echo url('controller=user&task=forgot_password'); ?>">忘记密码？</a>
+							<a href="<?php echo url('controller=user&task=forgotPassword'); ?>">忘记密码？</a>
 						</div>
 					</div>
 					<div class="clear-left"></div>
 				</div>
 				
 				<?php
-				if ($config_user->connect_qq == '1' || $config_user->connect_sina == '1') {
+				if ($configUser->connectQq == '1' || $configUser->connectSina == '1') {
 				?>
 				<div class="row">
 					<div class="col-8"></div>
 					<div class="col-12">
 						<div class="val">
 							<?php
-							if ($config_user->connect_qq == '1') {
+							if ($configUser->connectQq == '1') {
 							?>
-							<a href="<?php echo url('controller=user&task=qq_login'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/qq_login.png" /></a> &nbsp;
+							<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/qqLogin.png" /></a> &nbsp;
 							<?php
 							}
 							
-							if ($config_user->connect_sina == '1') {
+							if ($configUser->connectSina == '1') {
 							?>
-							<a href="<?php echo url('controller=user&task=sina_login'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/sina_login.png" /></a>
+							<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/sinaLogin.png" /></a>
 							<?php
 							}
 							?>

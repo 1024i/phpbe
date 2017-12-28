@@ -11,7 +11,7 @@ class validator
      * @param string $mobile 手机号码
      * @return bool
      */
-    public static function is_mobile($mobile)
+    public static function isMobile($mobile)
     {
         return strlen($mobile) == 11 && preg_match('/^1[3|4|5|7|8][0-9]\d{4,8}$/', $mobile);
     }
@@ -22,9 +22,9 @@ class validator
      * @param string $email 邮箱
      * @return bool
      */
-    public static function is_email($email)
+    public static function isEmail($email)
     {
-        return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
+        return preg_match("/^[A-z0-9-]+(\.[A-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
     }
 
     /**
@@ -33,7 +33,7 @@ class validator
      * @param string $ip
      * @return bool
      */
-    public static function is_ip($ip)
+    public static function isIp($ip)
     {
         return preg_match("/^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$/", $ip);
     }
@@ -44,7 +44,7 @@ class validator
      * @param string $url
      * @return bool
      */
-    public static function is_url($url)
+    public static function isUrl($url)
     {
         return preg_match("/^(http:\/\/)?(https:\/\/)?([\w\d-]+\.)+[\w-]+(\/[\d\w-.\/?%&=]*)?$/", $url);
     }
@@ -52,13 +52,13 @@ class validator
     /**
      * 是否是身份证号
      *
-     * @param string $id_card
+     * @param string $idCard
      * @return bool
      */
-    public static function is_id_card($id_card)
+    public static function isIdCard($idCard)
     {
-        if (strlen($id_card) > 18) return false;
-        return preg_match("/^\d{6}((1[89])|(2\d))\d{2}((0\d)|(1[0-2]))((3[01])|([0-2]\d))\d{3}(\d|X)$/i", $id_card);
+        if (strlen($idCard) > 18) return false;
+        return preg_match("/^\d{6}((1[89])|(2\d))\d{2}((0\d)|(1[0-2]))((3[01])|([0-2]\d))\d{3}(\d|X)$/i", $idCard);
     }
 
     /**
@@ -67,7 +67,7 @@ class validator
      * @param string $postcode
      * @return bool
      */
-    public static function is_postcode($postcode)
+    public static function isPostcode($postcode)
     {
         return preg_match('/\d{6}/', $postcode);
     }
@@ -78,7 +78,7 @@ class validator
      * @param string $str
      * @return bool
      */
-    public static function is_chinese($str)
+    public static function isChinese($str)
     {
         return preg_match('/^[\x{4e00}-\x{9fa5}]+$/u', $str);
     }

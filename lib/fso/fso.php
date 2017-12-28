@@ -10,7 +10,7 @@ namespace lib\fso;
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com) 或登陆 http://www.liu12.com
 */
 
-class fso extends \system\lib
+class Fso extends \system\Lib
 {
 
     // 构造函数
@@ -26,10 +26,10 @@ class fso extends \system\lib
 
 
     // 删除文件夹, 同时删除文件夹下的所有文件
-    public function rm_dir($path)
+    public function rmDir($path)
     {
         if (!file_exists($path)) {
-            $this->set_error($path . ' 不存在');
+            $this->setError($path . ' 不存在');
             return false;
         }
 
@@ -37,7 +37,7 @@ class fso extends \system\lib
             $handle = opendir($path);
             while (($file = readdir($handle)) !== false) {
                 if ($file != '.' && $file != '..') {
-                    $this->rm_dir($path . DS . $file);
+                    $this->rmDir($path . DS . $file);
                 }
             }
             closedir($handle);
@@ -52,7 +52,7 @@ class fso extends \system\lib
 
 
     // 建立文件夹， 支持多级文件夹 如 aaa\bbb\ccc\...
-    public function mk_dir($path, $mode = 0777)
+    public function mkDir($path, $mode = 0777)
     {
         $dirs = explode(DS, $path);
 
@@ -65,9 +65,9 @@ class fso extends \system\lib
 
 
     // 复制文件夹
-    public function copy_dir($src, $dst, $overwrite = false)
+    public function copyDir($src, $dst, $overwrite = false)
     {
-        if (!is_dir($dst)) $this->mk_dir($dst);
+        if (!is_dir($dst)) $this->mkDir($dst);
 
         $handle = opendir($src);
         if ($handle) {
@@ -79,7 +79,7 @@ class fso extends \system\lib
                             @copy($path, $dst . DS . $file);
                     } else {
                         if (!is_dir($dst . DS . $file)) mkdir($dst . DS . $file);
-                        $this->copy_dir($path, $dst . DS . $file, $overwrite);
+                        $this->copyDir($path, $dst . DS . $file, $overwrite);
                     }
                 }
             }

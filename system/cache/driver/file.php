@@ -1,11 +1,12 @@
 <?php
-
 namespace system\cache\driver;
+
+use \system\cache\Driver;
 
 /**
  * 文件 缓存类
  */
-class file extends \system\cache\driver
+class File extends Driver
 {
 
     /**
@@ -26,7 +27,7 @@ class file extends \system\cache\driver
     public function get($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
 
         if (!is_file($path)) return false;
 
@@ -53,7 +54,7 @@ class file extends \system\cache\driver
      * @param array $keys 键名 数组
      * @return array()
      */
-    public function get_multi($keys)
+    public function getMulti($keys)
     {
         $values = array();
         foreach ($keys as $key) {
@@ -73,7 +74,7 @@ class file extends \system\cache\driver
     public function set($key, $value, $expire = 0)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
         $path = $dir . DS . $hash . '.php';
 
@@ -96,10 +97,10 @@ class file extends \system\cache\driver
      * @param int $expire 有效时间（秒）
      * @return bool
      */
-    public function set_multi($values, $expire = 0)
+    public function setMulti($values, $expire = 0)
     {
         foreach ($values as $key => $value) {
-            response::set($key, $value, $expire);
+            $this->set($key, $value, $expire);
         }
         return true;
     }
@@ -113,7 +114,7 @@ class file extends \system\cache\driver
     public function has($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
 
         return is_file($path) ? true : false;
     }
@@ -127,7 +128,7 @@ class file extends \system\cache\driver
     public function delete($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
         if (!is_file($path)) return true;
         return unlink($path);
     }
@@ -142,7 +143,7 @@ class file extends \system\cache\driver
     public function increment($key, $step = 1)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
         $path = $dir . DS . $hash . '.php';
 
@@ -179,7 +180,7 @@ class file extends \system\cache\driver
     public function decrement($key, $step = 1)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
         $path = $dir . DS . $hash . '.php';
 
@@ -213,7 +214,7 @@ class file extends \system\cache\driver
      */
     public function flush()
     {
-        $path = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'file';
+        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File';
 
         $handle = opendir($path);
         while (($file = readdir($handle)) !== false) {

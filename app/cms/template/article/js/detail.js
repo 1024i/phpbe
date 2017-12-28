@@ -25,7 +25,7 @@ $(function(){
 
 			$.ajax({
 				type: "POST",
-				url: BONE_URL + "/?controller=article&task=ajax_comment",
+				url: BONE_URL + "/?app=Cms&controller=Article&task=ajax_comment",
 				data: $(form).serialize(),
 				dataType: "json",
 				success: function(json){
@@ -54,7 +54,7 @@ $(function(){
 function like(iArticleID)
 {
 	$.ajax({
-		url: BONE_URL + "/?controller=article&task=ajax_like&article_id="+iArticleID,
+		url: BONE_URL + "/?app=Cms&controller=Article&task=ajax_like&article_id="+iArticleID,
 		dataType: "json",
 		success: function(json){
 
@@ -73,7 +73,7 @@ function like(iArticleID)
 function dislike(iArticleID)
 {
 	$.ajax({
-		url: BONE_URL + "/?controller=article&task=ajax_dislike&article_id="+iArticleID,
+		url: BONE_URL + "/?app=Cms&controller=Article&task=ajax_dislike&article_id="+iArticleID,
 		dataType: "json",
 		success: function(json){
 
@@ -92,7 +92,7 @@ function dislike(iArticleID)
 function commentLike(iCommentID)
 {
 	$.ajax({
-		url: BONE_URL + "/?controller=article&task=ajax_comment_like&comment_id="+iCommentID,
+		url: BONE_URL + "/?app=Cms&controller=Article&task=ajax_comment_like&comment_id="+iCommentID,
 		dataType: "json",
 		success: function(json){
 
@@ -111,7 +111,7 @@ function commentLike(iCommentID)
 function commentDislike(iCommentID)
 {
 	$.ajax({
-		url: BONE_URL + "/?controller=article&task=ajax_comment_dislike&comment_id="+iCommentID,
+		url: BONE_URL + "/?app=Cms&controller=Article&task=ajax_comment_dislike&comment_id="+iCommentID,
 		dataType: "json",
 		success: function(json){
 

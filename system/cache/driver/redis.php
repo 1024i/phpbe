@@ -1,10 +1,13 @@
 <?php
 namespace system\cache\driver;
 
+use \system\cache\Driver;
+use \system\Response;
+
 /**
- * redis 缓存类
+ * Redis 缓存类
  */
-class redis extends \system\cache\driver
+class Redis extends Driver
 {
 
     /**
@@ -19,7 +22,7 @@ class redis extends \system\cache\driver
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('redis')) \system\response::end('服务器未安装 redis 扩展！');
+        if (!extension_loaded('Redis')) Response::end('服务器未安装 redis 扩展！');
 
         if (!empty($options)) {
             $this->handler = new \Redis;
@@ -31,7 +34,7 @@ class redis extends \system\cache\driver
             if ('' != $options['password']) $this->handler->auth($options['password']);
             if (0 != $options['db'])  $this->handler->select($options['db']);
         } else {
-            $this->handler = \system\redis::get_instance();
+            $this->handler = \System\Redis::getInstance();
         }
     }
 
@@ -55,16 +58,16 @@ class redis extends \system\cache\driver
      * @param array $keys 键名 数组
      * @return array()
      */
-    public function get_multi($keys)
+    public function getMulti($keys)
     {
         $return = array();
 
-        $prefixed_keys = array();
+        $prefixedKeys = array();
         foreach ($keys as $key) {
-            $prefixed_keys[] = 'cache:'.$key;
+            $prefixedKeys[] = 'cache:'.$key;
         }
 
-        $values = $this->handler->mget($prefixed_keys);
+        $values = $this->handler->mget($prefixedKeys);
 
         foreach ($values as $index => $value) {
             if (!is_numeric($value) && $value !== false)
@@ -101,27 +104,27 @@ class redis extends \system\cache\driver
      * @param int $expire  有效时间（秒）
      * @return bool
      */
-    public function set_multi($values, $expire = 0)
+    public function setMulti($values, $expire = 0)
     {
-        $formatted_values = array();
+        $formattedValues = array();
         foreach ($values as $key=>$value) {
 
             if (!is_numeric($value)) {
-                $formatted_values['cache:'.$key] = $value;
+                $formattedValues['cache:'.$key] = $value;
             } else {
-                $formatted_values['cache:'.$key] = serialize($value);
+                $formattedValues['cache:'.$key] = serialize($value);
             }
         }
 
         if ($expire>0) {
             $this->handler->multi(); // 开启事务
-            $this->handler->mset($formatted_values);
-            foreach ($formatted_values as $key=>$val) {
+            $this->handler->mset($formattedValues);
+            foreach ($formattedValues as $key=>$val) {
                 $this->handler->expire($key, $expire);
             }
             return $this->handler->exec();
         } else {
-            return $this->handler->mset($formatted_values);
+            return $this->handler->mset($formattedValues);
         }
     }
 

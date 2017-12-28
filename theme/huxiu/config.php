@@ -14,15 +14,15 @@ class config
   public $description = '仿虎嗅网主题'; // 主题描述
   
   public $author = 'Lou Barnes';  // 作者
-  public $author_email = 'lou@loubarnes.com'; // 作者邮箱
-  public $author_website = 'http://www.1024i.com'; // 作者网站
+  public $authorEmail = 'lou@loubarnes.com'; // 作者邮箱
+  public $authorWebsite = 'http://www.1024i.com'; // 作者网站
   
   /*
   缩略图文件，保存在主题目录下
   */
-  public $thumbnail_l = 'l.jpg';  // 缩略图大图 800 x 800 px
-  public $thumbnail_m = 'm.jpg';  // 缩略图中图 400 x 400 px
-  public $thumbnail_s = 's.jpg';  // 缩略图小图 200 x 200 px
+  public $thumbnailL = 'l.jpg';  // 缩略图大图 800 x 800 px
+  public $thumbnailM = 'm.jpg';  // 缩略图中图 400 x 400 px
+  public $thumbnailS = 's.jpg';  // 缩略图小图 200 x 200 px
 
     public $colors = array('#2D2D2D');		// 主题 主色
 }

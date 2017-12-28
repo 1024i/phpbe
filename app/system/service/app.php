@@ -1,25 +1,25 @@
 <?php
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class app extends \system\service
+class app extends \System\Service
 {
 
-    private $be_api = 'http://api.phpbe.com/';
+    private $beApi = 'http://api.phpbe.com/';
 
-    private $app_tables = null;    
+    private $appTables = null;
 	private $apps = null;
 
-    public function get_apps()
+    public function getApps()
     {
 		if ($this->apps == null) {
 			$apps = array();
 
-			$config_admin = be::get_config('system.admin');
-			if (count($config_admin->apps)) {
-				foreach ($config_admin->apps as $app) {
-					$apps[] = be::get_app($app);
+			$configAdmin = Be::getConfig('System.admin');
+			if (count($configAdmin->apps)) {
+				foreach ($configAdmin->apps as $app) {
+					$apps[] = Be::getApp($app);
 				}
 			}
 
@@ -29,28 +29,28 @@ class app extends \system\service
         return $this->apps;
     }
 
-	public function get_app_count()
+	public function getAppCount()
     {
-		$config_admin = be::get_config('system.admin');
-		return count($config_admin->apps);
+		$configAdmin = Be::getConfig('System.admin');
+		return count($configAdmin->apps);
     }
     
-    public function get_remote_apps($option = array())
+    public function getRemoteApps($option = array())
     {
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->post($this->be_api . 'apps/', $option);
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->post($this->beApi . 'apps/', $option);
         
-        $apps = json_decode($response);
+        $apps = jsonDecode($Response);
 
         return $apps;
     }
         
-    public function get_remote_app($app_id)
+    public function getRemoteApp($appId)
     {
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->get($this->be_api . 'app/' . $app_id);
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->get($this->beApi . 'app/' . $appId);
         
-        $app = json_decode($response);
+        $app = jsonDecode($Response);
 
 		return $app;
     }
@@ -59,40 +59,40 @@ class app extends \system\service
     // 安装应用文件
     public function install($app)
     {
-        $lib_http = be::get_lib('http');
-        $response = $lib_http->get($this->be_api . 'app_download/'.$app->version->id.'/');
+        $libHttp = Be::getLib('Http');
+        $Response = $libHttp->get($this->beApi . 'appDownload/'.$app->version->id.'/');
 
 		$zip = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name.'.zip';
-        file_put_contents($zip, $response);
+        file_put_contents($zip, $Response);
 
 		$dir = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name;
-        $lib_zip = be::get_lib('zip');
-        $lib_zip->open($zip);
-        if (!$lib_zip->extract_to($dir)) {
-            $this->set_error($lib_zip->get_error());
+        $libZip = Be::getLib('zip');
+        $libZip->open($zip);
+        if (!$libZip->extractTo($dir)) {
+            $this->setError($libZip->getError());
             return false;
         }
 
 		include PATH_ADMIN.DS.'system'.DS.'app.php';
 		include $dir.DS.'admin'.DS.'apps'.DS.$app->name.'.php';
 		
-		$app_class = 'app_'.$app->name;
-		$app_obj = new $app_class();
-		$app_obj->set_name($app->name);
-		$app_obj->install();
+		$appClass = 'app_'.$app->name;
+		$appObj = new $appClass();
+		$appObj->setName($app->name);
+		$appObj->install();
 
-		$admin_config_system = be::get_config('system.admin');
-        $service_system = be::get_service('system');
-		if (!in_array($app->name, $admin_config_system->apps)) {
-			$admin_config_system->apps[] = $app->name;
-            $service_system->update_config($admin_config_system, PATH_DATA.DS.'admin_config'.DS.'system.php');
+		$adminConfigSystem = Be::getConfig('System.admin');
+        $serviceSystem = Be::getService('system');
+		if (!in_array($app->name, $adminConfigSystem->apps)) {
+			$adminConfigSystem->apps[] = $app->name;
+            $serviceSystem->updateConfig($adminConfigSystem, PATH_DATA.DS.'adminConfig'.DS.'system.php');
 		}
 
 		// 删除临时文件
 		unlink($zip);
 
-		$lib_fso = be::get_lib('fso');
-		$lib_fso->rm_dir($dir);
+		$libFso = Be::getLib('fso');
+		$libFso->rmDir($dir);
 
 		return true;
     }
@@ -101,19 +101,19 @@ class app extends \system\service
     // 删除应用
     public function uninstall($name)
     {
-		$admin_config_system = be::get_config('system.admin');
+		$adminConfigSystem = Be::getConfig('System.admin');
 
 		$apps = array();
-		foreach ($admin_config_system->apps as $app) {
+		foreach ($adminConfigSystem->apps as $app) {
 			if ($app!=$name) {
 				$apps[] = $app;
 			}
 		}
 
-		$admin_config_system->apps = $apps;
-        be::get_service('system')->update_config($admin_config_system, PATH_DATA.DS.'admin_config'.DS.'system.php');
+		$adminConfigSystem->apps = $apps;
+        Be::getService('system')->updateConfig($adminConfigSystem, PATH_DATA.DS.'adminConfig'.DS.'system.php');
 
-		$app = be::get_app($name);
+		$app = Be::getApp($name);
 		$app->uninstall();
 
         return true;

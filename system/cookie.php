@@ -4,7 +4,7 @@ namespace system;
 /**
  * cookie
  */
-class cookie
+class Cookie
 {
 
 	private static $expire = 0;
@@ -14,25 +14,25 @@ class cookie
 
 
 	// 设置默认超时时间
-	public static function set_expire($expire)
+	public static function setExpire($expire)
 	{
 		if (!is_numeric($expire)) $expire = 0;
 		self::$expire = $expire;
 	}
 
 	// 设置默认路径
-	public static function set_path($path)
+	public static function setPath($path)
 	{
 		self::$path = $path;
 	}
 
 	// 设置默认域名
-	public static function set_domain($domain)
+	public static function setDomain($domain)
 	{
 		self::$domain = $domain;
 	}
 
-	public static function set_secure($secure)
+	public static function setSecure($secure)
 	{
 		self::$secure = $secure;
 	}

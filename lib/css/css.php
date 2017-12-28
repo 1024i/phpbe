@@ -9,7 +9,7 @@ namespace lib\css;
 获得使用本类库的许可, 您必须保留著作权声明信息.
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com) http://www.liu12.com
 */
-class css extends \system\lib
+class Css extends \system\Lib
 {
 
     // 构造函数
@@ -26,69 +26,69 @@ class css extends \system\lib
 
 
     // 颜色加重
-    public function darken($hex_color, $percent)
+    public function darken($hexColor, $percent)
     {
         $percent = floatval($percent);
         if ($percent < 0) $percent = 0;
         if ($percent > 100) $percent = 100;
 
-        $rgb_color = $this->hex_to_rgb($hex_color);
-        $hsl_color = $this->rgb_to_hsl($rgb_color);
+        $rgbColor = $this->hexToRgb($hexColor);
+        $hslColor = $this->rgbToHsl($rgbColor);
 
-        $hsl_color[2] = min(100, max(0, $hsl_color[2] - $percent));
+        $hslColor[2] = min(100, max(0, $hslColor[2] - $percent));
 
-        return $this->rgb_to_hex($this->hsl_to_rgb($hsl_color));
+        return $this->rgbToHex($this->hslToRgb($hslColor));
     }
 
     // 颜色减轻
-    public function lighten($hex_color, $percent)
+    public function lighten($hexColor, $percent)
     {
         $percent = floatval($percent);
         if ($percent < 0) $percent = 0;
         if ($percent > 100) $percent = 100;
 
-        $rgb_color = $this->hex_to_rgb($hex_color);
-        $hsl_color = $this->rgb_to_hsl($rgb_color);
+        $rgbColor = $this->hexToRgb($hexColor);
+        $hslColor = $this->rgbToHsl($rgbColor);
 
-        $hsl_color[2] = min(100, max(0, $hsl_color[2] + $percent));
+        $hslColor[2] = min(100, max(0, $hslColor[2] + $percent));
 
-        return $this->rgb_to_hex($this->hsl_to_rgb($hsl_color));
+        return $this->rgbToHex($this->hslToRgb($hslColor));
     }
 
 
     // 颜色加重(按当前亮度的百分比)
-    public function darker($hex_color, $percent)
+    public function darker($hexColor, $percent)
     {
         $percent = floatval($percent);
         if ($percent < 0) $percent = 0;
         if ($percent > 100) $percent = 100;
 
-        $rgb_color = $this->hex_to_rgb($hex_color);
-        $hsl_color = $this->rgb_to_hsl($rgb_color);
+        $rgbColor = $this->hexToRgb($hexColor);
+        $hslColor = $this->rgbToHsl($rgbColor);
 
-        $hsl_color[2] = $hsl_color[2] - $hsl_color[2] * $percent / 100;
+        $hslColor[2] = $hslColor[2] - $hslColor[2] * $percent / 100;
 
-        return $this->rgb_to_hex($this->hsl_to_rgb($hsl_color));
+        return $this->rgbToHex($this->hslToRgb($hslColor));
     }
 
     // 颜色减轻(按剩余亮度的百分比)
-    public function lighter($hex_color, $percent)
+    public function lighter($hexColor, $percent)
     {
         $percent = floatval($percent);
         if ($percent < 0) $percent = 0;
         if ($percent > 100) $percent = 100;
 
-        $rgb_color = $this->hex_to_rgb($hex_color);
-        $hsl_color = $this->rgb_to_hsl($rgb_color);
+        $rgbColor = $this->hexToRgb($hexColor);
+        $hslColor = $this->rgbToHsl($rgbColor);
 
-        $hsl_color[2] = $hsl_color[2] + (100 - $hsl_color[2]) * $percent / 100;
+        $hslColor[2] = $hslColor[2] + (100 - $hslColor[2]) * $percent / 100;
 
-        return $this->rgb_to_hex($this->hsl_to_rgb($hsl_color));
+        return $this->rgbToHex($this->hslToRgb($hslColor));
     }
 
 
     // 16进制字符串颜色（如: #999 / #FFFFFF ）转 RGB
-    public function hex_to_rgb($str)
+    public function hexToRgb($str)
     {
         $c = array(0, 0, 0);
 
@@ -109,14 +109,14 @@ class css extends \system\lib
 
 
     // RGB 转 16进制字符串颜色（如: #999 / #FFFFFF ）
-    public function rgb_to_hex($color)
+    public function rgbToHex($color)
     {
         return sprintf("#%02x%02x%02x", $color[0], $color[1], $color[2]);
     }
 
 
     // RGB 转 HSL
-    public function rgb_to_hsl($color)
+    public function rgbToHsl($color)
     {
 
         $r = $color[0] / 255;
@@ -154,7 +154,7 @@ class css extends \system\lib
 
 
     // HSL 转 RGB
-    public function hsl_to_rgb($color)
+    public function hslToRgb($color)
     {
 
         $H = $color[0] / 360;
@@ -170,9 +170,9 @@ class css extends \system\lib
 
             $temp1 = 2.0 * $L - $temp2;
 
-            $r = $this->hsl_to_rgb_helper($H + 1 / 3, $temp1, $temp2);
-            $g = $this->hsl_to_rgb_helper($H, $temp1, $temp2);
-            $b = $this->hsl_to_rgb_helper($H - 1 / 3, $temp1, $temp2);
+            $r = $this->hslToRgbHelper($H + 1 / 3, $temp1, $temp2);
+            $g = $this->hslToRgbHelper($H, $temp1, $temp2);
+            $b = $this->hslToRgbHelper($H - 1 / 3, $temp1, $temp2);
         }
 
         // $out = array(round($r*255), round($g*255), round($b*255));
@@ -181,7 +181,7 @@ class css extends \system\lib
     }
 
 
-    protected function hsl_to_rgb_helper($comp, $temp1, $temp2)
+    protected function hslToRgbHelper($comp, $temp1, $temp2)
     {
         if ($comp < 0) $comp += 1.0;
         elseif ($comp > 1) $comp -= 1.0;
@@ -196,4 +196,3 @@ class css extends \system\lib
 
 }
 
-?>

@@ -4,7 +4,7 @@ namespace system\cache;
 /**
  * 缓存驱动
  */
-abstract class driver
+abstract class Driver
 {
 
     /**
@@ -28,7 +28,7 @@ abstract class driver
      * @param array $keys    键名 数组
      * @return mixed
      */
-    abstract public function get_multi($keys);
+    abstract public function getMulti($keys);
 
     /**
      * 设置缓存
@@ -47,7 +47,7 @@ abstract class driver
      * @param int   $expire 有效时间（秒）
      * @return bool
      */
-    abstract public function set_multi($values, $expire = 0);
+    abstract public function setMulti($values, $expire = 0);
 
     /**
      * 指定键名的缓存是否存在

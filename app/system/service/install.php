@@ -1,11 +1,11 @@
 <?php
 namespace service;
 
-class install extends \system\service
+class install extends \System\Service
 {
 
 
-	public function save_config($obj, $file)
+	public function saveConfig($obj, $file)
 	{
 		$vars = get_object_vars($obj);
 
@@ -36,10 +36,10 @@ class install extends \system\service
 		$files[] = PATH_ADMIN.DS.'apps'.DS.'user'.DS.'install.sql';
 		$files[] = PATH_ADMIN.DS.'apps'.DS.'user'.DS.'init.sql';
 		
-		$db = be::get_db();
+		$db = Be::getDb();
 		foreach ($files as $file) {
 			if (file_exists($file)) {
-				$sqls = $this->split_sql(file_get_contents($file));
+				$sqls = $this->splitSql(file_get_contents($file));
 				foreach ($sqls as $sql) {
 					$db->execute($sql);
 				}

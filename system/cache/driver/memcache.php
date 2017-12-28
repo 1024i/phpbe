@@ -1,10 +1,12 @@
 <?php
 namespace system\cache\driver;
 
+use \system\cache\Driver;
+
 /**
  * memcache 缓存类
  */
-class memcache extends \system\cache\driver
+class Memcache extends Driver
 {
 
     /**
@@ -19,9 +21,9 @@ class memcache extends \system\cache\driver
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcache')) \system\response::end('服务器未安装 memcache 扩展！');
+        if (!extension_loaded('memcache')) \system\Response::end('服务器未安装 memcache 扩展！');
 
-        if (empty($options)) \system\response::end('memcache 配置错误！');
+        if (empty($options)) \system\Response::end('memcache 配置错误！');
 
         $this->handler = new \Memcache;
         foreach ($options as $option) {
@@ -50,16 +52,16 @@ class memcache extends \system\cache\driver
      * @param array $keys 键名 数组
      * @return array()
      */
-    public function get_multi($keys)
+    public function getMulti($keys)
     {
-        $prefixed_keys = array();
+        $prefixedKeys = array();
         foreach ($keys as $key) {
-            $prefixed_keys[] = 'cache:'.$key;
+            $prefixedKeys[] = 'cache:'.$key;
         }
 
         $return = array();
-        foreach ($prefixed_keys as $index=>$prefixed_key) {
-            $return[$keys[$index]] = $this->handler->get($prefixed_key);
+        foreach ($prefixedKeys as $index=>$prefixedKey) {
+            $return[$keys[$index]] = $this->handler->get($prefixedKey);
         }
         return $return;
     }
@@ -88,7 +90,7 @@ class memcache extends \system\cache\driver
      * @param int $expire  有效时间（秒）
      * @return bool
      */
-    public function set_multi($values, $expire = 0)
+    public function setMulti($values, $expire = 0)
     {
         if ($expire>0) {
             foreach ($values as $key=>$val) {

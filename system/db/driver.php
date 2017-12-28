@@ -1,10 +1,11 @@
 <?php
+
 namespace system\db;
 
 /**
  * 数据库类
  */
-class driver
+class Driver
 {
     /**
      * @var \PDO
@@ -52,13 +53,13 @@ class driver
      * @return \PDOStatement SQL预编译结果对象
      * @throws
      */
-    public function prepare($sql, array $driver_options = [])
+    public function prepare($sql, array $driverOptions = [])
     {
         if (!isset($this->connection)) $this->connect();
 
-        $statement = $this->connection->prepare($sql, $driver_options);
+        $statement = $this->connection->prepare($sql, $driverOptions);
         if (!$statement) {
-            throw new exception($statement->errorCode() . '：' . $statement->errorInfo() . ' SQL=' . $sql);
+            throw new Exception($statement->errorCode() . '：' . $statement->errorInfo() . ' SQL=' . $sql);
         }
 
         $this->statement = $statement;
@@ -71,19 +72,19 @@ class driver
      * @param string $sql 查询语句
      * @param array $bind 占位参数
      * @return true 执行成功
-     * @throws exception
+     * @throws Exception
      */
     public function execute($sql = null, $bind = [])
     {
         if ($sql === null) {
             if ($this->statement == null) {
-                throw new exception('没有预编译SQL！');
+                throw new Exception('没有预编译SQL！');
             }
 
             if (!$this->statement->execute($bind)) {
                 $error = $this->statement->errorInfo();
-                //print_r($error);
-                throw new exception($error[1] . '：' . $error[2]);
+                //printR($error);
+                throw new Exception($error[1] . '：' . $error[2]);
             }
 
             return true;
@@ -99,8 +100,8 @@ class driver
                 $statement = $this->connection->query($sql);
                 if ($statement === false) {
                     $error = $this->connection->errorInfo();
-                    // print_r($error);
-                    throw new exception($error[1] . '：' . $error[2] . ' SQL=' . $sql);
+                    // printR($error);
+                    throw new Exception($error[1] . '：' . $error[2] . ' SQL=' . $sql);
                 }
                 $this->statement = $statement;
 
@@ -114,7 +115,7 @@ class driver
      *
      * @return \PDOStatement
      */
-    public function get_statement()
+    public function getStatement()
     {
         return $this->statement;
     }
@@ -134,12 +135,12 @@ class driver
     /**
      * 最后一次查询影响到的记录条数
      * @return int | bool 条数/失败
-     * @throws exception
+     * @throws Exception
      */
-    public function row_count()
+    public function rowCount()
     {
         if ($this->statement == null) {
-            throw new exception('没有预编译SQL！');
+            throw new Exception('没有预编译SQL！');
         }
         return $this->statement->rowCount();
     }
@@ -151,7 +152,7 @@ class driver
      * @param array $bind 参数
      * @return string
      */
-    public function get_value($sql = null, $bind = [])
+    public function getValue($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         $row = $this->statement->fetch(\PDO::FETCH_NUM);
@@ -165,7 +166,7 @@ class driver
      * @param array $bind 参数
      * @return array
      */
-    public function get_values($sql = null, $bind = [])
+    public function getValues($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetchAll(\PDO::FETCH_COLUMN);
@@ -178,7 +179,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_values($sql = null, $bind = [])
+    public function getYieldValues($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($row = $this->statement->fetch(\PDO::FETCH_NUM)) {
@@ -195,7 +196,7 @@ class driver
      * @param array $bind 参数
      * @return array
      */
-    public function get_key_values($sql = null, $bind = [])
+    public function getKeyValues($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
@@ -208,7 +209,7 @@ class driver
      * @param array $bind 参数
      * @return array
      */
-    public function get_array($sql = null, $bind = [])
+    public function getArray($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetch(\PDO::FETCH_ASSOC);
@@ -221,7 +222,7 @@ class driver
      * @param array $bind 参数
      * @return array
      */
-    public function get_arrays($sql = null, $bind = [])
+    public function getArrays($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -234,7 +235,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_arrays($sql = null, $bind = [])
+    public function getYieldArrays($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($result = $this->statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -251,7 +252,7 @@ class driver
      * @param string $key 作为下标索引的字段名
      * @return array
      */
-    public function get_key_arrays($sql = null, $bind = [], $key)
+    public function getKeyArrays($sql = null, $bind = [], $key)
     {
         $this->execute($sql, $bind);
         $arrays = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -271,7 +272,7 @@ class driver
      * @param array $bind 参数
      * @return object
      */
-    public function get_object($sql = null, $bind = [])
+    public function getObject($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetchObject();
@@ -284,7 +285,7 @@ class driver
      * @param array $bind 参数
      * @return array(object)
      */
-    public function get_objects($sql = null, $bind = [])
+    public function getObjects($sql = null, $bind = [])
     {
         $this->execute($sql, $bind);
         return $this->statement->fetchAll(\PDO::FETCH_OBJ);
@@ -297,7 +298,7 @@ class driver
      * @param array $bind 参数
      * @return void
      */
-    public function get_yield_objects($sql = null, $bind = [])
+    public function getYieldObjects($sql = null, $bind = [])
     {
         if ($this->execute($sql, $bind)) {
             while ($result = $this->statement->fetchObject()) {
@@ -314,7 +315,7 @@ class driver
      * @param string $key 作为下标索引的字段名
      * @return array(object)
      */
-    public function get_key_objects($sql = null, $bind = [], $key)
+    public function getKeyObjects($sql = null, $bind = [], $key)
     {
         $this->execute($sql, $bind);
         $objects = $this->statement->fetchAll(\PDO::FETCH_OBJ);
@@ -357,17 +358,17 @@ class driver
      *
      * @param string $table 表名
      * @param object $obj 要插入数据库的对象，对象属性需要和该表字段一致
-     * @param string $primary_key 主键
+     * @param string $primaryKey 主键
      * @return bool
-     * @throws exception
+     * @throws Exception
      */
-    public function update($table, $obj, $primary_key)
+    public function update($table, $obj, $primaryKey)
     {
         $fields = [];
-        $field_values = [];
+        $fieldValues = [];
 
         $where = null;
-        $where_value = null;
+        $whereValue = null;
 
         foreach (get_object_vars($obj) as $key => $value) {
             if (is_array($value) || is_object($value)) {
@@ -375,27 +376,27 @@ class driver
             }
 
             // 主键不更新
-            if ($key == $primary_key) {
-                $where = ''. $key . '=?';
-                $where_value = $value;
+            if ($key == $primaryKey) {
+                $where = '' . $key . '=?';
+                $whereValue = $value;
                 continue;
             }
             if ($value === null) {
                 continue;
             } else {
-                $fields[] = ''. $key . '=?';
-                $field_values[] = $value;
+                $fields[] = '' . $key . '=?';
+                $fieldValues[] = $value;
             }
         }
 
         if ($where == null) {
-            throw new exception('更新数据时未指定条件！');
+            throw new Exception('更新数据时未指定条件！');
         }
 
         $sql = 'UPDATE ' . $table . ' SET ' . implode(',', $fields) . ' WHERE ' . $where;
-        $field_values[] = $where_value;
+        $fieldValues[] = $whereValue;
 
-        return $this->execute($sql, $field_values);
+        return $this->execute($sql, $fieldValues);
     }
 
     /**
@@ -416,7 +417,7 @@ class driver
      *
      * @return int
      */
-    public function get_last_insert_id()
+    public function getLastInsertId()
     {
         if (!isset($this->connection)) $this->connect();
         if (!isset($this->connection)) return false;
@@ -428,9 +429,9 @@ class driver
      *
      * @return array
      */
-    public function get_tables()
+    public function getTables()
     {
-        return $this->get_objects('SHOW TABLES');
+        return $this->getObjects('SHOW TABLES');
     }
 
     /**
@@ -439,9 +440,9 @@ class driver
      * @param string $table 表名
      * @return array
      */
-    public function get_table_fields($table)
+    public function getTableFields($table)
     {
-        $fields = $this->get_objects('SHOW FIELDS FROM ' . $table);
+        $fields = $this->getObjects('SHOW FIELDS FROM ' . $table);
 
         $data = [];
         foreach ($fields as $field) {
@@ -456,7 +457,7 @@ class driver
      * @param string $table 表名
      * @return bool
      */
-    public function drop_table($table)
+    public function dropTable($table)
     {
         return $this->execute('DROP TABLE IF EXISTS ' . $table);
     }
@@ -466,12 +467,12 @@ class driver
      *
      * @return bool
      */
-    public function start_transaction()
+    public function startTransaction()
     {
-        return $this->begin_transaction();
+        return $this->beginTransaction();
     }
 
-    public function begin_transaction()
+    public function beginTransaction()
     {
         if (!isset($this->connection)) $this->connect();
         if (!isset($this->connection)) return false;
@@ -507,7 +508,7 @@ class driver
      *
      * @return bool
      */
-    public function in_transaction()
+    public function inTransaction()
     {
         if (!isset($this->connection)) $this->connect();
         if (!isset($this->connection)) return false;
@@ -519,7 +520,7 @@ class driver
      *
      * @return \PDO
      */
-    public function get_connection()
+    public function getConnection()
     {
         if (!isset($this->connection)) $this->connect();
         return $this->connection;
@@ -530,7 +531,7 @@ class driver
      *
      * @return string
      */
-    public function get_version()
+    public function getVersion()
     {
         if (!isset($this->connection)) $this->connect();
         if (!isset($this->connection)) return '';

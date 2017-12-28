@@ -12,24 +12,24 @@ class editor extends \system\ui
     private $submit = '保存';
     private $reset = null;
     private $back = null;
-    private $back_url = null;
+    private $backUrl = null;
 
 	public function head()
 	{
 	}
 
-    public function set_action($action = './')
+    public function setAction($action = './')
     {
         $this->action = $action;
     }
 
-    public function set_method($method = 'post')
+    public function setMethod($method = 'post')
     {
         $this->method = $method;
     }
 
     /*
-	set_fields(
+	setFields(
 
 			array(
 				'type'=>'text',
@@ -104,42 +104,42 @@ class editor extends \system\ui
     (3)email:true 必须输入正确格式的电子邮件
     (4)url:true 必须输入正确格式的网址
     (5)date:true 必须输入正确格式的日期
-    (6)date_iso:true 必须输入正确格式的日期(ISO)，例如：2009-06-23，1998/01/22 只验证格式，不验证有效性
+    (6)dateIso:true 必须输入正确格式的日期(ISO)，例如：2009-06-23，1998/01/22 只验证格式，不验证有效性
     (7)number:true 必须输入合法的数字(负数，小数)
     (8)digits:true 必须输入整数
     (9)creditcard: 必须输入合法的信用卡号
-    (10)equal_to:'field' 输入值必须和#field相同
+    (10)equalTo:'field' 输入值必须和#field相同
     (11)accept:'jpg|jpeg|gif|png' 输入拥有合法后缀名的字符串（如上传文件的后缀）
-    (12)max_length:5 输入长度最多是5的字符串(汉字算一个字符)
-    (13)min_length:10 输入长度最小是10的字符串(汉字算一个字符)
-    (14)range_length:[5,10] 输入长度必须介于 5 和 10 之间的字符串")(汉字算一个字符)
+    (12)maxLength:5 输入长度最多是5的字符串(汉字算一个字符)
+    (13)minLength:10 输入长度最小是10的字符串(汉字算一个字符)
+    (14)rangeLength:[5,10] 输入长度必须介于 5 和 10 之间的字符串")(汉字算一个字符)
     (15)range:[5,10] 输入值必须介于 5 和 10 之间
     (16)max:5 输入值不能大于5
     (17)min:10 输入值不能小于10 
 		
 	*/
-    public function set_fields()
+    public function setFields()
     {
         $this->fields = func_get_args();
     }
 
-    public function set_submit($submit)
+    public function setSubmit($submit)
     {
         $this->submit = $submit;
     }
 
-    public function set_reset($reset)
+    public function setReset($reset)
     {
         $this->reset = $reset;
     }
 
-    public function set_back($back, $url = null)
+    public function setBack($back, $url = null)
     {
         $this->back = $back;
-        $this->back_url = $url;
+        $this->backUrl = $url;
     }
 
-    public function add_hidden($name, $value = null)
+    public function addHidden($name, $value = null)
     {
         $this->hidden[$name] = $value;
     }

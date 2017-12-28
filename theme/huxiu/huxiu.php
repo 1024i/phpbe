@@ -1,10 +1,10 @@
 <?php
-use system\be;
-use system\request;
+use System\Be;
+use System\Request;
 ?>
 <!--{html}-->
 <?php
-$config = be::get_config('system.system');
+$config = Be::getConfig('System.System');
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,9 +12,9 @@ $config = be::get_config('system.system');
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="<?php echo $this->meta_description; ?>"/>
-    <meta name="keywords" content="<?php echo $this->meta_keywords; ?>"/>
-    <title><?php echo $this->title . ' - ' . $config->site_name; ?></title>
+    <meta name="description" content="<?php echo $this->metaDescription; ?>"/>
+    <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
+    <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
     <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery-1.12.4.min.js"></script>
     <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery.validate.min.js"></script>
@@ -40,16 +40,16 @@ $config = be::get_config('system.system');
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $config_system = be::get_config('system.system');
-        $config_user = be::get_config('system.user');
+        $configSystem = Be::getConfig('System.System');
+        $configUser = Be::getConfig('System.user');
 
-        $menu_id = request::get('menu_id', 0, 'int');
+        $menuId = Request::get('menuId', 0, 'int');
 
-        $my = be::get_user();
+        $my = Be::getUser();
         ?>
         <div class="row">
             <div class="col-3">
-                <img src="<?php echo URL_ROOT; ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $config_system->site_name; ?>" />
+                <img src="<?php echo URL_ROOT; ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $configSystem->siteName; ?>" />
             </div>
             <div class="col-17">
 
@@ -62,8 +62,8 @@ $config = be::get_config('system.system');
                         <?php
                     } else {
                         ?>
-                        <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatar_l == ''?('default/'.$config_user->default_avatar_l):$my->avatar_l); ?>" />
-                        <a href="<?php echo url('controller=user_profile&task=home'); ?>"><?php echo $my->name; ?></a>
+                        <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
+                        <a href="<?php echo url('controller=userProfile&task=home'); ?>"><?php echo $my->name; ?></a>
                         <input type="button" class="btn btn-small btn-warning" onclick="javascript:window.location.href='<?php echo url('controller=user&task=logout'); ?>';" value="退出" />
                         <?php
                     }
@@ -72,27 +72,27 @@ $config = be::get_config('system.system');
                 <div class="menu">
                     <ul class="inline">
                         <?php
-                        $north_menu = be::get_menu('north');
-                        $north_menu_tree = $north_menu->get_menu_tree();
+                        $northMenu = Be::getMenu('north');
+                        $northMenuTree = $northMenu->getMenuTree();
 
-                        if (count($north_menu_tree)) {
-                            foreach ($north_menu_tree as $menu) {
-                                $menu_on = true;
-                                if ($menu_id>0) {
-                                    $menu_on = $menu->id == $menu_id?true:false;
+                        if (count($northMenuTree)) {
+                            foreach ($northMenuTree as $menu) {
+                                $menuOn = true;
+                                if ($menuId>0) {
+                                    $menuOn = $menu->id == $menuId?true:false;
                                 }
                                 elseif (count($menu->params)) {
                                     foreach ($menu->params as $key=>$val) {
-                                        if (request::get($key, '')!=$val) {
-                                            $menu_on = false;
+                                        if (Request::get($key, '')!=$val) {
+                                            $menuOn = false;
                                             break;
                                         }
                                     }
                                 } else {
-                                    $menu_on = false;
+                                    $menuOn = false;
                                 }
 
-                                if ($menu_on)
+                                if ($menuOn)
                                     echo '<li class="active">';
                                 else
                                     echo '<li>';
@@ -127,7 +127,7 @@ $config = be::get_config('system.system');
                     <div class="theme-center">
                         <!--{message}-->
                         <?php
-                        if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->_message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->_message->body . '</div>';
+                        if ($this->Message !== null) echo '<div class="theme-message theme-message-' . $this->Message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->Message->body . '</div>';
                         ?>
                         <!--{/message}-->
 
@@ -156,14 +156,14 @@ $config = be::get_config('system.system');
     <div class="theme-south">
         <!--{south}-->
         <?php
-        $south_menu = be::get_menu('south');
-        $south_menu_tree = $south_menu->get_menu_tree();
-        if (count($south_menu_tree)) {
+        $southMenu = Be::getMenu('south');
+        $southMenuTree = $southMenu->getMenuTree();
+        if (count($southMenuTree)) {
             echo '<div class="menu">';
             echo '<ul>';
             $i=1;
-            $n=count($south_menu_tree);
-            foreach ($south_menu_tree as $menu) {
+            $n=count($southMenuTree);
+            foreach ($southMenuTree as $menu) {
                 echo '<li><a href="';
                 if ($menu->home)
                     echo URL_ROOT;
@@ -179,7 +179,7 @@ $config = be::get_config('system.system');
         }
         ?>
         <div class="copyright">
-            <?php echo be::get_html('copyright'); ?>
+            <?php echo Be::getHtml('copyright'); ?>
         </div>
         <!--{/south}-->
     </div>

@@ -4,7 +4,7 @@ namespace system;
 /**
  * 应用基类， 所有应用都从本类继承
  */
-abstract class app
+abstract class App
 {
 	public $id = 0; // 应用在BE网站上的编号, 以便升级更新
     public $name = ''; // 应用名
@@ -35,7 +35,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_menus()
+    public function getMenus()
     {
         return array();
     }
@@ -45,7 +45,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_admin_menus()
+    public function getAdminMenus()
     {
         return array();
     }
@@ -55,7 +55,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_permissions()
+    public function getPermissions()
     {
         return array();
     }
@@ -65,7 +65,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_admin_permissions()
+    public function getAdminPermissions()
     {
         return array();
     }
@@ -74,47 +74,47 @@ abstract class app
 	// 安装时需要执行的操作，如创建数据库表
 	public function install()
 	{
-		$this->install_file();
-		$this->install_db();
-        $this->install_config();
+		$this->installFile();
+		$this->installDb();
+        $this->installConfig();
 	}
-	public function install_file()
+	public function installFile()
 	{	
 	}
-	public function install_db()
+	public function installDb()
 	{	
 	}
 
 	// 查看应用是否已安装
-	public function is_installed()
+	public function isInstalled()
 	{
-		return $this->is_db_created();
+		return $this->isDbCreated();
 	}
 
-	public function get_db_tables()
+	public function getDbTables()
 	{
 		return array();
 	}
 
-	public function get_db_info($rows = null)
+	public function getDbInfo($rows = null)
 	{
         $info = new \stdClass();
         $info->total = 0;
         $info->created = 0;
         $info->tables = array();
 
-		if ($rows == null) $rows = $this->get_db_tables();
+		if ($rows == null) $rows = $this->getDbTables();
 
 		if (!is_array($rows)) return $info;
 
 		$info->total = count($rows);
 
-        $db = be::get_db();
-		$system_tables = $db->get_values('SHOW TABLES');
+        $db = Be::getDb();
+		$systemTables = $db->getValues('SHOW TABLES');
 
 		$created = 0;
 		foreach ($rows as $row) {
-			if (in_array($row, $system_tables)) {
+			if (in_array($row, $systemTables)) {
 				$info->tables[$row] = true;
 				$created++;
 			} else {
@@ -126,18 +126,18 @@ abstract class app
 	}
 
 	// 判断应用相关的数据库表是否已创建
-	public function is_db_created($rows = null)
+	public function isDbCreated($rows = null)
 	{
-		if ($rows == null) $rows = $this->get_db_tables();
+		if ($rows == null) $rows = $this->getDbTables();
 
 		if (!is_array($rows)) return false;
 
-        $db = be::get_db();
-		$system_tables = $db->get_values('SHOW TABLES');
+        $db = Be::getDb();
+		$systemTables = $db->getValues('SHOW TABLES');
 
 		$created = 0;
 		foreach ($rows as $row) {
-			if (in_array($row, $system_tables)) $created++;
+			if (in_array($row, $systemTables)) $created++;
 		}
 
 		return count($rows) == $created;
@@ -147,33 +147,33 @@ abstract class app
 	// 删除时需要执行的操作，如删除数据库表
 	public function uninstall()
 	{
-		$this->uninstall_file();
-		$this->uninstall_db();
-        $this->uninstall_config();
+		$this->uninstallFile();
+		$this->uninstallDb();
+        $this->uninstallConfig();
 	}
 
-	public function uninstall_file()
+	public function uninstallFile()
 	{
 	}
 
-	public function uninstall_db()
+	public function uninstallDb()
 	{
 	}
 
-    public function install_config()
+    public function installConfig()
     {
     }
 
-    public function uninstall_config()
+    public function uninstallConfig()
     {
-        $db = be::get_db();
-        $sql = 'DELECT * FROM be_config WHERE `app`=\''.$this->name.'\'';
+        $db = Be::getDb();
+        $sql = 'DELECT * FROM system_config WHERE `app`=\''.$this->name.'\'';
         $db->execute($sql);
     }
 
-	protected function copy_dir($src, $dst)
+	protected function copyDir($src, $dst)
 	{
-		$my = be::get_user();
+		$my = Be::getUser();
 
 		$src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
 
@@ -183,16 +183,16 @@ abstract class app
 			return false;
 		}
 
-		$lib_fso = be::get_lib('fso');
-		$lib_fso->copy_dir($src, $dst);
+		$libFso = Be::getLib('fso');
+		$libFso->copyDir($src, $dst);
 
 		// 安装成功
 		return true;
 	}
 
-	protected function copy_file($src, $dst)
+	protected function copyFile($src, $dst)
 	{
-		$my = be::get_user();
+		$my = Be::getUser();
 
 		$src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
 
@@ -208,14 +208,14 @@ abstract class app
 		return true;
 	}
 
-	protected function delete_dir($dir)
+	protected function deleteDir($dir)
 	{
-		$lib_fso = be::get_lib('fso');
-		$lib_fso->rm_dir($dir);
+		$libFso = Be::getLib('fso');
+		$libFso->rmDir($dir);
 		return true;
 	}
 
-	protected function delete_file($file)
+	protected function deleteFile($file)
 	{
 		unlink($file);
 		return true;
@@ -227,31 +227,31 @@ abstract class app
      * @param $name
      * @param $key
      * @param $value
-     * @param string $value_type int, float, string, bool, array
-     * @param string $option_type text, number, date, datetime, range, radio, checkbox, file
-     * @param array $option_values
+     * @param string $valueType int, float, string, bool, array
+     * @param string $optionType text, number, date, datetime, range, radio, checkbox, file
+     * @param array $optionValues
      */
-    protected function add_config($name, $key, $value, $value_type = 'string', $option_type = null, $option_values = array()) {
-        if ($option_type == null) {
-            switch ($value_type) {
+    protected function addConfig($name, $key, $value, $valueType = 'string', $optionType = null, $optionValues = array()) {
+        if ($optionType == null) {
+            switch ($valueType) {
                 case 'int':
                 case 'float':
-                    $option_type = 'number';
+                    $optionType = 'number';
                     break;
                 case 'string':
-                    $option_type = 'text';
+                    $optionType = 'text';
                     break;
             }
         }
 
-        $row = be::get_row('config');
+        $row = Be::getRow('config');
         $row->app = $this->name;
         $row->name = $name;
         $row->key = $key;
         $row->value = $value;
-        $row->value_type = $value_type;
-        $row->option_type = $option_type;
-        $row->option_values = json_encode($option_values);
+        $row->valueType = $valueType;
+        $row->optionType = $optionType;
+        $row->optionValues = json_encode($optionValues);
         $row->save();
     }
 

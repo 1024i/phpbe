@@ -1,34 +1,34 @@
 <?php
 namespace service;
 
-use system\be;
-use system\session;
-use system\request;
+use System\Be;
+use System\Session;
+use System\Request;
 
-class user_connect_qq extends \system\service
+class userConnectQq extends \System\Service
 {
 	
-	private $app_id = '';
-	private $app_key = '';
+	private $appId = '';
+	private $appKey = '';
 
     // 构造函数
     public function __construct()
     {
-		$config = be::get_config('system.user');
-        $this->app_id = $config->connect_qq_app_id;
-		$this->app_key = $config->connect_qq_app_key;
+		$config = Be::getConfig('System.user');
+        $this->appId = $config->connectQqAppId;
+		$this->appKey = $config->connectQqAppKey;
     }
 
 
 	public function login()
 	{
 		$state = md5(uniqid(rand(), true));
-		session::set('user_connect_qq_state', $state);
+		session::set('userConnectQqState', $state);
 
         $url = 'https://graph.qq.com/oauth2.0/authorize';
-		$url .= '?response_type=code';
-		$url .= '&client_id='.$this->app_id;
-		$url .= '&redirect_uri='.urlencode(URL_ROOT.'/?controller=user&task=qq_login_callback');
+		$url .= '?ResponseType=code';
+		$url .= '&clientId='.$this->appId;
+		$url .= '&redirectUri='.urlencode(URL_ROOT.'/?controller=user&task=qqLoginCallback');
 		$url .= '&state='.$state;
 
         header("Location:$url");
@@ -46,136 +46,136 @@ class user_connect_qq extends \system\service
 
 	public function callback()
 	{
-		if (request::get('state', '')!=session::get('user_connect_qq_state')) {
-			$this->set_error('返回信息被篡改！');
+		if (Request::get('state', '')!=session::get('userConnectQqState')) {
+			$this->setError('返回信息被篡改！');
 			return false;
 		}
 
         $url = 'https://graph.qq.com/oauth2.0/token';
-		$url .= '?grant_type=authorization_code';
-		$url .= '&client_id='.$this->app_id;
-		$url .= '&client_secret='.$this->app_key;
-		$url .= '&code='.request::get('code','');
-		$url .= '&redirect_uri='.urlencode(URL_ROOT.'/?controller=user&task=qq_login_callback');
+		$url .= '?grantType=authorizationCode';
+		$url .= '&clientId='.$this->appId;
+		$url .= '&clientSecret='.$this->appKey;
+		$url .= '&code='.Request::get('code','');
+		$url .= '&redirectUri='.urlencode(URL_ROOT.'/?controller=user&task=qqLoginCallback');
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($url);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($url);
 
-        if (strpos($response, "callback") !== false){
+        if (strpos($Response, "callback") !== false){
 
-            $lpos = strpos($response, "(");
-            $rpos = strrpos($response, ")");
-            $response  = substr($response, $lpos + 1, $rpos - $lpos -1);
-            $msg = json_decode($response);
+            $lpos = strpos($Response, "(");
+            $rpos = strrpos($Response, ")");
+            $Response  = substr($Response, $lpos + 1, $rpos - $lpos -1);
+            $msg = jsonDecode($Response);
 
             if (isset($msg->error)){
-				$this->set_error($msg->error.': '.$msg->error_description);
+				$this->setError($msg->error.': '.$msg->errorDescription);
 				return false;
             }
         }
 
         $params = array();
-        parse_str($response, $params);
+        parseStr($Response, $params);
 
-		return $params['access_token'];
+		return $params['accessToken'];
 	}
 
-	public function get_openid($access_token)
+	public function getOpenid($accessToken)
 	{
 		$url = 'https://graph.qq.com/oauth2.0/me';
-		$url .= '?access_token='.$access_token;
+		$url .= '?accessToken='.$accessToken;
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($url);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($url);
 
         //--------检测错误是否发生
-        if (strpos($response, "callback") !== false){
+        if (strpos($Response, "callback") !== false){
 
-            $lpos = strpos($response, "(");
-            $rpos = strrpos($response, ")");
-            $response = substr($response, $lpos + 1, $rpos - $lpos -1);
+            $lpos = strpos($Response, "(");
+            $rpos = strrpos($Response, ")");
+            $Response = substr($Response, $lpos + 1, $rpos - $lpos -1);
         }
 
-        $response = json_decode($response);
-        if (isset($response->error)) {
-			$this->set_error($response->error.': '.$response->error_description);
+        $Response = jsonDecode($Response);
+        if (isset($Response->error)) {
+			$this->setError($Response->error.': '.$Response->errorDescription);
 			return false;
         }
 
-        return $response->openid;
+        return $Response->openid;
 	}
 
-	public function get_user_info($access_token, $openid)
+	public function getUserInfo($accessToken, $openid)
 	{
-		$url = 'https://graph.qq.com/user/get_user_info';
-		$url .= '?oauth_consumer_key='.$this->app_id;
-		$url .= '&access_token='.$access_token;
+		$url = 'https://graph.qq.com/user/getUserInfo';
+		$url .= '?oauthConsumerKey='.$this->appId;
+		$url .= '&accessToken='.$accessToken;
 		$url .= '&openid='.$openid;
 		$url .= '&format=json';
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($url);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($url);
 
-		$response = json_decode($response);
+		$Response = jsonDecode($Response);
 
-		if ($response->ret!=0) {
-			$this->set_error($response->msg);
+		if ($Response->ret!=0) {
+			$this->setError($Response->msg);
 			return false;
 		}
 
-		return $response;	
+		return $Response;
 	}
 
-	public function register($user_info)
+	public function register($userInfo)
 	{
-		$config_user = be::get_config('system.user');
+		$configUser = Be::getConfig('System.user');
 
 		$t = time();
-		$row_user = be::get_row('system.user');
-		$row_user->connect = 'qq';
-		$row_user->name = $user_info->nickname;
-		$row_user->register_time = $t;
-		$row_user->last_visit_time = $t;
-		$row_user->is_admin = 0;
-		$row_user->block = 0;
-		$row_user->save();
+		$rowUser = Be::getRow('System.user');
+		$rowUser->connect = 'qq';
+		$rowUser->name = $userInfo->nickname;
+		$rowUser->registerTime = $t;
+		$rowUser->lastVisitTime = $t;
+		$rowUser->isAdmin = 0;
+		$rowUser->block = 0;
+		$rowUser->save();
 
-		$lib_http = be::get_lib('http');
-		$response = $lib_http->get($user_info->figureurl_qq_2?$user_info->figureurl_qq_1:$user_info->figureurl_qq_2);
+		$libHttp = Be::getLib('Http');
+		$Response = $libHttp->get($userInfo->figureurlQq_2?$userInfo->figureurlQq_1:$userInfo->figureurlQq_2);
 		
 		$t = date('YmdHis', $t);
 
-		$tmp_avatar = PATH_DATA.DS.'system'.DS.'tmp'.DS.'user_connect_qq_'.$t.'_'.$row_user->id;
-		file_put_contents($tmp_avatar, $response);
+		$tmpAvatar = PATH_DATA.DS.'system'.DS.'tmp'.DS.'userConnectQq_'.$t.'_'.$rowUser->id;
+		file_put_contents($tmpAvatar, $Response);
 
-		$lib_image = be::get_lib('image');
-		$lib_image->open($tmp_avatar);
-		if ($lib_image->is_image()) {
+		$libImage = Be::getLib('image');
+		$libImage->open($tmpAvatar);
+		if ($libImage->isImage()) {
 
-			$lib_image->resize($config_user->avatar_l_w, $config_user->avatar_l_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_l.'.$lib_image->get_type());
-			$row_user->avatar_l = $row_user->id.'_'.$t.'_l.'.$lib_image->get_type();
+			$libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'L.'.$libImage->getType());
+			$rowUser->avatarL = $rowUser->id.'_'.$t.'L.'.$libImage->getType();
 
-			$lib_image->resize($config_user->avatar_m_w, $config_user->avatar_m_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_m.'.$lib_image->get_type());
-			$row_user->avatar_m = $row_user->id.'_'.$t.'_m.'.$lib_image->get_type();
+			$libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'M.'.$libImage->getType());
+			$rowUser->avatarM = $rowUser->id.'_'.$t.'M.'.$libImage->getType();
 
-			$lib_image->resize($config_user->avatar_s_w, $config_user->avatar_s_h, 'north');
-			$lib_image->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$row_user->id.'_'.$t.'_s.'.$lib_image->get_type());
-			$row_user->avatar_s = $row_user->id.'_'.$t.'_s.'.$lib_image->get_type();
+			$libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
+			$libImage->save(PATH_DATA.DS.'user'.DS.'avatar'.DS.$rowUser->id.'_'.$t.'S.'.$libImage->getType());
+			$rowUser->avatarS = $rowUser->id.'_'.$t.'S.'.$libImage->getType();
 
-			$row_user->save();
+			$rowUser->save();
 		}
 		
-		unlink($tmp_avatar);
+		unlink($tmpAvatar);
 
-		return $row_user;
+		return $rowUser;
 	}
 
 	// 用户登陆到BE系统
-	public function system_login($user_id)
+	public function systemLogin($userId)
 	{
-		session::set('_user', be::get_user($user_id));
+		session::set('User', Be::getUser($userId));
 	}
 
 }

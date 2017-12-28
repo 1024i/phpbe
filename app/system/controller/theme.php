@@ -2,66 +2,66 @@
 
 namespace admin\controller;
 
-use system\be;
-use system\request;
-use system\response;
+use System\Be;
+use System\Request;
+use System\Response;
 
-class theme extends \system\admin_controller
+class Theme extends \System\AdminController
 {
 
     // 登陆后首页
     public function dashboard()
     {
-        $my = be::get_admin_user();
+        $my = Be::getAdminUser();
 
-        response::set_title('后台首页');
+        Response::setTitle('后台首页');
 
-        $row_admin_user = be::get_row('admin_user');
-        $row_admin_user->load($my->id);
-        response::set('admin_user', $row_admin_user);
+        $rowAdminUser = Be::getRow('adminUser');
+        $rowAdminUser->load($my->id);
+        Response::set('adminUser', $rowAdminUser);
 
-        $admin_service_user = be::get_service('system.user');
-        $user_count = $admin_service_user->get_user_count();
-        response::set('user_count', $user_count);
+        $adminServiceUser = Be::getService('System.user');
+        $userCount = $adminServiceUser->getUserCount();
+        Response::set('userCount', $userCount);
 
-        $admin_service_system = be::get_service('system.admin');
-        $admin_service_app = be::get_service('system.app');
-        $admin_service_theme = be::get_service('system.theme');
-        response::set('recent_logs', $admin_service_system->get_logs(array('user_id' => $my->id, 'offset' => 0, 'limit' => 10)));
-        response::set('app_count', $admin_service_app->get_app_count());
-        response::set('theme_count', $admin_service_theme->get_theme_count());
+        $adminServiceSystem = Be::getService('System.Admin');
+        $adminServiceApp = Be::getService('System.app');
+        $adminServiceTheme = Be::getService('System.theme');
+        Response::set('recentLogs', $adminServiceSystem->getLogs(array('userId' => $my->id, 'offset' => 0, 'limit' => 10)));
+        Response::set('appCount', $adminServiceApp->getAppCount());
+        Response::set('themeCount', $adminServiceTheme->getThemeCount());
 
-        response::display();
+        Response::display();
     }
 
 
     // 菜单管理
     public function menus()
     {
-        $group_id = request::get('group_id', 0, 'int');
+        $groupId = Request::get('groupId', 0, 'int');
 
-        $admin_service_menu = be::get_service('system.menu');
+        $adminServiceMenu = Be::getService('System.menu');
 
-        $groups = $admin_service_menu->get_menu_groups();
-        if ($group_id == 0) $group_id = $groups[0]->id;
+        $groups = $adminServiceMenu->getMenuGroups();
+        if ($groupId == 0) $groupId = $groups[0]->id;
 
-        response::set_title('菜单列表');
-        response::set('menus', $admin_service_menu->get_menus($group_id));
-        response::set('group_id', $group_id);
-        response::set('groups', $groups);
-        response::display();
+        Response::setTitle('菜单列表');
+        Response::set('menus', $adminServiceMenu->getMenus($groupId));
+        Response::set('groupId', $groupId);
+        Response::set('groups', $groups);
+        Response::display();
     }
 
-    public function menus_save()
+    public function menusSave()
     {
-        $group_id = request::post('group_id', 0, 'int');
+        $groupId = Request::post('groupId', 0, 'int');
 
-        $ids = request::post('id', array(), 'int');
-        $parent_ids = request::post('parent_id', array(), 'int');
-        $names = request::post('name', array());
-        $urls = request::post('url', array(), 'html');
-        $targets = request::post('target', array());
-        $params = request::post('params', array());
+        $ids = Request::post('id', array(), 'int');
+        $parentIds = Request::post('parentId', array(), 'int');
+        $names = Request::post('name', array());
+        $urls = Request::post('url', array(), 'html');
+        $targets = Request::post('target', array());
+        $params = Request::post('params', array());
 
         if (count($ids) > 0) {
             for ($i = 0, $n = count($ids); $i < $n; $i++) {
@@ -69,193 +69,193 @@ class theme extends \system\admin_controller
 
                 if ($id == 0 && $names[$i] == '') continue;
 
-                $row_system_menu = be::get_row('system.menu');
-                if ($id != 0) $row_system_menu->load($id);
-                $row_system_menu->group_id = $group_id;
-                $row_system_menu->parent_id = $parent_ids[$i];
-                $row_system_menu->name = $names[$i];
-                $row_system_menu->url = $urls[$i];
-                $row_system_menu->target = $targets[$i];
-                $row_system_menu->params = $params[$i];
-                $row_system_menu->ordering = $i;
-                $row_system_menu->save();
+                $rowSystemMenu = Be::getRow('System.menu');
+                if ($id != 0) $rowSystemMenu->load($id);
+                $rowSystemMenu->groupId = $groupId;
+                $rowSystemMenu->parentId = $parentIds[$i];
+                $rowSystemMenu->name = $names[$i];
+                $rowSystemMenu->url = $urls[$i];
+                $rowSystemMenu->target = $targets[$i];
+                $rowSystemMenu->params = $params[$i];
+                $rowSystemMenu->ordering = $i;
+                $rowSystemMenu->save();
             }
         }
 
-        $row_system_menu_group = be::get_row('system.menu_group');
-        $row_system_menu_group->load($group_id);
+        $rowSystemMenuGroup = Be::getRow('System.menuGroup');
+        $rowSystemMenuGroup->load($groupId);
 
-        $service_system = be::get_service('system');
-        $service_system->update_cache_menu($row_system_menu_group->class_name);
+        $serviceSystem = Be::getService('system');
+        $serviceSystem->updateCacheMenu($rowSystemMenuGroup->className);
 
-        system_log('修改菜单：' . $row_system_menu_group->name);
+        systemLog('修改菜单：' . $rowSystemMenuGroup->name);
 
-        response::set_message('保存菜单成功！');
-        response::redirect('./?controller=system&task=menus&group_id=' . $group_id);
+        Response::setMessage('保存菜单成功！');
+        Response::redirect('./?app=System&controller=System&task=menus&groupId=' . $groupId);
     }
 
 
-    public function ajax_menu_delete()
+    public function ajaxMenuDelete()
     {
-        $id = request::post('id', 0, 'int');
+        $id = Request::post('id', 0, 'int');
         if (!$id) {
-            response::set('error', 2);
-            response::set('message', '参数(id)缺失！');
+            Response::set('error', 2);
+            Response::set('message', '参数(id)缺失！');
         } else {
-            $row_system_menu = be::get_row('system.menu');
-            $row_system_menu->load($id);
+            $rowSystemMenu = Be::getRow('System.menu');
+            $rowSystemMenu->load($id);
 
-            $admin_service_menu = be::get_service('system.menu');
-            if ($admin_service_menu->delete_menu($id)) {
+            $adminServiceMenu = Be::getService('System.menu');
+            if ($adminServiceMenu->deleteMenu($id)) {
 
-                $row_system_menu_group = be::get_row('system.menu_group');
-                $row_system_menu_group->load($row_system_menu->group_id);
+                $rowSystemMenuGroup = Be::getRow('System.menuGroup');
+                $rowSystemMenuGroup->load($rowSystemMenu->groupId);
 
-                $service_system = be::get_service('system');
-                $service_system->update_cache_menu($row_system_menu_group->class_name);
+                $serviceSystem = Be::getService('system');
+                $serviceSystem->updateCacheMenu($rowSystemMenuGroup->className);
 
-                response::set('error', 0);
-                response::set('message', '删除菜单成功！');
+                Response::set('error', 0);
+                Response::set('message', '删除菜单成功！');
 
-                system_log('删除菜单: #' . $id . ' ' . $row_system_menu->name);
+                systemLog('删除菜单: #' . $id . ' ' . $rowSystemMenu->name);
             } else {
-                response::set('error', 3);
-                response::set('message', $admin_service_menu->get_error());
+                Response::set('error', 3);
+                Response::set('message', $adminServiceMenu->getError());
             }
         }
-        response::ajax();
+        Response::ajax();
     }
 
-    public function menu_set_link()
+    public function menuSetLink()
     {
-        $id = request::get('id', 0, 'int');
-        $url = request::get('url', '', '');
+        $id = Request::get('id', 0, 'int');
+        $url = Request::get('url', '', '');
 
         if ($url != '') $url = base64_decode($url);
 
 
-        response::set('url', $url);
+        Response::set('url', $url);
 
-        $admin_service_system = be::get_service('system.admin');
-        $apps = $admin_service_system->get_apps();
-        response::set('apps', $apps);
+        $adminServiceSystem = Be::getService('System.Admin');
+        $apps = $adminServiceSystem->getApps();
+        Response::set('apps', $apps);
 
-        response::display();
+        Response::display();
     }
 
-    public function ajax_menu_set_home()
+    public function ajaxMenuSetHome()
     {
-        $id = request::get('id', 0, 'int');
+        $id = Request::get('id', 0, 'int');
         if ($id == 0) {
-            response::set('error', 1);
-            response::set('message', '参数(id)缺失！');
+            Response::set('error', 1);
+            Response::set('message', '参数(id)缺失！');
         } else {
-            $row_system_menu = be::get_row('system.menu');
-            $row_system_menu->load($id);
+            $rowSystemMenu = Be::getRow('System.menu');
+            $rowSystemMenu->load($id);
 
-            $admin_service_menu = be::get_service('system.menu');
-            if ($admin_service_menu->set_home_menu($id)) {
+            $adminServiceMenu = Be::getService('System.menu');
+            if ($adminServiceMenu->setHomeMenu($id)) {
 
-                $row_system_menu_group = be::get_row('system.menu_group');
-                $row_system_menu_group->load($row_system_menu->group_id);
+                $rowSystemMenuGroup = Be::getRow('System.menuGroup');
+                $rowSystemMenuGroup->load($rowSystemMenu->groupId);
 
-                $service_system = be::get_service('system');
-                $service_system->update_cache_menu($row_system_menu_group->class_name);
+                $serviceSystem = Be::getService('system');
+                $serviceSystem->updateCacheMenu($rowSystemMenuGroup->className);
 
-                response::set('error', 0);
-                response::set('message', '设置首页菜单成功！');
+                Response::set('error', 0);
+                Response::set('message', '设置首页菜单成功！');
 
-                system_log('设置新首页菜单：#' . $id . ' ' . $row_system_menu->name);
+                systemLog('设置新首页菜单：#' . $id . ' ' . $rowSystemMenu->name);
             } else {
-                response::set('error', 2);
-                response::set('message', $admin_service_menu->get_error());
+                Response::set('error', 2);
+                Response::set('message', $adminServiceMenu->getError());
             }
         }
-        response::ajax();
+        Response::ajax();
     }
 
 
     // 菜单分组管理
-    public function menu_groups()
+    public function menuGroups()
     {
-        $admin_service_menu = be::get_service('system.menu');
+        $adminServiceMenu = Be::getService('System.menu');
 
-        response::set_title('添加新菜单组');
-        response::set('groups', $admin_service_menu->get_menu_groups());
-        response::display();
+        Response::setTitle('添加新菜单组');
+        Response::set('groups', $adminServiceMenu->getMenuGroups());
+        Response::display();
     }
 
 
     // 修改菜单组
-    public function menu_group_edit()
+    public function menuGroupEdit()
     {
-        $id = request::request('id', 0, 'int');
+        $id = Request::request('id', 0, 'int');
 
-        $row_menu_group = be::get_row('system.menu_group');
-        if ($id != 0) $row_menu_group->load($id);
+        $rowMenuGroup = Be::getRow('System.menuGroup');
+        if ($id != 0) $rowMenuGroup->load($id);
 
         if ($id != 0)
-            response::set_title('修改菜单组');
+            Response::setTitle('修改菜单组');
         else
-            response::set_title('添加新菜单组');
+            Response::setTitle('添加新菜单组');
 
-        response::set('menu_group', $row_menu_group);
-        response::display();
+        Response::set('menuGroup', $rowMenuGroup);
+        Response::display();
     }
 
     // 保存修改菜单组
-    public function menu_group_edit_save()
+    public function menuGroupEditSave()
     {
-        $id = request::post('id', 0, 'int');
+        $id = Request::post('id', 0, 'int');
 
-        $class_name = request::post('class_name', '');
-        $row_menu_group = be::get_row('system.menu_group');
-        $row_menu_group->load(array('class_name' => $class_name));
-        if ($row_menu_group->id > 0) {
-            response::set_message('已存在(' . $class_name . ')类名！', 'error');
-            response::redirect('./?controller=system&task=menu_group_edit&id=' . $id);
+        $className = Request::post('className', '');
+        $rowMenuGroup = Be::getRow('System.menuGroup');
+        $rowMenuGroup->load(array('className' => $className));
+        if ($rowMenuGroup->id > 0) {
+            Response::setMessage('已存在(' . $className . ')类名！', 'error');
+            Response::redirect('./?app=System&controller=System&task=menuGroupEdit&id=' . $id);
         }
 
-        if ($id != 0) $row_menu_group->load($id);
-        $row_menu_group->bind(request::post());
-        if ($row_menu_group->save()) {
-            system_log($id == 0 ? ('添加新菜单组：' . $row_menu_group->name) : ('修改菜单组：' . $row_menu_group->name));
-            response::set_message($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！');
+        if ($id != 0) $rowMenuGroup->load($id);
+        $rowMenuGroup->bind(Request::post());
+        if ($rowMenuGroup->save()) {
+            systemLog($id == 0 ? ('添加新菜单组：' . $rowMenuGroup->name) : ('修改菜单组：' . $rowMenuGroup->name));
+            Response::setMessage($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！');
 
-            response::redirect('./?controller=system&task=menu_groups');
+            Response::redirect('./?app=System&controller=System&task=menuGroups');
         } else {
-            response::set_message($row_menu_group->get_error(), 'error');
-            response::redirect('./?controller=system&task=menu_group_edit&id=' . $id);
+            Response::setMessage($rowMenuGroup->getError(), 'error');
+            Response::redirect('./?app=System&controller=System&task=menuGroupEdit&id=' . $id);
         }
     }
 
 
     // 删除菜单组
-    public function menu_group_delete()
+    public function menuGroupDelete()
     {
-        $id = request::post('id', 0, 'int');
+        $id = Request::post('id', 0, 'int');
 
-        $row_menu_group = be::get_row('system.menu_group');
-        $row_menu_group->load($id);
+        $rowMenuGroup = Be::getRow('System.menuGroup');
+        $rowMenuGroup->load($id);
 
-        if ($row_menu_group->id == 0) {
-            response::set_message('菜单组不存在！', 'error');
+        if ($rowMenuGroup->id == 0) {
+            Response::setMessage('菜单组不存在！', 'error');
         } else {
-            if (in_array($row_menu_group->class_name, array('north', 'south', 'dashboard'))) {
-                response::set_message('系统菜单不可删除！', 'error');
+            if (in_array($rowMenuGroup->className, array('north', 'south', 'dashboard'))) {
+                Response::setMessage('系统菜单不可删除！', 'error');
             } else {
-                $admin_service_menu = be::get_service('system.menu');
-                if ($admin_service_menu->delete_menu_group($row_menu_group->id)) {
-                    system_log('成功删除菜单组！');
-                    response::set_message('成功删除菜单组！');
+                $adminServiceMenu = Be::getService('System.menu');
+                if ($adminServiceMenu->deleteMenuGroup($rowMenuGroup->id)) {
+                    systemLog('成功删除菜单组！');
+                    Response::setMessage('成功删除菜单组！');
                 } else {
-                    response::set_message($admin_service_menu->get_error(), 'error');
+                    Response::setMessage($adminServiceMenu->getError(), 'error');
                 }
             }
         }
 
 
-        response::redirect('./?controller=system&task=menu_groups');
+        Response::redirect('./?app=System&controller=System&task=menuGroups');
 
     }
 
@@ -263,201 +263,201 @@ class theme extends \system\admin_controller
     // 应用管理
     public function apps()
     {
-        $admin_service_app = be::get_service('system.app');
-        $apps = $admin_service_app->get_apps();
+        $adminServiceApp = Be::getService('System.app');
+        $apps = $adminServiceApp->getApps();
 
-        response::set_title('已安装的应用');
-        response::set('apps', $apps);
-        response::display();
+        Response::setTitle('已安装的应用');
+        Response::set('apps', $apps);
+        Response::display();
     }
 
-    public function remote_apps()
+    public function remoteApps()
     {
-        $admin_service_app = be::get_service('system.app');
-        $remote_apps = $admin_service_app->get_remote_apps(request::post());
+        $adminServiceApp = Be::getService('System.app');
+        $remoteApps = $adminServiceApp->getRemoteApps(Request::post());
 
-        response::set_title('安装新应用');
-        response::set('remote_apps', $remote_apps);
-        response::display();
+        Response::setTitle('安装新应用');
+        Response::set('remoteApps', $remoteApps);
+        Response::display();
     }
 
-    public function remote_app()
+    public function remoteApp()
     {
-        $app_id = request::get('app_id', 0, 'int');
-        if ($app_id == 0) response::end('参数(app_id)缺失！');
+        $appId = Request::get('appId', 0, 'int');
+        if ($appId == 0) Response::end('参数(appId)缺失！');
 
-        $admin_service_system = be::get_service('system.admin');
+        $adminServiceSystem = Be::getService('System.Admin');
 
-        $remote_app = $admin_service_system->get_remote_app($app_id);
+        $remoteApp = $adminServiceSystem->getRemoteApp($appId);
 
-        response::set_title('安装新应用：' . ($remote_app->status == '0' ? $remote_app->app->label : ''));
-        response::set('remote_app', $remote_app);
-        response::display();
+        Response::setTitle('安装新应用：' . ($remoteApp->status == '0' ? $remoteApp->app->label : ''));
+        Response::set('remoteApp', $remoteApp);
+        Response::display();
     }
 
-    public function ajax_install_app()
+    public function ajaxInstallApp()
     {
-        $app_id = request::get('app_id', 0, 'int');
-        if ($app_id == 0) {
-            response::set('error', 1);
-            response::set('message', '参数(app_id)缺失！');
-            response::ajax();
+        $appId = Request::get('appId', 0, 'int');
+        if ($appId == 0) {
+            Response::set('error', 1);
+            Response::set('message', '参数(appId)缺失！');
+            Response::ajax();
         }
 
-        $admin_service_system = be::get_service('system.admin');
-        $remote_app = $admin_service_system->get_remote_app($app_id);
-        if ($remote_app->status != '0') {
-            response::set('error', 2);
-            response::set('message', $remote_app->description);
-            response::ajax();
+        $adminServiceSystem = Be::getService('System.Admin');
+        $remoteApp = $adminServiceSystem->getRemoteApp($appId);
+        if ($remoteApp->status != '0') {
+            Response::set('error', 2);
+            Response::set('message', $remoteApp->description);
+            Response::ajax();
         }
 
-        $app = $remote_app->app;
+        $app = $remoteApp->app;
         if (file_exists(PATH_ADMIN . DS . 'apps' . DS . $app->name . 'php')) {
-            response::set('error', 3);
-            response::set('message', '已存在安装标识为' . $app->name . '的应用');
-            response::ajax();
+            Response::set('error', 3);
+            Response::set('message', '已存在安装标识为' . $app->name . '的应用');
+            Response::ajax();
         }
 
-        if ($admin_service_system->install_app($app)) {
-            system_log('安装新应用：' . $app->name);
+        if ($adminServiceSystem->installApp($app)) {
+            systemLog('安装新应用：' . $app->name);
 
-            response::set('error', 0);
-            response::set('message', '应用安装成功！');
+            Response::set('error', 0);
+            Response::set('message', '应用安装成功！');
         } else {
-            response::set('error', 4);
-            response::set('message', $admin_service_system->get_error());
+            Response::set('error', 4);
+            Response::set('message', $adminServiceSystem->getError());
         }
 
-        response::ajax();
+        Response::ajax();
     }
 
-    public function ajax_uninstall_app()
+    public function ajaxUninstallApp()
     {
-        $app_name = request::get('app_name', '');
-        if ($app_name == '') {
-            response::set('error', 1);
-            response::set('message', '参数(app_name)缺失！');
-            response::ajax();
+        $appName = Request::get('appName', '');
+        if ($appName == '') {
+            Response::set('error', 1);
+            Response::set('message', '参数(appName)缺失！');
+            Response::ajax();
         }
 
-        $admin_service_system = be::get_service('system.admin');
-        if ($admin_service_system->uninstall_app($app_name)) {
-            system_log('卸载应用：' . $app_name);
+        $adminServiceSystem = Be::getService('System.Admin');
+        if ($adminServiceSystem->uninstallApp($appName)) {
+            systemLog('卸载应用：' . $appName);
 
-            response::set('error', 0);
-            response::set('message', '应用卸载成功！');
+            Response::set('error', 0);
+            Response::set('message', '应用卸载成功！');
         } else {
-            response::set('error', 2);
-            response::set('message', $admin_service_system->get_error());
+            Response::set('error', 2);
+            Response::set('message', $adminServiceSystem->getError());
         }
 
-        response::ajax();
+        Response::ajax();
     }
 
 
     // 主题管理
     public function themes()
     {
-        $admin_service_theme = be::get_service('system.theme');
-        $themes = $admin_service_theme->get_themes(request::post());
+        $adminServiceTheme = Be::getService('System.theme');
+        $themes = $adminServiceTheme->getThemes(Request::post());
 
-        response::set_title('已安装的主题');
-        response::set('themes', $themes);
-        response::display();
+        Response::setTitle('已安装的主题');
+        Response::set('themes', $themes);
+        Response::display();
     }
 
     // 设置默认主题
-    public function ajax_theme_set_default()
+    public function ajaxThemeSetDefault()
     {
-        $theme = request::get('theme', '');
+        $theme = Request::get('theme', '');
         if ($theme == '') {
-            response::set('error', 1);
-            response::set('message', '参数(theme)缺失！');
+            Response::set('error', 1);
+            Response::set('message', '参数(theme)缺失！');
         } else {
-            $admin_service_theme = be::get_service('system.theme');
-            if ($admin_service_theme->set_default_theme($theme)) {
-                system_log('设置主题（' . $theme . ') 为默认主题！');
+            $adminServiceTheme = Be::getService('System.theme');
+            if ($adminServiceTheme->setDefaultTheme($theme)) {
+                systemLog('设置主题（' . $theme . ') 为默认主题！');
 
-                response::set('error', 0);
-                response::set('message', '设置默认主题成功！');
+                Response::set('error', 0);
+                Response::set('message', '设置默认主题成功！');
             } else {
-                response::set('error', 2);
-                response::set('message', $admin_service_theme->get_error());
+                Response::set('error', 2);
+                Response::set('message', $adminServiceTheme->getError());
             }
         }
-        response::ajax();
+        Response::ajax();
     }
 
 
     // 在线主题
-    public function remote_themes()
+    public function remoteThemes()
     {
-        $admin_service_theme = be::get_service('system.theme');
+        $adminServiceTheme = Be::getService('System.theme');
 
-        $local_themes = $admin_service_theme->get_themes();
-        $remote_themes = $admin_service_theme->get_remote_themes(request::post());
+        $localThemes = $adminServiceTheme->getThemes();
+        $remoteThemes = $adminServiceTheme->getRemoteThemes(Request::post());
 
-        response::set_title('安装新主题');
-        response::set('local_themes', $local_themes);
-        response::set('remote_themes', $remote_themes);
-        response::display();
+        Response::setTitle('安装新主题');
+        Response::set('localThemes', $localThemes);
+        Response::set('remoteThemes', $remoteThemes);
+        Response::display();
     }
 
     // 安装主题
-    public function ajax_install_theme()
+    public function ajaxInstallTheme()
     {
-        $theme_id = request::get('theme_id', 0, 'int');
-        if ($theme_id == 0) {
-            response::set('error', 1);
-            response::set('message', '参数(theme_id)缺失！');
-            response::ajax();
+        $themeId = Request::get('themeId', 0, 'int');
+        if ($themeId == 0) {
+            Response::set('error', 1);
+            Response::set('message', '参数(themeId)缺失！');
+            Response::ajax();
         }
 
-        $admin_service_system = be::get_service('system.admin');
-        $remote_theme = $admin_service_system->get_remote_theme($theme_id);
+        $adminServiceSystem = Be::getService('System.Admin');
+        $remoteTheme = $adminServiceSystem->getRemoteTheme($themeId);
 
-        if ($remote_theme->status != '0') {
-            response::set('error', 2);
-            response::set('message', $remote_theme->description);
-            response::ajax();
+        if ($remoteTheme->status != '0') {
+            Response::set('error', 2);
+            Response::set('message', $remoteTheme->description);
+            Response::ajax();
         }
 
-        if ($admin_service_system->install_theme($remote_theme->theme)) {
-            system_log('安装新主题：' . $remote_theme->theme->name);
+        if ($adminServiceSystem->installTheme($remoteTheme->theme)) {
+            systemLog('安装新主题：' . $remoteTheme->theme->name);
 
-            response::set('error', 0);
-            response::set('message', '主题新安装成功！');
-            response::ajax();
+            Response::set('error', 0);
+            Response::set('message', '主题新安装成功！');
+            Response::ajax();
         } else {
-            response::set('error', 3);
-            response::set('message', $admin_service_system->get_error());
-            response::ajax();
+            Response::set('error', 3);
+            Response::set('message', $adminServiceSystem->getError());
+            Response::ajax();
         }
     }
 
 
     // 删除主题
-    public function ajax_uninstall_theme()
+    public function ajaxUninstallTheme()
     {
-        $theme = request::get('theme', '');
+        $theme = Request::get('theme', '');
         if ($theme == '') {
-            response::set('error', 1);
-            response::set('message', '参数(theme)缺失！');
-            response::ajax();
+            Response::set('error', 1);
+            Response::set('message', '参数(theme)缺失！');
+            Response::ajax();
         }
 
-        $admin_service_system = be::get_service('system.admin');
-        if ($admin_service_system->uninstall_theme($theme)) {
-            system_log('卸载主题：' . $theme);
+        $adminServiceSystem = Be::getService('System.Admin');
+        if ($adminServiceSystem->uninstallTheme($theme)) {
+            systemLog('卸载主题：' . $theme);
 
-            response::set('error', 0);
-            response::set('message', '主题卸载成功！');
-            response::ajax();
+            Response::set('error', 0);
+            Response::set('message', '主题卸载成功！');
+            Response::ajax();
         } else {
-            response::set('error', 2);
-            response::set('message', $admin_service_system->get_error());
-            response::ajax();
+            Response::set('error', 2);
+            Response::set('message', $adminServiceSystem->getError());
+            Response::ajax();
         }
     }
 
@@ -465,117 +465,117 @@ class theme extends \system\admin_controller
     // 系统配置
     public function config()
     {
-        response::set_title('系统基本设置');
-        response::set('config', be::get_config('system.system'));
-        response::display();
+        Response::setTitle('系统基本设置');
+        Response::set('config', Be::getConfig('System.System'));
+        Response::display();
     }
 
-    public function config_save()
+    public function configSave()
     {
-        $config = be::get_config('system.system');
-        $config->offline = request::post('offline', 0, 'int');
-        $config->offline_message = request::post('offline_message', '', 'html');
-        $config->site_name = request::post('site_name', '');
-        $config->sef = request::post('sef', 0, 'int');
-        $config->sef_suffix = request::post('sef_suffix', '');
-        $config->home_title = request::post('home_title', '');
-        $config->home_meta_keywords = request::post('home_meta_keywords', '');
-        $config->home_meta_description = request::post('home_meta_description', '');
+        $config = Be::getConfig('System.System');
+        $config->offline = Request::post('offline', 0, 'int');
+        $config->offlineMessage = Request::post('offlineMessage', '', 'html');
+        $config->siteName = Request::post('siteName', '');
+        $config->sef = Request::post('sef', 0, 'int');
+        $config->sefSuffix = Request::post('sefSuffix', '');
+        $config->homeTitle = Request::post('homeTitle', '');
+        $config->homeMetaKeywords = Request::post('homeMetaKeywords', '');
+        $config->homeMetaDescription = Request::post('homeMetaDescription', '');
 
-        $allow_upload_file_types = request::post('allow_upload_file_types', '');
-        $allow_upload_file_types = explode(',', $allow_upload_file_types);
-        $allow_upload_file_types = array_map('trim', $allow_upload_file_types);
-        $config->allow_upload_file_types = $allow_upload_file_types;
+        $allowUploadFileTypes = Request::post('allowUploadFileTypes', '');
+        $allowUploadFileTypes = explode(',', $allowUploadFileTypes);
+        $allowUploadFileTypes = array_map('trim', $allowUploadFileTypes);
+        $config->allowUploadFileTypes = $allowUploadFileTypes;
 
-        $allow_upload_image_types = request::post('allow_upload_image_types', '');
-        $allow_upload_image_types = explode(',', $allow_upload_image_types);
-        $allow_upload_image_types = array_map('trim', $allow_upload_image_types);
-        $config->allow_upload_image_types = $allow_upload_image_types;
+        $allowUploadImageTypes = Request::post('allowUploadImageTypes', '');
+        $allowUploadImageTypes = explode(',', $allowUploadImageTypes);
+        $allowUploadImageTypes = array_map('trim', $allowUploadImageTypes);
+        $config->allowUploadImageTypes = $allowUploadImageTypes;
 
-        $service_system = be::get_service('system');
-        $service_system->update_config($config, PATH_DATA . DS . 'config' . DS . 'system.php');
+        $serviceSystem = Be::getService('system');
+        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'system.php');
 
-        system_log('改动系统基本设置');
+        systemLog('改动系统基本设置');
 
-        response::set_message('保存成功！');
-        response::redirect('./?controller=system&task=config');
+        Response::setMessage('保存成功！');
+        Response::redirect('./?app=System&controller=System&task=config');
     }
 
 
     // 邮件服务配置
-    public function config_mail()
+    public function configMail()
     {
-        $config = be::get_config('mail');
+        $config = Be::getConfig('mail');
 
-        response::set_title('发送邮件设置');
-        response::set('config', $config);
-        response::display();
+        Response::setTitle('发送邮件设置');
+        Response::set('config', $config);
+        Response::display();
     }
 
-    public function config_mail_save()
+    public function configMailSave()
     {
-        $config = be::get_config('mail');
+        $config = Be::getConfig('mail');
 
-        $config->from_mail = request::post('from_mail', '');
-        $config->from_name = request::post('from_name', '');
-        $config->smtp = request::post('smtp', 0, 'int');
-        $config->smtp_host = request::post('smtp_host', '');
-        $config->smtp_port = request::post('smtp_port', 0, 'int');
-        $config->smtp_user = request::post('smtp_user', '');
-        $config->smtp_pass = request::post('smtp_pass', '');
-        $config->smtp_secure = request::post('smtp_secure', '');
+        $config->fromMail = Request::post('fromMail', '');
+        $config->fromName = Request::post('fromName', '');
+        $config->smtp = Request::post('smtp', 0, 'int');
+        $config->smtpHost = Request::post('smtpHost', '');
+        $config->smtpPort = Request::post('smtpPort', 0, 'int');
+        $config->smtpUser = Request::post('smtpUser', '');
+        $config->smtpPass = Request::post('smtpPass', '');
+        $config->smtpSecure = Request::post('smtpSecure', '');
 
-        $service_system = be::get_service('system');
-        $service_system->update_config($config, PATH_DATA . DS . 'config' . DS . 'mail.php');
+        $serviceSystem = Be::getService('system');
+        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'mail.php');
 
-        system_log('改动发送邮件设置');
+        systemLog('改动发送邮件设置');
 
-        response::set_message('保存成功！');
-        response::redirect('./?controller=system&task=config_mail');
+        Response::setMessage('保存成功！');
+        Response::redirect('./?app=System&controller=System&task=configMail');
     }
 
-    public function config_mail_test()
+    public function configMailTest()
     {
-        response::set_title('发送邮件测试');
-        response::display();
+        Response::setTitle('发送邮件测试');
+        Response::display();
     }
 
-    public function config_mail_test_save()
+    public function configMailTestSave()
     {
-        $to_email = request::post('to_email', '');
-        $subject = request::post('subject', '');
-        $body = request::post('body', '', 'html');
+        $toEmail = Request::post('toEmail', '');
+        $subject = Request::post('subject', '');
+        $body = Request::post('body', '', 'html');
 
-        $lib_mail = be::get_lib('mail');
-        $lib_mail->set_subject($subject);
-        $lib_mail->set_body($body);
-        $lib_mail->to($to_email);
+        $libMail = Be::getLib('mail');
+        $libMail->setSubject($subject);
+        $libMail->setBody($body);
+        $libMail->to($toEmail);
 
-        if ($lib_mail->send()) {
-            system_log('发送测试邮件到 ' . $to_email . ' -成功');
-            response::set_message('发送邮件成功！');
+        if ($libMail->send()) {
+            systemLog('发送测试邮件到 ' . $toEmail . ' -成功');
+            Response::setMessage('发送邮件成功！');
         } else {
-            $error = $lib_mail->get_error();
+            $error = $libMail->getError();
 
-            system_log('发送测试邮件到 ' . $to_email . ' -失败：' . $error);
-            response::set_message('发送邮件失败：' . $error, 'error');
+            systemLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $error);
+            Response::setMessage('发送邮件失败：' . $error, 'error');
         }
 
-        response::redirect('./?controller=system&task=config_mail_test&to_email=' . $to_email);
+        Response::redirect('./?app=System&controller=System&task=configMailTest&toEmail=' . $toEmail);
     }
 
 
     // 水印设置
-    public function config_watermark()
+    public function configWatermark()
     {
-        $config = be::get_config('watermark');
+        $config = Be::getConfig('System.Watermark');
 
-        response::set_title('水印设置');
-        response::set('config', $config);
-        response::display();
+        Response::setTitle('水印设置');
+        Response::set('config', $config);
+        Response::display();
     }
 
-    private function is_rgb_color($arr)
+    private function isRgbColor($arr)
     {
         if (!is_array($arr)) return false;
         if (count($arr) != 3) return false;
@@ -588,215 +588,215 @@ class theme extends \system\admin_controller
         return true;
     }
 
-    public function config_watermark_save()
+    public function configWatermarkSave()
     {
-        $config = be::get_config('watermark');
+        $config = Be::getConfig('System.Watermark');
 
-        $config->watermark = request::post('watermark', 0, 'int');
-        $config->type = request::post('type', '');
-        $config->position = request::post('position', '');
-        $config->offset_x = request::post('offset_x', 0, 'int');
-        $config->offset_y = request::post('offset_y', 0, 'int');
+        $config->watermark = Request::post('watermark', 0, 'int');
+        $config->type = Request::post('type', '');
+        $config->position = Request::post('position', '');
+        $config->offsetX = Request::post('offsetX', 0, 'int');
+        $config->offsetY = Request::post('offsetY', 0, 'int');
 
-        $config->text = request::post('text', '');
-        $config->text_size = request::post('text_size', 0, 'int');
+        $config->text = Request::post('text', '');
+        $config->textSize = Request::post('textSize', 0, 'int');
 
-        $text_color = request::post('text_color', '');
-        $text_colors = explode(',', $text_color);
-        $text_colors = array_map('trim', $text_colors);
+        $textColor = Request::post('textColor', '');
+        $textColors = explode(',', $textColor);
+        $textColors = array_map('trim', $textColors);
 
-        if (!$this->is_rgb_color($text_colors)) $text_colors = array(255, 0, 0);
-        $config->text_color = $text_colors;
+        if (!$this->isRgbColor($textColors)) $textColors = array(255, 0, 0);
+        $config->textColor = $textColors;
 
         $image = $_FILES['image'];
         if ($image['error'] == 0) {
-            $lib_image = be::get_lib('image');
-            $lib_image->open($image['tmp_name']);
-            if ($lib_image->is_image()) {
-                $watermark_name = date('YmdHis') . '.' . $lib_image->get_type();
-                $watermark_path = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $watermark_name;
-                if (move_uploaded_file($image['tmp_name'], $watermark_path)) {
+            $libImage = Be::getLib('image');
+            $libImage->open($image['tmpName']);
+            if ($libImage->isImage()) {
+                $watermarkName = date('YmdHis') . '.' . $libImage->getType();
+                $watermarkPath = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $watermarkName;
+                if (move_uploaded_file($image['tmpName'], $watermarkPath)) {
                     // @unlink(PATH_DATA.DS.'system'.DS.'watermark'.DS.$config->image);
-                    $config->image = $watermark_name;
+                    $config->image = $watermarkName;
                 }
             }
         }
 
-        $service_system = be::get_service('system');
-        $service_system->update_config($config, PATH_DATA . DS . 'config' . DS . 'watermark.php');
+        $serviceSystem = Be::getService('system');
+        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'watermark.php');
 
-        system_log('修改水印设置');
+        systemLog('修改水印设置');
 
-        response::set_message('保存成功！');
-        response::redirect('./?controller=system&task=config_watermark');
+        Response::setMessage('保存成功！');
+        Response::redirect('./?app=System&controller=System&task=configWatermark');
     }
 
-    public function config_watermark_test()
+    public function configWatermarkTest()
     {
         $src = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-0.jpg';
         $dst = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-1.jpg';
 
-        if (!file_exists($src)) response::end(DATA . '/system/watermakr/test-0.jpg 文件不存在');
+        if (!file_exists($src)) Response::end(DATA . '/system/watermakr/test-0.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);
 
         copy($src, $dst);
 
         sleep(1);
 
-        $admin_service_system = be::get_service('system.admin');
-        $admin_service_system->watermark($dst);
+        $adminServiceSystem = Be::getService('System.Admin');
+        $adminServiceSystem->watermark($dst);
 
-        response::set_title('水印预览');
-        response::display();
+        Response::setTitle('水印预览');
+        Response::display();
     }
 
     public function cache()
     {
-        response::set_title('缓存管理');
-        response::display();
+        Response::setTitle('缓存管理');
+        Response::display();
     }
 
-    public function clear_cache()
+    public function clearCache()
     {
-        $type = request::request('type');
-        $service_system = be::get_service('system');
+        $type = Request::request('type');
+        $serviceSystem = Be::getService('system');
 
-        $service_system->clear_cache($type);
+        $serviceSystem->clearCache($type);
 
-        system_log('删除缓存（' . $type . '）');
+        systemLog('删除缓存（' . $type . '）');
 
-        response::set_message('删除缓存成功！');
-        response::redirect('./?controller=system&task=cache');
+        Response::setMessage('删除缓存成功！');
+        Response::redirect('./?app=System&controller=System&task=cache');
     }
 
     // 错误日志
-    public function error_logs()
+    public function errorLogs()
     {
-        $year = request::request('year', date('Y'));
-        $month = request::request('month', date('m'));
-        $day = request::request('day', date('d'));
+        $year = Request::request('year', date('Y'));
+        $month = Request::request('month', date('m'));
+        $day = Request::request('day', date('d'));
 
-        $limit = request::post('limit', -1, 'int');
+        $limit = Request::post('limit', -1, 'int');
         if ($limit == -1) {
-            $admin_config_system = be::get_config('system.admin');
-            $limit = $admin_config_system->limit;
+            $adminConfigSystem = Be::getConfig('System.admin');
+            $limit = $adminConfigSystem->limit;
         }
 
-        response::set_title('错误日志列表');
+        Response::setTitle('错误日志列表');
 
-        $admin_service_system_error_log = be::get_admin_service('system_error_log');
-        $years = $admin_service_system_error_log->get_years();
-        response::set('years', $years);
+        $adminServiceSystemErrorLog = Be::getAdminService('systemErrorLog');
+        $years = $adminServiceSystemErrorLog->getYears();
+        Response::set('years', $years);
 
         if (!$year && count($years)) $year = $years[0];
 
         if ($year && in_array($year, $years)) {
-            response::set('year', $year);
+            Response::set('year', $year);
 
-            $months = $admin_service_system_error_log->get_months($year);
-            response::set('months', $months);
+            $months = $adminServiceSystemErrorLog->getMonths($year);
+            Response::set('months', $months);
 
             if (!$month && count($months)) $month = $months[0];
 
             if ($month && in_array($month, $months)) {
-                response::set('month', $month);
+                Response::set('month', $month);
 
-                $days = $admin_service_system_error_log->get_days($year, $month);
-                response::set('days', $days);
+                $days = $adminServiceSystemErrorLog->getDays($year, $month);
+                Response::set('days', $days);
 
                 if (!$day && count($days)) $day = $days[0];
 
                 if ($day && in_array($day, $days)) {
-                    response::set('day', $day);
+                    Response::set('day', $day);
 
                     $option = array();
                     $option['year'] = $year;
                     $option['month'] = $month;
                     $option['day'] = $day;
 
-                    $error_count = $admin_service_system_error_log->get_error_log_count($option);
-                    response::set('error_log_count', $error_count);
+                    $errorCount = $adminServiceSystemErrorLog->getErrorLogCount($option);
+                    Response::set('errorLogCount', $errorCount);
 
-                    $pagination = be::get_ui('pagination');
-                    $pagination->set_limit($limit);
-                    $pagination->set_total($error_count);
-                    $pagination->set_page(request::request('page', 1, 'int'));
-                    response::set('pagination', $pagination);
+                    $pagination = Be::getUi('Pagination');
+                    $pagination->setLimit($limit);
+                    $pagination->setTotal($errorCount);
+                    $pagination->setPage(Request::request('page', 1, 'int'));
+                    Response::set('pagination', $pagination);
 
-                    $option['offset'] = $pagination->get_offset();
+                    $option['offset'] = $pagination->getOffset();
                     $option['limit'] = $limit;
 
-                    $error_logs = $admin_service_system_error_log->get_error_logs($option);
-                    response::set('error_logs', $error_logs);
+                    $errorLogs = $adminServiceSystemErrorLog->getErrorLogs($option);
+                    Response::set('errorLogs', $errorLogs);
                 }
             }
         }
 
-        response::display();
+        Response::display();
     }
 
-    public function error_log()
+    public function errorLog()
     {
-        $year = request::request('year');
-        $month = request::request('month');
-        $day = request::request('day');
-        $index = request::request('index', 0, 'int');
+        $year = Request::request('year');
+        $month = Request::request('month');
+        $day = Request::request('day');
+        $index = Request::request('index', 0, 'int');
 
-        $admin_service_system_error_log = be::get_admin_service('system_error_log');
-        $error_log = $admin_service_system_error_log->get_error_log($year, $month, $day, $index);
-        if (!$error_log) response::end($admin_service_system_error_log->get_error());
+        $adminServiceSystemErrorLog = Be::getAdminService('systemErrorLog');
+        $errorLog = $adminServiceSystemErrorLog->getErrorLog($year, $month, $day, $index);
+        if (!$errorLog) Response::end($adminServiceSystemErrorLog->getError());
 
-        response::set_title('错误详情');
-        response::set('error_log', $error_log);
-        response::display();
+        Response::setTitle('错误详情');
+        Response::set('errorLog', $errorLog);
+        Response::display();
     }
 
 
     // 系统日志
     public function logs()
     {
-        $user_id = request::post('user_id', 0, 'int');
-        $key = request::post('key', '');
-        $limit = request::post('limit', -1, 'int');
+        $userId = Request::post('userId', 0, 'int');
+        $key = Request::post('key', '');
+        $limit = Request::post('limit', -1, 'int');
         if ($limit == -1) {
-            $admin_config_system = be::get_config('system.admin');
-            $limit = $admin_config_system->limit;
+            $adminConfigSystem = Be::getConfig('System.admin');
+            $limit = $adminConfigSystem->limit;
         }
 
-        $admin_service_system = be::get_service('system.admin');
-        response::set_title('系统日志');
+        $adminServiceSystem = Be::getService('System.Admin');
+        Response::setTitle('系统日志');
 
-        $pagination = be::get_ui('pagination');
-        $pagination->set_limit($limit);
-        $pagination->set_total($admin_service_system->get_log_count(array('user_id' => $user_id, 'key' => $key)));
-        $pagination->set_page(request::post('page', 1, 'int'));
+        $pagination = Be::getUi('Pagination');
+        $pagination->setLimit($limit);
+        $pagination->setTotal($adminServiceSystem->getLogCount(array('userId' => $userId, 'key' => $key)));
+        $pagination->setPage(Request::post('page', 1, 'int'));
 
-        response::set('pagination', $pagination);
-        response::set('user_id', $user_id);
-        response::set('key', $key);
-        response::set('admin_users', $admin_service_system->get_admin_users());
-        response::set('logs', $admin_service_system->get_logs(array('user_id' => $user_id, 'key' => $key, 'offset' => $pagination->get_offset(), 'limit' => $limit)));
+        Response::set('pagination', $pagination);
+        Response::set('userId', $userId);
+        Response::set('key', $key);
+        Response::set('adminUsers', $adminServiceSystem->getAdminUsers());
+        Response::set('logs', $adminServiceSystem->getLogs(array('userId' => $userId, 'key' => $key, 'offset' => $pagination->getOffset(), 'limit' => $limit)));
 
-        response::display();
+        Response::display();
     }
 
     // 后台登陆日志
-    public function ajax_delete_logs()
+    public function ajaxDeleteLogs()
     {
-        $admin_service_system = be::get_service('system.admin');
-        $admin_service_system->delete_logs();
+        $adminServiceSystem = Be::getService('System.Admin');
+        $adminServiceSystem->deleteLogs();
 
-        system_log('删除三个月前系统日志');
+        systemLog('删除三个月前系统日志');
 
-        response::set('error', 0);
-        response::set('message', '删除日志成功！');
-        response::ajax();
+        Response::set('error', 0);
+        Response::set('message', '删除日志成功！');
+        Response::ajax();
     }
 
-    public function history_back()
+    public function historyBack()
     {
-        $lib_history = be::get_lib('history');
-        $lib_history->back();
+        $libHistory = Be::getLib('History');
+        $libHistory->back();
     }
 
 }

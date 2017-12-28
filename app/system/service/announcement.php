@@ -1,43 +1,43 @@
 <?php
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class announcement extends \system\service
+class announcement extends \System\Service
 {
 
-    public function get_system_announcements($conditions = [])
+    public function getSystemAnnouncements($conditions = [])
     {
-        $table_system_announcement = be::get_table('system_announcement');
+        $tableSystemAnnouncement = Be::getTable('systemAnnouncement');
 
-        $where = $this->create_system_announcement_where($conditions);
-        $table_system_announcement->where($where);
+        $where = $this->createSystemAnnouncementWhere($conditions);
+        $tableSystemAnnouncement->where($where);
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_system_announcement->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableSystemAnnouncement->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'ordering';
-            $order_by_dir = 'DESC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_system_announcement->order_by($order_by, $order_by_dir);
+            $orderBy = 'ordering';
+            $orderByDir = 'DESC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableSystemAnnouncement->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_system_announcement->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_system_announcement->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableSystemAnnouncement->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableSystemAnnouncement->limit($conditions['limit']);
 
-        return $table_system_announcement->get_objects();
+        return $tableSystemAnnouncement->getObjects();
     }
 
 
-    public function get_system_announcement_count($conditions = [])
+    public function getSystemAnnouncementCount($conditions = [])
     {
-        return be::get_table('system_announcement')
-            ->where($this->create_system_announcement_where($conditions))
+        return Be::getTable('systemAnnouncement')
+            ->where($this->createSystemAnnouncementWhere($conditions))
             ->count();
     }
 
-    private function create_system_announcement_where($conditions = [])
+    private function createSystemAnnouncementWhere($conditions = [])
     {
         $where = [];
 
@@ -59,22 +59,22 @@ class announcement extends \system\service
 
     public function unblock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_announcement');
+            $table = Be::getTable('systemAnnouncement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -83,22 +83,22 @@ class announcement extends \system\service
 
     public function block($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_announcement');
+            $table = Be::getTable('systemAnnouncement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -107,22 +107,22 @@ class announcement extends \system\service
 
     public function delete($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
-            $table = be::get_table('system_announcement');
+            $table = Be::getTable('systemAnnouncement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 

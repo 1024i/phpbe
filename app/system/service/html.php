@@ -1,9 +1,9 @@
 <?php
 namespace app\system\service;
 
-use system\be;
+use System\Be;
 
-class html extends \system\service
+class html extends \System\Service
 {
 
     /**
@@ -12,27 +12,27 @@ class html extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    public function get_system_htmls($conditions = array())
+    public function getSystemHtmls($conditions = array())
     {
-        $table_system_html = be::get_table('system_html');
+        $tableSystemHtml = Be::getTable('systemHtml');
 
-        $where = $this->create_system_html_where($conditions);
-        $table_system_html->where($where);
+        $where = $this->createSystemHtmlWhere($conditions);
+        $tableSystemHtml->where($where);
 
-        if (isset($conditions['order_by_string']) && $conditions['order_by_string']) {
-            $table_system_html->order_by($conditions['order_by_string']);
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableSystemHtml->orderBy($conditions['orderByString']);
         } else {
-            $order_by = 'id';
-            $order_by_dir = 'ASC';
-            if (isset($conditions['order_by']) && $conditions['order_by']) $order_by = $conditions['order_by'];
-            if (isset($conditions['order_by_dir']) && $conditions['order_by_dir']) $order_by_dir = $conditions['order_by_dir'];
-            $table_system_html->order_by($order_by, $order_by_dir);
+            $orderBy = 'id';
+            $orderByDir = 'ASC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableSystemHtml->orderBy($orderBy, $orderByDir);
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $table_system_html->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $table_system_html->limit($conditions['limit']);
+        if (isset($conditions['offset']) && $conditions['offset']) $tableSystemHtml->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableSystemHtml->limit($conditions['limit']);
 
-        return $table_system_html->get_objects();
+        return $tableSystemHtml->getObjects();
     }
 
     /**
@@ -41,10 +41,10 @@ class html extends \system\service
      * @param array $conditions 查询条件
      * @return int
      */
-    public function get_system_html_count($conditions = array())
+    public function getSystemHtmlCount($conditions = array())
     {
-        return be::get_table('system_html')
-            ->where($this->create_system_html_where($conditions))
+        return Be::getTable('systemHtml')
+            ->where($this->createSystemHtmlWhere($conditions))
             ->count();
     }
 
@@ -54,7 +54,7 @@ class html extends \system\service
      * @param array $conditions 查询条件
      * @return array
      */
-    private function create_system_html_where($conditions = array())
+    private function createSystemHtmlWhere($conditions = array())
     {
         $where = array();
 
@@ -76,9 +76,9 @@ class html extends \system\service
      * @param int $id
      * @return bool
      */
-    public function is_class_available($class, $id)
+    public function isClassAvailable($class, $id)
     {
-        $table = be::get_table('system_html');
+        $table = Be::getTable('systemHtml');
         if ($id > 0) {
             $table->where('id', '!=', $id);
         }
@@ -94,23 +94,23 @@ class html extends \system\service
      */
     public function unblock($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
-            $table = be::get_table('system_html');
+            $table = Be::getTable('systemHtml');
             if (!$table->where('id', 'in', $ids)->update(['block' => 0])) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
-            $objects = $table->where('id', 'in', $ids)->get_objects();
+            $objects = $table->where('id', 'in', $ids)->getObjects();
 
             $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
             if (!file_exists($dir)) {
-                $lib_fso = be::get_lib('fso');
-                $lib_fso->mk_dir($dir);
+                $libFso = Be::getLib('fso');
+                $libFso->mkDir($dir);
             }
 
             foreach ($objects as $obj) {
@@ -118,10 +118,10 @@ class html extends \system\service
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -136,18 +136,18 @@ class html extends \system\service
      */
     public function block($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
-            $table = be::get_table('system_html');
+            $table = Be::getTable('systemHtml');
             if (!$table->where('id', 'in', $ids)->update(['block' => 1])) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
-            $classes = $table->where('id', 'in', $ids)->get_values('class');
+            $classes = $table->where('id', 'in', $ids)->getValues('class');
 
             $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
             foreach ($classes as $class) {
@@ -156,10 +156,10 @@ class html extends \system\service
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -174,14 +174,14 @@ class html extends \system\service
      */
     public function delete($ids)
     {
-        $db = be::get_db();
+        $db = Be::getDb();
         try {
-            $db->begin_transaction();
+            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
-            $table = be::get_table('system_html');
-            $classes = $table->where('id', 'in', $ids)->get_values('class');
+            $table = Be::getTable('systemHtml');
+            $classes = $table->where('id', 'in', $ids)->getValues('class');
 
             $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
             foreach ($classes as $class) {
@@ -190,14 +190,14 @@ class html extends \system\service
             }
 
             if (!$table->where('id', 'in', $ids)->delete()) {
-                throw new \exception($table->get_error());
+                throw new \Exception($table->getError());
             }
 
             $db->commit();
-        } catch (\exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
 
-            $this->set_error($e->getMessage());
+            $this->setError($e->getMessage());
             return false;
         }
 

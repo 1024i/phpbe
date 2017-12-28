@@ -1,18 +1,18 @@
 <?php
-namespace system\session\driver;
+namespace system\Session\Driver;
 
-use system\response;
+use System\Response;
 
 /**
  * memcache session
  */
-class memcache extends \SessionHandler
+class Memcache extends \SessionHandler
 {
 
 	private $expire = 1440; // session 超时时间
 
 	/**
-	 * @var \memcache
+	 * @var \Memcache
 	 */
 	private $handler = null;
 	private $options = null;
@@ -20,29 +20,29 @@ class memcache extends \SessionHandler
 	/**
 	 * 构造函数
 	 *
-	 * @param object $config_session session 配直参数
+	 * @param object $configSession session 配直参数
 	 */
-	public function __construct($config_session)
+	public function __construct($configSession)
 	{
-		if (!extension_loaded('memcache')) response::end('SESSION 初始化失败：服务器未安装 memcache 扩展！');
+		if (!extension_loaded('Memcache')) Response::end('SESSION 初始化失败：服务器未安装 memcache 扩展！');
 
-		if (isset($config_session->memcache)) {
-			$this->options = $config_session->memcache;
+		if (isset($configSession->memcache)) {
+			$this->options = $configSession->memcache;
 		}
-		$this->expire = $config_session->expire;
+		$this->expire = $configSession->expire;
 	}
 
 	/**
 	 * 初始化 session
 	 *
-	 * @param string $save_path 保存路径
-	 * @param string $session_id session id
+	 * @param string $savePath 保存路径
+	 * @param string $sessionId session id
 	 * @return bool
 	 */
-	public function open($save_path, $session_id) {
+	public function open($savePath, $sessionId) {
 		$options = $this->options;
 		if ($options === null) {
-			response::end('SESSION 初始化失败：memcache 配置参数错误！');
+			Response::end('SESSION 初始化失败：memcache 配置参数错误！');
 		} else {
 			$this->handler = new \Memcache;
 			foreach ($options as $option) {
@@ -68,40 +68,40 @@ class memcache extends \SessionHandler
 	/**
 	 * 讯取 session 数据
 	 *
-	 * @param string $session_id session id
+	 * @param string $sessionId session id
 	 * @return string
 	 */
-	public function read($session_id) {
-		return $this->handler->get('session:'.$session_id);
+	public function read($sessionId) {
+		return $this->handler->get('session:'.$sessionId);
 	}
 
 	/**
 	 * 写入 session 数据
 	 *
-	 * @param string $session_id session id
-	 * @param string $session_data 写入 session 的数据
+	 * @param string $sessionId session id
+	 * @param string $sessionData 写入 session 的数据
 	 * @return bool
 	 */
-	public function write($session_id, $session_data) {
-		return $this->handler->set('session:'.$session_id, $session_data, 0 , $this->expire);
+	public function write($sessionId, $sessionData) {
+		return $this->handler->set('session:'.$sessionId, $sessionData, 0 , $this->expire);
 	}
 	/**
 	 * 销毁 session
 	 *
-	 * @param int $session_id 要销毁的 session 的 session id
+	 * @param int $sessionId 要销毁的 session 的 session id
 	 * @return bool
 	 */
-	public function destroy($session_id) {
-		return $this->handler->delete('session:'.$session_id);
+	public function destroy($sessionId) {
+		return $this->handler->delete('session:'.$sessionId);
 	}
 
 	/**
 	 * 垃圾回收
 	 *
-	 * @param int $max_lifetime 最大生存时间
+	 * @param int $maxLifetime 最大生存时间
 	 * @return bool
 	 */
-	public function gc($max_lifetime) {
+	public function gc($maxLifetime) {
 		return true;
 	}
 

@@ -1,9 +1,9 @@
 <?php
-use system\be;
+use System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/forgot_password.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/forgot_password.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/forgotPassword.css">
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/forgotPassword.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -13,7 +13,7 @@ use system\be;
 		<div class="theme-box-title"><?php echo $this->title; ?></div>
 		<div class="theme-box-body">
 		
-			<form id="form-forgot_password">
+			<form id="form-forgotPassword">
 
 				<div class="row">
 					<div class="col-8">

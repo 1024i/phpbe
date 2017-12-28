@@ -10,7 +10,7 @@ class article extends \system\app
 	}
 
 	// 新建前台菜单时可用的链接项
-    public function get_menus()
+    public function getMenus()
     {
 		return array(
 			array(
@@ -23,43 +23,43 @@ class article extends \system\app
 			),
 			array(
 				'name'=>'指定分类文章列表页面',
-				'url'=>'controller=article&task=articles&category_id={ID}'
+				'url'=>'controller=article&task=articles&categoryId={ID}'
 			),
 			array(
 				'name'=>'指定的一篇文章',
-				'url'=>'controller=article&task=detail&article_id={ID}'
+				'url'=>'controller=article&task=detail&articleId={ID}'
 			)
 		);
     }
 
-    public function get_admin_menus()
+    public function getAdminMenus()
 	{
 		return array(
 			array(
 				'name'=>'文章列表',
-				'url'=>'./?controller=article&task=articles',
+				'url'=>'./?app=Cms&controller=Article&task=articles',
 				'icon'=>'template/article/images/articles.png'
 			),
 			array(
 				'name'=>'分类管理',
-				'url'=>'./?controller=article&task=categories',
+				'url'=>'./?app=Cms&controller=Article&task=categories',
 				'icon'=>'template/article/images/category.gif'
 			),
 			array(
 				'name'=>'评论',
-				'url'=>'./?controller=article&task=comments',
+				'url'=>'./?app=Cms&controller=Article&task=comments',
 				'icon'=>'template/article/images/comments.png'
 			),
 			array(
 				'name'=>'设置',
-				'url'=>'./?controller=article&task=setting',
+				'url'=>'./?app=Cms&controller=Article&task=setting',
 				'icon'=>'template/article/images/setting.png'
 			)
 		);
 	}
 	
 
-	public function get_permissions()
+	public function getPermissions()
 	{
 		return [
 		    '查看文章系统首页' => [
@@ -72,15 +72,15 @@ class article extends \system\app
                 'article.detail',
             ],
             '对文章内容表态（喜欢/不喜欢）' => [
-                'article.ajax_like',
-                'article.ajax_dislike',
+                'article.ajaxLike',
+                'article.ajaxDislike',
             ],
             '发表评论' => [
-                'article.ajax_comment',
+                'article.ajaxComment',
             ],
             '对评论内容表态（顶/踩）' => [
-                'article.ajax_comment_like',
-                'article.ajax_comment_dislike',
+                'article.ajaxCommentLike',
+                'article.ajaxCommentDislike',
             ],
             '作者资料' => [
                 'article.user',
@@ -89,20 +89,20 @@ class article extends \system\app
 	}
 
 
-	public function get_admin_permissions()
+	public function getAdminPermissions()
 	{
 		return [
 			'-' => [
-                'article.ajax_get_summary',
-                'article.ajax_get_meta_keywords',
-                'article.ajax_get_meta_description',
+                'article.ajaxGetSummary',
+                'article.ajaxGetMetaKeywords',
+                'article.ajaxGetMetaDescription',
 			],
             '查看文章列表' => [
                 'article.articles',
             ],
             '添加/修改文章' => [
                 'article.edit',
-                'article.edit_save',
+                'article.editSave',
                 'article.unblock',
                 'article.block',
             ],
@@ -111,18 +111,18 @@ class article extends \system\app
             ],
             '管理文章分类' => [
                 'article.categories',
-                'article.save_categories',
-                'article.ajax_delete_category',
+                'article.saveCategories',
+                'article.ajaxDeleteCategory',
             ],
             '管理用户评论' => [
                 'article.comments',
-                'article.comments_unblock',
-                'article.comments_block',
-                'article.comments_delete'
+                'article.commentsUnblock',
+                'article.commentsBlock',
+                'article.commentsDelete'
             ],
             '设置文章系统参数' => [
                 'article.setting',
-                'article.setting_save',
+                'article.settingSave',
             ],
 		];
 	}

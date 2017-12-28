@@ -4,7 +4,7 @@ namespace system;
 /**
  * MongoDB
  */
-class mongo
+class Mongo
 {
 
     private static $connection = null; // mongodb 数据库连接
@@ -18,10 +18,10 @@ class mongo
     public static function connect()
     {
         if (self::$connection === null) {
-            if (!extension_loaded('mongoDb')) be_exit('服务器未安装mongoDb扩展！');
+            if (!extension_loaded('mongoDb')) Response::end('服务器未安装mongoDb扩展！');
 
-            $config = be::get_config('mongo');
-            $connection = new \mongoDb();
+            $config = Be::getConfig('mongo');
+            $connection = new \MongoDb();
             $fn = $config->persistent ? 'pconnect' : 'connect';
             if ($config->timeout > 0)
                 $connection->$fn($config->host, $config->port, $config->timeout);
@@ -31,7 +31,7 @@ class mongo
             if (0 != $config->db) $instance->select($config->db);
 
 
-            $config = be::get_config('mongo');
+            $config = Be::getConfig('mongo');
             self::$connection = new \MongoClient($config->host . ':' . $config->port);
             self::$dbname = self::$connection->selectDB($config->dbname);
             self::$db = self::$connection->selectCollection($config->table);
@@ -49,27 +49,27 @@ class mongo
      *
      * @return string
      */
-    public static function get_version()
+    public static function getVersion()
     {
         return \MongoClient::VERSION;
     }
 
-    public static function clear_error()
+    public static function clearError()
     {
         self::$error = null;
     }
 
-    public static function set_error($error)
+    public static function setError($error)
     {
         self::$error = $error;
     }
 
-    public static function get_error()
+    public static function getError()
     {
         return self::$error;
     }
 
-    public static function has_error()
+    public static function hasError()
     {
         return count(self::$error) > 0;
     }
@@ -80,7 +80,7 @@ class mongo
      *
      * @return \mongoDb
      */
-    public static function get_connection()
+    public static function getConnection()
     {
         self::connect();
         return self::$connection;
@@ -93,7 +93,7 @@ class mongo
      * @param array() $args 传入的参数
      * @return mixed
      */
-    public static function __callStatic($fn, $args)
+    public static function _CallStatic($fn, $args)
     {
         self::connect();
         return call_user_func_array(array(self::$connection, $fn), $args);

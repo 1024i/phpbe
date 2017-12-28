@@ -35,7 +35,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_menus()
+    public function getMenus()
     {
         return array();
     }
@@ -46,7 +46,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_admin_menus()
+    public function getAdminMenus()
     {
         return array();
     }
@@ -58,7 +58,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_permissions()
+    public function getPermissions()
     {
         return array();
     }
@@ -69,7 +69,7 @@ abstract class app
      * 
      * @return array
      */
-    public function get_admin_permissions()
+    public function getAdminPermissions()
     {
         return array();
     }
@@ -83,7 +83,7 @@ abstract class app
 
 
 	// 查看应用是否已安装
-	public function is_installed()
+	public function isInstalled()
 	{
 	}
 

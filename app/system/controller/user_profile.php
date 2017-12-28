@@ -2,32 +2,32 @@
 
 namespace controller;
 
-use system\be;
-use system\request;
-use system\response;
+use System\Be;
+use System\Request;
+use System\Response;
 
-class user_profile extends user_auth
+class userProfile extends userAuth
 {
 
     public function home()
     {
-        response::set_title('用户中心');
-        response::display();
+        Response::setTitle('用户中心');
+        Response::display();
     }
 
 
     // 上传头像
-    public function edit_avatar()
+    public function editAvatar()
     {
-        response::set_title('上传头像');
-        response::display();
+        Response::setTitle('上传头像');
+        Response::display();
     }
 
 
     // 上传头像 保存
-    public function edit_avatar_save()
+    public function editAvatarSave()
     {
-        $config_system = be::get_config('system.system');
+        $configSystem = Be::getConfig('System.System');
 
         $avatar = $_FILES['avatar'];
         if ($avatar['error'] == 0) {
@@ -37,59 +37,59 @@ class user_profile extends user_auth
             if ($pos !== false) {
                 $type = substr($name, $pos + 1);
             }
-            if (!in_array($type, $config_system->allow_upload_image_types)) {
-                response::set_message('您上传的不是合法的图像文件！', 'error');
+            if (!in_array($type, $configSystem->allowUploadImageTypes)) {
+                Response::setMessage('您上传的不是合法的图像文件！', 'error');
             } else {
-                $lib_image = be::get_lib('image');
-                $lib_image->open($avatar['tmp_name']);
-                if (!$lib_image->is_image()) {
-                    response::set_message('您上传的不是合法的图像文件！', 'error');
+                $libImage = Be::getLib('image');
+                $libImage->open($avatar['tmpName']);
+                if (!$libImage->isImage()) {
+                    Response::setMessage('您上传的不是合法的图像文件！', 'error');
                 } else {
-                    $my = be::get_user();
+                    $my = Be::getUser();
 
-                    $row_user = be::get_row('system.user');
-                    $row_user->load($my->id);
+                    $rowUser = Be::getRow('System.user');
+                    $rowUser->load($my->id);
 
-                    $config_user = be::get_config('system.user');
+                    $configUser = Be::getConfig('System.user');
 
-                    $avatar_dir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
-                    if (!file_exists($avatar_dir)) {
-                        mkdir($avatar_dir, 0777, true);
+                    $avatarDir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
+                    if (!file_exists($avatarDir)) {
+                        mkdir($avatarDir, 0777, true);
                     }
 
                     // 删除旧头像
-                    if ($row_user->avatar_s != '') @unlink($avatar_dir . $row_user->avatar_s);
-                    if ($row_user->avatar_m != '') @unlink($avatar_dir . $row_user->avatar_m);
-                    if ($row_user->avatar_l != '') @unlink($avatar_dir . $row_user->avatar_l);
+                    if ($rowUser->avatarS != '') @unlink($avatarDir . $rowUser->avatarS);
+                    if ($rowUser->avatarM != '') @unlink($avatarDir . $rowUser->avatarM);
+                    if ($rowUser->avatarL != '') @unlink($avatarDir . $rowUser->avatarL);
 
                     $t = date('YmdHis');
 
-                    $image_type = $lib_image->get_type();
+                    $imageType = $libImage->getType();
 
                     // 按配置文件里的尺寸大小生成新头像
-                    $lib_image->resize($config_user->avatar_l_w, $config_user->avatar_l_h, 'north');
-                    $lib_image->save($avatar_dir . $my->id . '_' . $t . '_l.' . $image_type);
-                    $my->avatar_l = $row_user->avatar_l = $my->id . '_' . $t . '_l.' . $image_type;
+                    $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
+                    $libImage->save($avatarDir . $my->id . '_' . $t . 'L.' . $imageType);
+                    $my->avatarL = $rowUser->avatarL = $my->id . '_' . $t . 'L.' . $imageType;
 
-                    $lib_image->resize($config_user->avatar_m_w, $config_user->avatar_m_h, 'north');
-                    $lib_image->save($avatar_dir . $my->id . '_' . $t . '_m.' . $image_type);
-                    $my->avatar_m = $row_user->avatar_m = $my->id . '_' . $t . '_m.' . $image_type;
+                    $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
+                    $libImage->save($avatarDir . $my->id . '_' . $t . 'M.' . $imageType);
+                    $my->avatarM = $rowUser->avatarM = $my->id . '_' . $t . 'M.' . $imageType;
 
-                    $lib_image->resize($config_user->avatar_s_w, $config_user->avatar_s_h, 'north');
-                    $lib_image->save($avatar_dir . $my->id . '_' . $t . '_s.' . $image_type);
-                    $my->avatar_s = $row_user->avatar_s = $my->id . '_' . $t . '_s.' . $image_type;
+                    $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
+                    $libImage->save($avatarDir . $my->id . '_' . $t . 'S.' . $imageType);
+                    $my->avatarS = $rowUser->avatarS = $my->id . '_' . $t . 'S.' . $imageType;
 
-                    if ($row_user->save()) {
-                        response::set_message('您的头像已更新！');
+                    if ($rowUser->save()) {
+                        Response::setMessage('您的头像已更新！');
                     } else {
-                        response::set_message($row_user->get_error(), 'error');
+                        Response::setMessage($rowUser->getError(), 'error');
                     }
                 }
             }
 
-            @unlink($avatar['tmp_name']);
+            @unlink($avatar['tmpName']);
         } else {
-            $upload_errors = array(
+            $uploadErrors = array(
                 '1' => '您上传的文件过大！',
                 '2' => '您上传的文件过大！',
                 '3' => '文件只有部分被上传！',
@@ -97,44 +97,44 @@ class user_profile extends user_auth
                 '5' => '上传的文件大小为 0！'
             );
             $error = null;
-            if (array_key_exists($avatar['error'], $upload_errors)) {
-                $error = $upload_errors[$avatar['error']];
+            if (array_key_exists($avatar['error'], $uploadErrors)) {
+                $error = $uploadErrors[$avatar['error']];
             } else {
                 $error = '错误代码：' . $avatar['error'];
             }
-            response::set_message('上传失败' . '(' . $error . ')', 'error');
+            Response::setMessage('上传失败' . '(' . $error . ')', 'error');
         }
 
-        response::redirect(url('controller=user_profile&task=edit_avatar'));
+        Response::redirect(url('controller=userProfile&task=editAvatar'));
     }
 
     // 删除头像，即改成系统默认头像
-    public function init_avatar()
+    public function initAvatar()
     {
-        $my = be::get_user();
+        $my = Be::getUser();
 
-        $row_user = be::get_row('system.user');
-        $row_user->load($my->id);
+        $rowUser = Be::getRow('System.user');
+        $rowUser->load($my->id);
 
-        $config_user = be::get_config('system.user');
+        $configUser = Be::getConfig('System.user');
 
-        $avatar_dir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
+        $avatarDir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
 
         // 删除旧头像
-        if ($row_user->avatar_s != '') @unlink($avatar_dir . $row_user->avatar_s);
-        if ($row_user->avatar_m != '') @unlink($avatar_dir . $row_user->avatar_m);
-        if ($row_user->avatar_l != '') @unlink($avatar_dir . $row_user->avatar_l);
+        if ($rowUser->avatarS != '') @unlink($avatarDir . $rowUser->avatarS);
+        if ($rowUser->avatarM != '') @unlink($avatarDir . $rowUser->avatarM);
+        if ($rowUser->avatarL != '') @unlink($avatarDir . $rowUser->avatarL);
 
         // 改为默认头像
-        $my->avatar_s = $row_user->avatar_s = '';
-        $my->avatar_m = $row_user->avatar_m = '';
-        $my->avatar_l = $row_user->avatar_l = '';
+        $my->avatarS = $rowUser->avatarS = '';
+        $my->avatarM = $rowUser->avatarM = '';
+        $my->avatarL = $rowUser->avatarL = '';
 
-        $return = url('controller=user_profile&task=edit_avatar');
-        if ($row_user->save()) {
-            response::success('您的头像已删除！', $return);
+        $return = url('controller=userProfile&task=editAvatar');
+        if ($rowUser->save()) {
+            Response::success('您的头像已删除！', $return);
         } else {
-            response::error($row_user->get_error(), $return);
+            Response::error($rowUser->getError(), $return);
         }
     }
 
@@ -142,61 +142,61 @@ class user_profile extends user_auth
     // 修改用户资料
     public function edit()
     {
-        response::set_title('修改资料');
-        response::display();
+        Response::setTitle('修改资料');
+        Response::display();
     }
 
     // 修改用户资料
-    public function ajax_edit_save()
+    public function ajaxEditSave()
     {
-        $my = be::get_user();
+        $my = Be::getUser();
 
-        $row_user = be::get_row('system.user');
-        $row_user->load($my->id);
+        $rowUser = Be::getRow('System.user');
+        $rowUser->load($my->id);
 
-        $my->name = $row_user->name = request::post('name', '');
-        $my->gender = $row_user->gender = request::post('gender', 0, 'int');
-        $my->phone = $row_user->phone = request::post('phone', '');
-        $my->mobile = $row_user->mobile = request::post('mobile', '');
-        $my->qq = $row_user->qq = request::post('qq', '');
+        $my->name = $rowUser->name = Request::post('name', '');
+        $my->gender = $rowUser->gender = Request::post('gender', 0, 'int');
+        $my->phone = $rowUser->phone = Request::post('phone', '');
+        $my->mobile = $rowUser->mobile = Request::post('mobile', '');
+        $my->qq = $rowUser->qq = Request::post('qq', '');
 
-        $row_user->save();
+        $rowUser->save();
 
-        response::success('您的资料已保存！');
+        Response::success('您的资料已保存！');
     }
 
     // 修改密码
-    public function edit_password()
+    public function editPassword()
     {
-        response::set_title('修改密码');
-        response::display();
+        Response::setTitle('修改密码');
+        Response::display();
     }
 
     // 修改密码
-    public function ajax_edit_password_save()
+    public function ajaxEditPasswordSave()
     {
-        $my = be::get_user();
+        $my = Be::getUser();
 
-        $password = request::post('password', '');
-        $password1 = request::post('password1', '');
-        $password2 = request::post('password2', '');
+        $password = Request::post('password', '');
+        $password1 = Request::post('password1', '');
+        $password2 = Request::post('password2', '');
 
-        $row_user = be::get_row('system.user');
-        $row_user->load($my->id);
+        $rowUser = Be::getRow('System.user');
+        $rowUser->load($my->id);
 
-        $service_user = be::get_service('system.user');
-        if ($service_user->encrypt_password($password) != $row_user->password) {
-            response::error('当前密码错误！');
+        $serviceUser = Be::getService('System.user');
+        if ($serviceUser->encryptPassword($password) != $rowUser->password) {
+            Response::error('当前密码错误！');
         }
 
         if ($password1 != $password2) {
-            response::error('两次输入的密码不匹配！');
+            Response::error('两次输入的密码不匹配！');
         }
 
-        $row_user->password = $service_user->encrypt_password($password1);
-        $row_user->save();
+        $rowUser->password = $serviceUser->encryptPassword($password1);
+        $rowUser->save();
 
-        response::success('您的密码已重设！');
+        Response::success('您的密码已重设！');
     }
 
 }

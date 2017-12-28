@@ -10,8 +10,11 @@ namespace lib\image\handler;
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com)
 */
 
-class imagick extends \system\lib
+class Imagick extends \system\Lib
 {
+    /**
+     * @var \Imagick
+     */
     private $image = null;
     private $type = null;
 
@@ -82,7 +85,7 @@ class imagick extends \system\lib
 	southwest    south    southeast
 	
 	*/
-    public function resize($width = 100, $height = 100, $fit = 'center', $fill_color = array(255,255,255,0))
+    public function resize($width = 100, $height = 100, $fit = 'center', $fillColor = array(255,255,255,0))
     {
         
         switch ($fit)
@@ -130,34 +133,34 @@ class imagick extends \system\lib
                 break;
             case 'scale_fill':
                 $size = $this->image->getImagePage();
-                $src_width = $size['width'];
-                $src_height = $size['height'];
+                $srcWidth = $size['width'];
+                $srcHeight = $size['height'];
                 
                 $x = 0;
                 $y = 0;
                 
-                $dst_width = $width;
-                $dst_height = $height;
+                $dstWidth = $width;
+                $dstHeight = $height;
                 
-                if ($src_width * $height > $src_height * $width) {
-                    $dst_height = intval($width * $src_height / $src_width);
-                    $y = intval(($height - $dst_height) / 2);
+                if ($srcWidth * $height > $srcHeight * $width) {
+                    $dstHeight = intval($width * $srcHeight / $srcWidth);
+                    $y = intval(($height - $dstHeight) / 2);
                 } else {
-                    $dst_width = intval($height * $src_width / $src_height);
-                    $x = intval(($width - $dst_width) / 2);
+                    $dstWidth = intval($height * $srcWidth / $srcHeight);
+                    $x = intval(($width - $dstWidth) / 2);
                 }
                 
                 $image = $this->image;
                 $canvas = new \Imagick();
                 
-                $color = 'rgba(' . $fill_color[0] . ',' . $fill_color[1] . ',' . $fill_color[2] . ',' . $fill_color[3] . ')';
+                $color = 'rgba(' . $fillColor[0] . ',' . $fillColor[1] . ',' . $fillColor[2] . ',' . $fillColor[3] . ')';
                 if ($this->type == 'gif') {
                     $images = $image->coalesceImages();
                     foreach ($images as $frame) {
                         $frame->thumbnailImage($width, $height, true);
                         
                         $draw = new \ImagickDraw();
-                        $draw->composite($frame->getImageCompose(), $x, $y, $dst_width, $dst_height, $frame);
+                        $draw->composite($frame->getImageCompose(), $x, $y, $dstWidth, $dstHeight, $frame);
                         
                         $img = new \Imagick();
                         $img->newImage($width, $height, $color, 'gif');
@@ -171,9 +174,9 @@ class imagick extends \system\lib
                     $image->thumbnailImage($width, $height, true);
                     
                     $draw = new \ImagickDraw();
-                    $draw->composite($image->getImageCompose(), $x, $y, $dst_width, $dst_height, $image);
+                    $draw->composite($image->getImageCompose(), $x, $y, $dstWidth, $dstHeight, $image);
                     
-                    $canvas->newImage($width, $height, $color, $this->get_type());
+                    $canvas->newImage($width, $height, $color, $this->getType());
                     $canvas->drawImage($draw);
                     $canvas->setImagePage($width, $height, 0, 0);
                 }
@@ -182,62 +185,62 @@ class imagick extends \system\lib
                 break;
             default:
                 $size = $this->image->getImagePage();
-                $src_width = $size['width'];
-                $src_height = $size['height'];
+                $srcWidth = $size['width'];
+                $srcHeight = $size['height'];
                 
-                $crop_x = 0;
-                $crop_y = 0;
+                $cropX = 0;
+                $cropY = 0;
                 
-                $crop_w = $src_width;
-                $crop_h = $src_height;
+                $cropW = $srcWidth;
+                $cropH = $srcHeight;
                 
-                if ($src_width * $height > $src_height * $width) {
-                    $crop_w = intval($src_height * $width / $height);
+                if ($srcWidth * $height > $srcHeight * $width) {
+                    $cropW = intval($srcHeight * $width / $height);
                 } else {
-                    $crop_h = intval($src_width * $height / $width);
+                    $cropH = intval($srcWidth * $height / $width);
                 }
                 
                 switch ($fit)
                 {
                     case 'northwest':
-                        $crop_x = 0;
-                        $crop_y = 0;
+                        $cropX = 0;
+                        $cropY = 0;
                         break;
                     case 'north':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = 0;
+                        $cropX = intval(($srcWidth - $cropW) / 2);
+                        $cropY = 0;
                         break;
                     case 'northeast':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = 0;
+                        $cropX = $srcWidth - $cropW;
+                        $cropY = 0;
                         break;
                     case 'west':
-                        $crop_x = 0;
-                        $crop_y = intval(($src_height - $crop_h) / 2);
+                        $cropX = 0;
+                        $cropY = intval(($srcHeight - $cropH) / 2);
                         break;
                     case 'center':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = intval(($src_height - $crop_h) / 2);
+                        $cropX = intval(($srcWidth - $cropW) / 2);
+                        $cropY = intval(($srcHeight - $cropH) / 2);
                         break;
                     case 'east':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = intval(($src_height - $crop_h) / 2);
+                        $cropX = $srcWidth - $cropW;
+                        $cropY = intval(($srcHeight - $cropH) / 2);
                         break;
                     case 'southwest':
-                        $crop_x = 0;
-                        $crop_y = $src_height - $crop_h;
+                        $cropX = 0;
+                        $cropY = $srcHeight - $cropH;
                         break;
                     case 'south':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = $src_height - $crop_h;
+                        $cropX = intval(($srcWidth - $cropW) / 2);
+                        $cropY = $srcHeight - $cropH;
                         break;
                     case 'southeast':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = $src_height - $crop_h;
+                        $cropX = $srcWidth - $cropW;
+                        $cropY = $srcHeight - $cropH;
                         break;
                     default:
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = intval(($src_height - $crop_h) / 2);
+                        $cropX = intval(($srcWidth - $cropW) / 2);
+                        $cropY = intval(($srcHeight - $cropH) / 2);
                 }
                 
                 $image = $this->image;
@@ -248,7 +251,7 @@ class imagick extends \system\lib
                     foreach ($images as $frame) {
                         $img = new \Imagick();
                         $img->readImageBlob($frame);
-                        $img->cropImage($crop_w, $crop_h, $crop_x, $crop_y);
+                        $img->cropImage($cropW, $cropH, $cropX, $cropY);
                         $img->thumbnailImage($width, $height, true);
                         
                         $canvas->addImage($img);
@@ -256,7 +259,7 @@ class imagick extends \system\lib
                         $canvas->setImagePage($width, $height, 0, 0);
                     }
                 } else {
-                    $image->cropImage($crop_w, $crop_h, $crop_x, $crop_y);
+                    $image->cropImage($cropW, $cropH, $cropX, $cropY);
                     $image->thumbnailImage($width, $height, true);
                     $canvas->addImage($image);
                     $canvas->setImagePage($width, $height, 0, 0);
@@ -279,7 +282,7 @@ class imagick extends \system\lib
             $canvas = new \Imagick();
             
             $images = $image->coalesceImages();
-            foreach ($image as $frame) {
+            foreach ($images as $frame) {
                 $img = new \Imagick();
                 $img->readImageBlob($frame);
                 $img->drawImage($draw);
@@ -303,10 +306,13 @@ class imagick extends \system\lib
 		$color = isset($style['color'])?$style['color']:array(64, 64, 64);
 		$color = 'rgb('.implode(', ', $color).')';
 
+        $pixel = new \ImagickPixel();
+        $pixel->setColor($color);
+
         $draw = new \ImagickDraw();
         $draw->setFont($font);
         $draw->setFontSize($font_size);
-        $draw->setFillColor($color);
+        $draw->setFillColor($pixel);
 
         if (isset($style['under_color'])) $draw->setTextUnderColor($style['under_color']);
         
@@ -339,34 +345,34 @@ class imagick extends \system\lib
         echo $this->image->getImagesBlob();
     }
 
-    public function get_width()
+    public function getWidth()
     {
         $size = $this->image->getImagePage();
         return $size['width'];
     }
 
-    public function get_height()
+    public function getHeight()
     {
         $size = $this->image->getImagePage();
         return $size['height'];
     }
 
     // 设置图像类型， 默认与源类型一致
-    public function set_type($type = 'png')
+    public function setType($type = 'png')
     {
         $this->type = $type;
         $this->image->setImageFormat($type);
     }
 
     // 获取源图像类型
-    public function get_type()
+    public function getType()
     {
         if ($this->type == 'jpeg') return 'jpg';
         return $this->type;
     }
 
     // 当前对象是否为图片
-    public function is_image()
+    public function isImage()
     {
         if ($this->image)
             return true;
@@ -390,9 +396,9 @@ class imagick extends \system\lib
 	*/
     public function border($width, $height, $color = 'rgb(220, 220, 220)')
     {
-        $color = new \ImagickPixel();
-        $color->setColor($color);
-        $this->image->borderImage($color, $width, $height);
+        $pixel = new \ImagickPixel();
+        $pixel->setColor($color);
+        $this->image->borderImage($pixel, $width, $height);
     }
 
     // 模糊
@@ -402,27 +408,27 @@ class imagick extends \system\lib
     }
 
     // 高斯模糊
-    public function gaussian_blur($radius, $sigma)
+    public function gaussianBlur($radius, $sigma)
     {
         $this->image->gaussianBlurImage($radius, $sigma);
     }
 
     // 运动模糊
-    public function motion_blur($radius, $sigma, $angle)
+    public function motionBlur($radius, $sigma, $angle)
     {
         $this->image->motionBlurImage($radius, $sigma, $angle);
     }
 
     // 径向模糊
-    public function radial_blur($radius)
+    public function radialBlur($radius)
     {
         $this->image->radialBlurImage($radius);
     }
 
     // 添加噪点
-    public function add_noise($type = null)
+    public function addNoise($type = null)
     {
-        $this->image->addNoiseImage($type == null ? imagick::NOISE_IMPULSE : $type);
+        $this->image->addNoiseImage($type == null ? \Imagick::NOISE_IMPULSE : $type);
     }
 
     // 调整色阶
@@ -444,7 +450,7 @@ class imagick extends \system\lib
     }
 
     // 油画效果
-    public function oil_paint($radius)
+    public function oilPaint($radius)
     {
         $this->image->oilPaintImage($radius);
     }

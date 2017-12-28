@@ -1,17 +1,17 @@
 <?php
-namespace app\system\config;
+namespace App\System\Config;
 
-class mail
+class Mail
 {
-    public $from_mail = 'be@phpbe.com';
-    public $from_name = 'BE';
+    public $fromMail = 'be@phpbe.com';
+    public $fromName = 'BE';
     public $charset = 'utf-8';
     public $encoding = 'base64';
     public $smtp = false;
-    public $smtp_host = '';
-    public $smtp_port = 25;
-    public $smtp_user = '';
-    public $smtp_pass = '';
-    public $smtp_secure = '0'; // 不加密 '0' 或 'ssl', 'tls'
-    public $smtp_timeout = 10;
+    public $smtpHost = '';
+    public $smtpPort = 25;
+    public $smtpUser = '';
+    public $smtpPass = '';
+    public $smtpSecure = '0'; // 不加密 '0' 或 'ssl', 'tls'
+    public $smtpTimeout = 10;
 }

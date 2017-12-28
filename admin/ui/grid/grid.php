@@ -8,12 +8,12 @@ class grid extends \system\ui
     private $data = null;
     private $filters = null;
     private $fields = null;
-    private $order_by = null;
-    private $order_by_dir = null;
+    private $orderBy = null;
+    private $orderByDir = null;
     
     private $footer = null;
     private $pagination = null;
-    private $pagination_window = 15; // 控制分页最多显示多少个页码
+    private $paginationWindow = 15; // 控制分页最多显示多少个页码
 	
 	private $index = 0;				// 一个页面上出现多个 ui list  时防止冲突
 
@@ -44,12 +44,12 @@ class grid extends \system\ui
 		}
 	}
 	
-    public function get_index()
+    public function getIndex()
     {
         return $this->index;
     }
 	
-	public function set_action($type, $url, $label = null)
+	public function setAction($type, $url, $label = null)
 	{
 		if ($label == null) {
 			switch($type)
@@ -66,41 +66,41 @@ class grid extends \system\ui
 	}
 
 
-    public function set_data($objs)
+    public function setData($objs)
     {
         $this->data = $objs;
     }
 
-    public function set_filters()
+    public function setFilters()
     {
         $this->filters = func_get_args();
     }
 
-    public function set_fields()
+    public function setFields()
     {
         $this->fields = func_get_args();
     }
 
-    public function set_footer($footer)
+    public function setFooter($footer)
     {
         $this->footer = $footer;
     }
 
 
-    public function order_by($order_by, $order_by_dir)
+    public function orderBy($orderBy, $orderByDir)
     {
-        $this->order_by = $order_by;
-        $this->order_by_dir = $order_by_dir;
+        $this->orderBy = $orderBy;
+        $this->orderByDir = $orderByDir;
     }
 
-    public function set_pagination($pagination)
+    public function setPagination($pagination)
     {
         $this->pagination = $pagination;
     }
 
-    public function set_pagination_window($pagination_window)
+    public function setPaginationWindow($paginationWindow)
     {
-        $this->pagination_window = $pagination_window;
+        $this->paginationWindow = $paginationWindow;
     }
 
     public function display()
@@ -123,16 +123,16 @@ class grid extends \system\ui
 		$this->index++;
 		
         echo '<script type="text/javascript" language="javascript">';
-		echo 'var oAdminUIList_'.$this->index.' = new admin_ui_list();';
+		echo 'var oAdminUIList_'.$this->index.' = new adminUiList();';
 		
         foreach ($this->actions as $key=>$val) {
             if ($val!=false) echo 'oAdminUIList_'.$this->index.'.setAction("' . $key . '", "'.$val['url'].'");';
         }
         echo '</script>';
 		
-        echo '<div class="admin_ui_list" id="admin_ui_list_'.$this->index.'">';
+        echo '<div class="adminUiList" id="adminUiList_'.$this->index.'">';
 
-        echo '<form action="'.$this->actions['list']['url'].'" id="admin_ui_list_'.$this->index.'_form" class="form-inline" method="post">';
+        echo '<form action="'.$this->actions['list']['url'].'" id="adminUiList_'.$this->index.'Form" class="form-inline" method="post">';
         echo '<div class="toolbar">';
 
         echo '<table>';
@@ -239,11 +239,11 @@ class grid extends \system\ui
         }
         echo '</div></td>';
         
-        if ($this->actions['create'] != false) echo '<td width="46" style="text-align:center;"><a class="icon create able" id="admin_ui_list_'.$this->index.'_toolbar_create" href="javascript:;" onclick="javascript:oAdminUIList_'.$this->index.'.create();" title="' . $this->actions['create']['label'] . '" data-toggle="tooltip">' . $this->actions['create']['label'] . '</a></td>';
-        if ($this->actions['edit'] != false) echo '<td width="46" style="text-align:center;"><a class="icon edit disable" id="admin_ui_list_'.$this->index.'_toolbar_edit" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.edit(0);}" title="' . $this->actions['edit']['label'] . '选中项'.'" data-toggle="tooltip">' . $this->actions['edit']['label'] . '</a></td>';
-        if ($this->actions['unblock'] != false) echo '<td width="46" style="text-align:center;"><a class="icon unblock disable" id="admin_ui_list_'.$this->index.'_toolbar_unblock" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.unblock(0);}" title="' . $this->actions['unblock']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['unblock']['label'] . '</a></td>';
-        if ($this->actions['block'] != false) echo '<td width="46" style="text-align:center;"><a class="icon block disable" id="admin_ui_list_'.$this->index.'_toolbar_block" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.block(0);}" title="' . $this->actions['block']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['block']['label'] . '</a></td>';
-        if ($this->actions['delete'] != false) echo '<td width="46" style="text-align:center;"><a class="icon delete disable" id="admin_ui_list_'.$this->index.'_toolbar_delete" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.remove(0);}" title="' . $this->actions['delete']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['delete']['label'] . '</a></td>';
+        if ($this->actions['create'] != false) echo '<td width="46" style="text-align:center;"><a class="icon create able" id="adminUiList_'.$this->index.'ToolbarCreate" href="javascript:;" onclick="javascript:oAdminUIList_'.$this->index.'.create();" title="' . $this->actions['create']['label'] . '" data-toggle="tooltip">' . $this->actions['create']['label'] . '</a></td>';
+        if ($this->actions['edit'] != false) echo '<td width="46" style="text-align:center;"><a class="icon edit disable" id="adminUiList_'.$this->index.'ToolbarEdit" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.edit(0);}" title="' . $this->actions['edit']['label'] . '选中项'.'" data-toggle="tooltip">' . $this->actions['edit']['label'] . '</a></td>';
+        if ($this->actions['unblock'] != false) echo '<td width="46" style="text-align:center;"><a class="icon unblock disable" id="adminUiList_'.$this->index.'ToolbarUnblock" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.unblock(0);}" title="' . $this->actions['unblock']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['unblock']['label'] . '</a></td>';
+        if ($this->actions['block'] != false) echo '<td width="46" style="text-align:center;"><a class="icon block disable" id="adminUiList_'.$this->index.'ToolbarBlock" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.block(0);}" title="' . $this->actions['block']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['block']['label'] . '</a></td>';
+        if ($this->actions['delete'] != false) echo '<td width="46" style="text-align:center;"><a class="icon delete disable" id="adminUiList_'.$this->index.'ToolbarDelete" href="javascript:;" onclick="javascript:if (!$(this).hasClass(\'disable\')){oAdminUIList_'.$this->index.'.remove(0);}" title="' . $this->actions['delete']['label'] .'选中项'.'" data-toggle="tooltip">' . $this->actions['delete']['label'] . '</a></td>';
         
         echo '</tr>';
         echo '</table>';
@@ -256,16 +256,16 @@ class grid extends \system\ui
         echo '<thead>';
         echo '<tr>';
         
-        if ($checkbox) echo '<th style="text-align:center;" width="20"><input type="checkbox" id="admin_ui_list_'.$this->index.'_check_all" /></th>';
+        if ($checkbox) echo '<th style="text-align:center;" width="20"><input type="checkbox" id="adminUiList_'.$this->index.'CheckAll" /></th>';
         foreach ($this->fields as $field) {
             echo '<th style="text-align:' . (isset($field['align']) ? $field['align'] : 'center') . ';" ' . (isset($field['width']) ? ('width=' . intval($field['width'])) : '') . '>';
-            if (isset($field['order_by'])) {
-                $order_by_dir = 'ASC';
-                if ($this->order_by == $field['order_by'] && $this->order_by_dir == 'ASC') $order_by_dir = 'DESC';
+            if (isset($field['orderBy'])) {
+                $orderByDir = 'ASC';
+                if ($this->orderBy == $field['orderBy'] && $this->orderByDir == 'ASC') $orderByDir = 'DESC';
                 
-                echo '<a href="javascript:;" onclick="javascript:oAdminUIList_'.$this->index.'.orderBy(\'' . $field['order_by'] . '\', \'' . $order_by_dir . '\');">';
+                echo '<a href="javascript:;" onclick="javascript:oAdminUIList_'.$this->index.'.orderBy(\'' . $field['orderBy'] . '\', \'' . $orderByDir . '\');">';
                 echo isset($field['label']) ? $field['label'] : '';
-                if ($this->order_by == $field['order_by']) echo ($this->order_by_dir == 'ASC') ? '&darr;' : '&uarr;';
+                if ($this->orderBy == $field['orderBy']) echo ($this->orderByDir == 'ASC') ? '&darr;' : '&uarr;';
                 echo '</a>';
             }
             else
@@ -285,7 +285,7 @@ class grid extends \system\ui
         echo '<tbody>';
         if (count($this->data)) {
             foreach ($this->data as $obj) {
-                echo '<tr id="admin_ui_list_'.$this->index.'_row_' . $obj->id . '" class="ui-row">';
+                echo '<tr id="adminUiList_'.$this->index.'Row_' . $obj->id . '" class="ui-row">';
                 
                 if ($checkbox) echo '<td style="text-align:center;" width="20"><input type="checkbox" class="id" value="' . $obj->id . '" /></td>';
                 foreach ($this->fields as $field) {
@@ -333,10 +333,10 @@ class grid extends \system\ui
         
         $total = $pages = $limit = $page = 0;
         if ($this->pagination !== null) {
-            $total = $this->pagination->get_total();
-            $pages = $this->pagination->get_pages();
-            $limit = $this->pagination->get_limit();
-            $page = $this->pagination->get_page();
+            $total = $this->pagination->getTotal();
+            $pages = $this->pagination->getPages();
+            $limit = $this->pagination->getLimit();
+            $page = $this->pagination->getPage();
         }
         
         echo '<tfoot>';
@@ -360,16 +360,16 @@ class grid extends \system\ui
         echo '</div>';
         
         if ($this->pagination !== null && $pages > 1) {
-            $window = $this->pagination_window;
-			$half_window = intval($window / 2);
-			if ($pages - $page < $half_window) {
-				$start_page = $pages - $window + 1;
+            $window = $this->paginationWindow;
+			$halfWindow = intval($window / 2);
+			if ($pages - $page < $halfWindow) {
+				$startPage = $pages - $window + 1;
 			} else {
-				$start_page = $page - $half_window;
+				$startPage = $page - $halfWindow;
 			}            
-            if ($start_page < 1) $start_page = 1;
-            $end_page = $start_page + $window - 1;
-            if ($end_page > $pages) $end_page = $pages;
+            if ($startPage < 1) $startPage = 1;
+            $endPage = $startPage + $window - 1;
+            if ($endPage > $pages) $endPage = $pages;
             
             echo '<div class="pagination">';
             echo '<ul>';
@@ -378,7 +378,7 @@ class grid extends \system\ui
             } else {
                 echo '<li><a href="javascript:" onclick="javascript:oAdminUIList_'.$this->index.'.gotoPage(' . ($page - 1) . ');">&larr; '.'上一页'.'</a></li>';
             }
-            for ($i = $start_page; $i <= $end_page; $i++)
+            for ($i = $startPage; $i <= $endPage; $i++)
             {
                 if ($i == $page) {
                     echo '<li class="active"><a href="#">' . $i . '</a></li>';
@@ -395,11 +395,11 @@ class grid extends \system\ui
             echo '</div>';
         }
         
-        echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_id" name="id" value="">';
-        echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_page" name="page" value="' . $page . '">';
-        if ($this->order_by !== null) {
-            echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_order_by" name="order_by" value="' . $this->order_by . '">';
-            echo '<input type="hidden" id="admin_ui_list_'.$this->index.'_order_by_dir" name="order_by_dir" value="' . $this->order_by_dir . '">';
+        echo '<input type="hidden" id="adminUiList_'.$this->index.'Id" name="id" value="">';
+        echo '<input type="hidden" id="adminUiList_'.$this->index.'Page" name="page" value="' . $page . '">';
+        if ($this->orderBy !== null) {
+            echo '<input type="hidden" id="adminUiList_'.$this->index.'OrderBy" name="orderBy" value="' . $this->orderBy . '">';
+            echo '<input type="hidden" id="adminUiList_'.$this->index.'OrderByDir" name="orderByDir" value="' . $this->orderByDir . '">';
         }
         
         echo '</form>';
@@ -411,4 +411,3 @@ class grid extends \system\ui
     }
 
 }
-?>

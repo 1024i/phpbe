@@ -2,7 +2,7 @@
 namespace system;
 
 
-class loader
+class Loader
 {
 
     /**
@@ -19,9 +19,9 @@ class loader
         //echo $class . '<br>';
 
         $paths = explode('\\', $class);
-        if ($paths[1] == 'admin') {
+        if ($paths[1] == 'Admin') {
             $paths[1] = ADMIN;
-        } elseif ($paths[1] == 'data') {
+        } elseif ($paths[1] == 'Data') {
             $paths[1] = DATA;
         }
 

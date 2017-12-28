@@ -38,7 +38,7 @@ abstract class file
     }
 
     // 查看应用是否已安装
-    public function is_installed()
+    public function isInstalled()
     {
     }
 
@@ -48,7 +48,7 @@ abstract class file
     }
 
 
-    protected function copy_dir($src, $dst)
+    protected function copyDir($src, $dst)
     {
         $src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
 
@@ -58,14 +58,14 @@ abstract class file
             return false;
         }
 
-        $lib_fso = be::get_lib('fso');
-        $lib_fso->copy_dir($src, $dst);
+        $libFso = Be::getLib('fso');
+        $libFso->copyDir($src, $dst);
 
         // 安装成功
         return true;
     }
 
-    protected function copy_file($src, $dst)
+    protected function copyFile($src, $dst)
     {
          $src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
 
@@ -81,14 +81,14 @@ abstract class file
         return true;
     }
 
-    protected function delete_dir($dir)
+    protected function deleteDir($dir)
     {
-        $lib_fso = be::get_lib('fso');
-        $lib_fso->rm_dir($dir);
+        $libFso = Be::getLib('fso');
+        $libFso->rmDir($dir);
         return true;
     }
 
-    protected function delete_file($file)
+    protected function deleteFile($file)
     {
         unlink($file);
         return true;

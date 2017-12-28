@@ -27,43 +27,43 @@ class string
         $length -= strlen($etc); // 去除结尾符长度
         if ($length <= 0) return '';
 
-        $str_len = strlen($string);
+        $strLen = strlen($string);
 
         $pos = 0; // 当前处理到的字符位置
-        $last_len = 0; // 最后一次处理的字符所代表的文字的宽度
+        $lastLen = 0; // 最后一次处理的字符所代表的文字的宽度
         $len = 0; // 文字宽度累加值
 
 
-        while ($pos < $str_len) // 系统采用了utf-8编码， 逐字符判断
+        while ($pos < $strLen) // 系统采用了utf-8编码， 逐字符判断
         {
             $char = ord($string[$pos]);
             if ($char == 9 || $char == 10 || (32 <= $char && $char <= 126)) {
-                $last_len = 1;
+                $lastLen = 1;
                 $pos++;
                 $len++;
             }
             elseif (192 <= $char && $char <= 223) {
-                $last_len = 2;
+                $lastLen = 2;
                 $pos += 2;
                 $len += 2;
             }
             elseif (224 <= $char && $char <= 239) {
-                $last_len = 3;
+                $lastLen = 3;
                 $pos += 3;
                 $len += 2;
             }
             elseif (240 <= $char && $char <= 247) {
-                $last_len = 4;
+                $lastLen = 4;
                 $pos += 4;
                 $len += 2;
             }
             elseif (248 <= $char && $char <= 251) {
-                $last_len = 5;
+                $lastLen = 5;
                 $pos += 5;
                 $len += 2;
             }
             elseif ($char == 252 || $char == 253) {
-                $last_len = 6;
+                $lastLen = 6;
                 $pos += 6;
                 $len += 2;
             } else {
@@ -75,7 +75,7 @@ class string
 
         // 超过指定宽度， 减去最后一次处理的字符所代表的文字宽度
         if ($len >= $length) {
-            $pos -= $last_len;
+            $pos -= $lastLen;
             $string = substr($string, 0, $pos);
             $string .= $etc;
         }

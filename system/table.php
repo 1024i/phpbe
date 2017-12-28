@@ -1,17 +1,17 @@
 <?php
-
 namespace system;
-use system\db\exception;
+
+use System\Db\Exception;
 
 /**
  * 数据库表 查询器
  */
-class table extends obj
+class Table extends Obj
 {
     protected $db = 'master';
 
-    protected $table_name = ''; // 表名
-    protected $primary_key = 'id'; // 主键
+    protected $tableName = ''; // 表名
+    protected $primaryKey = 'id'; // 主键
     protected $fields = []; // 字段列表
 
     protected $quote = '`'; // 字段或表名转义符 mysql: `
@@ -19,18 +19,18 @@ class table extends obj
     protected $alias = ''; // 当前表的别名
     protected $join = array(); // 表连接
     protected $where = array(); // where 条件
-    protected $group_by = ''; // 分组
+    protected $groupBy = ''; // 分组
     protected $having = ''; // having
     protected $offset = 0; // 分页编移
     protected $limit = 0; // 分页大小
-    protected $order_by = ''; // 排序
+    protected $orderBy = ''; // 排序
 
-    protected $last_sql = null; // 上次执行的 SQL
+    protected $lastSql = null; // 上次执行的 SQL
 
     /**
      * 缓存失效时间（单位：秒），0 为不使用缓存
      */
-    protected $cache_expire = 0;
+    protected $cacheExpire = 0;
 
     /**
      * 切换库
@@ -47,12 +47,12 @@ class table extends obj
     /**
      * 切换表名
      *
-     * @param string $table_name 表名
+     * @param string $tableName 表名
      * @return table
      */
-    public function table($table_name)
+    public function table($tableName)
     {
-        $this->table_name = $table_name;
+        $this->tableName = $tableName;
         return $this;
     }
 
@@ -76,7 +76,7 @@ class table extends obj
      * @param string $on 连接条件
      * @return table
      */
-    public function left_join($table, $on)
+    public function leftJoin($table, $on)
     {
         $this->join[] = array('LEFT JOIN', $table, $on);
         return $this;
@@ -89,7 +89,7 @@ class table extends obj
      * @param string $on 连接条件
      * @return table
      */
-    public function right_join($table, $on)
+    public function rightJoin($table, $on)
     {
         $this->join[] = array('RIGHT JOIN', $table, $on);
         return $this;
@@ -102,14 +102,14 @@ class table extends obj
      * @param string $on 连接条件
      * @return table
      */
-    public function inner_join($table, $on)
+    public function innerJoin($table, $on)
     {
         $this->join[] = array('INNER JOIN', $table, $on);
         return $this;
     }
 
     /**
-     * 内连接 同 inner_join
+     * 内连接 同 innerJoin
      *
      * @param string $table 表名
      * @param string $on 连接条件
@@ -128,7 +128,7 @@ class table extends obj
      * @param string $on 连接条件
      * @return table
      */
-    public function full_join($table, $on)
+    public function fullJoin($table, $on)
     {
         $this->join[] = array('FULL JOIN', $table, $on);
         return $this;
@@ -141,7 +141,7 @@ class table extends obj
      * @param string $on 连接条件
      * @return table
      */
-    public function cross_join($table, $on)
+    public function crossJoin($table, $on)
     {
         $this->join[] = array('CROSS JOIN', $table, $on);
         return $this;
@@ -161,7 +161,7 @@ class table extends obj
      * $table->where('age','=',18);
      * $table->where('age','>',18);
      * $table->where('age','between', array(18, 30));
-     * $table->where('user_id','in', array(1, 2, 3, 4));
+     * $table->where('userId','in', array(1, 2, 3, 4));
      * $table->where('username LIKE \'Tom\'');
      * $table->where('username LIKE ?', array('Tom'));
      * $table->where('(')->where('username','like','Tom')->where('OR')->where('age','>',18)->where(')');
@@ -239,9 +239,9 @@ class table extends obj
      * @param string $field 分组条件
      * @return table
      */
-    public function group_by($field)
+    public function groupBy($field)
     {
-        $this->group_by = $field;
+        $this->groupBy = $field;
         return $this;
     }
 
@@ -288,17 +288,17 @@ class table extends obj
      * @param string $dir 排序方向：ASC | DESC
      * @return table
      */
-    public function order_by($field, $dir = null)
+    public function orderBy($field, $dir = null)
     {
         $field = trim($field);
         if ($dir == null) {
-            $this->order_by = $field;
+            $this->orderBy = $field;
         } else {
             $dir = strtoupper(trim($dir));
             if ($dir != 'ASC' && $dir != 'DESC') {
-                $this->order_by = $field;
+                $this->orderBy = $field;
             } else {
-                $this->order_by = $this->quote . $field . $this->quote . ' ' . $dir;
+                $this->orderBy = $this->quote . $field . $this->quote . ' ' . $dir;
             }
         }
         return $this;
@@ -312,7 +312,7 @@ class table extends obj
      */
     public function cache($expire = 60)
     {
-        $this->cache_expire = intval($expire);
+        $this->cacheExpire = intval($expire);
         return $this;
     }
 
@@ -322,9 +322,9 @@ class table extends obj
      * @param string $field 查询的字段
      * @return string|int
      */
-    public function get_value($field)
+    public function getValue($field)
     {
-        return $this->query('get_value', $field);
+        return $this->query('getValue', $field);
     }
 
     /**
@@ -333,32 +333,32 @@ class table extends obj
      * @param string $field 查询的字段
      * @return array 数组
      */
-    public function get_values($field)
+    public function getValues($field)
     {
-        return $this->query('get_values', $field);
+        return $this->query('getValues', $field);
     }
 
     /**
      * 查询单个字段的所有记录, 跌代器方式
      *
      * @param string $field 查询的字段
-     * @return \Generator 跌代器
+     * @return array
      */
-    public function get_yield_values($field)
+    public function getYieldValues($field)
     {
-        return $this->query('get_yield_values', $field);
+        return $this->query('getYieldValues', $field);
     }
 
     /**
      * 查询键值对
      *
-     * @param string $key_field 键字段
-     * @param string $value_field 值字段
+     * @param string $keyField 键字段
+     * @param string $valueField 值字段
      * @return array 数组
      */
-    public function get_key_values($key_field, $value_field)
+    public function getKeyValues($keyField, $valueField)
     {
-        return $this->query('get_key_values', $key_field.','.$value_field);
+        return $this->query('getKeyValues', $keyField.','.$valueField);
     }
 
     /**
@@ -367,9 +367,9 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return array 数组
      */
-    public function get_array($fields = null)
+    public function getArray($fields = null)
     {
-        return $this->query('get_array', $fields);
+        return $this->query('getArray', $fields);
     }
 
     /**
@@ -378,20 +378,20 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return array 二维数组
      */
-    public function get_arrays($fields = null)
+    public function getArrays($fields = null)
     {
-        return $this->query('get_arrays', $fields);
+        return $this->query('getArrays', $fields);
     }
 
     /**
      * 查询多条记录, 跌代器方式
      *
      * @param string $fields 查询用到的字段列表
-     * @return \Generator 跌代器
+     * @return array
      */
-    public function get_yield_arrays($fields = null)
+    public function getYieldArrays($fields = null)
     {
-        return $this->query('get_yield_arrays', $fields);
+        return $this->query('getYieldArrays', $fields);
     }
 
     /**
@@ -400,9 +400,9 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return array 二维数组
      */
-    public function get_key_arrays($key_field, $fields = null)
+    public function getKeyArrays($keyField, $fields = null)
     {
-        return $this->query('get_key_arrays', $fields, $key_field);
+        return $this->query('getKeyArrays', $fields, $keyField);
     }
 
     /**
@@ -411,9 +411,9 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return object 对象
      */
-    public function get_object($fields = null)
+    public function getObject($fields = null)
     {
-        return $this->query('get_object', $fields);
+        return $this->query('getObject', $fields);
     }
 
     /**
@@ -422,20 +422,20 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return array
      */
-    public function get_objects($fields = null)
+    public function getObjects($fields = null)
     {
-        return $this->query('get_objects', $fields);
+        return $this->query('getObjects', $fields);
     }
 
     /**
      * 查询多条记录, 跌代器方式
      *
      * @param string $fields 查询用到的字段列表
-     * @return \Generator 跌代器
+     * @return array
      */
-    public function get_yield_objects($fields = null)
+    public function getYieldObjects($fields = null)
     {
-        return $this->query('get_yield_objects', $fields);
+        return $this->query('getYieldObjects', $fields);
     }
 
     /**
@@ -444,9 +444,9 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return array 对象列表
      */
-    public function get_key_objects($key_field, $fields = null)
+    public function getKeyObjects($keyField, $fields = null)
     {
-        return $this->query('get_key_objects', $fields, $key_field);
+        return $this->query('getKeyObjects', $fields, $keyField);
     }
 
     /**
@@ -456,9 +456,9 @@ class table extends obj
      * @param string $fields 查询用到的字段列表
      * @return mixed
      */
-    private function query($fn, $fields = null, $key_field = null)
+    private function query($fn, $fields = null, $keyField = null)
     {
-        $sql_data = $this->prepare_sql();
+        $sqlData = $this->prepareSql();
         $sql = null;
         if ($fields === null) {
             $sql = 'SELECT ' . $this->quote . implode($this->quote . ',' . $this->quote, $this->fields) . $this->quote;
@@ -466,29 +466,29 @@ class table extends obj
             $sql = 'SELECT ' . $fields;
         }
 
-        $sql .= ' FROM ' . $this->quote . $this->table_name . $this->quote;
+        $sql .= ' FROM ' . $this->quote . $this->tableName . $this->quote;
         if ($this->alias) {
             $sql .= ' AS ' . $this->alias;
         }
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= $sql_data[0];
+        $sql .= $sqlData[0];
 
-        $this->last_sql = array($sql, $sql_data[1]);
+        $this->lastSql = array($sql, $sqlData[1]);
 
-        $cache_key = null;
-        if ($this->cache_expire > 0) {
-            $cache_key = 'table:' . $fn . ':' . sha1($sql . serialize($sql_data[1]));
-            $cache = cache::get($cache_key);
+        $cacheKey = null;
+        if ($this->cacheExpire > 0) {
+            $cacheKey = 'table:' . $fn . ':' . sha1($sql . serialize($sqlData[1]));
+            $cache = cache::get($cacheKey);
             if ($cache !== false) return $cache;
         }
 
-        $db = be::get_db($this->db);
-        $result = $key_field === null ? $db->$fn($sql, $sql_data[1]) : $db->$fn($sql, $sql_data[1], $key_field);
+        $db = Be::getDb($this->db);
+        $result = $keyField === null ? $db->$fn($sql, $sqlData[1]) : $db->$fn($sql, $sqlData[1], $keyField);
 
-        if ($this->cache_expire > 0) {
-            cache::set($cache_key, $result, $this->cache_expire);
+        if ($this->cacheExpire > 0) {
+            cache::set($cacheKey, $result, $this->cacheExpire);
         }
 
         return $result;
@@ -502,7 +502,7 @@ class table extends obj
      */
     public function count($field = '*')
     {
-        return $this->query('get_value', 'COUNT(' . $field . ')');
+        return $this->query('getValue', 'COUNT(' . $field . ')');
     }
 
     /**
@@ -513,7 +513,7 @@ class table extends obj
      */
     public function sum($field)
     {
-        return $this->query('get_value', 'SUM(' . $field . ')');
+        return $this->query('getValue', 'SUM(' . $field . ')');
     }
 
     /**
@@ -524,7 +524,7 @@ class table extends obj
      */
     public function min($field)
     {
-        return $this->query('get_value', 'MIN(' . $field . ')');
+        return $this->query('getValue', 'MIN(' . $field . ')');
     }
 
     /**
@@ -535,7 +535,7 @@ class table extends obj
      */
     public function max($field)
     {
-        return $this->query('get_value', 'MAX(' . $field . ')');
+        return $this->query('getValue', 'MAX(' . $field . ')');
     }
 
     /**
@@ -546,7 +546,7 @@ class table extends obj
      */
     public function avg($field)
     {
-        return $this->query('get_value', 'AVG(' . $field . ')');
+        return $this->query('getValue', 'AVG(' . $field . ')');
     }
 
     /**
@@ -558,17 +558,17 @@ class table extends obj
      */
     public function increment($field, $step = 1)
     {
-        $sql_data = $this->prepare_sql();
-        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
+        $sqlData = $this->prepareSql();
+        $sql = 'UPDATE ' . $this->quote . $this->tableName . $this->quote;
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '+' . intval($step);
-        $sql .= $sql_data[0];
-        $this->last_sql = array($sql, $sql_data[1]);
+        $sql .= $sqlData[0];
+        $this->lastSql = array($sql, $sqlData[1]);
 
-        $db = be::get_db($this->db);
-        $db->execute($sql, $sql_data[1]);
+        $db = Be::getDb($this->db);
+        $db->execute($sql, $sqlData[1]);
 
         return true;
     }
@@ -582,17 +582,17 @@ class table extends obj
      */
     public function decrement($field, $step = 1)
     {
-        $sql_data = $this->prepare_sql();
-        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
+        $sqlData = $this->prepareSql();
+        $sql = 'UPDATE ' . $this->quote . $this->tableName . $this->quote;
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . $field . $this->quote . '=' . $this->quote . $field . $this->quote . '-' . intval($step);
-        $sql .= $sql_data[0];
-        $this->last_sql = array($sql, $sql_data[1]);
+        $sql .= $sqlData[0];
+        $this->lastSql = array($sql, $sqlData[1]);
 
-        $db = be::get_db($this->db);
-        $db->execute($sql, $sql_data[1]);
+        $db = Be::getDb($this->db);
+        $db->execute($sql, $sqlData[1]);
 
         return true;
     }
@@ -605,18 +605,18 @@ class table extends obj
      */
     public function update($values = array())
     {
-        $sql_data = $this->prepare_sql();
+        $sqlData = $this->prepareSql();
 
-        $sql = 'UPDATE ' . $this->quote . $this->table_name . $this->quote;
+        $sql = 'UPDATE ' . $this->quote . $this->tableName . $this->quote;
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
         $sql .= ' SET ' . $this->quote . implode($this->quote . '=?,' . $this->quote, array_keys($values)) . $this->quote . '=?';
-        $sql .= $sql_data[0];
-        $this->last_sql = array($sql, $sql_data[1]);
+        $sql .= $sqlData[0];
+        $this->lastSql = array($sql, $sqlData[1]);
 
-        $db = be::get_db($this->db);
-        $db->execute($sql, array_merge(array_values($values), $sql_data[1]));
+        $db = Be::getDb($this->db);
+        $db->execute($sql, array_merge(array_values($values), $sqlData[1]));
 
         return true;
     }
@@ -628,16 +628,16 @@ class table extends obj
      */
     public function delete()
     {
-        $sql_data = $this->prepare_sql();
-        $sql = 'DELETE FROM ' . $this->quote . $this->table_name . $this->quote;
+        $sqlData = $this->prepareSql();
+        $sql = 'DELETE FROM ' . $this->quote . $this->tableName . $this->quote;
         foreach ($this->join as $join) {
             $sql .= $join[0] . ' ' . $this->quote . $join[1] . $this->quote . ' ON ' . $join[2];
         }
-        $sql .= $sql_data[0];
-        $this->last_sql = array($sql, $sql_data[1]);
+        $sql .= $sqlData[0];
+        $this->lastSql = array($sql, $sqlData[1]);
 
-        $db = be::get_db($this->db);
-        $db->execute($sql, $sql_data[1]);
+        $db = Be::getDb($this->db);
+        $db->execute($sql, $sqlData[1]);
 
         return true;
     }
@@ -649,10 +649,10 @@ class table extends obj
      */
     public function truncate()
     {
-        $sql = 'TRUNCATE TABLE ' . $this->quote . $this->table_name . $this->quote;
-        $this->last_sql = array($sql, []);
+        $sql = 'TRUNCATE TABLE ' . $this->quote . $this->tableName . $this->quote;
+        $this->lastSql = array($sql, []);
 
-        $db = be::get_db($this->db);
+        $db = Be::getDb($this->db);
         $db->execute($sql);
 
         return true;
@@ -665,10 +665,10 @@ class table extends obj
      */
     public function drop()
     {
-        $sql = 'DROP TABLE ' . $this->quote . $this->table_name . $this->quote;
-        $this->last_sql = array($sql, []);
+        $sql = 'DROP TABLE ' . $this->quote . $this->tableName . $this->quote;
+        $this->lastSql = array($sql, []);
 
-        $db = be::get_db($this->db);
+        $db = Be::getDb($this->db);
         $db->execute($sql);
 
         return true;
@@ -683,11 +683,11 @@ class table extends obj
     {
         $this->join = array();
         $this->where = array();
-        $this->group_by = '';
+        $this->groupBy = '';
         $this->having = '';
         $this->offset = 0;
         $this->limit = 0;
-        $this->order_by = '';
+        $this->orderBy = '';
 
         return $this;
     }
@@ -696,9 +696,9 @@ class table extends obj
      * 准备查询的 sql
      *
      * @return array
-     * @throws exception
+     * @throws Exception
      */
-    public function prepare_sql()
+    public function prepareSql()
     {
         $sql = '';
         $values = array();
@@ -723,7 +723,7 @@ class table extends obj
                                     $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
                                     $values = array_merge($values, $where[2]);
                                 } else {
-                                    throw new exception('IN 查询条件异常！');
+                                    throw new Exception('IN 查询条件异常！');
                                 }
                                 break;
                             case 'BETWEEN':
@@ -732,7 +732,7 @@ class table extends obj
                                     $sql .= ' ? AND ?';
                                     $values = array_merge($values, $where[2]);
                                 } else {
-                                    throw new exception('BETWEEN 查询条件异常！');
+                                    throw new Exception('BETWEEN 查询条件异常！');
                                 }
                                 break;
                             default:
@@ -746,9 +746,9 @@ class table extends obj
             }
         }
 
-        if ($this->group_by) $sql .= ' GROUP BY ' . $this->group_by;
+        if ($this->groupBy) $sql .= ' GROUP BY ' . $this->groupBy;
         if ($this->having) $sql .= ' HAVING ' . $this->having;
-        if ($this->order_by) $sql .= ' ORDER BY ' . $this->order_by;
+        if ($this->orderBy) $sql .= ' ORDER BY ' . $this->orderBy;
 
         if ($this->limit > 0) {
             if ($this->offset > 0) {
@@ -770,9 +770,9 @@ class table extends obj
      *
      * @return string
      */
-    public function get_table_name()
+    public function getTableName()
     {
-        return $this->table_name;
+        return $this->tableName;
     }
 
     /**
@@ -780,9 +780,9 @@ class table extends obj
      *
      * @return string
      */
-    public function get_primary_key()
+    public function getPrimaryKey()
     {
-        return $this->primary_key;
+        return $this->primaryKey;
     }
 
     /**
@@ -790,7 +790,7 @@ class table extends obj
      *
      * @return array
      */
-    public function get_fields()
+    public function getFields()
     {
         return $this->fields;
     }
@@ -800,18 +800,18 @@ class table extends obj
      *
      * @return string
      */
-    public function get_last_sql()
+    public function getLastSql()
     {
-        if ($this->last_sql == null) return '';
-        $last_sql = $this->last_sql[0];
-        $values = $this->last_sql[1];
+        if ($this->lastSql == null) return '';
+        $lastSql = $this->lastSql[0];
+        $values = $this->lastSql[1];
         $n = count($values);
         $i = 0;
-        while (($pos = strpos($last_sql, '?')) !== false && $i < $n) {
-            $last_sql = substr($last_sql, 0, $pos) . '\'' . addslashes($values[$i]) . '\'' . substr($last_sql, $pos + 1);
+        while (($pos = strpos($lastSql, '?')) !== false && $i < $n) {
+            $lastSql = substr($lastSql, 0, $pos) . '\'' . addslashes($values[$i]) . '\'' . substr($lastSql, $pos + 1);
             $i++;
         }
-        return $last_sql;
+        return $lastSql;
     }
 
 }

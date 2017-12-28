@@ -1,11 +1,11 @@
 <?php
-use system\be;
+use System\Be;
 ?>
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/dashboard.css">
 <script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user_profile/js/edit.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/userProfile/js/edit.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -13,7 +13,7 @@ use system\be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include PATH_ROOT.DS.'template'.DS.'user_profile'.DS.'west.php'
+        include PATH_ROOT.DS.'template'.DS.'userProfile'.DS.'west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -22,20 +22,20 @@ use system\be;
     <div class="wrapper">
         <!--{message}-->
         <?php
-        if ($this->_message !== null) echo '<div class="theme-message theme-message-' . $this->_message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->_message->body . '</div>';
+        if ($this->Message !== null) echo '<div class="theme-message theme-message-' . $this->Message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->Message->body . '</div>';
         ?>
         <!--{/message}-->
 
         <!--{center}-->
         <?php
-        $my = be::get_user();
+        $my = Be::getUser();
         ?>
         <div class="theme-box-container">
             <div class="theme-box">
                 <div class="theme-box-title"><?php echo $this->title; ?></div>
                 <div class="theme-box-body">
 
-                    <form id="form-user_profile_edit">
+                    <form id="form-userProfileEdit">
                         <div class="row">
                             <div class="col-5">
                                 <div class="key">用户名: </div>

@@ -8,7 +8,7 @@ namespace lib\http;
 获得使用本类库的许可, 您必须保留著作权声明信息.
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com)
 */
-class http extends \system\lib
+class Http extends \system\Lib
 {
 
     protected $options = null;
@@ -20,12 +20,12 @@ class http extends \system\lib
      * 构造函数
      *
      * http constructor.
-     * @throws \exception
+     * @throws \Exception
      */
     public function __construct()
     {
         if (!function_exists('curl_init')) {
-            throw new \exception('您的服务器未安装用于HTTP通信的 CURL 扩展');
+            throw new \Exception('您的服务器未安装用于HTTP通信的 CURL 扩展');
         }
 
         $this->init();
@@ -43,11 +43,11 @@ class http extends \system\lib
      */
     public function init() {
         $this->options = [
-            'connect_timeout' => 15,
+            'connectTimeout' => 15,
             'timeout' => 30,
             'redirection' => 5,
-            'http_version' => 1.0,
-            'user_agent' => 'phpbe',
+            'httpVersion' => 1.0,
+            'userAgent' => 'phpbe',
         ];
         $this->url = null;
         $this->data = [];
@@ -89,7 +89,7 @@ class http extends \system\lib
      *
      * @param $url
      */
-    public function set_url($url)
+    public function setUrl($url)
     {
         $this->url = $url;
     }
@@ -100,7 +100,7 @@ class http extends \system\lib
      * @param string | array $key 键名
      * @param mixed $val 值
      */
-    public function set_data($key, $val = null)
+    public function setData($key, $val = null)
     {
         if (is_array($key)) {
             $this->data = array_merge($this->data, $key);
@@ -170,8 +170,8 @@ class http extends \system\lib
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, $ssl);
         curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, $ssl);
-        curl_setopt($handle, CURLOPT_USERAGENT, $this->options['user_agent']);
-        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, $this->options['connect_timeout']);
+        curl_setopt($handle, CURLOPT_USERAGENT, $this->options['userAgent']);
+        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, $this->options['connectTimeout']);
         curl_setopt($handle, CURLOPT_TIMEOUT, $this->options['timeout']);
         curl_setopt($handle, CURLOPT_MAXREDIRS, $this->options['redirection']);
 
@@ -189,24 +189,24 @@ class http extends \system\lib
             curl_setopt($handle, CURLOPT_POSTFIELDS, $this->data);
         }
 
-        if ($this->options['http_version'] == '1.0')
+        if ($this->options['httpVersion'] == '1.0')
             curl_setopt($handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         else
             curl_setopt($handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
         curl_setopt($handle, CURLOPT_HEADER, false);    //不返回头信息
 
-        $response = curl_exec($handle);
+        $Response = curl_exec($handle);
 
         if (curl_errno($handle)) {
-            $this->set_error('连接主机' . $this->url . '时发生错误: ' . curl_error($handle));
+            $this->setError('连接主机' . $this->url . '时发生错误: ' . curl_error($handle));
             curl_close($handle);
 
             return false;
         }
 
         curl_close($handle);
-        return $response;
+        return $Response;
     }
 
 }

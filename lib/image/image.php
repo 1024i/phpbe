@@ -10,7 +10,7 @@ namespace lib\image;
 报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com)
 */
 
-class image extends \system\lib
+class Image extends \system\Lib
 {
     private $handler = null;
     private $imagick = false;
@@ -20,10 +20,10 @@ class image extends \system\lib
     public function __construct()
     {
         if (class_exists('Imagick')) {
-            $this->handler = new \lib\image\handler\imagick();
+            $this->handler = new \lib\image\handler\Imagick();
             $this->imagick = true;
         } else {
-            $this->handler = new \lib\image\handler\gd();
+            $this->handler = new \lib\image\handler\Gd();
             $this->gd = true;
         }
     }
@@ -35,19 +35,19 @@ class image extends \system\lib
     }
     
     // 检测当前是否为 imagick 处理器
-    public function is_imagick()
+    public function isImagick()
     {
         return $this->imagick;
     }
     
     // 检测当前是否为  GD 处理器
-    public function is_gd()
+    public function isGD()
     {
         return $this->gd;
     }
     
     // 获取处理器
-    public function get_handler()
+    public function getHandler()
     {
         return $this->handler;
     }
