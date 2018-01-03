@@ -6,15 +6,16 @@
     "type": "project",
     "authors": [
         {
+            "name": "BE Team",
+            "homepage": "http://www.phpbe.com/"
+        },
+        {
             "name": "liu12",
             "email": "i@liu12.com",
-            "homepage": "http://www.phpbe.com/"
+            "homepage": "http://www.liu12.com/"
         }
     ],
     "require": {
-        "php": ">=5.6.0",
-        "phpbe/system": "2.0.0",
-        "phpbe/lib": "2.0.0",
-        "phpbe/ui": "2.0.0"
+        "php": ">=5.6.0"
     }
 }
