@@ -174,7 +174,7 @@ $monthHottestArticles = $this->monthHottestArticles;
 $configArticle = Be::getConfig('Cms.Article');
 
 if (count($activeUsers)) {
-$configUser = Be::getConfig('System.user');
+$configUser = Be::getConfig('System.User');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">

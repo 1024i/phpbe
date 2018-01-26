@@ -26,7 +26,7 @@ foreach ($categories as $category) {
     if ($category->children > 0) $categoryHtml .= ' disabled="disabled"';
     if ($category->id == $article->categoryId)  $categoryHtml .= ' selected="selected"';
     $categoryHtml .= '>';
-    if ($category->level) $categoryHtml .= strRepeat('&nbsp; ', $category->level);
+    if ($category->level) $categoryHtml .= str_repeat('&nbsp; ', $category->level);
     $categoryHtml .= $category->name . '</option>';
 }
 $categoryHtml .= '</select>';

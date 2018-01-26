@@ -1,9 +1,10 @@
 <?php
-namespace service;
+namespace App\Cms\Service;
 
 use System\Be;
+use System\Service;
 
-class Article extends \System\Service
+class Article extends Service
 {
 
     /**
@@ -14,7 +15,7 @@ class Article extends \System\Service
      */
     public function getArticles($conditions = [])
     {
-        $tableArticle = Be::getTable('Cms.article');
+        $tableArticle = Be::getTable('Cms.Article');
 
         $where = $this->createArticleWhere($conditions);
         $tableArticle->where($where);
@@ -32,10 +33,8 @@ class Article extends \System\Service
         if (isset($conditions['offset']) && $conditions['offset']) $tableArticle->offset($conditions['offset']);
         if (isset($conditions['limit']) && $conditions['limit']) $tableArticle->limit($conditions['limit']);
 
-        $tableArticle->cache(Be::getConfig('Cms.Article')->cacheExpire);
         return $tableArticle->getObjects();
     }
-
 
     /**
      * 获取符合条件的文章总数
@@ -45,9 +44,8 @@ class Article extends \System\Service
      */
     public function getArticleCount($conditions = [])
     {
-        return Be::getTable('Cms.article')
+        return Be::getTable('Cms.Article')
             ->where($this->createArticleWhere($conditions))
-            ->cache(Be::getConfig('Cms.Article')->cacheExpire)
             ->count();
     }
 
@@ -60,18 +58,25 @@ class Article extends \System\Service
     private function createArticleWhere($conditions = [])
     {
         $where = [];
-        $where[] = ['block', 0];
+
+        if (isset($conditions['thumbnail'])) {
+            if ($conditions['thumbnail'] == 1) {
+                $where[] = ['thumbnail_s', '!=', ''];
+            } else {
+                $where[] = ['thumbnail_s', '=', ''];
+            }
+        }
 
         if (isset($conditions['categoryId']) && $conditions['categoryId'] != -1) {
             if ($conditions['categoryId'] == 0)
-                $where[] = ['categoryId', 0];
+                $where[] = ['category_id', 0];
             elseif ($conditions['categoryId'] > 0) {
-                $ids = $this->getSubCategoryIds($conditions['categoryId']);
+                $ids = Be::getService('Cms.Category')->getSubCategoryIds($conditions['categoryId']);
                 if (count($ids) > 0) {
                     $ids[] = $conditions['categoryId'];
-                    $where[] = ['categoryId', 'in', $ids];
+                    $where[] = ['category_id', 'in', $ids];
                 } else {
-                    $where[] = ['categoryId', $conditions['categoryId']];
+                    $where[] = ['category_id', $conditions['categoryId']];
                 }
             }
         }
@@ -82,9 +87,9 @@ class Article extends \System\Service
 
         if (isset($conditions['thumbnail'])) {
             if ($conditions['thumbnail'] == 1) {
-                $where[] = ['thumbnailS', '!=', ''];
+                $where[] = ['thumbnail_s', '!=', ''];
             } else {
-                $where[] = ['thumbnailS', '=', ''];
+                $where[] = ['thumbnail_s', '=', ''];
             }
         }
 
@@ -97,11 +102,15 @@ class Article extends \System\Service
         }
 
         if (isset($conditions['fromTime']) && is_numeric($conditions['fromTime'])) {
-            $where[] = ['createTime', '>', $conditions['fromTime']];
+            $where[] = ['create_time', '>', $conditions['fromTime']];
         }
 
         if (isset($conditions['userId']) && is_numeric($conditions['userId'])) {
-            $where[] = ['createById', '>', $conditions['userId']];
+            $where[] = ['create_by_id', '>', $conditions['userId']];
+        }
+
+        if (isset($conditions['block']) && is_numeric($conditions['block']) && $conditions['block'] != -1) {
+            $where[] = ['block', $conditions['block']];
         }
 
         return $where;
@@ -156,10 +165,9 @@ class Article extends \System\Service
     {
         $similarArticles = [];
 
-        $configArticle = Be::getConfig('Cms.Article');
         $keywordsCount = count($keywords);
         if ($keywordsCount > 0) {
-            $tableArticle = Be::getTable('Cms.article');
+            $tableArticle = Be::getTable('Cms.Article');
             $tableArticle->where('id', '!=', $rowArticle->id);
             $tableArticle->where('(');
             for ($i = 0; $i < $keywordsCount; $i++) {
@@ -167,9 +175,9 @@ class Article extends \System\Service
                 if ($i < ($keywordsCount - 1)) $tableArticle->where('OR');
             }
             $tableArticle->where(')');
-            $tableArticle->orderBy('hits DESC, createTime DESC');
+            $tableArticle->where('block', 0);
+            $tableArticle->orderBy('hits DESC, create_time DESC');
             $tableArticle->limit($n);
-            $tableArticle->cache($configArticle->cacheExpire);
             $similarArticles = $tableArticle->getObjects();
 
             if (count($similarArticles) == 0) {
@@ -181,9 +189,9 @@ class Article extends \System\Service
                     if ($i < ($keywordsCount - 1)) $tableArticle->where('OR');
                 }
                 $tableArticle->where(')');
-                $tableArticle->orderBy('hits DESC, createTime DESC');
+                $tableArticle->where('block', 0);
+                $tableArticle->orderBy('hits DESC, create_time DESC');
                 $tableArticle->limit($n);
-                $tableArticle->cache($configArticle->cacheExpire);
                 $similarArticles = $tableArticle->getObjects();
             }
         }
@@ -192,213 +200,125 @@ class Article extends \System\Service
     }
 
     /**
-     * 获取评论列表
+     * 屏蔽文章
      *
-     * @param array $conditions 查询条件
-     * @return array
+     * @param $ids
+     * @return bool
      */
-    public function getComments($conditions = [])
+    public function unblock($ids)
     {
-        $tableArticleComment= Be::getTable('Cms.article_comment');
+        $db = Be::getDb();
+        try {
+            $db->beginTransaction();
 
-        $where = $this->createCommentWhere($conditions);
-        $tableArticleComment->where($where);
+            $table = Be::getTable('Cms.Article');
+            if (!$table->where('id', 'in', explode(',', $ids))
+                ->update(['block' => 0])
+            ) {
+                throw new \Exception($table->getError());
+            }
 
-        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
-            $tableArticleComment->orderBy($conditions['orderByString']);
-        } else {
-            $orderBy = 'createTime';
-            $orderByDir = 'DESC';
-            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
-            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
-            $tableArticleComment->orderBy($orderBy, $orderByDir);
+            $db->commit();
+        } catch (\Exception $e) {
+            $db->rollback();
+
+            $this->setError($e->getMessage());
+            return false;
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $tableArticleComment->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $tableArticleComment->limit($conditions['limit']);
-
-        $tableArticleComment->cache(Be::getConfig('Cms.Article')->cacheExpire);
-
-        return $tableArticleComment->getObjects();
+        return true;
     }
 
     /**
-     * 获取评论总数
+     * 公开文章
      *
-     * @param array $conditions 查询条件
-     * @return int
+     * @param $ids
+     * @return bool
      */
-    public function getCommentCount($conditions = [])
+    public function block($ids)
     {
-        return Be::getTable('Cms.article_comment')
-            ->where($this->createCommentWhere($conditions))
-            ->cache(Be::getConfig('Cms.Article')->cacheExpire)
-            ->count();
-    }
+        $db = Be::getDb();
+        try {
+            $db->beginTransaction();
 
-    /**
-     * 生成评论条件where
-     *
-     * @param array $conditions 查询条件
-     * @return array
-     */
-    private function createCommentWhere($conditions = [])
-    {
-        $where = [];
-        $where[] = ['block', 0];
+            $table = Be::getTable('Cms.Article');
+            if (!$table->where('id', 'in', explode(',', $ids))
+                ->update(['block' => 1])
+            ) {
+                throw new \Exception($table->getError());
+            }
 
-        if (isset($conditions['articleId']) && is_numeric($conditions['articleId']) && $conditions['articleId'] > 0) {
-            $where[] = ['articleId', $conditions['articleId']];
+            $db->commit();
+        } catch (\Exception $e) {
+            $db->rollback();
+
+            $this->setError($e->getMessage());
+            return false;
         }
 
-        if (isset($conditions['userId']) && is_numeric($conditions['userId'])) {
-            $where[] = ['userId', $conditions['userId']];
-        }
-
-        return $where;
+        return true;
     }
 
     /**
-     * 活跃会员, 即参与评论最多的会员
+     * 删除文章
      *
-     * @param int $limit 获取多少个
-     * @return array 用户对象数组
+     * @param $ids
+     * @return bool
      */
-    public function getActiveUsers($limit = 10)
+    public function delete($ids)
     {
-        $userIds = Be::getTable('Cms.article_comment')
-            ->groupBy('userId')
-            ->orderBy('COUNT(*) DESC')
-            ->limit($limit)
-            ->cache(Be::getConfig('Cms.Article')->cacheExpire)
-            ->getValues('userId');
+        $db = Be::getDb();
+        try {
+            $db->beginTransaction();
 
-        $activeUsers = [];
-        foreach ($userIds as $userId) {
-            $activeUsers[] = Be::getUser($userId);
-        }
+            $files = [];
 
-        return $activeUsers;
-    }
+            $array = explode(',', $ids);
+            foreach ($array as $id) {
 
-    private $categories = null;
-    private $categoryTree = null;
+                $articleCommentIds = Be::getTable('Cms.ArticleComment')->where('article_id', $id)->getArray('id');
+                if (count($articleCommentIds)) {
+                    $table = Be::getTable('Cms.ArticleVoteLog');
+                    if (!$table->where('comment_id', 'in', $articleCommentIds)->delete()) {
+                        throw new \Exception($table->getError());
+                    }
 
-    /**
-     * 获取分类列表
-     *
-     * @return array|null
-     */
-    public function getCategories()
-    {
-        if ($this->categories === null) {
-            $this->categories = $this->CreateCategories($this->getCategoryTree());
-        }
-        return $this->categories;
-    }
+                    $table = Be::getTable('Cms.ArticleVoteLog');
+                    if (!$table->where('article_id', $id)->delete()) {
+                        throw new \Exception($table->getError());
+                    }
 
-    /**
-     * 获取分类总数
-     *
-     * @return int
-     */
-    public function getCategoryCount()
-    {
-        return Be::getTable('Cms.article_category')
-            ->cache(Be::getConfig('Cms.Article')->cacheExpire)
-            ->count();
-    }
-
-    /**
-     * 获取分类树
-     *
-     * @return array|null
-     */
-    public function getCategoryTree()
-    {
-        if ($this->categoryTree === null) {
-            $categories = Be::getTable('Cms.article_category')
-                ->cache(Be::getConfig('Cms.Article')->cacheExpire)
-                ->getObjects();
-
-            $this->categoryTree = $this->CreateCategoryTree($categories);
-        }
-        return $this->categoryTree;
-    }
-
-    /**
-     * 获取指定分类ID下的所有层级的子分类ID
-     *
-     * @param $categoryId
-     * @return array
-     */
-    public function getSubCategoryIds($categoryId)
-    {
-        $categories = $this->getCategories();
-
-        $ids = [];
-        $level = 0;
-        $start = false;
-        foreach ($categories as $category) {
-            if ($start) {
-                if ($category->level > $level) {
-                    $ids[] = $category->id;
-                } else {
-                    break;
+                    $table = Be::getTable('Cms.ArticleComment');
+                    if (!$table->where('article_id', $id)->delete()) {
+                        throw new \Exception($table->getError());
+                    }
                 }
-            } elseif ($category->id == $categoryId) {
-                $level = $category->level;
-                $start = true;
-            }
-        }
-        return $ids;
-    }
 
-    /**
-     * 生成分类列表，按树结构格式化过
-     *
-     * @param array $categoryTree 分类树
-     * @param array $categories
-     * @return array
-     */
-    private function createCategories($categoryTree = null, &$categories = [])
-    {
-        if (count($categoryTree)) {
-            foreach ($categoryTree as $category) {
-                $subCategory = null;
-                if (isset($category->subCategory)) {
-                    $subCategory = $category->subCategory;
-                    unset($category->subCategory);
+                $rowArticle = Be::getRow('Cms.Article');
+                $rowArticle->load($id);
+
+                if ($rowArticle->thumbnail_l != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
+                if ($rowArticle->thumbnail_m != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
+                if ($rowArticle->thumbnail_s != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
+
+                if (!$rowArticle->delete()) {
+                    throw new \Exception($rowArticle->getError());
                 }
-                $categories[] = $category;
-
-                if ($subCategory !== null) $this->createCategories($subCategory, $categories);
             }
-        }
-        return $categories;
-    }
 
-    /**
-     * 生成分类树
-     *
-     * @param array $categories
-     * @param int $parentId
-     * @param int $level
-     * @return array
-     */
-    private function CreateCategoryTree(&$categories = null, $parentId = 0, $level = 0)
-    {
-        $tree = [];
-        foreach ($categories as $category) {
-            if ($category->parentId == $parentId) {
-                $category->level = $level;
-                $subCategory = $this->CreateCategoryTree($categories, $category->id, $level + 1);
-                if (count($subCategory)) $category->subCategory = $subCategory;
-                $category->children = count($subCategory);
-                $tree[] = $category;
+            foreach ($files as $file) {
+                @unlink($file);
             }
+
+            $db->commit();
+        } catch (\Exception $e) {
+            $db->rollback();
+
+            $this->setError($e->getMessage());
+            return false;
         }
-        return $tree;
+
+        return true;
     }
 
     /**
@@ -418,19 +338,19 @@ class Article extends \System\Service
                 throw new \Exception('请先登陆！');
             }
 
-            $rowArticle = Be::getRow('Cms.article');
+            $rowArticle = Be::getRow('Cms.Article');
             $rowArticle->load($articleId);
             if ($rowArticle->id == 0 || $rowArticle->block == 1) {
                 throw new \Exception('文章不存在！');
             }
 
-            $rowArticleVoteLog = Be::getRow('Cms.article_vote_log');
-            $rowArticleVoteLog->load(['articleId' => $articleId, 'userId' => $my->id]);
+            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+            $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
             if ($rowArticleVoteLog->id > 0) {
                 throw new \Exception('您已经表过态啦！');
             }
-            $rowArticleVoteLog->articleId = $articleId;
-            $rowArticleVoteLog->userId = $my->id;
+            $rowArticleVoteLog->article_id = $articleId;
+            $rowArticleVoteLog->user_id = $my->id;
             $rowArticleVoteLog->save();
 
             $rowArticle->increment('like', 1);
@@ -463,19 +383,19 @@ class Article extends \System\Service
                 throw new \Exception('请先登陆！');
             }
 
-            $rowArticle = Be::getRow('Cms.article');
+            $rowArticle = Be::getRow('Cms.Article');
             $rowArticle->load($articleId);
             if ($rowArticle->id == 0 || $rowArticle->block == 1) {
                 throw new \Exception('文章不存在！');
             }
 
-            $rowArticleVoteLog = Be::getRow('Cms.article_vote_log');
-            $rowArticleVoteLog->load(['articleId' => $articleId, 'userId' => $my->id]);
+            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+            $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
             if ($rowArticleVoteLog->id > 0) {
                 throw new \Exception('您已经表过态啦！');
             }
-            $rowArticleVoteLog->articleId = $articleId;
-            $rowArticleVoteLog->userId = $my->id;
+            $rowArticleVoteLog->article_id = $articleId;
+            $rowArticleVoteLog->user_id = $my->id;
             $rowArticleVoteLog->save();
 
             $rowArticle->increment('dislike', 1);
@@ -491,152 +411,26 @@ class Article extends \System\Service
         return true;
     }
 
-    /**
-     * 提交评论
-     *
-     * @param int $articleId 文章编号
-     * @param string $commentBody 评论内容
-     * @return bool
-     */
-    public function comment($articleId, $commentBody)
-    {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticle = Be::getRow('Cms.article');
-            $rowArticle->load($articleId);
-            if ($rowArticle->id == 0 || $rowArticle->block == 1) {
-                throw new \Exception('文章不存在！');
-            }
-
-            $commentBody = trim($commentBody);
-            $commentBodyLength = strlen($commentBody);
-            if ($commentBodyLength == 0) {
-                throw new \Exception('请输入评论内容！');
-            }
-
-            if ($commentBodyLength > 2000) {
-                throw new \Exception('评论内容过长！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.article_comment');
-            $rowArticleComment->articleId = $articleId;
-            $rowArticleComment->userId = $my->id;
-            $rowArticleComment->userName = $my->name;
-            $rowArticleComment->body = $commentBody;
-            $rowArticleComment->ip = $_SERVER['REMOTE_ADDR'];
-            $rowArticleComment->createTime = time();
-
-            $configArticle = Be::getConfig('Cms.Article');
-            $rowArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
-
-            $rowArticleComment->save();
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
-    }
 
     /**
-     * 顶
+     * 活跃会员, 即参与评论最多的会员
      *
-     * @param int $commentId 文章评论编号
-     * @return bool
+     * @param int $limit 获取多少个
+     * @return array 用户对象数组
      */
-    public function commentLike($commentId)
+    public function getActiveUsers($limit = 10)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
+        $userIds = Be::getTable('Cms.ArticleComment')
+            ->groupBy('user_id')
+            ->orderBy('COUNT(*) DESC')
+            ->limit($limit)
+            ->getValues('user_id');
 
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.article_comment');
-            $rowArticleComment->load($commentId);
-            if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
-                throw new \Exception('评论不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.article_vote_log');
-            $rowArticleVoteLog->load(['commentId' => $commentId, 'userId' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
-            $rowArticleVoteLog->commentId = $commentId;
-            $rowArticleVoteLog->userId = $my->id;
-            $rowArticleVoteLog->save();
-
-            $rowArticleComment->increment('like', 1);
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+        $activeUsers = [];
+        foreach ($userIds as $userId) {
+            $activeUsers[] = Be::getUser($userId);
         }
 
-        return true;
+        return $activeUsers;
     }
-
-    /**
-     * 踩
-     *
-     * @param int $commentId 文章评论编号
-     * @return bool
-     */
-    public function commentDislike($commentId)
-    {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.article_comment');
-            $rowArticleComment->load($commentId);
-            if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
-                throw new \Exception('评论不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.article_vote_log');
-            $rowArticleVoteLog->load(['commentId' => $commentId, 'userId' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
-            $rowArticleVoteLog->commentId = $commentId;
-            $rowArticleVoteLog->userId = $my->id;
-            $rowArticleVoteLog->save();
-
-            $rowArticleComment->increment('dislike', 1);
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
-    }
-
 }

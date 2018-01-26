@@ -1,9 +1,6 @@
-/*
-@最初版本开发日期: 2010年08月14日
-@著作权所有: Lou Barnes ( http://www.liu12.com )
-
-报告漏洞，意见或建议, 请联系 Lou Barnes(i@liu12.com) 或登陆 http://www.liu12.com
-*/
+/**
+ * @author: liu12 ( http://www.liu12.com )
+ */
 
 
 // 为新添加的节点分配临时ID

@@ -5,6 +5,7 @@ use System\Be;
 use System\Request;
 use System\Response;
 use System\AdminController;
+use System\Util\String;
 
 class Article extends AdminController
 {
@@ -15,22 +16,25 @@ class Article extends AdminController
         $orderByDir = Request::post('orderByDir', 'ASC');
         $categoryId = Request::post('categoryId', -1, 'int');
         $key = Request::post('key', '');
-        $status = Request::post('status', -1, 'int');
+        $block = Request::post('block', -1, 'int');
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.admin');
+            $adminConfigSystem = Be::getConfig('System.Admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $adminServiceArticle = Be::getService('Cms.Article');
+        $serviceArticle = Be::getService('Cms.Article');
+        $serviceArticleComment = Be::getService('Cms.ArticleComment');
+        $serviceCategory = Be::getService('Cms.Category');
+
         Response::setTitle('文章列表');
 
-        $option = array('categoryId' => $categoryId, 'key' => $key, 'status' => $status);
+        $option = array('categoryId' => $categoryId, 'key' => $key, 'block' => $block);
 
         $pagination = Be::getUi('Pagination');
         $pagination->setLimit($limit);
-        $pagination->setTotal($adminServiceArticle->getArticleCount($option));
+        $pagination->setTotal($serviceArticle->getArticleCount($option));
         $pagination->setPage(Request::post('page', 1, 'int'));
 
         Response::set('pagination', $pagination);
@@ -38,26 +42,25 @@ class Article extends AdminController
         Response::set('orderByDir', $orderByDir);
         Response::set('categoryId', $categoryId);
         Response::set('key', $key);
-        Response::set('status', $status);
+        Response::set('block', $block);
 
         $option['orderBy'] = $orderBy;
         $option['orderByDir'] = $orderByDir;
         $option['offset'] = $pagination->getOffset();
         $option['limit'] = $limit;
 
-        $articles = $adminServiceArticle->getArticles($option);
+        $articles = $serviceArticle->getArticles($option);
         foreach ($articles as $article) {
-            $article->commentCount = $adminServiceArticle->getCommentCount(array('articleId' => $article->id));
+            $article->commentCount = $serviceArticleComment->getCommentCount(array('articleId' => $article->id));
         }
         Response::set('articles', $articles);
 
-        $serviceArticle = Be::getService('Cms.Article');
-        Response::set('categories', $serviceArticle->getCategories());
+        Response::set('categories', $serviceCategory->getCategories());
 
         Response::display();
 
         $libHistory = Be::getLib('History');
-        $libHistory->save();
+        $libHistory->save('Admin.Cms.Article.articles');
     }
 
 
@@ -65,7 +68,7 @@ class Article extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowArticle = Be::getRow('Cms.article');
+        $rowArticle = Be::getRow('Cms.Article');
         $rowArticle->load($id);
 
         if ($id == 0) {
@@ -75,8 +78,8 @@ class Article extends AdminController
         }
         Response::set('article', $rowArticle);
 
-        $serviceArticle = Be::getService('Cms.Article');
-        $categories = $serviceArticle->getCategories();
+        $serviceCategory = Be::getService('Cms.Category');
+        $categories = $serviceCategory->getCategories();
         Response::set('categories', $categories);
         Response::display();
     }
@@ -88,7 +91,7 @@ class Article extends AdminController
 
         $my = Be::getAdminUser();
 
-        $rowArticle = Be::getRow('Cms.article');
+        $rowArticle = Be::getRow('Cms.Article');
         if ($id != 0) $rowArticle->load($id);
         $rowArticle->bind(Request::post());
 
@@ -128,11 +131,11 @@ class Article extends AdminController
 
                 // 下载到本地的文件夹
                 $dirName = date('Y-m-d');
-                $dirPath = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . $dirName;
+                $dirPath = PATH_DATA . '/Cms/Article/' .  $dirName;
 
                 // 文件夹不存在时自动创建
                 if (!file_exists($dirPath)) {
-                    $libFso = Be::getLib('fso');
+                    $libFso = Be::getLib('Fso');
                     $libFso->mkDir($dirPath);
                 }
 
@@ -142,15 +145,15 @@ class Article extends AdminController
                     $localImageName = $t . $i . '.' . strtolower(substr(strrchr($remoteImage, '.'), 1));
                     $data = $libHttp->get($remoteImage);
 
-                    file_put_contents($dirPath . DS . $localImageName, $data);
+                    file_put_contents($dirPath . '/' . $localImageName, $data);
 
                     // 下截远程图片添加水印
                     if ($downloadRemoteImageWatermark == 1) {
                         $serviceSystem = Be::getService('System.Admin');
-                        $serviceSystem->watermark($dirPath . DS . $localImageName);
+                        $serviceSystem->watermark($dirPath . '/' . $localImageName);
                     }
 
-                    $body = str_replace($remoteImage, URL_ROOT . '/' . DATA . '/Article/' . $dirName . '/' . $localImageName, $body);
+                    $body = str_replace($remoteImage, '/' . DATA . '/Article/' . $dirName . '/' . $localImageName, $body);
                     $i++;
                 }
             }
@@ -166,7 +169,7 @@ class Article extends AdminController
                 $data = $libHttp->get($images[0]);
 
                 if ($data != false) {
-                    $tmpImage = PATH_DATA . DS . 'Tmp' . DS . date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
+                    $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
                     file_put_contents($tmpImage, $data);
 
                     $libImage = Be::getLib('image');
@@ -174,26 +177,26 @@ class Article extends AdminController
 
                     if ($libImage->isImage()) {
                         $t = date('YmdHis');
-                        $dir = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail';
+                        $dir = PATH_DATA . '/Cms/Article/Thumbnail';
                         if (!file_exists($dir)) {
-                            $libFso = Be::getLib('fso');
+                            $libFso = Be::getLib('Fso');
                             $libFso->mkDir($dir);
                         }
 
-                        $thumbnailLName = $t . 'L.' . $libImage->getType();
+                        $thumbnailLName = $t . '_l.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailLName);
-                        $rowArticle->thumbnailL = $thumbnailLName;
+                        $libImage->save($dir . '/' . $thumbnailLName);
+                        $rowArticle->thumbnail_l = $thumbnailLName;
 
-                        $thumbnailMName = $t . 'M.' . $libImage->getType();
+                        $thumbnailMName = $t . '_m.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailMName);
-                        $rowArticle->thumbnailM = $thumbnailMName;
+                        $libImage->save($dir . '/' . $thumbnailMName);
+                        $rowArticle->thumbnail_m = $thumbnailMName;
 
-                        $thumbnailSName = $t . 'S.' . $libImage->getType();
+                        $thumbnailSName = $t . '_s.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailSName);
-                        $rowArticle->thumbnailS = $thumbnailSName;
+                        $libImage->save($dir . '/' . $thumbnailSName);
+                        $rowArticle->thumbnail_s = $thumbnailSName;
                     }
 
                     @unlink($tmpImage);
@@ -208,26 +211,26 @@ class Article extends AdminController
                     $libImage->open($thumbnailUpload['tmpName']);
                     if ($libImage->isImage()) {
                         $t = date('YmdHis');
-                        $dir = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail';
+                        $dir = PATH_DATA . '/Cms/Article/Thumbnail';
                         if (!file_exists($dir)) {
-                            $libFso = Be::getLib('fso');
+                            $libFso = Be::getLib('Fso');
                             $libFso->mkDir($dir);
                         }
 
-                        $thumbnailLName = $t . 'L.' . $libImage->getType();
+                        $thumbnailLName = $t . '_l.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailLName);
-                        $rowArticle->thumbnailL = $thumbnailLName;
+                        $libImage->save($dir . '/' . $thumbnailLName);
+                        $rowArticle->thumbnail_l = $thumbnailLName;
 
-                        $thumbnailMName = $t . 'M.' . $libImage->getType();
+                        $thumbnailMName = $t . '_m.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailMName);
-                        $rowArticle->thumbnailM = $thumbnailMName;
+                        $libImage->save($dir . '/' . $thumbnailMName);
+                        $rowArticle->thumbnail_m = $thumbnailMName;
 
-                        $thumbnailSName = $t . 'S.' . $libImage->getType();
+                        $thumbnailSName = $t . '_s.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                        $libImage->save($dir . DS . $thumbnailSName);
-                        $rowArticle->thumbnailS = $thumbnailSName;
+                        $libImage->save($dir . '/' . $thumbnailSName);
+                        $rowArticle->thumbnail_s = $thumbnailSName;
                     }
                 }
             } elseif ($thumbnailSource == 'url') { // 从指定网址获取缩图片
@@ -237,7 +240,7 @@ class Article extends AdminController
                     $data = $libHttp->get($thumbnailUrl);
 
                     if ($data != false) {
-                        $tmpImage = PATH_DATA . DS . 'Tmp' . DS . date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
+                        $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
                         file_put_contents($tmpImage, $data);
 
                         $libImage = Be::getLib('image');
@@ -245,26 +248,26 @@ class Article extends AdminController
 
                         if ($libImage->isImage()) {
                             $t = date('YmdHis');
-                            $dir = PATH_DATA . DS . 'Cms' . DS . 'Article' . DS . 'Thumbnail';
+                            $dir = PATH_DATA . '/Cms/Article/Thumbnail';
                             if (!file_exists($dir)) {
-                                $libFso = Be::getLib('fso');
+                                $libFso = Be::getLib('Fso');
                                 $libFso->mkDir($dir);
                             }
 
-                            $thumbnailLName = $t . 'L.' . $libImage->getType();
+                            $thumbnailLName = $t . '_l.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                            $libImage->save($dir . DS . $thumbnailLName);
-                            $rowArticle->thumbnailL = $thumbnailLName;
+                            $libImage->save($dir . '/' . $thumbnailLName);
+                            $rowArticle->thumbnail_l = $thumbnailLName;
 
-                            $thumbnailMName = $t . 'M.' . $libImage->getType();
+                            $thumbnailMName = $t . '_m.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                            $libImage->save($dir . DS . $thumbnailMName);
-                            $rowArticle->thumbnailM = $thumbnailMName;
+                            $libImage->save($dir . '/' . $thumbnailMName);
+                            $rowArticle->thumbnail_m = $thumbnailMName;
 
-                            $thumbnailSName = $t . 'S.' . $libImage->getType();
+                            $thumbnailSName = $t . '_s.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                            $libImage->save($dir . DS . $thumbnailSName);
-                            $rowArticle->thumbnailS = $thumbnailSName;
+                            $libImage->save($dir . '/' . $thumbnailSName);
+                            $rowArticle->thumbnail_s = $thumbnailSName;
                         }
 
                         @unlink($tmpImage);
@@ -275,10 +278,10 @@ class Article extends AdminController
 
 
         if ($id == 0) {
-            $rowArticle->createById = $my->id;
+            $rowArticle->create_by_id = $my->id;
         } else {
-            $rowArticle->modifyTime = time();
-            $rowArticle->modifyById = $my->id;
+            $rowArticle->modify_time = time();
+            $rowArticle->modify_by_id = $my->id;
         }
 
         if ($rowArticle->save()) {
@@ -294,7 +297,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.articles');
     }
 
 
@@ -311,7 +314,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.articles');
     }
 
     public function block()
@@ -327,7 +330,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.articles');
     }
 
     public function delete()
@@ -343,7 +346,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.articles');
     }
 
 
@@ -370,7 +373,7 @@ class Article extends AdminController
         $configArticle = Be::getConfig('Cms.Article');
 
         Response::set('error', 0);
-        Response::set('summary', limit($body, intval($configArticle->getSummary)));
+        Response::set('summary', String::limit($body, intval($configArticle->getSummary)));
         Response::ajax();
     }
 
@@ -382,14 +385,14 @@ class Article extends AdminController
 
         $configArticle = Be::getConfig('Cms.Article');
 
-        $libScws = Be::getLib('scws');
-        $libScws->sendText($body);
-        $scwsKeywords = $libScws->getTops(intval($configArticle->getMetaKeywords));
+        $libPscws = Be::getLib('Pscws');
+        $libPscws->sendText($body);
+        $keywords = $libPscws->getTops(intval($configArticle->getMetaKeywords));
         $metaKeywords = '';
-        if ($scwsKeywords !== false) {
+        if ($keywords !== false) {
             $tmpMetaKeywords = array();
-            foreach ($scwsKeywords as $scwsKeyword) {
-                $tmpMetaKeywords[] = $scwsKeyword['word'];
+            foreach ($keywords as $keyword) {
+                $tmpMetaKeywords[] = $keyword['word'];
             }
             $metaKeywords = implode(' ', $tmpMetaKeywords);
         }
@@ -407,7 +410,7 @@ class Article extends AdminController
         $configArticle = Be::getConfig('Cms.Article');
 
         Response::set('error', 0);
-        Response::set('metaDescription', limit($body, intval($configArticle->getMetaDescription)));
+        Response::set('metaDescription', String::limit($body, intval($configArticle->getMetaDescription)));
         Response::ajax();
     }
 
@@ -464,7 +467,7 @@ class Article extends AdminController
         Response::display();
 
         $libHistory = Be::getLib('History');
-        $libHistory->save();
+        $libHistory->save('Admin.Cms.Article.comments');
     }
 
     public function commentsUnblock()
@@ -481,7 +484,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.comments');
     }
 
     public function commentsBlock()
@@ -497,7 +500,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.comments');
     }
 
     public function commentsDelete()
@@ -513,7 +516,7 @@ class Article extends AdminController
         }
 
         $libHistory = Be::getLib('History');
-        $libHistory->back();
+        $libHistory->back('Admin.Cms.Article.comments');
     }
 
 }

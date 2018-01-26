@@ -4,6 +4,7 @@ namespace App\Cms\Controller;
 use System\Be;
 use System\Request;
 use System\Response;
+use System\Controller;
 
 /**
  *
@@ -11,7 +12,7 @@ use System\Response;
  * @router article
  * @permission 文章
  */
-class Article extends \System\Controller
+class Article extends Controller
 {
 
     /**
@@ -21,21 +22,21 @@ class Article extends \System\Controller
      */
     public function home()
     {
-        $serviceArticle = Be::getService('Cms.Article');
+        $serviceArticleCache = Be::getService('Cms.ArticleCache');
 
         // 最新带图文章
-        $latestThumbnailArticles = $serviceArticle->getArticles([
+        $latestThumbnailArticles = $serviceArticleCache->getArticles([
             'block' => 0,
             'thumbnail' => 1,
-            'orderBy' => 'createTime',
+            'orderBy' => 'create_time',
             'orderByDir' => 'DESC',
             'limit' => 6
         ]);
 
-        $activeUsers = $serviceArticle->getActiveUsers();
+        $activeUsers = $serviceArticleCache->getActiveUsers();
 
         // 本月热点
-        $monthHottestArticles = $serviceArticle->getArticles([
+        $monthHottestArticles = $serviceArticleCache->getArticles([
             'block' => 0,
             'orderBy' => 'hits',
             'orderByDir' => 'DESC',
@@ -44,7 +45,7 @@ class Article extends \System\Controller
         ]);
 
         // 推荐文章
-        $topArticles = $serviceArticle->getArticles([
+        $topArticles = $serviceArticleCache->getArticles([
             'block' => 0,
             'top' => 1,
             'orderBy' => 'top',
@@ -53,15 +54,17 @@ class Article extends \System\Controller
         ]);
 
         $topCategories = array();
-        $categories = $serviceArticle->getCategories();
+
+        $serviceCategoryCache = Be::getService('Cms.CategoryCache');
+        $categories = $serviceCategoryCache->getCategories();
         foreach ($categories as $category) {
             if ($category->parentId > 0) continue;
             $topCategories[] = $category;
 
-            $category->articles = $serviceArticle->getArticles([
+            $category->articles = $serviceArticleCache->getArticles([
                 'block' => 0,
                 'categoryId' => $category->id,
-                'orderBy' => 'createTime',
+                'orderBy' => 'create_time',
                 'orderByDir' => 'DESC',
                 'limit' => 6
             ]);
@@ -87,29 +90,19 @@ class Article extends \System\Controller
      */
     public function articles()
     {
-        $configArticle = Be::getConfig('Cms.Article');
-
         $categoryId = Request::get('categoryId', 0, 'int');
         Response::set('categoryId', $categoryId);
 
-        $rowArticleCategory = Be::getRow('articleCategory');
-        $rowArticleCategory->cache($configArticle->cacheExpire);
-        $rowArticleCategory->load($categoryId);
+        $serviceCategoryCache = Be::getService('Cms.CategoryCache');
+        $category = $serviceCategoryCache->getCategory($categoryId);
 
-        if ($rowArticleCategory->id == 0) Response::end('文章分类不存在！');
+        if ($category->id == 0) Response::end('文章分类不存在！');
 
-        Response::setTitle($rowArticleCategory->name);
-        Response::set('category', $rowArticleCategory);
+        Response::setTitle($category->name);
+        Response::set('category', $category);
 
-        if ($rowArticleCategory->parentId > 0) {
-            $parentCategory = null;
-            $tmpCategory = $rowArticleCategory;
-            while ($tmpCategory->parentId > 0) {
-                $parentId = $tmpCategory->parentId;
-                $tmpCategory = Be::getRow('articleCategory');
-                $tmpCategory->load($parentId);
-            }
-            $parentCategory = $tmpCategory;
+        if ($category->parentId > 0) {
+            $parentCategory = $serviceCategoryCache->getTopParentCategory($category->parentId);
             Response::set('parentCategory', $parentCategory);
 
             $northMenu = Be::getMenu('north');
@@ -118,7 +111,8 @@ class Article extends \System\Controller
                 //$menuExist = false;
                 foreach ($northMenuTree as $menu) {
                     if (
-                        isset($menu->params['controller']) && $menu->params['controller'] == 'article' &&
+                        isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
+                        isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
                         isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
                         isset($menu->params['categoryId']) && $menu->params['categoryId'] == $parentCategory->id
                     ) {
@@ -128,30 +122,30 @@ class Article extends \System\Controller
                 }
             }
         } else {
-            Response::set('parentCategory', $rowArticleCategory);
+            Response::set('parentCategory', $category);
         }
 
-        $serviceArticle = Be::getService('Cms.Article');
+        $serviceArticleCache = Be::getService('Cms.ArticleCache');
 
         $option = array('categoryId' => $categoryId);
 
         $limit = 10;
         $pagination = Be::getUi('Pagination');
         $pagination->setLimit($limit);
-        $pagination->setTotal($serviceArticle->getArticleCount($option));
+        $pagination->setTotal($serviceArticleCache->getArticleCount($option));
         $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->setUrl('app=cms&controller=article&task=articles&categoryId=' . $categoryId);
+        $pagination->setUrl('app=Cms&controller=Article&task=articles&categoryId=' . $categoryId);
         Response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->getOffset();
         $option['limit'] = $limit;
-        $option['orderByString'] = '`top` DESC, `ordering` DESC, `createTime` DESC';
+        $option['orderByString'] = '`top` DESC, `ordering` DESC, `create_time` DESC';
 
-        $articles = $serviceArticle->getArticles($option);
+        $articles = $serviceArticleCache->getArticles($option);
         Response::set('articles', $articles);
 
         // 热门文章
-        $hottestArticles = $serviceArticle->getArticles([
+        $hottestArticles = $serviceArticleCache->getArticles([
             'block' => 0,
             'categoryId' => $categoryId,
             'orderBy' => 'hits',
@@ -161,7 +155,7 @@ class Article extends \System\Controller
         Response::set('hottestArticles', $hottestArticles);
 
         // 推荐文章
-        $topArticles = $serviceArticle->getArticles(array('categoryId' => $categoryId, 'top' => 1, 'orderBy' => 'top', 'orderByDir' => 'DESC', 'limit' => 10));
+        $topArticles = $serviceArticleCache->getArticles(array('categoryId' => $categoryId, 'top' => 1, 'orderBy' => 'top', 'orderByDir' => 'DESC', 'limit' => 10));
         Response::set('topArticles', $topArticles);
 
         Response::display();
@@ -172,40 +166,39 @@ class Article extends \System\Controller
      */
     public function detail()
     {
-        $configArticle = Be::getConfig('Cms.Article');
-
         $articleId = Request::get('articleId', 0, 'int');
         if ($articleId == 0) Response::end('参数(articleId)缺失！');
 
-        $rowArticle = Be::getRow('Cms.article');
-        $rowArticle->cache($configArticle->cacheExpire);
+        $rowArticle = Be::getRow('Cms.Article');
         $rowArticle->load($articleId);
         $rowArticle->increment('hits', 1); // 点击量加 1
 
-        $serviceArticle = Be::getService('Cms.Article');
+        $serviceArticleCache = Be::getService('Cms.ArticleCache');
 
-        $similarArticles = $serviceArticle->getSimilarArticles($rowArticle, 10);
+        $similarArticles = $serviceArticleCache->getSimilarArticles($rowArticle, 10);
 
         // 热门文章
-        $hottestArticles = $serviceArticle->getArticles([
+        $hottestArticles = $serviceArticleCache->getArticles([
             'block' => 0,
-            'categoryId' => $rowArticle->categoryId,
+            'categoryId' => $rowArticle->category_id,
             'orderBy' => 'hits',
             'orderByDir' => 'DESC',
             'limit' => 10
         ]);
 
         // 推荐文章
-        $topArticles = $serviceArticle->getArticles([
+        $topArticles = $serviceArticleCache->getArticles([
             'block' => 0,
-            'categoryId' => $rowArticle->categoryId,
+            'categoryId' => $rowArticle->category_id,
             'top' => 1,
             'orderBy' => 'top',
             'orderByDir' => 'DESC',
             'limit' => 10
         ]);
 
-        $comments = $serviceArticle->getComments([
+
+        $serviceArticleCommentCache = Be::getService('Cms.ArticleCommentCache');
+        $comments = $serviceArticleCommentCache->getComments([
             'articleId' => $articleId
         ]);
 
@@ -219,7 +212,8 @@ class Article extends \System\Controller
             $menuExist = false;
             foreach ($northMenuTree as $menu) {
                 if (
-                    isset($menu->params['controller']) && $menu->params['controller'] == 'article' &&
+                    isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
+                    isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
                     isset($menu->params['task']) && $menu->params['task'] == 'detail' &&
                     isset($menu->params['articleId']) && $menu->params['articleId'] == $articleId
                 ) {
@@ -233,7 +227,8 @@ class Article extends \System\Controller
             if (!$menuExist) {
                 foreach ($northMenuTree as $menu) {
                     if (
-                        isset($menu->params['controller']) && $menu->params['controller'] == 'article' &&
+                        isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
+                        isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
                         isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
                         isset($menu->params['categoryId']) && $menu->params['categoryId'] == $rowArticle->categoryId
                     ) {

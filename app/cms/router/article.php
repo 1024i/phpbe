@@ -1,9 +1,10 @@
 <?php
-namespace router;
+namespace App\Cms\Router;
 
 use System\Be;
+use System\Router;
 
-class Article extends \system\router
+class Article extends Router
 {
 
     public function encodeUrl($app, $controller, $task, $params = [])
