@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * 应用基类， 所有应用都从本类继承
@@ -175,7 +175,7 @@ abstract class App
 	{
 		$my = Be::getUser();
 
-		$src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
+		$src = PATH_ADMIN . '/tmp/app_' . $this->name . '/' . $src;
 
 		if (!file_exists($src)) {
 			echo '源文件夹'.$src.'不存在';
@@ -194,7 +194,7 @@ abstract class App
 	{
 		$my = Be::getUser();
 
-		$src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
+		$src = PATH_ADMIN . '/tmp/app_' . $this->name . '/' . $src;
 
 		if (!file_exists($src)) {
 			echo '源文件'.$src.'不存在';

@@ -1,13 +1,13 @@
 <?php
-namespace system\cache\dDriver;
+namespace System\cache\dDriver;
 
-use \system\Response;
-use \system\cache\Driver;
+use System\Cache\Exception;
+use System\Cache\DriverInterface;
 
 /**
  * Memcache 缓存类
  */
-class Memcached extends Driver
+class Memcached implements DriverInterface
 {
 
     /**
@@ -19,12 +19,13 @@ class Memcached extends Driver
      * 构造函数
      *
      * @param array $options 初始化参数
+     * @throws Exception
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcached')) Response::end('服务器未安装 memcached 扩展！');
+        if (!extension_loaded('memcached')) throw new Exception('服务器未安装 memcached 扩展！');
 
-        if (empty($options)) Response::end('memcached 配置错误！');
+        if (empty($options)) throw new Exception('memcached 配置错误！');
 
         $this->handler = new \Memcached;
         $this->handler->addServers($options);

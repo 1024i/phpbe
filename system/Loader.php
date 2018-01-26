@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 
 class Loader

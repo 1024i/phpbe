@@ -1,5 +1,5 @@
 <?php
-namespace system\Session\Driver;
+namespace System\Session\Driver;
 
 use System\Response;
 
@@ -51,7 +51,7 @@ class Redis extends \SessionHandler
 			if ('' != $options['password']) $this->handler->auth($options['password']);
 			if (0 != $options['db']) $this->handler->select($options['db']);
 		} else {
-			$this->handler = \system\redis::getInstance();
+			$this->handler = \System\Redis::getInstance();
 		}
 		return true;
 	}

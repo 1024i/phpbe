@@ -1,6 +1,6 @@
 <?php
 
-namespace system\Db\Driver;
+namespace System\Db\Driver;
 
 use System\Be;
 use System\Db\Driver;

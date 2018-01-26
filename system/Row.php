@@ -1,6 +1,7 @@
 <?php
-namespace system;
+namespace System;
 
+use MongoDB\BSON\ObjectID;
 use System\Db\Exception;
 
 /**
@@ -13,11 +14,6 @@ abstract class Row extends Obj
     protected $primaryKey = '';
 
     protected $quote = '`'; // 字段或表名转义符 mysql: `
-
-    /**
-     * 缓存失效时间（单位：秒），0 为不使用缓存
-     */
-    protected $cacheExpire = 0;
 
     /**
      * 构造函数
@@ -47,7 +43,7 @@ abstract class Row extends Obj
      * 绑定一个数据源， GET, POST, 或者一个数组, 对象
      *
      * @param string | array | object $data 要绑定的数据对象
-     * @return \system\row | bool
+     * @return \System\row | bool
      * @throws Exception
      */
     public function bind($data)
@@ -75,13 +71,13 @@ abstract class Row extends Obj
      *
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
-     * @return \system\row | false
+     * @return \System\row | false
      * @throws Exception
      */
     public function load($field, $value = null)
     {
         $sql = null;
-        $values = array();
+        $values = [];
 
         if ($value === null) {
             if (is_array($field)) {
@@ -104,25 +100,11 @@ abstract class Row extends Obj
             $values[] = $value;
         }
 
-        $row = null;
-        $cacheKey = null;
-        if ($this->cacheExpire > 0) {
-            $cacheKey = 'row:load:' . sha1($sql . serialize($values));
-            $cache = cache::get($cacheKey);
-            if ($cache !== false) $row = $cache;
-        }
-
-        if ($row === null) {
-            $db = Be::getDb($this->db);
-            $row = $db->getObject($sql, $values);
-        }
+        $db = Be::getDb($this->db);
+        $row = $db->getObject($sql, $values);
 
         if (!$row) {
             throw new Exception('未找到指定数据记录！');
-        }
-
-        if ($this->cacheExpire > 0) {
-            cache::set($cacheKey, $row, $this->cacheExpire);
         }
 
         return $this->bind($row);
@@ -168,17 +150,6 @@ abstract class Row extends Obj
         $db->execute('DELETE FROM ' . $this->quote . $this->tableName . $this->quote . ' WHERE ' . $this->quote . $this->primaryKey . $this->quote . '=?', array($id));
 
         return true;
-    }
-
-    /**
-     * 缓存查询结果
-     *
-     * @param int $expire 缓存有期时间（单位：秒）
-     *
-     */
-    public function cache($expire = 60)
-    {
-        $this->cacheExpire = $expire;
     }
 
     /**
@@ -239,4 +210,24 @@ abstract class Row extends Obj
         return $this->primaryKey;
     }
 
+    /**
+     * 转成简单数组
+     *
+     * @return array
+     */
+    public function toArray() {
+        $array = get_object_vars($this);
+        unset($array['db'], $array['tableName'], $array['primaryKey'], $array['quote']);
+
+        return $array;
+    }
+
+    /**
+     * 转成简单对象
+     *
+     * @return Object
+     */
+    public function toObject() {
+        return (Object) $this->toArray();
+    }
 }

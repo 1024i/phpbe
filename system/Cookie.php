@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * cookie
@@ -10,7 +10,7 @@ class Cookie
 	private static $expire = 0;
     private static $path = '/';
 	private static $domain = '';
-	private static $secure = 0;
+	private static $secure = false;
 
 
 	// 设置默认超时时间

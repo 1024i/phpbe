@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 class AdminRouter
 {
@@ -26,7 +26,7 @@ class AdminRouter
                 $urlParams .= '/' . $key . '-' . $val;
             }
         }
-        echo URL_ROOT . '/' . ADMIN . '/'  . $app . '/' . $adminController . '/' . $task . $urlParams . $configSystem->sefSuffix;
+
         return URL_ROOT . '/' . ADMIN . '/' . $app . '/'  . $adminController . '/' . $task . $urlParams . $configSystem->sefSuffix;
     }
 

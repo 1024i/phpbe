@@ -8,10 +8,10 @@
  */
 function url($url)
 {
-    return \App\System\Tool\System::url($url);
+    return \System\Util\System::url($url);
 }
 
 function adminUrl($url)
 {
-    return \App\System\Tool\System::adminUrl($url);
+    return \System\Util\System::adminUrl($url);
 }

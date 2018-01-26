@@ -1,5 +1,5 @@
 <?php
-namespace system\Session\Driver;
+namespace System\Session\Driver;
 
 use System\Response;
 

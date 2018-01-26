@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * 
@@ -20,6 +20,7 @@ class Theme
 	*/
 	protected $colors = array('#333333');
 
+	/** @var Template | mixed */
 	protected $template = null;
 	protected $templateMethods = null;
 
@@ -50,9 +51,9 @@ class Theme
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-			<meta name="description" content="<?php echo Response::getMetaDescription();?>" />
-			<meta name="keywords" content="<?php echo Response::getMetaKeywords();?>" />
-			<title><?php echo Response::getTitle().' - '.$config->siteName; ?></title>
+			<meta name="description" content="<?php echo $template->getMetaDescription();?>" />
+			<meta name="keywords" content="<?php echo $template->getMetaKeywords();?>" />
+			<title><?php echo $template->getTitle().' - '.$config->siteName; ?></title>
 
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/system/theme/default/js/jquery-1.11.0.min.js"></script>
 			<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/system/theme/default/js/jquery.validate.min.js"></script>
@@ -62,7 +63,7 @@ class Theme
 			</script>
 
 			<?php $this->head(); ?>
-			<?php if (in_array('head', $templateMethods)) Response::head(); ?>
+			<?php if (in_array('head', $templateMethods)) $template->head(); ?>
 
 		</head>
 		<body>
@@ -70,7 +71,7 @@ class Theme
 				<div class="theme-body">
 				<?php
 				if (in_array('body', $templateMethods)) {
-					Response::body();
+					$template->body();
 				} else {
 					$this->body();
 				}
@@ -99,7 +100,7 @@ class Theme
 
 	/**
 	 *
-	 * 项部
+	 * 主体
 	 */
 	protected function body()
 	{
@@ -110,7 +111,7 @@ class Theme
 			<div class="theme-north">
 				<?php
 				if (in_array('north', $templateMethods)) {
-					Response::north();
+					$template->north();
 				} else {
 					$this->north();
 				}
@@ -122,7 +123,7 @@ class Theme
 			<div class="theme-middle">
 				<?php
 				if (in_array('middle', $templateMethods)) {
-					Response::middle();
+					$template->middle();
 				} else {
 					$this->middle();
 				}
@@ -134,7 +135,7 @@ class Theme
 			<div class="theme-south">
 				<?php
 				if (in_array('south', $templateMethods)) {
-					Response::south();
+					$template->south();
 				} else {
 					$this->south();
 				}
@@ -181,7 +182,7 @@ class Theme
 	<div class="col" style="width:<?php echo $westWidth; ?>%;">
 		<div class="theme-west-container">
 			<div class="theme-west">
-				<?php Response::west(); ?>
+				<?php $template->west(); ?>
 			</div>
 		</div>
 	</div>
@@ -196,7 +197,7 @@ class Theme
 				<?php
 				$this->message();
 
-				Response::center();
+				$template->center();
 				?>
 			</div>
 		</div>
@@ -210,7 +211,7 @@ class Theme
 		<div class="theme-east-container">
 			<div class="theme-east">
 				<?php
-				Response::east();
+				$template->east();
 				?>
 			</div>
 		</div>
@@ -235,9 +236,9 @@ class Theme
     public function getColor($index = 0)
     {
 		if ($index == 0) return $this->colors[0];
-		if (array_key_exists($index, $this->colors)) return $this->colors[$index];
+		if (isset($this->colors[$index])) return $this->colors[$index];
 		
-		$libCss = Be::getLib('css');
+		$libCss = Be::getLib('Css');
 		return $libCss->lighter($this->colors[0], $index*10);
     }
 
@@ -248,8 +249,8 @@ class Theme
      */
     protected function message()
     {
-        if (session::has('Message')) {
-			$message = session::delete('Message');
+        if (Session::has('_message')) {
+			$message = Session::delete('_message');
 
 			//$message->type: success:成功 / error:错误 / warning:警告 / info:普通信息 
 
@@ -261,4 +262,3 @@ class Theme
     }
 
 }
-?>

@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * Request
@@ -65,34 +65,34 @@ class Request
 
     private static function _stripslashes($value)
     {
-        return is_array($value) ? array_map(array('\system\Request', '_stripslashes'), $value) : stripslashes($value);
+        return is_array($value) ? array_map(array('System\Request', '_stripslashes'), $value) : stripslashes($value);
     }
 
     private static function formatInt($value)
     {
-        return is_array($value) ? array_map(array('\system\Request', 'formatInt'), $value) : intval($value);
+        return is_array($value) ? array_map(array('System\Request', 'formatInt'), $value) : intval($value);
     }
 
     private static function formatFloat($value)
     {
-        return is_array($value) ? array_map(array('\system\Request', 'formatFloat'), $value) : floatval($value);
+        return is_array($value) ? array_map(array('System\Request', 'formatFloat'), $value) : floatval($value);
     }
 
     private static function formatBool($value)
     {
-        return is_array($value) ? array_map(array('\system\Request', 'formatBool'), $value) : boolval($value);
+        return is_array($value) ? array_map(array('System\Request', 'formatBool'), $value) : boolval($value);
     }
 
     private static function formatString($value)
     {
-        return is_array($value) ? array_map(array('\system\Request', 'formatString'), $value) : htmlspecialchars($value);
+        return is_array($value) ? array_map(array('System\Request', 'formatString'), $value) : htmlspecialchars($value);
     }
 
     // 过滤  脚本,样式，框架
     private static function formatHtml($value)
     {
         if (is_array($value)) {
-            return array_map(array('\system\Request', 'formatHtml'), $value);
+            return array_map(array('System\Request', 'formatHtml'), $value);
         } else {
             $value = preg_replace("@<script(.*?)</script>@is", '', $value);
             $value = preg_replace("@<style(.*?)</style>@is", '', $value);

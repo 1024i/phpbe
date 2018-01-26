@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * 缓存类

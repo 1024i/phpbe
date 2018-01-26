@@ -1,6 +1,5 @@
 <?php
-
-namespace system\Table\Query;
+namespace System\Table\Query;
 
 use System\Be;
 use System\Cache;

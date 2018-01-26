@@ -1,7 +1,7 @@
 <?php
-namespace system\app;
+namespace System\App;
 
-use \system\be;
+use System\Be;
 
 /**
  * 应用基类， 所有应用都从本类继承

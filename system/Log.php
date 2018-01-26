@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * errorLog
@@ -10,7 +10,7 @@ class Log
      * 错误或异常信息写入日志文件
      *
      * @param Throwable $e 错误或异常对象
-     * @author Lou Barnes<i@liu12.com>
+     * @author liu12<i@liu12.com>
      */
     public static function log(\Throwable $e)
     {
@@ -46,7 +46,7 @@ class Log
         $month = date('m', $t);
         $day = date('d', $t);
 
-        $path = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.data';
+        $path = PATH_DATA . '/system/errorLog/' .  $year . '/' . $month . '/' . $day . '.data';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -57,7 +57,7 @@ class Log
         $i = 1;
         while ($offset > 256 * 1024 * 1024) {
             $day = date('d', $t) . '-' . $i;
-            $path = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.data';
+            $path = PATH_DATA . '/system/errorLog/' .  $year . '/' . $month . '/' . $day . '.data';
             $offset = 0;
             if (file_exists($path)) $offset = filesize($path);
             $i++;
@@ -70,7 +70,7 @@ class Log
             fclose($f);
         }
 
-        $path = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.index';
+        $path = PATH_DATA . '/system/errorLog/' .  $year . '/' . $month . '/' . $day . '.index';
         $f = fopen($path, 'ab+');
         if ($f) {
             fwrite($f, pack('L', $offset));

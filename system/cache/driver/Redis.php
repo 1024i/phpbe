@@ -1,13 +1,13 @@
 <?php
-namespace system\cache\driver;
+namespace System\Cache\Driver;
 
-use \system\cache\Driver;
-use \system\Response;
+use System\Cache\Exception;
+use System\Cache\DriverInterface;
 
 /**
  * Redis 缓存类
  */
-class Redis extends Driver
+class Redis implements DriverInterface
 {
 
     /**
@@ -19,10 +19,11 @@ class Redis extends Driver
      * 构造函数
      *
      * @param array $options 初始化参数
+     * @throws Exception
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('Redis')) Response::end('服务器未安装 redis 扩展！');
+        if (!extension_loaded('Redis')) throw new Exception('服务器未安装 redis 扩展！');
 
         if (!empty($options)) {
             $this->handler = new \Redis;

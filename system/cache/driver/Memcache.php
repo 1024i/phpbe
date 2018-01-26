@@ -1,12 +1,13 @@
 <?php
-namespace system\cache\driver;
+namespace System\Cache\Driver;
 
-use \system\cache\Driver;
+use System\Cache\DriverInterface;
+use System\Cache\Exception;
 
 /**
  * memcache 缓存类
  */
-class Memcache extends Driver
+class Memcache implements DriverInterface
 {
 
     /**
@@ -18,12 +19,13 @@ class Memcache extends Driver
      * 构造函数
      *
      * @param array $options 初始化参数
+     * @throws Exception
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcache')) \system\Response::end('服务器未安装 memcache 扩展！');
+        if (!extension_loaded('memcache')) throw new Exception('服务器未安装 memcache 扩展！');
 
-        if (empty($options)) \system\Response::end('memcache 配置错误！');
+        if (empty($options)) throw new Exception('memcache 配置错误！');
 
         $this->handler = new \Memcache;
         foreach ($options as $option) {

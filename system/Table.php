@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 use System\Db\Exception;
 
@@ -26,11 +26,6 @@ class Table extends Obj
     protected $orderBy = ''; // 排序
 
     protected $lastSql = null; // 上次执行的 SQL
-
-    /**
-     * 缓存失效时间（单位：秒），0 为不使用缓存
-     */
-    protected $cacheExpire = 0;
 
     /**
      * 切换库
@@ -305,18 +300,6 @@ class Table extends Obj
     }
 
     /**
-     * 缓存查询结果
-     *
-     * @param int $expire 缓存有期时间（单位：秒）
-     * @return table
-     */
-    public function cache($expire = 60)
-    {
-        $this->cacheExpire = intval($expire);
-        return $this;
-    }
-
-    /**
      * 查询单个字段第一条记录
      *
      * @param string $field 查询的字段
@@ -477,19 +460,8 @@ class Table extends Obj
 
         $this->lastSql = array($sql, $sqlData[1]);
 
-        $cacheKey = null;
-        if ($this->cacheExpire > 0) {
-            $cacheKey = 'table:' . $fn . ':' . sha1($sql . serialize($sqlData[1]));
-            $cache = cache::get($cacheKey);
-            if ($cache !== false) return $cache;
-        }
-
         $db = Be::getDb($this->db);
         $result = $keyField === null ? $db->$fn($sql, $sqlData[1]) : $db->$fn($sql, $sqlData[1], $keyField);
-
-        if ($this->cacheExpire > 0) {
-            cache::set($cacheKey, $result, $this->cacheExpire);
-        }
 
         return $result;
     }

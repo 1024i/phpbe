@@ -1,5 +1,5 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * 菜单基类

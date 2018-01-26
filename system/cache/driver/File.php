@@ -1,12 +1,12 @@
 <?php
-namespace system\cache\driver;
+namespace System\Cache\Driver;
 
-use \system\cache\Driver;
+use System\Cache\DriverInterface;
 
 /**
  * 文件 缓存类
  */
-class File extends Driver
+class File implements DriverInterface
 {
 
     /**
@@ -27,7 +27,7 @@ class File extends Driver
     public function get($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . $hash . '.php';
 
         if (!is_file($path)) return false;
 
@@ -74,9 +74,9 @@ class File extends Driver
     public function set($key, $value, $expire = 0)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
-        $path = $dir . DS . $hash . '.php';
+        $path = $dir . '/' . $hash . '.php';
 
         if (!is_numeric($value)) $value = serialize($value);
 
@@ -114,7 +114,7 @@ class File extends Driver
     public function has($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . $hash . '.php';
 
         return is_file($path) ? true : false;
     }
@@ -128,7 +128,7 @@ class File extends Driver
     public function delete($key)
     {
         $hash = sha1($key);
-        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2) . DS . $hash . '.php';
+        $path = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . $hash . '.php';
         if (!is_file($path)) return true;
         return unlink($path);
     }
@@ -143,9 +143,9 @@ class File extends Driver
     public function increment($key, $step = 1)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
-        $path = $dir . DS . $hash . '.php';
+        $path = $dir . '/' . $hash . '.php';
 
         if (!is_file($path)) {
             $value = $step;
@@ -180,9 +180,9 @@ class File extends Driver
     public function decrement($key, $step = 1)
     {
         $hash = sha1($key);
-        $dir = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File' . DS . substr($hash, 0, 2) . DS . substr($hash, 2, 2);
+        $dir = PATH_CACHE . '/File/' .  substr($hash, 0, 2) . '/' . substr($hash, 2, 2);
         if (!is_dir($dir)) mkdir($dir, 0777, 1);
-        $path = $dir . DS . $hash . '.php';
+        $path = $dir . '/' . $hash . '.php';
 
         if (!is_file($path)) {
             $value = -$step;
@@ -214,12 +214,12 @@ class File extends Driver
      */
     public function flush()
     {
-        $path = PATH_DATA . DS . 'System' . DS . 'Cache' . DS . 'File';
+        $path = PATH_CACHE . '/File';
 
         $handle = opendir($path);
         while (($file = readdir($handle)) !== false) {
             if ($file != '.' && $file != '..') {
-                $this->rm($path . DS . $file);
+                $this->rm($path . '/' . $file);
             }
         }
         closedir($handle);
@@ -237,7 +237,7 @@ class File extends Driver
             $handle = opendir($path);
             while (($file = readdir($handle)) !== false) {
                 if ($file != '.' && $file != '..') {
-                    $this->rm($path . DS . $file);
+                    $this->rm($path . '/' . $file);
                 }
             }
             closedir($handle);

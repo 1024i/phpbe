@@ -1,11 +1,11 @@
 <?php
-namespace system\app;
+namespace System\App;
 
 
 /**
  * 应用配置项
  */
-abstract class configItem
+abstract class ConfigItem
 {
 
     public $name = ''; // 配置项名称
@@ -21,7 +21,7 @@ abstract class configItem
      * @param $name
      * @param $key
      * @param $value
-     * @param string $valueType int, float, bool, string, html, '', array
+     * @param string $valueType int, float, bool, string, array
      * @param string $optionType text, number, date, datetime, range, radio, checkbox, file
      * @param array $optionValues
      */

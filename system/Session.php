@@ -1,6 +1,6 @@
 <?php
 
-namespace system;
+namespace System;
 
 /**
  * Session
@@ -28,8 +28,8 @@ class Session
         session_name($configSession->name);
 
         $driver = $configSession->driver;
-        if ($driver != 'File') {
-            $className = '\\System\\Session\\Driver\\' . $driver;
+        if ($driver != 'Default') {
+            $className = 'Phpbe\\System\\Session\\Driver\\' . $driver;
             $handler = new $className($configSession);
             session_set_save_handler($handler);
             register_shutdown_function('sessionWriteClose');

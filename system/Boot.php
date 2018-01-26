@@ -2,11 +2,13 @@
 use System\Be;
 use System\Request;
 use System\Response;
+use System\Session;
+use System\Log;
 
-require PATH_ROOT . DS . 'System' . DS . 'Loader.php';
+require PATH_ROOT . '/System/Loader.php';
 spl_autoload_register(array('\\System\\Loader', 'autoload'));
 
-require PATH_ROOT . DS . 'System' . DS . 'Tool.php';
+require PATH_ROOT . '/System/Tool.php';
 
 // 检查网站配置， 是否暂停服务
 $configSystem = Be::getConfig('System.System');
@@ -18,17 +20,18 @@ date_default_timezone_set($configSystem->timezone);
 try {
 
     // 启动 session
-    \system\session::start();
-
-    $my = Be::getUser();
-    if (!isset($my->id) || $my->id == 0) {
-        $model = Be::getService('System.User');
-        $model->rememberMe();
-    }
+    Session::start();
 
     //printR($_SERVER);
 
     $uri = $_SERVER['REQUEST_URI'];    // 返回值为: /{controller}/{task}......
+
+    if (substr($uri, 0, strlen(ADMIN)) == ADMIN) {
+        define('IS_BACKEND', true); // 是否后台
+
+        $uri = substr($uri, strlen(ADMIN));
+    }
+
     $scriptName = $_SERVER['SCRIPT_NAME'];
     if ($scriptName != '/index.php') $uri = substr($uri, strrpos($scriptName, '/index.php'));
 
@@ -90,7 +93,7 @@ try {
         Response::error('未定义的任务：' . $task, null, -404);
     }
 } catch (\Exception $e) { // 兼容 < php 7 版本
-    \system\Log::log($e);
+    System\Log::log($e);
     $db = Be::getDb();
     if ($db->inTransaction()) $db->rollback();
 
@@ -101,7 +104,7 @@ try {
         Response::error('系统错误！', $redirectUrl, -500);
     }
 } catch (\throwable $e) {
-    \system\Log::log($e);
+    System\Log::log($e);
     $db = Be::getDb();
     if ($db->inTransaction()) $db->rollback();
 

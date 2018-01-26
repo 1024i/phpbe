@@ -1,13 +1,13 @@
 <?php
-namespace system\app;
+namespace System\App;
 
-use \system\be;
+use System\Be;
 use System\Request;
 
 /**
  * 应用配轩类
  */
-abstract class config
+abstract class Config
 {
 
     public $app = ''; // 应用名

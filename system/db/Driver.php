@@ -1,6 +1,5 @@
 <?php
-
-namespace system\db;
+namespace System\db;
 
 /**
  * 数据库类

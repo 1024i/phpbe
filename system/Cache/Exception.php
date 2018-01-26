@@ -1,5 +1,5 @@
 <?php
-namespace System\db;
+namespace System\Cache;
 
 /**
  * 错误异常

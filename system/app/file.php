@@ -1,12 +1,12 @@
 <?php
-namespace system\app;
+namespace System\App;
 
-use \system\be;
+use System\Be;
 
 /**
  * 应用基类， 所有应用都从本类继承
  */
-abstract class file
+abstract class File
 {
     public $id = 0; // 应用在BE网站上的编号, 以便升级更新
     public $name = ''; // 应用名
@@ -50,7 +50,7 @@ abstract class file
 
     protected function copyDir($src, $dst)
     {
-        $src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
+        $src = PATH_ADMIN . '/tmp/app_' . $this->name . '/' . $src;
 
         if (!file_exists($src)) {
             echo '源文件夹'.$src.'不存在';
@@ -67,7 +67,7 @@ abstract class file
 
     protected function copyFile($src, $dst)
     {
-         $src = PATH_ADMIN . DS . 'tmp' . DS . 'app_' . $this->name . DS . $src;
+         $src = PATH_ADMIN . '/tmp/app_' . $this->name . '/' . $src;
 
         if (!file_exists($src)) {
             echo '源文件'.$src.'不存在';

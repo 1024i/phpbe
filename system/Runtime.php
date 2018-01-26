@@ -1,9 +1,9 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  *  运行时
- * @package system
+ * @package System
  *
  */
 class Runtime

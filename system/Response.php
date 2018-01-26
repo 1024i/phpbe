@@ -1,9 +1,9 @@
 <?php
-namespace system;
+namespace System;
 
 /**
  * Response
- * @package system
+ * @package System
  *
  * @method void setTitle(string $title) static 设置 title
  * @method void setMetaKeywords(string $metaKeywords)  static 设置 meta keywords
@@ -83,7 +83,7 @@ class Response
         $data = new \stdClass();
         $data->type = $type;
         $data->body = $message;
-        session::set('Message', $data);
+        Session::set('_message', $data);
     }
 
     /**
@@ -113,14 +113,14 @@ class Response
      *
      * @param string $message 消息
      * @param string $redirectUrl 跳转网址
-     * @param int $code 错误码
+     * @param int $errorCode 错误码
      */
-    public static function success($message, $redirectUrl = 'referer', $code = 0)
+    public static function success($message, $redirectUrl = 'referer', $errorCode = 0)
     {
         if (Request::isAjax()) {
             self::set('success', true);
             self::set('message', $message);
-            self::set('code', $code);
+            self::set('error_code', $errorCode);
             if ($redirectUrl !== null) self::set('redirectUrl', $redirectUrl);
             self::ajax();
         } else {
@@ -140,14 +140,14 @@ class Response
      *
      * @param string $message 消息
      * @param string $redirectUrl 跳转网址
-     * @param int $code 错误码
+     * @param int $errorCode 错误码
      */
-    public static function error($message, $redirectUrl = 'referer', $code = 1)
+    public static function error($message, $redirectUrl = 'referer', $errorCode = 1)
     {
         if (Request::isAjax()) {
             self::set('success', false);
             self::set('message', $message);
-            self::set('code', $code);
+            self::set('error_code', $errorCode);
             if ($redirectUrl !== null) self::set('redirectUrl', $redirectUrl);
             self::ajax();
         } else {
@@ -165,28 +165,30 @@ class Response
     /**
      * 显示模板
      *
+     * @param string $app 应用名
      * @param string $template 模板名
      * @param string $theme 主题名
      */
-    public static function display($template = null, $theme = null)
+    public static function display($app = null, $template = null, $theme = null)
     {
         $templateInstance = null;
         if ($template === null) {
-            $controller = Request::request('controller', 'adminUser');
-            $task = Request::request('task', 'login');
+            $app = Request::request('app');
+            $controller = Request::request('controller');
+            $task = Request::request('task');
             $template = $controller . '.' . $task;
 
             if (defined('IS_BACKEND') && IS_BACKEND) {
-                $templateInstance = Be::getAdminTemplate($template, $theme);
+                $templateInstance = Be::getAdminTemplate($app, $template, $theme);
             } else {
-                $templateInstance = Be::getTemplate($template, $theme);
+                $templateInstance = Be::getTemplate($app, $template, $theme);
             }
 
         } else {
             if (defined('IS_BACKEND') && IS_BACKEND) {
-                $templateInstance = Be::getAdminTemplate($template, $theme);
+                $templateInstance = Be::getAdminTemplate($app, $template, $theme);
             } else {
-                $templateInstance = Be::getTemplate($template, $theme);
+                $templateInstance = Be::getTemplate($app, $template, $theme);
             }
         }
 
@@ -194,8 +196,8 @@ class Response
             $templateInstance->$key = $val;
         }
 
-        if (session::has('Message')) {
-            $templateInstance->Message = session::delete('Message');
+        if (Session::has('_message')) {
+            $templateInstance->_message = Session::delete('_message');
         }
 
         $templateInstance->display();
@@ -226,8 +228,8 @@ class Response
      */
     public static function end($string = null)
     {
-        if (session::has('Message')) {
-            session::delete('Message');
+        if (Session::has('_message')) {
+            Session::delete('_message');
         }
 
         if ($string === null) {

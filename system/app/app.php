@@ -1,10 +1,10 @@
 <?php
-namespace system\app;
+namespace System\App;
 
 /**
  * 应用基类， 所有应用都从本类继承
  */
-abstract class app
+abstract class App
 {
 	public $id = 0; // 应用在BE网站上的编号, 以便升级更新
     public $name = ''; // 应用名

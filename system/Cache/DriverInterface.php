@@ -1,10 +1,10 @@
 <?php
-namespace system\cache;
+namespace System\Cache;
 
 /**
  * 缓存驱动
  */
-abstract class Driver
+interface DriverInterface
 {
 
     /**
@@ -12,7 +12,7 @@ abstract class Driver
      *
      * @param string $options 初始化参数
      */
-    abstract public function __construct($options = array());
+    public function __construct($options = array());
 
     /**
      * 获取 指定的缓存 值
@@ -20,7 +20,7 @@ abstract class Driver
      * @param string $key     键名
      * @return mixed
      */
-    abstract public function get($key);
+    public function get($key);
 
     /**
      * 获取 多个指定的缓存 值
@@ -28,7 +28,7 @@ abstract class Driver
      * @param array $keys    键名 数组
      * @return mixed
      */
-    abstract public function getMulti($keys);
+    public function getMulti($keys);
 
     /**
      * 设置缓存
@@ -38,7 +38,7 @@ abstract class Driver
      * @param int    $expire 有效时间（秒）
      * @return bool
      */
-    abstract public function set($key, $value, $expire = 0);
+    public function set($key, $value, $expire = 0);
 
     /**
      * 设置缓存
@@ -47,7 +47,7 @@ abstract class Driver
      * @param int   $expire 有效时间（秒）
      * @return bool
      */
-    abstract public function setMulti($values, $expire = 0);
+    public function setMulti($values, $expire = 0);
 
     /**
      * 指定键名的缓存是否存在
@@ -55,7 +55,7 @@ abstract class Driver
      * @param string $key 缓存键名
      * @return bool
      */
-    abstract public function has($key);
+    public function has($key);
 
     /**
      * 删除指定键名的缓存
@@ -63,7 +63,7 @@ abstract class Driver
      * @param string $key 缓存键名
      * @return bool
      */
-    abstract public function delete($key);
+    public function delete($key);
 
     /**
      * 自增缓存（针对数值缓存）
@@ -72,7 +72,7 @@ abstract class Driver
      * @param int    $step 步长
      * @return false|int
      */
-    abstract public function increment($key, $step = 1);
+    public function increment($key, $step = 1);
 
     /**
      * 自减缓存（针对数值缓存）
@@ -81,13 +81,13 @@ abstract class Driver
      * @param int    $step 步长
      * @return false|int
      */
-    abstract public function decrement($key, $step = 1);
+    public function decrement($key, $step = 1);
 
     /**
      * 清除缓存
      *
      * @return bool
      */
-    abstract public function flush();
+    public function flush();
 
 }
