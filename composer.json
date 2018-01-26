@@ -1,21 +1,39 @@
 {
     "name": "phpbe/phpbe",
-    "description": "Be Easy Framework.",
-    "keywords": ["BE", "framework"],
+    "description": "BE（Be Easy）框架。",
+    "keywords": ["BE", "框架", "framework"],
     "license": "MIT",
     "type": "project",
     "authors": [
         {
-            "name": "BE Team",
+            "name": "BE团队",
             "homepage": "http://www.phpbe.com/"
         },
         {
-            "name": "liu12",
+            "name": "刘一二",
             "email": "i@liu12.com",
             "homepage": "http://www.liu12.com/"
         }
     ],
     "require": {
-        "php": ">=5.6.0"
+        "php": ">=5.6.0",
+        "phpbe/lib-ip": "1.0.*",
+        "phpbe/lib-http": "1.0.*",
+        "phpbe/lib-image": "1.0.*",
+        "phpbe/lib-history": "1.0.*",
+        "phpbe/lib-captcha": "1.0.*",
+        "phpbe/lib-css": "1.0.*",
+        "phpbe/lib-fso": "1.0.*",
+        "phpbe/lib-pscws": "1.0.*",
+
+        "phpmailer/phpmailer": "^6.0",
+        "tinymce/tinymce": "^4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Cache\\": "cache/",
+            "System\\": "system/"
+        }
     }
 }
