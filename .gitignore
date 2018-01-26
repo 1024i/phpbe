@@ -1,7 +1,18 @@
 /.idea
+
 /cache/*
+!/cache/index.html
+
 /data/*
+!/data/index.html
+!/data/Tmp/index.html
+!/data/System/AdminUser/Avatar/Default
+!/data/System/User/Avatar/Default
+!/data/System/Watermark/0.png
+!/data/System/Watermark/test-0.jpg
+
 /vendor/*
 !/vendor/index.html
+
 /composer.lock
 
