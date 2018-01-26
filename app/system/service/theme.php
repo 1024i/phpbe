@@ -1,11 +1,9 @@
 <?php
-
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
-
-class theme extends \System\Service
+class Theme extends \System\Service
 {
     private $beApi = 'http://api.phpbe.com/';
 
@@ -16,11 +14,11 @@ class theme extends \System\Service
         if ($this->theme === null) {
             $this->theme = array();
 
-            $dir = dir(PATH_ROOT . DS . 'theme');
+            $dir = dir(PATH_ROOT . '/theme');
             while (($file = $dir->read()) !== false) {
-                if ($file != '.' && $file != '..' && is_dir(PATH_ROOT . DS . 'theme' . DS . $file)) {
-                    if (file_exists(PATH_ROOT . DS . 'theme' . DS . $file . DS . 'config.php')) {
-                        include(PATH_ROOT . DS . 'theme' . DS . $file . DS . 'config.php');
+                if ($file != '.' && $file != '..' && is_dir(PATH_ROOT . '/theme/' .  $file)) {
+                    if (file_exists(PATH_ROOT . '/theme/' .  $file . '/config.php')) {
+                        include(PATH_ROOT . '/theme/' .  $file . '/config.php');
                         $className = 'configTheme_' . $file;
                         if (class_exists($className)) {
                             $this->theme[$file] = new $className();
@@ -44,7 +42,7 @@ class theme extends \System\Service
         $configSystem = Be::getConfig('System.System');
         $configSystem->theme = $theme;
 
-        Be::getService('system')->updateConfig($configSystem, PATH_ROOT . DS . 'Config' . DS . 'system.php');
+        Be::getService('system')->updateConfig($configSystem, PATH_ROOT . '/Config/system.php');
 
         return true;
     }
@@ -55,7 +53,7 @@ class theme extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->post($this->beApi . 'theme/', $option);
 
-        $theme = jsonDecode($Response);
+        $theme = json_decode($Response);
         return $theme;
     }
 
@@ -64,7 +62,7 @@ class theme extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'theme/' . $themeId);
 
-        $theme = jsonDecode($Response);
+        $theme = json_decode($Response);
         return $theme;
     }
 
@@ -72,7 +70,7 @@ class theme extends \System\Service
     // 安装应用文件
     public function installTheme($theme)
     {
-        $dir = PATH_ROOT . DS . 'theme' . DS . $theme->name;
+        $dir = PATH_ROOT . '/theme/' .  $theme->name;
         if (file_exists($dir)) {
             $this->setError('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
             return false;
@@ -81,7 +79,7 @@ class theme extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'themeDownload/' . $theme->id . '/');
 
-        $zip = PATH_ADMIN . DS . 'tmp' . DS . 'theme_' . $theme->name . '.zip';
+        $zip = PATH_ADMIN . '/tmp/theme_' . $theme->name . '.zip';
         file_put_contents($zip, $Response);
 
         $libZip = Be::getLib('zip');
@@ -107,7 +105,7 @@ class theme extends \System\Service
             return false;
         }
 
-        $themePath = PATH_ROOT . DS . 'theme' . DS . $theme;
+        $themePath = PATH_ROOT . '/theme/' .  $theme;
 
         $libFso = Be::getLib('fso');
         $libFso->rmDir($themePath);

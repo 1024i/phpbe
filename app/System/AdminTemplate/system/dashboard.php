@@ -16,7 +16,7 @@ $userCount = $this->userCount;
 $appCount = $this->appCount;
 $themeCount = $this->themeCount;
 
-$configUser = Be::getConfig('System.user');
+$configUser = Be::getConfig('System.User');
 $adminUserRole = Be::getAdminUserRole($my->roleId);
 ?>
 

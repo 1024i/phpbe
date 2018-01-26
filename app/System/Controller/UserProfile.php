@@ -1,12 +1,11 @@
 <?php
-
-namespace controller;
+namespace App\System\Controller;
 
 use System\Be;
 use System\Request;
 use System\Response;
 
-class userProfile extends userAuth
+class UserProfile extends UserAuth
 {
 
     public function home()
@@ -47,12 +46,12 @@ class userProfile extends userAuth
                 } else {
                     $my = Be::getUser();
 
-                    $rowUser = Be::getRow('System.user');
+                    $rowUser = Be::getRow('System.User');
                     $rowUser->load($my->id);
 
-                    $configUser = Be::getConfig('System.user');
+                    $configUser = Be::getConfig('System.User');
 
-                    $avatarDir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
+                    $avatarDir = PATH_DATA . '/system/user/avatar/';
                     if (!file_exists($avatarDir)) {
                         mkdir($avatarDir, 0777, true);
                     }
@@ -113,12 +112,12 @@ class userProfile extends userAuth
     {
         $my = Be::getUser();
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load($my->id);
 
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
 
-        $avatarDir = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS;
+        $avatarDir = PATH_DATA . '/system/user/avatar/';
 
         // 删除旧头像
         if ($rowUser->avatarS != '') @unlink($avatarDir . $rowUser->avatarS);
@@ -151,7 +150,7 @@ class userProfile extends userAuth
     {
         $my = Be::getUser();
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load($my->id);
 
         $my->name = $rowUser->name = Request::post('name', '');
@@ -181,10 +180,10 @@ class userProfile extends userAuth
         $password1 = Request::post('password1', '');
         $password2 = Request::post('password2', '');
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load($my->id);
 
-        $serviceUser = Be::getService('System.user');
+        $serviceUser = Be::getService('System.User');
         if ($serviceUser->encryptPassword($password) != $rowUser->password) {
             Response::error('当前密码错误！');
         }

@@ -19,7 +19,7 @@ class App extends \System\AdminController
         $rowAdminUser->load($my->id);
         Response::set('adminUser', $rowAdminUser);
 
-        $adminServiceUser = Be::getService('System.user');
+        $adminServiceUser = Be::getService('System.User');
         $userCount = $adminServiceUser->getUserCount();
         Response::set('userCount', $userCount);
 
@@ -155,7 +155,7 @@ class App extends \System\AdminController
             $adminServiceMenu = Be::getService('System.menu');
             if ($adminServiceMenu->setHomeMenu($id)) {
 
-                $rowSystemMenuGroup = Be::getRow('System.menuGroup');
+                $rowSystemMenuGroup = Be::getRow('System.MenuGroup');
                 $rowSystemMenuGroup->load($rowSystemMenu->groupId);
 
                 $serviceSystem = Be::getService('system');
@@ -208,7 +208,7 @@ class App extends \System\AdminController
         $id = Request::post('id', 0, 'int');
 
         $className = Request::post('className', '');
-        $rowMenuGroup = Be::getRow('System.menuGroup');
+        $rowMenuGroup = Be::getRow('System.MenuGroup');
         $rowMenuGroup->load(array('className' => $className));
         if ($rowMenuGroup->id > 0) {
             Response::setMessage('已存在(' . $className . ')类名！', 'error');
@@ -234,7 +234,7 @@ class App extends \System\AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowMenuGroup = Be::getRow('System.menuGroup');
+        $rowMenuGroup = Be::getRow('System.MenuGroup');
         $rowMenuGroup->load($id);
 
         if ($rowMenuGroup->id == 0) {
@@ -262,7 +262,7 @@ class App extends \System\AdminController
     // 应用管理
     public function apps()
     {
-        $adminServiceApp = Be::getService('System.app');
+        $adminServiceApp = Be::getService('System.App');
         $apps = $adminServiceApp->getApps();
 
         Response::setTitle('已安装的应用');
@@ -272,7 +272,7 @@ class App extends \System\AdminController
 
     public function remoteApps()
     {
-        $adminServiceApp = Be::getService('System.app');
+        $adminServiceApp = Be::getService('System.App');
         $remoteApps = $adminServiceApp->getRemoteApps(Request::post());
 
         Response::setTitle('安装新应用');
@@ -312,7 +312,7 @@ class App extends \System\AdminController
         }
 
         $app = $remoteApp->app;
-        if (file_exists(PATH_ADMIN . DS . 'apps' . DS . $app->name . 'php')) {
+        if (file_exists(PATH_ADMIN . '/apps/' .  $app->name . 'php')) {
             Response::set('error', 3);
             Response::set('message', '已存在安装标识为' . $app->name . '的应用');
             Response::ajax();
@@ -358,7 +358,7 @@ class App extends \System\AdminController
     // 主题管理
     public function themes()
     {
-        $adminServiceTheme = Be::getService('System.theme');
+        $adminServiceTheme = Be::getService('System.Theme');
         $themes = $adminServiceTheme->getThemes(Request::post());
 
         Response::setTitle('已安装的主题');
@@ -374,7 +374,7 @@ class App extends \System\AdminController
             Response::set('error', 1);
             Response::set('message', '参数(theme)缺失！');
         } else {
-            $adminServiceTheme = Be::getService('System.theme');
+            $adminServiceTheme = Be::getService('System.Theme');
             if ($adminServiceTheme->setDefaultTheme($theme)) {
                 systemLog('设置主题（' . $theme . ') 为默认主题！');
 
@@ -392,7 +392,7 @@ class App extends \System\AdminController
     // 在线主题
     public function remoteThemes()
     {
-        $adminServiceTheme = Be::getService('System.theme');
+        $adminServiceTheme = Be::getService('System.Theme');
 
         $localThemes = $adminServiceTheme->getThemes();
         $remoteThemes = $adminServiceTheme->getRemoteThemes(Request::post());
@@ -492,7 +492,7 @@ class App extends \System\AdminController
         $config->allowUploadImageTypes = $allowUploadImageTypes;
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'system.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/system.php');
 
         systemLog('改动系统基本设置');
 
@@ -525,7 +525,7 @@ class App extends \System\AdminController
         $config->smtpSecure = Request::post('smtpSecure', '');
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'mail.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/mail.php');
 
         systemLog('改动发送邮件设置');
 
@@ -613,16 +613,16 @@ class App extends \System\AdminController
             $libImage->open($image['tmpName']);
             if ($libImage->isImage()) {
                 $watermarkName = date('YmdHis') . '.' . $libImage->getType();
-                $watermarkPath = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $watermarkName;
+                $watermarkPath = PATH_DATA . '/system/watermark/' .  $watermarkName;
                 if (move_uploaded_file($image['tmpName'], $watermarkPath)) {
-                    // @unlink(PATH_DATA.DS.'system'.DS.'watermark'.DS.$config->image);
+                    // @unlink(PATH_DATA.'/system/watermark/'.$config->image);
                     $config->image = $watermarkName;
                 }
             }
         }
 
-        $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'watermark.php');
+        $serviceSystem = Be::getService('System.System');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/watermark.php');
 
         systemLog('修改水印设置');
 
@@ -632,8 +632,8 @@ class App extends \System\AdminController
 
     public function configWatermarkTest()
     {
-        $src = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-0.jpg';
-        $dst = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-1.jpg';
+        $src = PATH_DATA . '/system/watermark/test-0.jpg';
+        $dst = PATH_DATA . '/system/watermark/test-1.jpg';
 
         if (!file_exists($src)) Response::end(DATA . '/system/watermakr/test-0.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);
@@ -677,13 +677,13 @@ class App extends \System\AdminController
 
         $limit = Request::post('limit', -1, 'int');
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.admin');
+            $adminConfigSystem = Be::getConfig('System.Admin');
             $limit = $adminConfigSystem->limit;
         }
 
         Response::setTitle('错误日志列表');
 
-        $adminServiceSystemErrorLog = Be::getAdminService('systemErrorLog');
+        $adminServiceSystemErrorLog = Be::getAdminService('System.ErrorLog');
         $years = $adminServiceSystemErrorLog->getYears();
         Response::set('years', $years);
 

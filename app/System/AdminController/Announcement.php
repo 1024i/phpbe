@@ -10,6 +10,9 @@ use System\AdminController;
 class Announcement extends AdminController
 {
 
+    /**
+     *
+     */
     public function announcements()
     {
         $orderBy = Request::post('orderBy', 'id');

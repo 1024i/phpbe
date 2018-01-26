@@ -312,7 +312,7 @@ class System extends \System\AdminController
         }
 
         $app = $remoteApp->app;
-        if (file_exists(PATH_ADMIN . DS . 'Apps' . DS . $app->name . 'php')) {
+        if (file_exists(PATH_ADMIN . '/Apps/' .  $app->name . 'php')) {
             Response::set('error', 3);
             Response::set('message', '已存在安装标识为' . $app->name . '的应用');
             Response::ajax();
@@ -492,7 +492,7 @@ class System extends \System\AdminController
         $config->allowUploadImageTypes = $allowUploadImageTypes;
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'system.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/system.php');
 
         systemLog('改动系统基本设置');
 
@@ -525,7 +525,7 @@ class System extends \System\AdminController
         $config->smtpSecure = Request::post('smtpSecure', '');
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'mail.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/mail.php');
 
         systemLog('改动发送邮件设置');
 
@@ -613,16 +613,16 @@ class System extends \System\AdminController
             $libImage->open($image['tmpName']);
             if ($libImage->isImage()) {
                 $watermarkName = date('YmdHis') . '.' . $libImage->getType();
-                $watermarkPath = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $watermarkName;
+                $watermarkPath = PATH_DATA . '/system/watermark/' .  $watermarkName;
                 if (move_uploaded_file($image['tmpName'], $watermarkPath)) {
-                    // @unlink(PATH_DATA.DS.'system'.DS.'watermark'.DS.$config->image);
+                    // @unlink(PATH_DATA.'/system/watermark/'.$config->image);
                     $config->image = $watermarkName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('System.System');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'Config' . DS . 'Watermark.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/Config/Watermark.php');
 
         systemLog('修改水印设置');
 
@@ -632,8 +632,8 @@ class System extends \System\AdminController
 
     public function configWatermarkTest()
     {
-        $src = PATH_DATA . DS . 'System' . DS . 'Watermark' . DS . 'test-0.jpg';
-        $dst = PATH_DATA . DS . 'System' . DS . 'Watermark' . DS . 'test-1.jpg';
+        $src = PATH_DATA . '/System/Watermark/test-0.jpg';
+        $dst = PATH_DATA . '/System/Watermark/test-1.jpg';
 
         if (!file_exists($src)) Response::end(DATA . '/System/Watermark/test-0.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);

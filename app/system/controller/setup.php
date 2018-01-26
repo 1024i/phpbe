@@ -44,7 +44,7 @@ class Setup extends \System\Controller
 		$configDb->dbName = Request::post('dbName', '');
 
 		$serviceSetup = Be::getService('setup');
-		$serviceSetup->saveConfig($configDb, PATH_ROOT.DS.'configs'.DS.'db.php');
+		$serviceSetup->saveConfig($configDb, PATH_ROOT . '/configs/db.php');
 
 		db::connect();
 		if (db::hasError()) {
@@ -64,10 +64,10 @@ class Setup extends \System\Controller
 		$template->display();
 		
 		/*
-		$path = BONE_ROOT.DS.'setup.html';
+		$path = BONE_ROOT'/setup.html';
 		if (file_exists($path)) @unlink($path);
 
-		$path = BONE_ROOT.DS.'apps'.DS.'setup';
+		$path = BONE_ROOT'/apps/setup';
 		if (file_exists($path)) {
 			$fso = Be::getLib('fso');
 			$fso->rmDir($path);

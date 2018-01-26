@@ -1,9 +1,9 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
-class app extends \System\Service
+class App extends \System\Service
 {
 
     private $beApi = 'http://api.phpbe.com/';
@@ -40,7 +40,7 @@ class app extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->post($this->beApi . 'apps/', $option);
         
-        $apps = jsonDecode($Response);
+        $apps = json_decode($Response);
 
         return $apps;
     }
@@ -50,7 +50,7 @@ class app extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'app/' . $appId);
         
-        $app = jsonDecode($Response);
+        $app = json_decode($Response);
 
 		return $app;
     }
@@ -62,10 +62,10 @@ class app extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'appDownload/'.$app->version->id.'/');
 
-		$zip = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name.'.zip';
+		$zip = PATH_DATA.'/system/tmp/app_'.$app->name.'.zip';
         file_put_contents($zip, $Response);
 
-		$dir = PATH_DATA.DS.'system'.DS.'tmp'.DS.'app_'.$app->name;
+		$dir = PATH_DATA.'/system/tmp/app_'.$app->name;
         $libZip = Be::getLib('zip');
         $libZip->open($zip);
         if (!$libZip->extractTo($dir)) {
@@ -73,8 +73,8 @@ class app extends \System\Service
             return false;
         }
 
-		include PATH_ADMIN.DS.'system'.DS.'app.php';
-		include $dir.DS.'admin'.DS.'apps'.DS.$app->name.'.php';
+		include PATH_ADMIN.'/system/app.php';
+		include $dir.'/admin/apps/'.$app->name.'.php';
 		
 		$appClass = 'app_'.$app->name;
 		$appObj = new $appClass();
@@ -85,7 +85,7 @@ class app extends \System\Service
         $serviceSystem = Be::getService('system');
 		if (!in_array($app->name, $adminConfigSystem->apps)) {
 			$adminConfigSystem->apps[] = $app->name;
-            $serviceSystem->updateConfig($adminConfigSystem, PATH_DATA.DS.'adminConfig'.DS.'system.php');
+            $serviceSystem->updateConfig($adminConfigSystem, PATH_DATA.'/adminConfig/system.php');
 		}
 
 		// 删除临时文件
@@ -111,7 +111,7 @@ class app extends \System\Service
 		}
 
 		$adminConfigSystem->apps = $apps;
-        Be::getService('system')->updateConfig($adminConfigSystem, PATH_DATA.DS.'adminConfig'.DS.'system.php');
+        Be::getService('system')->updateConfig($adminConfigSystem, PATH_DATA.'/adminConfig/system.php');
 
 		$app = Be::getApp($name);
 		$app->uninstall();

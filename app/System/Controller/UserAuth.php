@@ -1,11 +1,11 @@
 <?php
-namespace controller;
+namespace App\System\Controller;
 
 use System\Be;
-use System\Request;
 use System\Response;
+use System\Controller;
 
-class userAuth extends \System\Controller
+class UserAuth extends Controller
 {
     public function __construct()
     {

@@ -2,13 +2,13 @@
 use System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/registerSuccess.css">
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/registerSuccess.css">
 <!--{/head}-->
 
 <!--{middle}-->
 <!--{center}-->
 <?php
-$configUser = Be::getConfig('System.user');
+$configUser = Be::getConfig('System.User');
 $username = $this->get('username');
 $email = $this->get('email');
 ?>

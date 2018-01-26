@@ -27,14 +27,14 @@ class install extends \System\Service
 	{
 		$files = array();
 
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'content'.DS.'install.sql';
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'content'.DS.'init.sql';
+		$files[] = PATH_ADMIN.'/apps/content/install.sql';
+		$files[] = PATH_ADMIN.'/apps/content/init.sql';
 
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'menu'.DS.'install.sql';
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'menu'.DS.'init.sql';
+		$files[] = PATH_ADMIN.'/apps/menu/install.sql';
+		$files[] = PATH_ADMIN.'/apps/menu/init.sql';
 
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'user'.DS.'install.sql';
-		$files[] = PATH_ADMIN.DS.'apps'.DS.'user'.DS.'init.sql';
+		$files[] = PATH_ADMIN.'/apps/user/install.sql';
+		$files[] = PATH_ADMIN.'/apps/user/init.sql';
 		
 		$db = Be::getDb();
 		foreach ($files as $file) {

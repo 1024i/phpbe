@@ -84,12 +84,12 @@ class Html extends \System\AdminController
 
         if ($rowSystemHtml->save()) {
             $cleanBody = Request::post('body', '', 'html');
-            $dir = PATH_DATA . DS . 'System' . DS . 'Html';
+            $dir = PATH_DATA . '/System/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);
             }
-            file_put_contents($dir . DS . $rowSystemHtml->class . '.html', $cleanBody);
+            file_put_contents($dir . '/' . $rowSystemHtml->class . '.html', $cleanBody);
 
             if ($id == 0) {
                 Response::setMessage('添加自定义模块成功！');

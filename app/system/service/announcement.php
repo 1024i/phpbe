@@ -1,14 +1,14 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
-class announcement extends \System\Service
+class Announcement extends \System\Service
 {
 
     public function getSystemAnnouncements($conditions = [])
     {
-        $tableSystemAnnouncement = Be::getTable('systemAnnouncement');
+        $tableSystemAnnouncement = Be::getTable('System.Announcement');
 
         $where = $this->createSystemAnnouncementWhere($conditions);
         $tableSystemAnnouncement->where($where);
@@ -32,7 +32,7 @@ class announcement extends \System\Service
 
     public function getSystemAnnouncementCount($conditions = [])
     {
-        return Be::getTable('systemAnnouncement')
+        return Be::getTable('System.Announcement')
             ->where($this->createSystemAnnouncementWhere($conditions))
             ->count();
     }
@@ -63,7 +63,7 @@ class announcement extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemAnnouncement');
+            $table = Be::getTable('System.Announcement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
@@ -87,7 +87,7 @@ class announcement extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemAnnouncement');
+            $table = Be::getTable('System.Announcement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
@@ -111,7 +111,7 @@ class announcement extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemAnnouncement');
+            $table = Be::getTable('System.Announcement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {

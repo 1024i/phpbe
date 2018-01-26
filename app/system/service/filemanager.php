@@ -1,12 +1,13 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 use System\Session;
+use System\Service;
 
 /**
  */
-class FileManager extends \System\Service
+class FileManager extends Service
 {
 
     public function getFiles($option = array())
@@ -23,7 +24,7 @@ class FileManager extends \System\Service
         foreach ($files as $x => $name) {
             if ($name == "." || $name == "..") continue;
 
-            $itemPath = $absPath . DS . $name;
+            $itemPath = $absPath . '/' . $name;
 
             $size = 0;
             $type = 'dir';
@@ -53,7 +54,7 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $dirPath = $absPath . DS . $dirName;
+        $dirPath = $absPath . '/' . $dirName;
         if (file_exists($dirPath)) {
             $this->setError('已存在名称为 ' . $dirName . ' 的文件夹！');
             return false;
@@ -69,7 +70,7 @@ class FileManager extends \System\Service
         $absDirPath = $this->getAbsDirPath($dirName, $path);
         if ($absDirPath == false) return false;
 
-        $libFso = Be::getLib('fso');
+        $libFso = Be::getLib('Fso');
         $libFso->rmDir($absDirPath);
 
         return true;
@@ -85,13 +86,13 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $srcPath = $absPath . DS . $oldDirName;
+        $srcPath = $absPath . '/' . $oldDirName;
         if (!file_exists($srcPath)) {
             $this->setError('文件夹 ' . $oldDirName . ' 不存在！');
             return false;
         }
 
-        $dstPath = $absPath . DS . $newDirName;
+        $dstPath = $absPath . '/' . $newDirName;
         if (file_exists($dstPath)) {
             $this->setError('已存在名称为 ' . $newDirName . ' 的文件夹！');
             return false;
@@ -130,7 +131,7 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $srcPath = $absPath . DS . $oldFileName;
+        $srcPath = $absPath . '/' . $oldFileName;
         if (!file_exists($srcPath)) {
             $this->setError('文件 ' . $oldFileName . ' 不存在！');
             return false;
@@ -143,7 +144,7 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $dstPath = $absPath . DS . $newFileName;
+        $dstPath = $absPath . '/' . $newFileName;
         if (file_exists($dstPath)) {
             $this->setError('文件 ' . $newFileName . ' 已存在！');
             return false;
@@ -160,7 +161,7 @@ class FileManager extends \System\Service
 
     public function getAbsPath($path = null)
     {
-        if ($path == null) $path = session::get('systemFilemanagerPath');
+        if ($path == null) $path = Session::get('systemFileManagerPath');
 
         // 禁止用户查看其它目录
         if (strpos($path, './') != false) {
@@ -194,7 +195,7 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $absDirPath = $absPath . DS . $dirName;
+        $absDirPath = $absPath . '/' . $dirName;
         if (!file_exists($absDirPath) || !is_dir($absDirPath)) {
             $this->setError('文件夹 ' . $dirName . ' 不存在！');
             return false;
@@ -214,7 +215,7 @@ class FileManager extends \System\Service
             return false;
         }
 
-        $absFilePath = $absPath . DS . $fileName;
+        $absFilePath = $absPath . '/' . $fileName;
         if (!file_exists($absFilePath) || is_dir($absFilePath)) {
             $this->setError('文件 ' . $fileName . ' 不存在！');
             return false;
@@ -232,7 +233,7 @@ class FileManager extends \System\Service
             $size = $size / 1024;
             $u++;
         }
-        return (numberFormat($size, 0) . ' ' . $units[$u]);
+        return (number_format($size, 0) . ' ' . $units[$u]);
     }
 
 

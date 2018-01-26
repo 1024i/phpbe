@@ -1,18 +1,18 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 
-class errorLog extends \System\Service
+class ErrorLog extends \System\Service
 {
 
     public function getYears()
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog';
+        $dir = PATH_DATA . '/System/ErrorLog';
         $years = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
             foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . DS . $fileName)) {
+                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
                     $years[] = $fileName;
                 }
             }
@@ -22,12 +22,12 @@ class errorLog extends \System\Service
 
     public function getMonths($year)
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year;
+        $dir = PATH_DATA . '/System/ErrorLog/' .  $year;
         $months = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
             foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . DS . $fileName)) {
+                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
                     $months[] = $fileName;
                 }
             }
@@ -37,12 +37,12 @@ class errorLog extends \System\Service
 
     public function getDays($year, $month)
     {
-        $dir = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month;
+        $dir = PATH_DATA . '/System/ErrorLog/' .  $year . '/' . $month;
         $days = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
             foreach ($fileNames as $fileName) {
-                if (is_file($dir . DS . $fileName) && strrchr($fileName, '.') == '.data') {
+                if (is_file($dir . '/' . $fileName) && strrchr($fileName, '.') == '.data') {
                     $days[] = substr($fileName, 0, strpos($fileName, '.'));
                 }
             }
@@ -56,10 +56,10 @@ class errorLog extends \System\Service
         if (!isset($options['month'])) return array();
         if (!isset($options['day'])) return array();
 
-        $dataPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.data';
+        $dataPath = PATH_DATA . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.data';
         if (!is_file($dataPath)) return array();
 
-        $indexPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
+        $indexPath = PATH_DATA . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
         if (!is_file($indexPath)) return array();
 
         $offset = 0;
@@ -111,7 +111,7 @@ class errorLog extends \System\Service
         if (!isset($options['month'])) return 0;
         if (!isset($options['day'])) return 0;
 
-        $path = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $options['year'] . DS . $options['month'] . DS . $options['day'] . '.index';
+        $path = PATH_DATA . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
         if (!is_file($path)) return 0;
 
         return filesize($path) / 4;
@@ -124,13 +124,13 @@ class errorLog extends \System\Service
      */
     public function getErrorLog($year, $month, $day, $index)
     {
-        $dataPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.data';
+        $dataPath = PATH_DATA . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.data';
         if (!is_file($dataPath)) {
             $this->setError('打开日志数据文件不存在！');
             return false;
         }
 
-        $indexPath = PATH_DATA . DS . 'system' . DS . 'errorLog' . DS . $year . DS . $month . DS . $day . '.index';
+        $indexPath = PATH_DATA . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.index';
         if (!is_file($indexPath)) {
             $this->setError('日志索引文件不存在！');
             return false;

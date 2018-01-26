@@ -2,14 +2,14 @@
 use System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/register.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/register.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/register.css">
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/register.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
 <!--{center}-->
 <?php
-$configUser = Be::getConfig('System.user');
+$configUser = Be::getConfig('System.User');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">
@@ -98,13 +98,13 @@ $configUser = Be::getConfig('System.user');
 						<?php
 						if ($configUser->connectQq == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/qqLogin.png" /></a> &nbsp;
+						<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/System/template/user/images/qqLogin.png" /></a> &nbsp;
 						<?php
 						}
 						
 						if ($configUser->connectSina == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/system/template/user/images/sinaLogin.png" /></a>
+						<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/System/template/user/images/sinaLogin.png" /></a>
 						<?php
 						}
 						?>

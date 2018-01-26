@@ -1,9 +1,9 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 use System\Session;
-use System\cookie;
+use System\Cookie;
 
 class AdminUser extends \System\Service
 {
@@ -17,19 +17,19 @@ class AdminUser extends \System\Service
     public function login($username, $password)
     {
         $ip = $_SERVER["REMOTE_ADDR"];
-        $times = session::get($ip);
+        $times = Session::get($ip);
         if (!$times) $times = 0;
         $times++;
         if ($times > 100) {
             $this->setError('登陆失败次数过多，请稍后再试！');
             return false;
         }
-        session::set($ip, $times);
+        Session::set($ip, $times);
 
-        $rowAdminUserAdminLog = Be::getRow('adminUserLog');
+        $rowAdminUserAdminLog = Be::getRow('System.AdminUserLog');
         $rowAdminUserAdminLog->username = $username;
         $rowAdminUserAdminLog->ip = $ip;
-        $rowAdminUserAdminLog->createTime = time();
+        $rowAdminUserAdminLog->create_time = time();
 
         $rowAdminUser = Be::getRow('adminUser');
         $rowAdminUser->load('username', $username);
@@ -44,20 +44,20 @@ class AdminUser extends \System\Service
                     session::delete($ip);
                     $beAdminUser = Be::getAdminUser($rowAdminUser->id);
 
-                    session::set('AdminUser', $beAdminUser);
+                    Session::set('AdminUser', $beAdminUser);
 
                     $rowAdminUserAdminLog->success = 1;
                     $rowAdminUserAdminLog->description = '登陆成功！';
 
-                    $rowAdminUser->lastLoginTime = time();
+                    $rowAdminUser->last_login_time = time();
                     $rowAdminUser->save();
 
                     $adminConfigAdminUser = Be::getConfig('System.AdminUser');
                     $rememberMeAdmin = $username . '|||' . $this->encryptPassword($rowAdminUser->password);
-                    $rememberMeAdmin = $this->rc4($rememberMeAdmin, $adminConfigAdminUser->rememberMeKey);
+                    $rememberMeAdmin = $this->rc4($rememberMeAdmin, $adminConfigAdminUser->remember_me_key);
                     $rememberMeAdmin = base64_encode($rememberMeAdmin);
                     cookie::setExpire(time() + 30 * 86400);
-                    cookie::set('RememberMeAdmin', $rememberMeAdmin);
+                    cookie::set('_remember_me_admin', $rememberMeAdmin);
                     $result = $beAdminUser;
                 }
             } else {
@@ -79,8 +79,8 @@ class AdminUser extends \System\Service
      */
     public function rememberMe()
     {
-        if (cookie::has('RememberMeAdmin')) {
-            $rememberMeAdmin = cookie::get('RememberMeAdmin', '');
+        if (cookie::has('_remember_me_admin')) {
+            $rememberMeAdmin = cookie::get('_remember_me_admin', '');
             if ($rememberMeAdmin) {
                 $adminConfigAdminUser = Be::getConfig('System.AdminUser');
                 $rememberMeAdmin = base64_decode($rememberMeAdmin);
@@ -94,7 +94,7 @@ class AdminUser extends \System\Service
                     $rowAdminUser->load('username', $username);
 
                     if ($rowAdminUser->id && $this->encryptPassword($rowAdminUser->password) == $password && $rowAdminUser->block == 0) {
-                        session::set('AdminUser', Be::getAdminUser($rowAdminUser->id));
+                        Session::set('AdminUser', Be::getAdminUser($rowAdminUser->id));
 
                         $rowAdminUser->lastLoginTime = time();
                         $rowAdminUser->save();
@@ -113,8 +113,8 @@ class AdminUser extends \System\Service
      */
     public function logout()
     {
-        session::delete('AdminUser');
-        cookie::delete('RememberMeAdmin');
+        session::delete('_admin_user');
+        cookie::delete('_remember_me_admin');
         return true;
     }
 
@@ -126,7 +126,7 @@ class AdminUser extends \System\Service
      */
     public function getUsers($conditions = array())
     {
-        $tableAdminUser = Be::getTable('system.adminUser');
+        $tableAdminUser = Be::getTable('System.AdminUser');
         $tableAdminUser->where($this->createUserWhere($conditions));
 
         if (isset($conditions['orderByString']) && $conditions['orderByString']) {
@@ -153,7 +153,7 @@ class AdminUser extends \System\Service
      */
     public function getUserCount($conditions = array())
     {
-        return Be::getTable('system.adminUser')
+        return Be::getTable('System.AdminUser')
             ->where($this->createUserWhere($conditions))
             ->count();
     }
@@ -182,7 +182,7 @@ class AdminUser extends \System\Service
         }
 
         if (isset($conditions['roleId']) && is_numeric($conditions['roleId']) && $conditions['roleId'] > 0) {
-            $where[] = ['roleId', '>', $conditions['roleId']];
+            $where[] = ['role_id', '>', $conditions['roleId']];
         }
 
         return $where;
@@ -200,7 +200,7 @@ class AdminUser extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system.adminUser');
+            $table = Be::getTable('System.AdminUser');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
@@ -242,7 +242,7 @@ class AdminUser extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system.adminUser');
+            $table = Be::getTable('System.AdminUser');
             if (!$table->where('id', 'in', $array)
                 ->update(['block' => 1])
             ) {
@@ -288,12 +288,12 @@ class AdminUser extends \System\Service
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $rowAdminUser = Be::getRow('System.user');
+                $rowAdminUser = Be::getRow('System.AdminUser');
                 $rowAdminUser->load($id);
 
-                if ($rowAdminUser->avatarS != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarS;
-                if ($rowAdminUser->avatarM != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarM;
-                if ($rowAdminUser->avatarL != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarL;
+                if ($rowAdminUser->avatar_s != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
+                if ($rowAdminUser->avatar_m != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
+                if ($rowAdminUser->avatar_l != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
 
                 if (!$rowAdminUser->delete()) {
                     throw new \Exception($rowAdminUser->getError());
@@ -328,17 +328,17 @@ class AdminUser extends \System\Service
         try {
             $db->beginTransaction();
 
-            $rowAdminUser = Be::getRow('System.user');
+            $rowAdminUser = Be::getRow('System.AdminUser');
             $rowAdminUser->load($userId);
 
             $files = [];
-            if ($rowAdminUser->avatarS != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarS;
-            if ($rowAdminUser->avatarM != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarM;
-            if ($rowAdminUser->avatarL != '') $files[] = PATH_DATA . DS . 'system' . DS . 'adminUser' . DS . 'avatar' . DS . $rowAdminUser->avatarL;
+            if ($rowAdminUser->avatar_s != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
+            if ($rowAdminUser->avatar_m != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
+            if ($rowAdminUser->avatar_l != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
 
-            $rowAdminUser->avatarS = '';
-            $rowAdminUser->avatarM = '';
-            $rowAdminUser->avatarL = '';
+            $rowAdminUser->avatar_s = '';
+            $rowAdminUser->avatar_m = '';
+            $rowAdminUser->avatar_l = '';
 
             if (!$rowAdminUser->save()) {
                 throw new \Exception($rowAdminUser->getError());
@@ -369,7 +369,7 @@ class AdminUser extends \System\Service
      */
     public function isUsernameAvailable($username, $userId = 0)
     {
-        $table = Be::getTable('system.adminUser');
+        $table = Be::getTable('System.AdminUser');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -386,7 +386,7 @@ class AdminUser extends \System\Service
      */
     public function isEmailAvailable($email, $userId = 0)
     {
-        $table = Be::getTable('system.adminUser');
+        $table = Be::getTable('System.AdminUser');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -401,7 +401,7 @@ class AdminUser extends \System\Service
      */
     public function getRoles()
     {
-        return Be::getTable('adminUserRole')->orderBy('ordering', 'asc')->getObjects();
+        return Be::getTable('System.AdminUserRole')->orderBy('ordering', 'ASC')->getObjects();
     }
 
     /**
@@ -412,13 +412,13 @@ class AdminUser extends \System\Service
      */
     public function getLogs($conditions = array())
     {
-        $tableAdminUserLog = Be::getTable('adminUserLog');
+        $tableAdminUserLog = Be::getTable('System.AdminUserLog');
         $tableAdminUserLog->where($this->createLogWhere($conditions));
 
         if (isset($conditions['orderByString']) && $conditions['orderByString']) {
             $tableAdminUserLog->orderBy($conditions['orderByString']);
         } else {
-            $orderBy = 'createTime';
+            $orderBy = 'create_time';
             $orderByDir = 'DESC';
             if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
             if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
@@ -439,7 +439,7 @@ class AdminUser extends \System\Service
      */
     public function getLogCount($conditions = array())
     {
-        return Be::getTable('adminUserLog')
+        return Be::getTable('System.AdminUserLog')
             ->where($this->createLogWhere($conditions))
             ->count();
     }
@@ -471,8 +471,8 @@ class AdminUser extends \System\Service
      */
     public function deleteLogs()
     {
-        $table = Be::getTable('adminUserLog');
-        if (!$table->where('createTime', '<', time() - 90 * 86400)
+        $table = Be::getTable('System.AdminUserLog');
+        if (!$table->where('create_time', '<', time() - 90 * 86400)
             ->delete()
         ) {
             $this->setError($table->getError());
@@ -550,9 +550,9 @@ class AdminUser extends \System\Service
     {
         $roles = $this->getRoles();
 
-        $serviceSystem = Be::getService('system');
+        $service = Be::getService('System.Cache');
         foreach ($roles as $role) {
-            $serviceSystem->updateCacheAdminUserRole($role->id);
+            $service->updateCacheAdminUserRole($role->id);
         }
     }
 
@@ -563,7 +563,7 @@ class AdminUser extends \System\Service
      */
     public function updateAdminUserRole($roleId)
     {
-        $serviceSystem = Be::getService('system');
-        $serviceSystem->updateCacheAdminUserRole($roleId);
+        $service = Be::getService('System.Cache');
+        $service->updateCacheAdminUserRole($roleId);
     }
 }

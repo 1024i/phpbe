@@ -4,8 +4,9 @@ namespace App\System\AdminController;
 use System\Be;
 use System\Request;
 use System\Response;
+use System\AdminController;
 
-class User extends \System\AdminController
+class User extends AdminController
 {
 
     // 管理用户列表
@@ -64,7 +65,7 @@ class User extends \System\AdminController
     {
         $id = Request::request('id', 0, 'int');
 
-        $user = Be::getRow('System.user');
+        $user = Be::getRow('System.User');
         if ($id != 0) $user->load($id);
 
         if ($id != 0)
@@ -106,7 +107,7 @@ class User extends \System\AdminController
             Response::redirect('./?controller=user&task=edit&id=' . $id);
         }
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         if ($id > 0) $rowUser->load($id);
 
         $rowUser->bind(Request::post());
@@ -153,15 +154,15 @@ class User extends \System\AdminController
                 $t = date('YmdHis');
 
                 $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
-                $libImage->save(PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->id . '_' . $t . 'L.' . $libImage->getType());
+                $libImage->save(PATH_DATA . '/system/user/avatar/' .  $rowUser->id . '_' . $t . 'L.' . $libImage->getType());
                 $rowUser->avatarL = $rowUser->id . '_' . $t . 'L.' . $libImage->getType();
 
                 $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
-                $libImage->save(PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->id . '_' . $t . 'M.' . $libImage->getType());
+                $libImage->save(PATH_DATA . '/system/user/avatar/' .  $rowUser->id . '_' . $t . 'M.' . $libImage->getType());
                 $rowUser->avatarM = $rowUser->id . '_' . $t . 'M.' . $libImage->getType();
 
                 $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
-                $libImage->save(PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->id . '_' . $t . 'S.' . $libImage->getType());
+                $libImage->save(PATH_DATA . '/system/user/avatar/' .  $rowUser->id . '_' . $t . 'S.' . $libImage->getType());
                 $rowUser->avatarS = $rowUser->id . '_' . $t . 'S.' . $libImage->getType();
 
                 if (!$rowUser->save()) {
@@ -464,7 +465,7 @@ class User extends \System\AdminController
 
     public function settingSave()
     {
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
         $configUser->register = Request::post('register', 0, 'int');
         $configUser->captchaLogin = Request::post('captchaLogin', 0, 'int');
         $configUser->captchaRegister = Request::post('captchaRegister', 0, 'int');
@@ -492,9 +493,9 @@ class User extends \System\AdminController
             $libImage->open($defaultAvatarL['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarLName = date('YmdHis') . 'L.' . $libImage->getType();
-                $defaultAvatarLPath = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . 'Default' . DS . $defaultAvatarLName;
+                $defaultAvatarLPath = PATH_DATA . '/system/user/avatar/Default/' .  $defaultAvatarLName;
                 if (move_uploaded_file($defaultAvatarL['tmpName'], $defaultAvatarLPath)) {
-                    // @unlink(PATH_DATA.DS.'user'.DS.'avatar'.DS.'default'.DS.$configUser->defaultAvatarL);
+                    // @unlink(PATH_DATA.'/user/avatar/default/'.$configUser->defaultAvatarL);
                     $configUser->defaultAvatarL = $defaultAvatarLName;
                 }
             }
@@ -508,9 +509,9 @@ class User extends \System\AdminController
             $libImage->open($defaultAvatarM['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarMName = date('YmdHis') . 'M.' . $libImage->getType();
-                $defaultAvatarMPath = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . 'Default' . DS . $defaultAvatarMName;
+                $defaultAvatarMPath = PATH_DATA . '/system/user/avatar/Default/' .  $defaultAvatarMName;
                 if (move_uploaded_file($defaultAvatarM['tmpName'], $defaultAvatarMPath)) {
-                    // @unlink(PATH_DATA.DS.'user'.DS.'avatar'.DS.'default'.DS.$configUser->defaultAvatarM);
+                    // @unlink(PATH_DATA.'/user/avatar/default/'.$configUser->defaultAvatarM);
                     $configUser->defaultAvatarM = $defaultAvatarMName;
                 }
             }
@@ -523,16 +524,16 @@ class User extends \System\AdminController
             $libImage->open($defaultAvatarS['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarSName = date('YmdHis') . 'S.' . $libImage->getType();
-                $defaultAvatarSPath = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . 'Default' . DS . $defaultAvatarSName;
+                $defaultAvatarSPath = PATH_DATA . '/system/user/avatar/Default/' .  $defaultAvatarSName;
                 if (move_uploaded_file($defaultAvatarS['tmpName'], $defaultAvatarSPath)) {
-                    // @unlink(PATH_DATA.DS.'user'.DS.'avatar'.DS.'default'.DS.$configUser->defaultAvatarS);
+                    // @unlink(PATH_DATA.'/user/avatar/default/'.$configUser->defaultAvatarS);
                     $configUser->defaultAvatarS = $defaultAvatarSName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('System.Cache');
-        $serviceSystem->updateConfig($configUser, PATH_DATA . DS . 'Config' . DS . 'User.php');
+        $serviceSystem->updateConfig($configUser, PATH_DATA . '/Config/User.php');
 
         systemLog('设置用户系统参数');
 

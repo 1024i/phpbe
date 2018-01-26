@@ -1,10 +1,14 @@
 <?php
-namespace app\system\service;
 
+namespace App\System\Service;
+
+use System\Util\String;
+use System\Util\System;
 use System\Be;
 use System\Db;
+use System\db\Exception;
 
-class cache extends \System\Service
+class Cache extends \System\Service
 {
 
     /**
@@ -17,20 +21,20 @@ class cache extends \System\Service
     public function clear($dir = null, $file = null)
     {
         if ($dir === null) {
-            return $this->clear('file')
-                && $this->clear('html')
-                && $this->clear('menu')
-                && $this->clear('userRole')
-                && $this->clear('adminUserRole')
-                && $this->clear('row')
-                && $this->clear('table')
-                && $this->clear('template')
-                && $this->clear('adminTemplate');
+            return $this->clear('File')
+                && $this->clear('Html')
+                && $this->clear('Menu')
+                && $this->clear('UserRole')
+                && $this->clear('AdminUserRole')
+                && $this->clear('Row')
+                && $this->clear('Table')
+                && $this->clear('Template')
+                && $this->clear('AdminTemplate');
         }
 
-        $libFso = Be::getLib('fso');
-        if ($file === null) return $libFso->rmDir(PATH_CACHE. DS . $dir);
-        return $libFso->rmDir(PATH_CACHE. DS . $dir . DS . $file);
+        $libFso = Be::getLib('Fso');
+        if ($file === null) return $libFso->rmDir(PATH_CACHE . DS . $dir);
+        return $libFso->rmDir(PATH_CACHE . DS . $dir . '/' . $file);
     }
 
     /**
@@ -38,26 +42,23 @@ class cache extends \System\Service
      *
      * @param string $name 数据库行记灵对象名称
      * @return bool 是否更新成功
+     * @throws |Exception
      */
     public function updateRow($app, $name)
     {
-        $rowName = $name;
+        $tableName = String::snakeCase($app) . '_' . String::snakeCase($name);
         $db = Be::getDb();
-        if (!$db->getValue('SHOW TABLES LIKE \'' . $rowName . '\'')) {
-            $rowName = 'be_' . $rowName;
-            if (!$db->getValue('SHOW TABLES LIKE \'' . $rowName . '\'')) {
-                $this->setError('未找到名称为 ' . $name . ' 的数据库表！');
-                return false;
-            }
+        if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
+            throw new \Exception('未找到名称为 ' . $tableName . ' 的数据库表！');
         }
 
         $primaryKey = 'id';
-        $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $rowName);
+        $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
 
         $code = '<?php' . "\n";
-        $code .= 'namespace data\\system\\cache\\row;' . "\n";
+        $code .= 'namespace Cache\\Row\\' . $app . ';' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $name . ' extends \\system\\row' . "\n";
+        $code .= 'class ' . $name . ' extends \\System\\Row' . "\n";
         $code .= '{' . "\n";
 
         foreach ($fields as $field) {
@@ -90,12 +91,12 @@ class cache extends \System\Service
         $code .= "\n";
         $code .= '    public function __construct()' . "\n";
         $code .= '    {' . "\n";
-        $code .= '        parent::__construct(\'' . $rowName . '\', \'' . $primaryKey . '\');' . "\n";
+        $code .= '        parent::__construct(\'' . $tableName . '\', \'' . $primaryKey . '\');' . "\n";
         $code .= '    }' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = PATH_CACHE. DS . 'row' . DS . $name . '.php';
+        $path = PATH_CACHE . '/Row/' . $app . '/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -113,16 +114,8 @@ class cache extends \System\Service
      */
     public function updateTable($app, $name)
     {
-        $tableName = $name;
+        $tableName = String::snakeCase($app) . '_' . String::snakeCase($name);
         $db = Be::getDb();
-        if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
-            $tableName = 'be_' . $tableName;
-            if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
-                $this->setError('未找到名称为 ' . $name . ' 的数据库表！');
-                return false;
-            }
-        }
-
         $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
         $primaryKey = 'id';
         $fieldNames = array();
@@ -135,9 +128,9 @@ class cache extends \System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace data\\system\\cache\\table;' . "\n";
+        $code .= 'namespace Cache\\Table\\' . $app . ';' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $name . ' extends \\system\\table' . "\n";
+        $code .= 'class ' . $name . ' extends \\System\\Table' . "\n";
         $code .= '{' . "\n";
         $code .= '    protected $tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
@@ -145,7 +138,7 @@ class cache extends \System\Service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = PATH_CACHE. DS . 'table' . DS . $name . '.php';
+        $path = PATH_CACHE . '/Table/' . $app . '/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -163,20 +156,22 @@ class cache extends \System\Service
      */
     public function updateMenu($menuName)
     {
-        $group = Be::getRow('System.menuGroup');
+        $group = Be::getRow('System.MenuGroup');
         $group->load(array('className' => $menuName));
         if (!$group->id) {
             $this->setError('未找到调用类名为 ' . $menuName . ' 的菜单！');
             return false;
         }
 
-        $db = Be::getDb();
-        $menus = $db->getObjects('SELECT * FROM `beSystemMenu` WHERE `groupId`=' . $group->id . ' ORDER BY `ordering` ASC');;
+        $menus = Be::getTable('System.Menu')
+            ->where('group_id', $group->id)
+            ->orderBy('ordering', 'ASC')
+            ->getObjects();
 
         $code = '<?php' . "\n";
-        $code .= 'namespace cache\menu;' . "\n";
+        $code .= 'namespace Cache\\Menu;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $group->className . ' extends \system\menu' . "\n";
+        $code .= 'class ' . $group->className . ' extends \\System\\Menu' . "\n";
         $code .= '{' . "\n";
         $code .= '  public function __construct()' . "\n";
         $code .= '  {' . "\n";
@@ -198,7 +193,7 @@ class cache extends \System\Service
                 $configSystem = Be::getConfig('System.System');
                 if (serialize($configSystem->homeParams) != serialize($homeParams)) {
                     $configSystem->homeParams = $homeParams;
-                    $this->updateConfig($configSystem, PATH_ROOT . DS . 'config' . DS . 'system.php');
+                    $this->updateConfig($configSystem, PATH_ROOT . '/config/system.php');
                 }
             }
 
@@ -229,7 +224,7 @@ class cache extends \System\Service
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'menu' . DS . $group->className . '.php';
+        $path = PATH_CACHE . '/Menu/' . $group->className . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -247,7 +242,7 @@ class cache extends \System\Service
      */
     public function updateUserRole($roleId)
     {
-        $row = Be::getRow('userRole');
+        $row = Be::getRow('System.UserRole');
         $row->load($roleId);
         if (!$row->id) {
             $this->setError('未找到指定编号（#' . $roleId . '）的用户角色！');
@@ -255,16 +250,16 @@ class cache extends \System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace cache\userRole;' . "\n";
+        $code .= 'namespace Cache\\UserRole;' . "\n";
         $code .= "\n";
-        $code .= 'class userRole_' . $roleId . ' extends \system\role' . "\n";
+        $code .= 'class UserRole' . $roleId . ' extends \\System\\Role' . "\n";
         $code .= '{' . "\n";
-        $code .= '  public $name = \''.$row->name.'\';' . "\n";
-        $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
-        $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
+        $code .= '  public $name = \'' . $row->name . '\';' . "\n";
+        $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
+        $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'userRole' . DS . 'userRole_' . $roleId . '.php';
+        $path = PATH_CACHE . '/UserRole/UserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -290,16 +285,16 @@ class cache extends \System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace cache\adminUserRole;' . "\n";
+        $code .= 'namespace Cache\\AdminUserRole;' . "\n";
         $code .= "\n";
-        $code .= 'class adminUserRole_' . $roleId . ' extends \system\role' . "\n";
+        $code .= 'class AdminUserRole' . $roleId . ' extends \\System\\Role' . "\n";
         $code .= '{' . "\n";
-        $code .= '  public $name = \''.$row->name.'\';' . "\n";
-        $code .= '  public $permission = \''.$row->permission.'\';' . "\n";
-        $code .= '  public $permissions = [\''.implode('\',\'', explode(',', $row->permissions)).'\'];' . "\n";
+        $code .= '  public $name = \'' . $row->name . '\';' . "\n";
+        $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
+        $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE. DS . 'adminUserRole' . DS . 'adminUserRole_' . $roleId . '.php';
+        $path = PATH_CACHE . '/AdminUserRole/AdminUserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -317,14 +312,14 @@ class cache extends \System\Service
      */
     public function updateHtml($class)
     {
-        $row = Be::getRow('systemHtml');
+        $row = Be::getRow('System.Html');
         $row->load(array('class' => $class));
         if (!$row->id) {
             $this->setError('未找到调用类名为 ' . $class . ' 的 html 内容！');
             return false;
         }
 
-        $path = PATH_CACHE. DS . 'html' . DS . $class . '.html';
+        $path = PATH_CACHE . '/Html/' . $class . '.html';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -334,29 +329,31 @@ class cache extends \System\Service
         return true;
     }
 
+
     /**
      * 更新模板
      *
-     * @param string $theme 主题名
+     * @param string $app 应用名
      * @param string $template 模析名
+     * @param string $theme 主题名
      * @param bool $admin 是否是后台模析
      * @return bool 是否更新成功
      */
-    public function updateTemplate($theme, $template, $admin = false)
+    public function updateTemplate($app, $template, $theme, $admin = false)
     {
-        $fileTheme = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . $theme . '.php';
+        $fileTheme = ($admin ? PATH_ADMIN : PATH_ROOT) . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             $this->setError('主题 ' . $theme . ' 不存在！');
             return false;
         }
 
-        $fileTemplate = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'template' . DS . str_replace('.', DS, $template) . '.php';
+        $fileTemplate = PATH_ROOT . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
         if (!file_exists($fileTemplate)) {
             $this->setError('模板 ' . $template . ' 不存在！');
             return false;
         }
 
-        $path = PATH_CACHE. DS . ($admin ? 'adminTemplate' : 'template') . DS . $theme . DS . str_replace('.', DS, $template) . '.php';
+        $path = PATH_CACHE . DS . ($admin ? 'AdminTemplate' : 'Template') . '/' . $theme . '/' . $app . '/' . str_replace('.', '/', $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -445,7 +442,7 @@ class cache extends \System\Service
             }
 
             $pattern = '/use\s(.+);/';
-            $uses =null;
+            $uses = null;
             if (preg_match_all($pattern, $contentTheme, $matches)) {
                 $uses = $matches[1];
                 foreach ($matches[1] as $m) {
@@ -466,7 +463,7 @@ class cache extends \System\Service
                 $codePreTheme = trim($matches[1]);
                 $codePreTheme = preg_replace('/use\s(.+);/', '', $codePreTheme);
                 $codePreTheme = preg_replace('/\s+$/m', '', $codePreTheme);
-                $codePre = $codePreTheme . "\n" ;
+                $codePre = $codePreTheme . "\n";
             }
 
             $pattern = '/<\?php(.*?)\?>\s+<!--{(?:html|head|body|north|middle|west|center|east|south|message)}-->/s';
@@ -480,7 +477,7 @@ class cache extends \System\Service
         }
 
         $templates = explode('.', $template);
-        $className = arrayPop($templates);
+        $className = array_pop($templates);
 
         $namespaceSuffix = '';
         if (count($templates)) {
@@ -488,24 +485,24 @@ class cache extends \System\Service
         }
 
         $codeVars = '';
-        $configPath = ($admin ? PATH_ADMIN : PATH_ROOT) . DS . 'theme' . DS . $theme . DS . 'config.php';
+        $configPath = ($admin ? PATH_ADMIN : PATH_ROOT) . '/theme/' . $theme . '/config.php';
         if (file_exists($configPath)) {
             include $configPath;
-            $themeConfigClassName = ($admin ? 'admin\\' : '') . 'theme\\' . $theme.'\\config';
+            $themeConfigClassName = ($admin ? 'admin\\' : '') . 'theme\\' . $theme . '\\config';
             if (class_exists($themeConfigClassName)) {
                 $themeConfig = new $themeConfigClassName();
                 if (isset($themeConfig->colors) && is_array($themeConfig->colors)) {
-                    $codeVars .= '  public $colors = [\''.implode('\',\'', $themeConfig->colors).'\'];' . "\n";
+                    $codeVars .= '  public $colors = [\'' . implode('\',\'', $themeConfig->colors) . '\'];' . "\n";
                 }
             }
         }
 
         $codePhp = '<?php' . "\n";
-        $codePhp .= 'namespace data\\system\\cache\\' . ($admin ? 'adminTemplate' : 'template') . '\\' . $theme . $namespaceSuffix . ';' . "\n";
+        $codePhp .= 'namespace Cache\\' . ($admin ? 'AdminTemplate' : 'Template') . '\\' . $theme . '\\' . $app . $namespaceSuffix . ';' . "\n";
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";
-        $codePhp .= 'class ' . $className . ' extends \\system\\template' . "\n";
+        $codePhp .= 'class ' . $className . ' extends \\System\\Template' . "\n";
         $codePhp .= '{' . "\n";
         $codePhp .= $codeVars;
         $codePhp .= "\n";
@@ -528,25 +525,26 @@ class cache extends \System\Service
     /**
      * 更新后台模板
      *
-     * @param string $theme 主题名
+     * @param string $app 应用名
      * @param string $template 模析名
+     * @param string $theme 主题名
      * @return bool 是否更新成功
      */
-    public function updateAdminTemplate($theme, $template)
+    public function updateAdminTemplate($app, $template, $theme)
     {
-        return $this->updateTemplate($theme, $template, true);
+        return $this->updateTemplate($app, $template, $theme, true);
     }
 
 
     /*
      * 保存配置文件到指定咱径
      *
-     * @param object $config 配置文件类
-     * @param string $path 保存路径
+     * @param string $app 应用名称
+     * @param string $config 配置文件类
      *
      * @return bool 是否保存成功
      */
-    public function updateConfig($config, $path)
+    public function updateConfig($app, $config)
     {
         $comments = array();
         if (file_exists($path)) {
@@ -582,7 +580,7 @@ class cache extends \System\Service
         $className = substr($class, strrpos($class, '\\') + 1);
 
         $buf = "<?php\n";
-        $buf .= 'namespace '.$namespace.';'. "\n\n";
+        $buf .= 'namespace ' . $namespace . ';' . "\n\n";
         $buf .= 'class ' . $className . "\n";
         $buf .= "{\r\n";
 
@@ -611,9 +609,9 @@ class cache extends \System\Service
                     }
                 }
                 $buf .= '  public $' . $key . ' = [' . implode(', ', $arr) . '];';
-            } elseif (isBool($val)) {
+            } elseif (is_bool($val)) {
                 $buf .= '  public $' . $key . ' = ' . ($val ? 'true' : 'false') . ';';
-            } elseif (isInt($val) || isFloat($val)) {
+            } elseif (is_int($val) || is_float($val)) {
                 $buf .= '  public $' . $key . ' = ' . $val . ';';
             } else {
                 $val = str_replace('\'', '&#039;', $val);

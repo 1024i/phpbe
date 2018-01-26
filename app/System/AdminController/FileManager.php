@@ -5,9 +5,10 @@ use System\Be;
 use System\Request;
 use System\Response;
 use System\Session;
+use System\AdminController;
 
 // 文件管理器
-class FileManager extends \System\AdminController
+class FileManager extends AdminController
 {
 
     public function browser()
@@ -29,24 +30,24 @@ class FileManager extends \System\AdminController
 
         // session 缓存用户选择
         if ($path == '') {
-            $sessionPath = session::get('systemFilemanagerPath');
+            $sessionPath = Session::get('systemFileManagerPath');
             if ($sessionPath != '') $path = $sessionPath;
         } else {
             if ($path == '/') $path = '';
-            session::set('systemFilemanagerPath', $path);
+            Session::set('systemFileManagerPath', $path);
         }
 
         if ($view == '') {
             $view = 'thumbnail';
-            $sessionView = session::get('systemFilemanagerView');
+            $sessionView = Session::get('systemFileManagerView');
             if ($sessionView != '' && ($sessionView == 'thumbnail' || $sessionView == 'list')) $view = $sessionView;
         } else {
             if ($view != 'thumbnail' && $view != 'list') $view = 'thumbnail';
-            session::set('systemFilemanagerView', $view);
+            Session::set('systemFileManagerView', $view);
         }
 
         if ($sort == '') {
-            $sessionSort = session::get('systemFilemanagerSort');
+            $sessionSort = Session::get('systemFileManagerSort');
             if ($sessionSort == '') {
                 $sort = 'name';
             } else {
@@ -54,25 +55,25 @@ class FileManager extends \System\AdminController
             }
 
         } else {
-            session::set('systemFilemanagerSort', $sort);
+            Session::set('systemFileManagerSort', $sort);
         }
 
         if ($filterImage == -1) {
             $filterImage = 0;
-            $sessionFilterImage = session::get('systemFilemanagerFilterImage', -1);
+            $sessionFilterImage = Session::get('systemFileManagerFilterImage', -1);
             if ($sessionFilterImage != -1 && ($sessionFilterImage == 0 || $sessionFilterImage == 1)) $filterImage = $sessionFilterImage;
         } else {
             if ($filterImage != 0 && $filterImage != 1) $filterImage = 0;
-            session::set('systemFilemanagerFilterImage', $filterImage);
+            Session::set('systemFileManagerFilterImage', $filterImage);
         }
 
         if ($srcId == '') {
-            $srcId = session::get('systemFilemanagerSrcId', '');
+            $srcId = Session::get('systemFileManagerSrcId', '');
         } elseif ($srcId == 'img') {
             $srcId = '';
-            session::set('systemFilemanagerSrcId', $srcId);
+            Session::set('systemFileManagerSrcId', $srcId);
         } else {
-            session::set('systemFilemanagerSrcId', $srcId);
+            Session::set('systemFileManagerSrcId', $srcId);
         }
 
 
@@ -82,10 +83,9 @@ class FileManager extends \System\AdminController
         $option['sort'] = $sort;
         $option['filterImage'] = $filterImage;
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        $files = $serviceSystemFilemanager->getFiles($option);
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $files = $serviceSystemFileManager->getFiles($option);
 
-        $template = Be::getAdminTemplate('systemFilemanager.browser');
         Response::set('path', $path);
         Response::set('view', $view);
         Response::set('sort', $sort);
@@ -100,14 +100,14 @@ class FileManager extends \System\AdminController
     {
         $dirName = Request::post('dirName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        if ($serviceSystemFilemanager->createDir($dirName)) {
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        if ($serviceSystemFileManager->createDir($dirName)) {
             Response::setMessage('创建文件夹(' . $dirName . ')成功！');
         } else {
-            Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+            Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?controller=systemFilemanager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&task=browser');
     }
 
     // 删除文件夹
@@ -115,14 +115,14 @@ class FileManager extends \System\AdminController
     {
         $dirName = Request::get('dirName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        if ($serviceSystemFilemanager->deleteDir($dirName)) {
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        if ($serviceSystemFileManager->deleteDir($dirName)) {
             Response::setMessage('删除文件夹(' . $dirName . ')成功！');
         } else {
-            Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+            Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?controller=systemFilemanager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&task=browser');
     }
 
     // 修改文件夹名称
@@ -131,14 +131,14 @@ class FileManager extends \System\AdminController
         $oldDirName = Request::post('oldDirName', '');
         $newDirName = Request::post('newDirName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        if ($serviceSystemFilemanager->editDirName($oldDirName, $newDirName)) {
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        if ($serviceSystemFileManager->editDirName($oldDirName, $newDirName)) {
             Response::setMessage('重命名文件夹成功！');
         } else {
-            Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+            Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?controller=systemFilemanager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&task=browser');
     }
 
 
@@ -146,7 +146,7 @@ class FileManager extends \System\AdminController
     {
         $configSystem = Be::getConfig('System.System');
 
-        $return = './?controller=systemFilemanager&task=browser';
+        $return = './?app=System&controller=FileManager&task=browser';
 
         $file = $_FILES['file'];
         if ($file['error'] == 0) {
@@ -163,24 +163,24 @@ class FileManager extends \System\AdminController
                 Response::redirect($return);
             }
 
-            $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-            $absPath = $serviceSystemFilemanager->getAbsPath();
+            $serviceSystemFileManager = Be::getService('System.FileManager');
+            $absPath = $serviceSystemFileManager->getAbsPath();
             if ($absPath == false) {
-                Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+                Response::setMessage($serviceSystemFileManager->getError(), 'error');
                 Response::redirect($return);
             }
 
-            $dstPath = $absPath . DS . $fileName;
+            $dstPath = $absPath . '/' . $fileName;
 
             $rename = false;
             if (file_exists($dstPath)) {
                 $i = 1;
                 $name = substr($fileName, 0, strrpos($fileName, '.'));
-                while (file_exists($absPath . DS . $name . '_' . $i . '.' . $type)) {
+                while (file_exists($absPath . '/' . $name . '_' . $i . '.' . $type)) {
                     $i++;
                 }
 
-                $dstPath = $absPath . DS . $name . '_' . $i . '.' . $type;
+                $dstPath = $absPath . '/' . $name . '_' . $i . '.' . $type;
 
                 $rename = $name . '_' . $i . '.' . $type;
             }
@@ -228,14 +228,14 @@ class FileManager extends \System\AdminController
     {
         $fileName = Request::get('fileName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        if ($serviceSystemFilemanager->deleteFile($fileName)) {
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        if ($serviceSystemFileManager->deleteFile($fileName)) {
             Response::setMessage('删除文件(' . $fileName . ')成功！');
         } else {
-            Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+            Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?controller=systemFilemanager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&task=browser');
     }
 
     // 修改文件名称
@@ -244,24 +244,24 @@ class FileManager extends \System\AdminController
         $oldFileName = Request::post('oldFileName', '');
         $newFileName = Request::post('newFileName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        if ($serviceSystemFilemanager->editFileName($oldFileName, $newFileName)) {
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        if ($serviceSystemFileManager->editFileName($oldFileName, $newFileName)) {
             Response::setMessage('重命名文件成功！');
         } else {
-            Response::setMessage($serviceSystemFilemanager->getError(), 'error');
+            Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?controller=systemFilemanager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&task=browser');
     }
 
     public function downloadFile()
     {
         $fileName = Request::get('fileName', '');
 
-        $serviceSystemFilemanager = Be::getAdminService('systemFilemanager');
-        $absFilePath = $serviceSystemFilemanager->getAbsFilePath($fileName);
+        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $absFilePath = $serviceSystemFileManager->getAbsFilePath($fileName);
         if ($absFilePath == false) {
-            echo $serviceSystemFilemanager->getError();
+            echo $serviceSystemFileManager->getError();
         } else {
             header('Pragma: private');
             header('Cache-control: private, must-revalidate');
@@ -274,5 +274,3 @@ class FileManager extends \System\AdminController
     }
 
 }
-
-?>

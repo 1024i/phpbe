@@ -3,7 +3,7 @@ namespace App\System\Config;
 
 class Cache
 {
-    public $driver = 'file';  // 缓存类型 file：文件/memcache/memcached/redis
+    public $driver = 'File';  // 缓存类型 File：文件/Memcache/Memcached/Redis
 
 
     // memcache 配置项，二维数组，可存放多个服务器配置

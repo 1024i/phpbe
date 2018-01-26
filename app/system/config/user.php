@@ -9,9 +9,9 @@ class User
     public $emailValid = false;  // 是否发送激活链接验证用户邮箱
     public $emailRegister = false;  // 注册成功后是否发送提示邮件
     public $emailRegisterAdmin = '1024i@gmail.com';  // 新用户注册后给管理员发送邮件
-    public $defaultAvatarS = '0S.png';  // 用户默认头像 小 small
-    public $defaultAvatarM = '0M.png';  // 用户默认头像 中 medium
-    public $defaultAvatarL = '0L.png';  // 用户默认头像 大 large
+    public $defaultAvatarS = '0_s.png';  // 用户默认头像 小 small
+    public $defaultAvatarM = '0_m.png';  // 用户默认头像 中 medium
+    public $defaultAvatarL = '0_l.png';  // 用户默认头像 大 large
     public $avatarSW = 32;  // 用户头像 小 长度
     public $avatarSH = 32;  // 用户头像 小 高度
     public $avatarMW = 64;  // 用户头像 中 长度

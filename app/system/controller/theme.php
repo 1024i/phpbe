@@ -20,7 +20,7 @@ class Theme extends \System\AdminController
         $rowAdminUser->load($my->id);
         Response::set('adminUser', $rowAdminUser);
 
-        $adminServiceUser = Be::getService('System.user');
+        $adminServiceUser = Be::getService('System.User');
         $userCount = $adminServiceUser->getUserCount();
         Response::set('userCount', $userCount);
 
@@ -313,7 +313,7 @@ class Theme extends \System\AdminController
         }
 
         $app = $remoteApp->app;
-        if (file_exists(PATH_ADMIN . DS . 'apps' . DS . $app->name . 'php')) {
+        if (file_exists(PATH_ADMIN . '/apps/' .  $app->name . 'php')) {
             Response::set('error', 3);
             Response::set('message', '已存在安装标识为' . $app->name . '的应用');
             Response::ajax();
@@ -493,7 +493,7 @@ class Theme extends \System\AdminController
         $config->allowUploadImageTypes = $allowUploadImageTypes;
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'system.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/system.php');
 
         systemLog('改动系统基本设置');
 
@@ -526,7 +526,7 @@ class Theme extends \System\AdminController
         $config->smtpSecure = Request::post('smtpSecure', '');
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'mail.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/mail.php');
 
         systemLog('改动发送邮件设置');
 
@@ -614,16 +614,16 @@ class Theme extends \System\AdminController
             $libImage->open($image['tmpName']);
             if ($libImage->isImage()) {
                 $watermarkName = date('YmdHis') . '.' . $libImage->getType();
-                $watermarkPath = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $watermarkName;
+                $watermarkPath = PATH_DATA . '/system/watermark/' .  $watermarkName;
                 if (move_uploaded_file($image['tmpName'], $watermarkPath)) {
-                    // @unlink(PATH_DATA.DS.'system'.DS.'watermark'.DS.$config->image);
+                    // @unlink(PATH_DATA.'/system/watermark/'.$config->image);
                     $config->image = $watermarkName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, PATH_DATA . DS . 'config' . DS . 'watermark.php');
+        $serviceSystem->updateConfig($config, PATH_DATA . '/config/watermark.php');
 
         systemLog('修改水印设置');
 
@@ -633,8 +633,8 @@ class Theme extends \System\AdminController
 
     public function configWatermarkTest()
     {
-        $src = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-0.jpg';
-        $dst = PATH_DATA . DS . 'system' . DS . 'watermark' . DS . 'test-1.jpg';
+        $src = PATH_DATA . '/system/watermark/test-0.jpg';
+        $dst = PATH_DATA . '/system/watermark/test-1.jpg';
 
         if (!file_exists($src)) Response::end(DATA . '/system/watermakr/test-0.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);

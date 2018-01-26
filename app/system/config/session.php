@@ -8,7 +8,7 @@ class Session
 
     public $expire = 1440;  // 超时时间
 
-    public $driver = 'File';  // SESSION 驱动 File：系统默认/Mysql/Memcache/Memcached/Redis
+    public $driver = 'Default';  // SESSION 驱动 Default：系统默认/Mysql/Memcache/Memcached/Redis
 
     // mysql 配置项
     /*

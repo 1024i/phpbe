@@ -2,10 +2,10 @@
 use System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/userProfile/js/editAvatar.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/userProfile/js/editAvatar.js"></script>
 <!--{/head}-->
 
 
@@ -14,7 +14,7 @@ use System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include PATH_ROOT.DS.'template'.DS.'userProfile'.DS.'west.php'
+        include PATH_ROOT . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -30,7 +30,7 @@ use System\Be;
         <!--{center}-->
         <?php
         $configSystem = Be::getConfig('System.System');
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
         $my = Be::getUser();
         ?>
         <div class="theme-box-container">
@@ -47,7 +47,7 @@ use System\Be;
                                 <div class="val">
                                     <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
                                     <?php
-                                    $configUser = Be::getConfig('System.user');
+                                    $configUser = Be::getConfig('System.User');
                                     if ($my->avatarL != '') {
                                         ?>
                                         <a href="<?php echo url('controller=userProfile&task=initAvatar'); ?>" style="font-size:18px;">&times;</a>

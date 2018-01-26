@@ -11,7 +11,7 @@ class System
     public $sef = false;  // 是否开启伪静态
     public $sefSuffix = '.html';  // 伪静态页后辍
     public $theme = 'huxiu';  // 主题
-    public $homeParams = ['controller'=>'article', 'task'=>'home'];  // 默认首页参数
+    public $homeParams = ['app'=>'Cms', 'controller'=>'Article', 'task'=>'home'];  // 默认首页参数
     public $homeTitle = '首页';  // 首页的标题
     public $homeMetaKeywords = '';  // 首页的 meta keywords
     public $homeMetaDescription = '';  // 首页的 meta description

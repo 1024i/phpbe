@@ -2,10 +2,10 @@
 use System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/system/template/user/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/user/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/system/template/userProfile/js/editPassword.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/userProfile/js/editPassword.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -13,7 +13,7 @@ use System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include PATH_ROOT.DS.'template'.DS.'userProfile'.DS.'west.php'
+        include PATH_ROOT . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>

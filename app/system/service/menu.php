@@ -1,9 +1,10 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
+use System\Service;
 
-class menu extends \System\Service
+class menu extends Service
 {
 
     /**
@@ -14,9 +15,9 @@ class menu extends \System\Service
      */
     public function getMenus($groupId)
     {
-        return Be::getTable('systemMenu')
-            ->where('groupId', $groupId)
-            ->orderBy('ordering', 'asc')
+        return Be::getTable('System.Menu')
+            ->where('group_id', $groupId)
+            ->orderBy('ordering', 'ASC')
             ->getObjects();
     }
 
@@ -32,14 +33,14 @@ class menu extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemMenu');
-            if (!$table->where('parentId', $menuId)
-                ->update(['parentId' => 0])
+            $table = Be::getTable('System.Menu');
+            if (!$table->where('parent_id', $menuId)
+                ->update(['parent_id' => 0])
             ) {
                 throw new \Exception($table->getError());
             }
 
-            $row = Be::getRow('System.menu');
+            $row = Be::getRow('System.Menu');
             if (!$row->delete($menuId)) {
                 throw new \Exception($row->getError());
             }
@@ -67,14 +68,14 @@ class menu extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemMenu');
+            $table = Be::getTable('System.Menu');
             if (!$table->where('home', 1)
                 ->update(['home' => 0])
             ) {
                 throw new \Exception($table->getError());
             }
 
-            $table = Be::getTable('systemMenu');
+            $table = Be::getTable('System.Menu');
             if (!$table->where('id', $menuId)
                 ->update(['home' => 1])
             ) {
@@ -98,7 +99,7 @@ class menu extends \System\Service
      */
     public function getMenuGroups()
     {
-        return Be::getTable('systemMenuGroup')->orderBy('id', 'asc')->getObjects();
+        return Be::getTable('System.MenuGroup')->orderBy('id', 'asc')->getObjects();
     }
 
     /**
@@ -108,7 +109,7 @@ class menu extends \System\Service
      */
     public function getMenuGroupSum()
     {
-        return Be::getTable('systemMenuGroup')->count();
+        return Be::getTable('System.MenuGroup')->count();
     }
 
     /**
@@ -123,14 +124,14 @@ class menu extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('systemMenu');
-            if (!$table->where('groupId', $groupId)
+            $table = Be::getTable('System.Menu');
+            if (!$table->where('group_id', $groupId)
                 ->delete()
             ) {
                 throw new \Exception($table->getError());
             }
 
-            $row = Be::getRow('System.menuGroup');
+            $row = Be::getRow('System.MenuGroup');
             if (!$row->delete($groupId)) {
                 throw new \Exception($row->getError());
             }

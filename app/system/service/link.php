@@ -9,7 +9,7 @@ class Link extends Service
 
     public function getSystemLinks($conditions = array())
     {
-        $tableSystemLink = Be::getTable('system_link');
+        $tableSystemLink = Be::getTable('System.Link');
 
         $where = $this->createSystemLinkWhere($conditions);
         $tableSystemLink->where($where);
@@ -32,7 +32,7 @@ class Link extends Service
 
     public function getSystemLinkCount($conditions = array())
     {
-        return Be::getTable('system_link')
+        return Be::getTable('System.Link')
             ->where($this->createSystemLinkWhere($conditions))
             ->count();
     }
@@ -58,7 +58,7 @@ class Link extends Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system_link');
+            $table = Be::getTable('System.Link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
@@ -82,7 +82,7 @@ class Link extends Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system_link');
+            $table = Be::getTable('System.Link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
@@ -106,7 +106,7 @@ class Link extends Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system_link');
+            $table = Be::getTable('System.Link');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {
@@ -126,12 +126,12 @@ class Link extends Service
 
     public function update()
     {
-        $links = Be::getTable('system_link')
+        $links = Be::getTable('System.Link')
             ->where('block', 0)
             ->orderBy('ordering', 'desc')
             ->getObjects();
 
-        $configSystemLink = Be::getConfig('systemLink');
+        $configSystemLink = Be::getConfig('System.Link');
         $properties = get_object_vars($configSystemLink);
         foreach ($properties as $key => $val) {
             unset($configSystemLink->$key);
@@ -145,7 +145,7 @@ class Link extends Service
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($configSystemLink, PATH_DATA . DS . 'config' . DS . 'systemLink.php');
+        $serviceSystem->updateConfig($configSystemLink, PATH_DATA . '/config/systemLink.php');
     }
 
 }

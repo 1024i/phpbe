@@ -1,9 +1,9 @@
 <?php
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
-class html extends \System\Service
+class Html extends \System\Service
 {
 
     /**
@@ -14,7 +14,7 @@ class html extends \System\Service
      */
     public function getSystemHtmls($conditions = array())
     {
-        $tableSystemHtml = Be::getTable('systemHtml');
+        $tableSystemHtml = Be::getTable('System.Html');
 
         $where = $this->createSystemHtmlWhere($conditions);
         $tableSystemHtml->where($where);
@@ -43,7 +43,7 @@ class html extends \System\Service
      */
     public function getSystemHtmlCount($conditions = array())
     {
-        return Be::getTable('systemHtml')
+        return Be::getTable('System.Html')
             ->where($this->createSystemHtmlWhere($conditions))
             ->count();
     }
@@ -78,7 +78,7 @@ class html extends \System\Service
      */
     public function isClassAvailable($class, $id)
     {
-        $table = Be::getTable('systemHtml');
+        $table = Be::getTable('System.Html');
         if ($id > 0) {
             $table->where('id', '!=', $id);
         }
@@ -100,21 +100,21 @@ class html extends \System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('systemHtml');
+            $table = Be::getTable('System.Html');
             if (!$table->where('id', 'in', $ids)->update(['block' => 0])) {
                 throw new \Exception($table->getError());
             }
 
             $objects = $table->where('id', 'in', $ids)->getObjects();
 
-            $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
+            $dir = PATH_CACHE . '/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);
             }
 
             foreach ($objects as $obj) {
-                file_put_contents($dir . DS . $obj->class . '.html', $obj->body);
+                file_put_contents($dir . '/' . $obj->class . '.html', $obj->body);
             }
 
             $db->commit();
@@ -142,16 +142,16 @@ class html extends \System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('systemHtml');
+            $table = Be::getTable('System.Html');
             if (!$table->where('id', 'in', $ids)->update(['block' => 1])) {
                 throw new \Exception($table->getError());
             }
 
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
+            $dir = PATH_CACHE . '/Html';
             foreach ($classes as $class) {
-                $path = $dir . DS . $class . '.html';
+                $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
             }
 
@@ -180,12 +180,12 @@ class html extends \System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('systemHtml');
+            $table = Be::getTable('System.Html');
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = PATH_DATA . DS . 'system' . DS . 'cache' . DS . 'html';
+            $dir = PATH_CACHE . '/Html';
             foreach ($classes as $class) {
-                $path = $dir . DS . $class . '.html';
+                $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
             }
 

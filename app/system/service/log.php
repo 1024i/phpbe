@@ -1,6 +1,5 @@
 <?php
-
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
@@ -11,10 +10,10 @@ class log extends \System\Service
     {
         $my = Be::getAdminUser();
         $rowSystemLog = Be::getRow('System.log');
-        $rowSystemLog->userId = $my->id;
+        $rowSystemLog->user_id = $my->id;
         $rowSystemLog->title = $log;
         $rowSystemLog->ip = $_SERVER['REMOTE_ADDR'];
-        $rowSystemLog->createTime = time();
+        $rowSystemLog->create_time = time();
         $rowSystemLog->save();
     }
 
@@ -55,7 +54,7 @@ class log extends \System\Service
      */
     public function getLogCount($conditions = array())
     {
-        return Be::getTable('system.log')
+        return Be::getTable('System.Log')
             ->where($this->createLogWhere($conditions))
             ->count();
     }
@@ -75,7 +74,7 @@ class log extends \System\Service
         }
 
         if (isset($conditions['userId']) && is_numeric($conditions['userId']) && $conditions['userId'] != 0) {
-            $where[] = ['userId', $conditions['userId']];
+            $where[] = ['user_id', $conditions['userId']];
         }
 
         return $where;
@@ -89,7 +88,7 @@ class log extends \System\Service
      */
     public function deleteLogs()
     {
-        return Be::getTable('system.log')->where('createTime', '<', (time() - 90 * 86400))->delete();
+        return Be::getTable('System.Log')->where('create_time', '<', (time() - 90 * 86400))->delete();
     }
 
 

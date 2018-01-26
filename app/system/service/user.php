@@ -1,14 +1,13 @@
 <?php
-
-namespace service;
+namespace App\System\Service;
 
 use app\system\tool\random;
 use app\system\tool\validator;
 use System\Be;
+use System\Cookie;
 use System\Session;
-use System\cookie;
 
-class user extends \System\Service
+class User extends \System\Service
 {
 
     /**
@@ -22,16 +21,16 @@ class user extends \System\Service
     public function login($username, $password, $rememberMe = false)
     {
         $ip = $_SERVER["REMOTE_ADDR"];
-        $times = session::get($ip);
+        $times = Session::get($ip);
         if (!$times) $times = 0;
         $times++;
         if ($times > 10) {
             $this->setError('登陆失败次数过多，请稍后再试！');
             return false;
         }
-        session::set($ip, $times);
+        Session::set($ip, $times);
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load(['username' => $username]);
 
         if ($rowUser->id > 0) {
@@ -45,18 +44,18 @@ class user extends \System\Service
                 }
 
                 session::delete($ip);
-                session::set('User', Be::getUser($rowUser->id));
+                Session::set('_user', $rowUser->toObject());
 
                 $rowUser->lastLoginTime = time();
                 $rowUser->save();
 
                 if ($rememberMe) {
-                    $configUser = Be::getConfig('System.user');
+                    $configUser = Be::getConfig('System.User');
                     $rememberMe = $username . '|||' . $this->encryptPassword($password, $rowUser->salt);
                     $rememberMe = $this->rc4($rememberMe, $configUser->rememberMeKey);
                     $rememberMe = base64_encode($rememberMe);
                     cookie::setExpire(time() + 30 * 86400);
-                    cookie::set('RememberMe', $rememberMe);
+                    cookie::set('_remember_me', $rememberMe);
                 }
                 return $rowUser;
             } else {
@@ -71,14 +70,14 @@ class user extends \System\Service
     /**
      * 记住我 自动登录
      *
-     * @return bool|mixed|\system\row
+     * @return \Object | false
      */
     public function rememberMe()
     {
-        if (cookie::has('RememberMe')) {
-            $rememberMe = cookie::get('RememberMe', '');
+        if (cookie::has('_remember_me')) {
+            $rememberMe = cookie::get('_remember_me', '');
             if ($rememberMe) {
-                $configUser = Be::getConfig('System.user');
+                $configUser = Be::getConfig('System.User');
                 $rememberMe = base64_decode($rememberMe);
                 $rememberMe = $this->rc4($rememberMe, $configUser->rememberMeKey);
                 $rememberMe = explode('|||', $rememberMe);
@@ -86,22 +85,22 @@ class user extends \System\Service
                     $username = $rememberMe[0];
                     $password = $rememberMe[0];
 
-                    $rowUser = Be::getRow('System.user');
+                    $rowUser = Be::getRow('System.User');
                     $rowUser->load(['username' => $username]);
 
                     if ($rowUser->id > 0 && $this->encryptPassword($rowUser->password, $rowUser->salt) == $password && $rowUser->block == 0) {
-                        session::set('User', Be::getUser($rowUser->id));
-
                         $rowUser->lastLoginTime = time();
                         $rowUser->save();
 
-                        return $rowUser;
+                        $user = $rowUser->toObject();
+                        Session::set('_user', $user);
+                        return $user;
                     }
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -111,8 +110,8 @@ class user extends \System\Service
      */
     public function logout()
     {
-        session::delete('User');
-        cookie::delete('RememberMe');
+        session::delete('_user');
+        cookie::delete('_remember_me');
         return true;
     }
 
@@ -123,52 +122,51 @@ class user extends \System\Service
      * @param string $email 邮箱
      * @param string $password 密码
      * @param string $name 名称
-     * @return mixed|\system\row
+     * @return \System\Row
+     * @throws \Exception
+     *
      */
     public function register($username, $email, $password, $name = '')
     {
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load(['username' => $username]);
 
         if ($rowUser->id > 0) {
-            $this->setError('用户名(' . $username . ')已被占用！');
-            return false;
+            throw new \Exception('用户名(' . $username . ')已被占用！');
         }
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load(['email' => $email]);
 
         if ($rowUser->id > 0) {
-            $this->setError('邮箱(' . $email . ')已被占用！');
-            return false;
+            throw new \Exception('邮箱(' . $email . ')已被占用！');
         }
 
         if ($name == '') $name = $username;
 
         $t = time();
 
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
 
         $salt = random::complex(32);
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->username = $username;
         $rowUser->email = $email;
         $rowUser->name = $name;
         $rowUser->password = $this->encryptPassword($password, $salt);
         $rowUser->salt = $salt;
         $rowUser->token = random::complex(32);
-        $rowUser->registerTime = $t;
-        $rowUser->lastLoginTime = $t;
-        $rowUser->isAdmin = 0;
+        $rowUser->register_time = $t;
+        $rowUser->last_login_time = $t;
         $rowUser->block = ($configUser->emailValid == '1' ? 1 : 0);
         $rowUser->save();
 
         $configSystem = Be::getConfig('System.System');
 
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
         if ($configUser->emailValid == '1') {
-            $activationUrl = url('app=system&controller=user&task=forgetPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+            $activationUrl = url('app=System&controller=User&task=forgetPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
             $data = array(
                 'siteName' => $configSystem->siteName,
@@ -178,7 +176,7 @@ class user extends \System\Service
                 'activationUrl' => $activationUrl
             );
 
-            $libMail = Be::getLib('mail');
+            $libMail = Be::getLib('Mail');
 
             $subject = $libMail->format($configUser->registerMailActivationSubject, $data);
             $body = $libMail->format($configUser->registerMailActivationBody, $data);
@@ -195,7 +193,7 @@ class user extends \System\Service
                     'name' => $rowUser->name
                 );
 
-                $libMail = Be::getLib('mail');
+                $libMail = Be::getLib('Mail');
 
                 $subject = $libMail->format($configUser->registerMailSubject, $data);
                 $body = $libMail->format($configUser->registerMailBody, $data);
@@ -216,7 +214,7 @@ class user extends \System\Service
                     'name' => $rowUser->name
                 );
 
-                $libMail = Be::getLib('mail');
+                $libMail = Be::getLib('Mail');
 
                 $subject = $libMail->format($configUser->registerMailToAdminSubject, $data);
                 $body = $libMail->format($configUser->registerMailToAdminBody, $data);
@@ -237,25 +235,23 @@ class user extends \System\Service
      *
      * @param string $username 用户名
      * @return bool
+     * @throws \Exception
      */
     public function forgotPassword($username)
     {
         if ($username == '') {
-            $this->setError('用户名不能为空！');
-            return false;
+            throw new \Exception('用户名不能为空！');
         }
 
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load('username', $username);
 
         if ($rowUser->id == 0) {
-            $this->setError('账号不存在！');
-            return false;
+            throw new \Exception('账号不存在！');
         }
 
         if ($rowUser->id == 1) {
-            $this->setError('超级管理禁止使用该功能！');
-            return false;
+            throw new \Exception('超级管理禁止使用该功能！');
         }
 
         $rowUser->token = random::complex(32);
@@ -263,15 +259,15 @@ class user extends \System\Service
 
         $configSystem = Be::getConfig('System.System');
 
-        $activationUrl = url('controller=user&task=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+        $activationUrl = url('app=System&controller=User&task=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
         $data = array(
             'siteName' => $configSystem->siteName,
             'activationUrl' => $activationUrl
         );
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
 
-        $libMail = Be::getLib('mail');
+        $libMail = Be::getLib('Mail');
 
         $subject = $libMail->format($configUser->forgotPasswordMailSubject, $data);
         $body = $libMail->format($configUser->forgotPasswordMailBody, $data);
@@ -291,18 +287,18 @@ class user extends \System\Service
      * @param string $token 邮件发送的 token
      * @param string $password 新密码
      * @return bool
+     * @throws \Exception
      */
     public function forgotPasswordReset($userId, $token, $password)
     {
-        $rowUser = Be::getRow('System.user');
+        $rowUser = Be::getRow('System.User');
         $rowUser->load($userId);
 
         if ($rowUser->token != $token) {
             if ($rowUser->token == '')
-                $this->setError('您的密码已重设！');
+                throw new \Exception('您的密码已重设！');
             else
-                $this->setError('重设密码链接已失效！');
-            return false;
+                throw new \Exception('重设密码链接已失效！');
         }
         $salt = random::complex(32);
         $rowUser->password = $this->encryptPassword($password, $salt);
@@ -317,9 +313,9 @@ class user extends \System\Service
             'siteUrl' => URL_ROOT
         );
 
-        $configUser = Be::getConfig('System.user');
+        $configUser = Be::getConfig('System.User');
 
-        $libMail = Be::getLib('mail');
+        $libMail = Be::getLib('Mail');
 
         $subject = $libMail->format($configUser->forgotPasswordResetMailSubject, $data);
         $body = $libMail->format($configUser->forgotPasswordResetMailBody, $data);
@@ -404,7 +400,7 @@ class user extends \System\Service
      */
     public function getUsers($conditions = [])
     {
-        $tableUser = Be::getTable('system.user');
+        $tableUser = Be::getTable('System.User');
 
         $where = $this->createUserWhere($conditions);
         $tableUser->where($where);
@@ -433,7 +429,7 @@ class user extends \System\Service
      */
     public function getUserCount($conditions = [])
     {
-        return Be::getTable('system.user')
+        return Be::getTable('System.User')
             ->where($this->createUserWhere($conditions))
             ->count();
     }
@@ -463,7 +459,7 @@ class user extends \System\Service
         }
 
         if (isset($conditions['roleId']) && is_numeric($conditions['roleId']) && $conditions['roleId'] > 0) {
-            $where[] = ['roleId', $conditions['roleId']];
+            $where[] = ['role_id', $conditions['roleId']];
         }
 
         return $where;
@@ -481,7 +477,7 @@ class user extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system.user');
+            $table = Be::getTable('System.User');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
@@ -511,7 +507,7 @@ class user extends \System\Service
         try {
             $db->beginTransaction();
 
-            $table = Be::getTable('system.user');
+            $table = Be::getTable('System.User');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
@@ -546,12 +542,12 @@ class user extends \System\Service
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $rowUser = Be::getRow('System.user');
+                $rowUser = Be::getRow('System.User');
                 $rowUser->load($id);
 
-                if ($rowUser->avatarS != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarS;
-                if ($rowUser->avatarM != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarM;
-                if ($rowUser->avatarL != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarL;
+                if ($rowUser->avatar_s != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_s;
+                if ($rowUser->avatar_m != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_m;
+                if ($rowUser->avatar_l != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_l;
 
                 if (!$rowUser->delete()) {
                     throw new \Exception($rowUser->getError());
@@ -586,17 +582,17 @@ class user extends \System\Service
         try {
             $db->beginTransaction();
 
-            $rowUser = Be::getRow('System.user');
+            $rowUser = Be::getRow('System.User');
             $rowUser->load($userId);
 
             $files = [];
-            if ($rowUser->avatarS != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarS;
-            if ($rowUser->avatarM != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarM;
-            if ($rowUser->avatarL != '') $files[] = PATH_DATA . DS . 'system' . DS . 'user' . DS . 'avatar' . DS . $rowUser->avatarL;
+            if ($rowUser->avatar_s != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_s;
+            if ($rowUser->avatar_m != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_m;
+            if ($rowUser->avatar_l != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_l;
 
-            $rowUser->avatarS = '';
-            $rowUser->avatarM = '';
-            $rowUser->avatarL = '';
+            $rowUser->avatar_s = '';
+            $rowUser->avatar_m = '';
+            $rowUser->avatar_l = '';
 
             if (!$rowUser->save()) {
                 throw new \Exception($rowUser->getError());
@@ -627,7 +623,7 @@ class user extends \System\Service
      */
     public function isUsernameAvailable($username, $userId = 0)
     {
-        $table = Be::getTable('system.user');
+        $table = Be::getTable('System.User');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -644,7 +640,7 @@ class user extends \System\Service
      */
     public function isEmailAvailable($email, $userId = 0)
     {
-        $table = Be::getTable('system.user');
+        $table = Be::getTable('System.User');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -659,7 +655,7 @@ class user extends \System\Service
      */
     public function getRoles()
     {
-        return Be::getTable('userRole')->orderBy('ordering', 'asc')->getObjects();
+        return Be::getTable('System.UserRole')->orderBy('ordering', 'asc')->getObjects();
     }
 
     /**
@@ -668,9 +664,9 @@ class user extends \System\Service
     public function updateUserRoles()
     {
         $roles = $this->getRoles();
-        $serviceSystem = Be::getService('system');
+        $service = Be::getService('System.Cache');
         foreach ($roles as $role) {
-            $serviceSystem->updateCacheUserRole($role->id);
+            $service->updateCacheUserRole($role->id);
         }
     }
 
@@ -681,7 +677,7 @@ class user extends \System\Service
      */
     public function updateUserRole($roleId)
     {
-        $serviceSystem = Be::getService('system');
-        $serviceSystem->updateCacheUserRole($roleId);
+        $service = Be::getService('System.Cache');
+        $service->updateCacheUserRole($roleId);
     }
 }

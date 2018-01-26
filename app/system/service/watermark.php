@@ -1,15 +1,14 @@
 <?php
-
-namespace app\system\service;
+namespace App\System\Service;
 
 use System\Be;
 
-class watermark extends \System\Service
+class Watermark extends \System\Service
 {
 
     public function save($image)
     {
-        $libImage = Be::getLib('image');
+        $libImage = Be::getLib('Image');
         $libImage->open($image);
 
         if (!$libImage->isImage()) {
@@ -29,7 +28,7 @@ class watermark extends \System\Service
                 $x = $width / 2 + $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
-            case 'northeast':
+            case 'northEast':
                 $x = $width + $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
@@ -37,7 +36,7 @@ class watermark extends \System\Service
                 $x = $width + $configWatermark->offsetX;
                 $y = $height / 2 + $configWatermark->offsetY;
                 break;
-            case 'southeast':
+            case 'southEast':
                 $x = $width + $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
@@ -45,7 +44,7 @@ class watermark extends \System\Service
                 $x = $width / 2 + $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
-            case 'southwest':
+            case 'southWest':
                 $x = $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
@@ -53,7 +52,7 @@ class watermark extends \System\Service
                 $x = $configWatermark->offsetX;
                 $y = $height / 2 + $configWatermark->offsetY;
                 break;
-            case 'northwest':
+            case 'northWest':
                 $x = $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
@@ -75,7 +74,7 @@ class watermark extends \System\Service
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
             // 添加图像水印
-            $libImage->watermark(PATH_DATA . DS . 'system' . DS . 'watermark' . DS . $configWatermark->image, $x, $y);
+            $libImage->watermark(PATH_DATA . '/System/Watermark/' .  $configWatermark->image, $x, $y);
         }
 
         $libImage->save($image);
