@@ -3,11 +3,11 @@ use System\Be;
 use System\Request;
 use System\Response;
 
-require PATH_ROOT . DS . 'System' . DS . 'Loader.php';
+require PATH_ROOT . '/System/Loader.php';
 spl_autoload_register(array('\\System\\Loader', 'autoload'));
 
-require PATH_ROOT . DS . 'System' . DS . 'Tool.php';
-require PATH_ADMIN . DS . 'System' . DS . 'Tool.php';
+require PATH_ROOT . '/System/Tool.php';
+require PATH_ADMIN . '/System/Tool.php';
 
 $configSystem = Be::getConfig('System.System');
 

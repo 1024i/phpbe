@@ -24,4 +24,3 @@ class userGroup extends \system\table
 		db::execute('UPDATE `'.$this->tableName.'` SET `default`=1 WHERE `'.$this->tableKey.'` = \''.$this->{$this->tableKey}.'\'');
 	}
 }
-?>

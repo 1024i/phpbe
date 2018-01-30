@@ -231,4 +231,3 @@ CREATE TABLE IF NOT EXISTS `beSystemLog` (
 
 }
 
-?>

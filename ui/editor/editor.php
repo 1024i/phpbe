@@ -151,4 +151,3 @@ class editor extends \system\ui
 
 }
 
-?>

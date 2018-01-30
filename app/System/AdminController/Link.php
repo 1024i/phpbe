@@ -156,4 +156,3 @@ class Link extends AdminController
 
 }
 
-?>

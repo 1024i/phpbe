@@ -801,4 +801,3 @@ class Theme extends \System\AdminController
 
 }
 
-?>

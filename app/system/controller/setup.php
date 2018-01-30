@@ -80,4 +80,3 @@ class Setup extends \System\Controller
 
 
 }
-?>

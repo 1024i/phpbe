@@ -800,4 +800,3 @@ class App extends \System\AdminController
 
 }
 
-?>

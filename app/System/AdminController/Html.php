@@ -4,9 +4,10 @@ namespace App\System\AdminController;
 use System\Be;
 use System\Request;
 use System\Response;
+use System\AdminController;
 
 // 自定义模块
-class Html extends \System\AdminController
+class Html extends AdminController
 {
 
     public function htmls()
@@ -161,5 +162,3 @@ class Html extends \System\AdminController
         $libHistory->back();
     }
 }
-
-?>
