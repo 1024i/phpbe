@@ -25,7 +25,7 @@ class menu extends Service
      * 删除菜单
      *
      * @param int $menuId 菜单编号
-     * @return bool
+     * @throws \Exception
      */
     public function deleteMenu($menuId)
     {
@@ -48,19 +48,15 @@ class menu extends Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 将某项菜单设置为首页
      *
      * @param $menuId
-     * @return bool
+     * @throws \Exception
      */
     public function setHomeMenu($menuId)
     {
@@ -84,12 +80,8 @@ class menu extends Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
@@ -116,7 +108,7 @@ class menu extends Service
      * 删除菜单组
      *
      * @param $groupId
-     * @return bool
+     * @throws \Exception
      */
     public function deleteMenuGroup($groupId)
     {
@@ -138,12 +130,8 @@ class menu extends Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
 }

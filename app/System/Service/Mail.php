@@ -60,11 +60,8 @@ class Mail extends \System\Service
     public function to($email, $name = '')
     {
         if (!$this->mailer->AddAddress($email, $name)) {
-            $this->setError($this->mailer->ErrorInfo);
-            return false;
+            throw new \Exception($this->mailer->ErrorInfo);
         }
-
-        return true;
     }
 
 
@@ -72,11 +69,8 @@ class Mail extends \System\Service
     public function cc($email, $name = '')
     {
         if (!$this->mailer->AddCC($email, $name)) {
-            $this->setError($this->mailer->ErrorInfo);
-            return false;
+            throw new \Exception($this->mailer->ErrorInfo);
         }
-
-        return true;
     }
 
 
@@ -84,22 +78,16 @@ class Mail extends \System\Service
     public function bcc($email, $name = '')
     {
         if (!$this->mailer->AddBCC($email, $name)) {
-            $this->setError($this->mailer->ErrorInfo);
-            return false;
+            throw new \Exception($this->mailer->ErrorInfo);
         }
-
-        return true;
     }
 
 
     public function addAttachment($path)
     {
         if (!$this->mailer->AddAttachment($path)) {
-            $this->setError($this->mailer->ErrorInfo);
-            return false;
+            throw new \Exception($this->mailer->ErrorInfo);
         }
-
-        return true;
     }
 
     public function setSubject($subject = '')
@@ -135,11 +123,8 @@ class Mail extends \System\Service
     public function send()
     {
         if (!$this->mailer->Send()) {
-            $this->setError($this->mailer->ErrorInfo);
-            return false;
+            throw new \Exception($this->mailer->ErrorInfo);
         }
-
-        return true;
     }
 
     public function verify($email)

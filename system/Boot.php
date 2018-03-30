@@ -8,8 +8,6 @@ use System\Log;
 require PATH_ROOT . '/System/Loader.php';
 spl_autoload_register(array('\\System\\Loader', 'autoload'));
 
-require PATH_ROOT . '/System/Tool.php';
-
 // 检查网站配置， 是否暂停服务
 $configSystem = Be::getConfig('System.System');
 if ($configSystem->offline === '1') Response::end($configSystem->offlineMessage);
@@ -74,8 +72,6 @@ try {
             if ($key == 'task') $task = $val;
         }
     }
-
-
 
     $instance = Be::getController($app, $controller);
     if ($task == '') $task = 'index';

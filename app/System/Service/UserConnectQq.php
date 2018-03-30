@@ -47,8 +47,7 @@ class UserConnectQq extends \System\Service
     public function callback()
     {
         if (Request::get('state', '') != Session::get('user_connect_qq_state')) {
-            $this->setError('返回信息被篡改！');
-            return false;
+            throw new \Exception('返回信息被篡改！');
         }
 
         $url = 'https://graph.qq.com/oauth2.0/token';
@@ -69,8 +68,7 @@ class UserConnectQq extends \System\Service
             $msg = json_decode($response);
 
             if (isset($msg->error)) {
-                $this->setError($msg->error . ': ' . $msg->errorDescription);
-                return false;
+                throw new \Exception($msg->error . ': ' . $msg->errorDescription);
             }
         }
 
@@ -98,8 +96,7 @@ class UserConnectQq extends \System\Service
 
         $response = json_decode($response);
         if (isset($response->error)) {
-            $this->setError($response->error . ': ' . $response->errorDescription);
-            return false;
+            throw new \Exception($response->error . ': ' . $response->errorDescription);
         }
 
         return $response->openid;
@@ -119,8 +116,7 @@ class UserConnectQq extends \System\Service
         $response = json_decode($response);
 
         if ($response->ret != 0) {
-            $this->setError($response->msg);
-            return false;
+            throw new \Exception($response->msg);
         }
 
         return $response;

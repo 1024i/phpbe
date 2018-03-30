@@ -165,41 +165,44 @@ class Article extends AdminController
         // 提取第一张图作为缩略图
         if ($thumbnailPickUp == 1) {
             if (count($images) > 0) {
-                $libHttp = Be::getLib('Http');
-                $data = $libHttp->get($images[0]);
 
-                if ($data != false) {
-                    $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
-                    file_put_contents($tmpImage, $data);
+                $libHttp = Be::getLib('\GuzzleHttp\Client');
+                $response = $libHttp->request('GET', $images[0]);
+                if ($response->getStatusCode() == 200) {
+                    $data = $response->getBody();
+                    if ($data) {
+                        $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
+                        file_put_contents($tmpImage, $data);
 
-                    $libImage = Be::getLib('image');
-                    $libImage->open($tmpImage);
+                        $libImage = Be::getLib('image');
+                        $libImage->open($tmpImage);
 
-                    if ($libImage->isImage()) {
-                        $t = date('YmdHis');
-                        $dir = PATH_DATA . '/Cms/Article/Thumbnail';
-                        if (!file_exists($dir)) {
-                            $libFso = Be::getLib('Fso');
-                            $libFso->mkDir($dir);
+                        if ($libImage->isImage()) {
+                            $t = date('YmdHis');
+                            $dir = PATH_DATA . '/Cms/Article/Thumbnail';
+                            if (!file_exists($dir)) {
+                                $libFso = Be::getLib('Fso');
+                                $libFso->mkDir($dir);
+                            }
+
+                            $thumbnailLName = $t . '_l.' . $libImage->getType();
+                            $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
+                            $libImage->save($dir . '/' . $thumbnailLName);
+                            $rowArticle->thumbnail_l = $thumbnailLName;
+
+                            $thumbnailMName = $t . '_m.' . $libImage->getType();
+                            $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
+                            $libImage->save($dir . '/' . $thumbnailMName);
+                            $rowArticle->thumbnail_m = $thumbnailMName;
+
+                            $thumbnailSName = $t . '_s.' . $libImage->getType();
+                            $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
+                            $libImage->save($dir . '/' . $thumbnailSName);
+                            $rowArticle->thumbnail_s = $thumbnailSName;
                         }
 
-                        $thumbnailLName = $t . '_l.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailLName);
-                        $rowArticle->thumbnail_l = $thumbnailLName;
-
-                        $thumbnailMName = $t . '_m.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailMName);
-                        $rowArticle->thumbnail_m = $thumbnailMName;
-
-                        $thumbnailSName = $t . '_s.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailSName);
-                        $rowArticle->thumbnail_s = $thumbnailSName;
+                        @unlink($tmpImage);
                     }
-
-                    @unlink($tmpImage);
                 }
             }
         } else {
@@ -236,42 +239,46 @@ class Article extends AdminController
             } elseif ($thumbnailSource == 'url') { // 从指定网址获取缩图片
                 $thumbnailUrl = Request::post('thumbnailUrl', '');
                 if ($thumbnailUrl != '' && substr($thumbnailUrl, 0, 7) == 'http://') {
-                    $libHttp = Be::getLib('Http');
-                    $data = $libHttp->get($thumbnailUrl);
 
-                    if ($data != false) {
-                        $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
-                        file_put_contents($tmpImage, $data);
+                    $libHttp = Be::getLib('\GuzzleHttp\Client');
+                    $response = $libHttp->request('GET', $thumbnailUrl);
+                    if ($response->getStatusCode() == 200) {
+                        $data = $response->getBody();
+                        if ($data) {
+                            $tmpImage = PATH_DATA . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
+                            file_put_contents($tmpImage, $data);
 
-                        $libImage = Be::getLib('image');
-                        $libImage->open($tmpImage);
+                            $libImage = Be::getLib('image');
+                            $libImage->open($tmpImage);
 
-                        if ($libImage->isImage()) {
-                            $t = date('YmdHis');
-                            $dir = PATH_DATA . '/Cms/Article/Thumbnail';
-                            if (!file_exists($dir)) {
-                                $libFso = Be::getLib('Fso');
-                                $libFso->mkDir($dir);
+                            if ($libImage->isImage()) {
+                                $t = date('YmdHis');
+                                $dir = PATH_DATA . '/Cms/Article/Thumbnail';
+                                if (!file_exists($dir)) {
+                                    $libFso = Be::getLib('Fso');
+                                    $libFso->mkDir($dir);
+                                }
+
+                                $thumbnailLName = $t . '_l.' . $libImage->getType();
+                                $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
+                                $libImage->save($dir . '/' . $thumbnailLName);
+                                $rowArticle->thumbnail_l = $thumbnailLName;
+
+                                $thumbnailMName = $t . '_m.' . $libImage->getType();
+                                $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
+                                $libImage->save($dir . '/' . $thumbnailMName);
+                                $rowArticle->thumbnail_m = $thumbnailMName;
+
+                                $thumbnailSName = $t . '_s.' . $libImage->getType();
+                                $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
+                                $libImage->save($dir . '/' . $thumbnailSName);
+                                $rowArticle->thumbnail_s = $thumbnailSName;
                             }
 
-                            $thumbnailLName = $t . '_l.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailLName);
-                            $rowArticle->thumbnail_l = $thumbnailLName;
-
-                            $thumbnailMName = $t . '_m.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailMName);
-                            $rowArticle->thumbnail_m = $thumbnailMName;
-
-                            $thumbnailSName = $t . '_s.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailSName);
-                            $rowArticle->thumbnail_s = $thumbnailSName;
+                            @unlink($tmpImage);
                         }
-
-                        @unlink($tmpImage);
                     }
+
                 }
             }
         }

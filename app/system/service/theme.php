@@ -72,8 +72,7 @@ class Theme extends \System\Service
     {
         $dir = PATH_ROOT . '/theme/' .  $theme->name;
         if (file_exists($dir)) {
-            $this->setError('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
-            return false;
+            throw new \Exception('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
         }
 
         $libHttp = Be::getLib('Http');
@@ -85,14 +84,11 @@ class Theme extends \System\Service
         $libZip = Be::getLib('zip');
         $libZip->open($zip);
         if (!$libZip->extractTo($dir)) {
-            $this->setError($libZip->getError());
-            return false;
+            throw new \Exception($libZip->getError());
         }
 
         // 删除临时文件
         unlink($zip);
-
-        return true;
     }
 
     // 删除主题
@@ -101,16 +97,13 @@ class Theme extends \System\Service
         $configSystem = Be::getConfig('System.System');
 
         if ($configSystem->theme == $theme) {
-            $this->setError('正在使用的默认主题不能删除');
-            return false;
+            throw new \Exception('正在使用的默认主题不能删除');
         }
 
         $themePath = PATH_ROOT . '/theme/' .  $theme;
 
         $libFso = Be::getLib('fso');
         $libFso->rmDir($themePath);
-
-        return true;
     }
 
 }

@@ -1,8 +1,8 @@
 <?php
 namespace App\System\Service;
 
-use app\system\tool\random;
-use app\system\tool\validator;
+use System\Util\Random;
+use System\Util\Validator;
 use System\Be;
 use System\Cookie;
 use System\Session;
@@ -16,7 +16,8 @@ class User extends \System\Service
      * @param string $username 用户名
      * @param string $password 密码
      * @param bool $rememberMe 记住我
-     * @return bool|mixed|\system\row
+     * @return \system\row
+     * @throws \Exception
      */
     public function login($username, $password, $rememberMe = false)
     {
@@ -25,8 +26,7 @@ class User extends \System\Service
         if (!$times) $times = 0;
         $times++;
         if ($times > 10) {
-            $this->setError('登陆失败次数过多，请稍后再试！');
-            return false;
+            throw new \Exception('登陆失败次数过多，请稍后再试！');
         }
         Session::set($ip, $times);
 
@@ -39,8 +39,7 @@ class User extends \System\Service
 
             if ($rowUser->password == $password) {
                 if ($rowUser->block == 1) {
-                    $this->setError('用户账号已被停用！');
-                    return false;
+                    throw new \Exception('用户账号已被停用！');
                 }
 
                 session::delete($ip);
@@ -59,12 +58,11 @@ class User extends \System\Service
                 }
                 return $rowUser;
             } else {
-                $this->setError('密码错误！');
+                throw new \Exception('密码错误！');
             }
         } else {
-            $this->setError('用户名不存在！');
+            throw new \Exception('用户名不存在！');
         }
-        return false;
     }
 
     /**
@@ -106,13 +104,11 @@ class User extends \System\Service
     /**
      * 退出
      *
-     * @return bool
      */
     public function logout()
     {
         session::delete('_user');
         cookie::delete('_remember_me');
-        return true;
     }
 
     /**
@@ -234,7 +230,6 @@ class User extends \System\Service
      * 向用户邮箱发送一封重置密码的邮件
      *
      * @param string $username 用户名
-     * @return bool
      * @throws \Exception
      */
     public function forgotPassword($username)
@@ -276,8 +271,6 @@ class User extends \System\Service
         $libMail->setBody($body);
         $libMail->to($rowUser->email, $rowUser->name);
         $libMail->send();
-
-        return true;
     }
 
     /**
@@ -286,7 +279,6 @@ class User extends \System\Service
      * @param int $userId 用户ID
      * @param string $token 邮件发送的 token
      * @param string $password 新密码
-     * @return bool
      * @throws \Exception
      */
     public function forgotPasswordReset($userId, $token, $password)
@@ -324,8 +316,6 @@ class User extends \System\Service
         $libMail->setBody($body);
         $libMail->to($rowUser->email, $rowUser->name);
         $libMail->send();
-
-        return true;
     }
 
 
@@ -469,7 +459,7 @@ class User extends \System\Service
      * 屏蔽用户账号
      *
      * @param string $ids 以逗号分隔的多个用户ID
-     * @return bool
+     * @throws \Exception
      */
     public function unblock($ids)
     {
@@ -487,19 +477,15 @@ class User extends \System\Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 启用用户账号
      *
      * @param string $ids 以逗号分隔的多个用户ID
-     * @return bool
+     * @throws \Exception
      */
     public function block($ids)
     {
@@ -517,19 +503,15 @@ class User extends \System\Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 删除用户账号
      *
      * @param string $ids 以逗号分隔的多个用户ID
-     * @return bool
+     * @throws \Exception
      */
     public function delete($ids)
     {
@@ -562,19 +544,15 @@ class User extends \System\Service
 
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 初始化用户头像
      *
      * @param int $userId 用户ID
-     * @return bool
+     * @throws \Exception
      */
     public function initAvatar($userId)
     {
@@ -606,12 +584,8 @@ class User extends \System\Service
 
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**

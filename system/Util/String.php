@@ -22,7 +22,7 @@ class String
     }
 
     /**
-     * 下划线转驼峰
+     * 下划线转首字母小写驼峰
      *
      * @param string $str
      * @return string
