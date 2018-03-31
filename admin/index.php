@@ -1,5 +1,5 @@
 <?php
-define('ENVIRONMENT', ''); // 部置环境
+define('ENV', ''); // 部置环境
 
 require 'define.php';
 require dirname(__DIR__) . '/define.php';

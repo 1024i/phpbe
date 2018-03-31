@@ -15,7 +15,7 @@ class Db
 
     public function __construct()
     {
-        if (ENVIRONMENT == 'prod') {
+        if (ENV == 'prod') {
             $this->master = [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1', // 主机名

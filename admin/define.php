@@ -11,5 +11,5 @@ define('IS_BACKEND', true); // 是否后台
  */
 $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
 $url .= isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']));
-$url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/admin/index' . (defined('ENVIRONMENT') ? ('.' . ENVIRONMENT) : '') . '.php'));
+$url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/admin/index' . (defined('ENV') ? ('.' . ENV) : '') . '.php'));
 define('URL_ROOT', $url);
