@@ -33,7 +33,7 @@ class Cache
 			$configCache = Be::getConfig('cache');
 			$driver = $configCache->driver;
 
-			$className = '\\System\\Cache\\Driver\\' . $driver;
+			$className = '\\System\\Cache\\Driver\\' . $driver . 'Impl';
 			$options = isset($configCache->$driver) ? $configCache->$driver : array();
 
 			self::$handler = new $className($options);

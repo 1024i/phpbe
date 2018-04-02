@@ -2,12 +2,12 @@
 namespace System\Cache\Driver;
 
 use System\Cache\Exception;
-use System\Cache\DriverInterface;
+use System\Cache\Driver;
 
 /**
  * Redis 缓存类
  */
-class Redis implements DriverInterface
+class RedisImpl implements Driver
 {
 
     /**

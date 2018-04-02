@@ -34,7 +34,7 @@ abstract class Be
 
         $config = $config->$db;
 
-        $class = 'System\\Db\\Driver\\' . $config['driver'];
+        $class = 'System\\Db\\Driver\\' . $config['driver'] . 'Impl';
         if (!class_exists($class)) throw new \Exception('数据库配置项（' . $db . '）指定的数据库驱动' . $config['driver'] . '不支持！');
 
         self::$cache[$key] = new $class($config);

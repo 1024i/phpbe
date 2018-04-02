@@ -2,12 +2,12 @@
 namespace System\cache\dDriver;
 
 use System\Cache\Exception;
-use System\Cache\DriverInterface;
+use System\Cache\Driver;
 
 /**
  * Memcache 缓存类
  */
-class Memcached implements DriverInterface
+class MemcachedImpl implements Driver
 {
 
     /**

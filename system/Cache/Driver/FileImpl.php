@@ -1,12 +1,12 @@
 <?php
 namespace System\Cache\Driver;
 
-use System\Cache\DriverInterface;
+use System\Cache\Driver;
 
 /**
  * 文件 缓存类
  */
-class File implements DriverInterface
+class FileImpl implements Driver
 {
 
     /**

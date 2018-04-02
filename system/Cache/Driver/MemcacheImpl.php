@@ -1,13 +1,13 @@
 <?php
 namespace System\Cache\Driver;
 
-use System\Cache\DriverInterface;
+use System\Cache\Driver;
 use System\Cache\Exception;
 
 /**
  * memcache 缓存类
  */
-class Memcache implements DriverInterface
+class MemcacheImpl implements Driver
 {
 
     /**

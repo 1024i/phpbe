@@ -4,7 +4,7 @@ namespace System\Cache;
 /**
  * 缓存驱动
  */
-interface DriverInterface
+interface Driver
 {
 
     /**

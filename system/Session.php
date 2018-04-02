@@ -29,7 +29,7 @@ class Session
 
         $driver = $configSession->driver;
         if ($driver != 'Default') {
-            $className = 'Phpbe\\System\\Session\\Driver\\' . $driver;
+            $className = 'Phpbe\\System\\Session\\Driver\\' . $driver . 'Impl';
             $handler = new $className($configSession);
             session_set_save_handler($handler);
             register_shutdown_function('sessionWriteClose');

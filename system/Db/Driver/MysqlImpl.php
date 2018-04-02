@@ -9,7 +9,7 @@ use System\Db\Exception;
 /**
  * 数据库类
  */
-class Mysql extends Driver
+class MysqlImpl extends Driver
 {
 
     /**

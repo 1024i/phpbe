@@ -4,15 +4,15 @@ namespace System\Session\Driver;
 use System\Response;
 
 /**
- * Memcached session
+ * memcache session
  */
-class Memcached extends \SessionHandler
+class MemcacheImpl extends \SessionHandler
 {
 
 	private $expire = 1440; // session 超时时间
 
 	/**
-	 * @var \memcached
+	 * @var \Memcache
 	 */
 	private $handler = null;
 	private $options = null;
@@ -24,10 +24,10 @@ class Memcached extends \SessionHandler
 	 */
 	public function __construct($configSession)
 	{
-		if (!extension_loaded('Memcached')) Response::end('SESSION 初始化失败：服务器未安装 memcached 扩展！');
+		if (!extension_loaded('Memcache')) Response::end('SESSION 初始化失败：服务器未安装 memcache 扩展！');
 
-		if (isset($configSession->memcached)) {
-			$this->options = $configSession->memcached;
+		if (isset($configSession->memcache)) {
+			$this->options = $configSession->memcache;
 		}
 		$this->expire = $configSession->expire;
 	}
@@ -42,10 +42,16 @@ class Memcached extends \SessionHandler
 	public function open($savePath, $sessionId) {
 		$options = $this->options;
 		if ($options === null) {
-			Response::end('SESSION 初始化失败：memcached 配置参数错误！');
+			Response::end('SESSION 初始化失败：memcache 配置参数错误！');
 		} else {
-			$this->handler = new \Memcached;
-			$this->handler->addServers($options);
+			$this->handler = new \Memcache;
+			foreach ($options as $option) {
+				if ($option['timeout'] > 0) {
+					$this->handler->addServer($option['host'], $option['port'], $option['persistent'], $option['weight'], $option['timeout']);
+				} else {
+					$this->handler->addServer($option['host'], $option['port'], $option['persistent'], $option['weight']);
+				}
+			}
 		}
 		return true;
 	}
@@ -77,9 +83,8 @@ class Memcached extends \SessionHandler
 	 * @return bool
 	 */
 	public function write($sessionId, $sessionData) {
-		return $this->handler->set('session:'.$sessionId, $sessionData, $this->expire);
+		return $this->handler->set('session:'.$sessionId, $sessionData, 0 , $this->expire);
 	}
-
 	/**
 	 * 销毁 session
 	 *

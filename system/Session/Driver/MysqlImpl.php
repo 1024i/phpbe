@@ -20,7 +20,7 @@ use System\Be;
  * 注意，因为mysql内存表的限制(不能使用text)，varchar最大存储长度有限制
  *
  */
-class Mysql extends \SessionHandler
+class MysqlImpl extends \SessionHandler
 {
 
     private $expire = 1440; // session 超时时间

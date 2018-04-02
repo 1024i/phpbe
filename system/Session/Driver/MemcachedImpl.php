@@ -4,15 +4,15 @@ namespace System\Session\Driver;
 use System\Response;
 
 /**
- * Redis session
+ * Memcached session
  */
-class Redis extends \SessionHandler
+class MemcachedImpl extends \SessionHandler
 {
 
 	private $expire = 1440; // session 超时时间
 
 	/**
-	 * @var \redis
+	 * @var \memcached
 	 */
 	private $handler = null;
 	private $options = null;
@@ -24,10 +24,10 @@ class Redis extends \SessionHandler
 	 */
 	public function __construct($configSession)
 	{
-		if (!extension_loaded('Redis')) Response::end('SESSION 初始化失败：服务器未安装 Redis 扩展！');
+		if (!extension_loaded('Memcached')) Response::end('SESSION 初始化失败：服务器未安装 memcached 扩展！');
 
-		if (isset($configSession->redis)) {
-			$this->options = $configSession->redis;
+		if (isset($configSession->memcached)) {
+			$this->options = $configSession->memcached;
 		}
 		$this->expire = $configSession->expire;
 	}
@@ -41,17 +41,11 @@ class Redis extends \SessionHandler
 	 */
 	public function open($savePath, $sessionId) {
 		$options = $this->options;
-		if ($options !== null) {
-			$this->handler = new \Redis;
-			$fn = $options['persistent'] ? 'pconnect' : 'connect';
-			if ($options['timeout']>0)
-				$this->handler->$fn($options['host'],$options['port'], $options['timeout']);
-			else
-				$this->handler->$fn($options['host'],$options['port']);
-			if ('' != $options['password']) $this->handler->auth($options['password']);
-			if (0 != $options['db']) $this->handler->select($options['db']);
+		if ($options === null) {
+			Response::end('SESSION 初始化失败：memcached 配置参数错误！');
 		} else {
-			$this->handler = \System\Redis::getInstance();
+			$this->handler = new \Memcached;
+			$this->handler->addServers($options);
 		}
 		return true;
 	}
@@ -83,8 +77,9 @@ class Redis extends \SessionHandler
 	 * @return bool
 	 */
 	public function write($sessionId, $sessionData) {
-		return $this->handler->setex('session:'.$sessionId, $this->expire, $sessionData);
+		return $this->handler->set('session:'.$sessionId, $sessionData, $this->expire);
 	}
+
 	/**
 	 * 销毁 session
 	 *
@@ -92,7 +87,7 @@ class Redis extends \SessionHandler
 	 * @return bool
 	 */
 	public function destroy($sessionId) {
-		return $this->handler->del('session:'.$sessionId);
+		return $this->handler->delete('session:'.$sessionId);
 	}
 
 	/**

@@ -4,15 +4,15 @@ namespace System\Session\Driver;
 use System\Response;
 
 /**
- * memcache session
+ * Redis session
  */
-class Memcache extends \SessionHandler
+class RedisImpl extends \SessionHandler
 {
 
 	private $expire = 1440; // session 超时时间
 
 	/**
-	 * @var \Memcache
+	 * @var \redis
 	 */
 	private $handler = null;
 	private $options = null;
@@ -24,10 +24,10 @@ class Memcache extends \SessionHandler
 	 */
 	public function __construct($configSession)
 	{
-		if (!extension_loaded('Memcache')) Response::end('SESSION 初始化失败：服务器未安装 memcache 扩展！');
+		if (!extension_loaded('Redis')) Response::end('SESSION 初始化失败：服务器未安装 Redis 扩展！');
 
-		if (isset($configSession->memcache)) {
-			$this->options = $configSession->memcache;
+		if (isset($configSession->redis)) {
+			$this->options = $configSession->redis;
 		}
 		$this->expire = $configSession->expire;
 	}
@@ -41,17 +41,17 @@ class Memcache extends \SessionHandler
 	 */
 	public function open($savePath, $sessionId) {
 		$options = $this->options;
-		if ($options === null) {
-			Response::end('SESSION 初始化失败：memcache 配置参数错误！');
+		if ($options !== null) {
+			$this->handler = new \Redis;
+			$fn = $options['persistent'] ? 'pconnect' : 'connect';
+			if ($options['timeout']>0)
+				$this->handler->$fn($options['host'],$options['port'], $options['timeout']);
+			else
+				$this->handler->$fn($options['host'],$options['port']);
+			if ('' != $options['password']) $this->handler->auth($options['password']);
+			if (0 != $options['db']) $this->handler->select($options['db']);
 		} else {
-			$this->handler = new \Memcache;
-			foreach ($options as $option) {
-				if ($option['timeout'] > 0) {
-					$this->handler->addServer($option['host'], $option['port'], $option['persistent'], $option['weight'], $option['timeout']);
-				} else {
-					$this->handler->addServer($option['host'], $option['port'], $option['persistent'], $option['weight']);
-				}
-			}
+			$this->handler = \System\Redis::getInstance();
 		}
 		return true;
 	}
@@ -83,7 +83,7 @@ class Memcache extends \SessionHandler
 	 * @return bool
 	 */
 	public function write($sessionId, $sessionData) {
-		return $this->handler->set('session:'.$sessionId, $sessionData, 0 , $this->expire);
+		return $this->handler->setex('session:'.$sessionId, $this->expire, $sessionData);
 	}
 	/**
 	 * 销毁 session
@@ -92,7 +92,7 @@ class Memcache extends \SessionHandler
 	 * @return bool
 	 */
 	public function destroy($sessionId) {
-		return $this->handler->delete('session:'.$sessionId);
+		return $this->handler->del('session:'.$sessionId);
 	}
 
 	/**
