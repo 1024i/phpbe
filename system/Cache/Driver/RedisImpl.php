@@ -1,7 +1,7 @@
 <?php
 namespace System\Cache\Driver;
 
-use System\Cache\Exception;
+use System\Cache\CacheException;
 use System\Cache\Driver;
 
 /**
@@ -19,11 +19,11 @@ class RedisImpl implements Driver
      * 构造函数
      *
      * @param array $options 初始化参数
-     * @throws Exception
+     * @throws CacheException
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('Redis')) throw new Exception('服务器未安装 redis 扩展！');
+        if (!extension_loaded('Redis')) throw new CacheException('服务器未安装 redis 扩展！');
 
         if (!empty($options)) {
             $this->handler = new \Redis;
@@ -35,7 +35,7 @@ class RedisImpl implements Driver
             if ('' != $options['password']) $this->handler->auth($options['password']);
             if (0 != $options['db'])  $this->handler->select($options['db']);
         } else {
-            $this->handler = \System\Redis::getInstance();
+            $this->handler = \System\Be::getRedis();
         }
     }
 

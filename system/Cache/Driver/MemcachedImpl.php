@@ -1,7 +1,7 @@
 <?php
-namespace System\cache\dDriver;
+namespace System\Cache\Driver;
 
-use System\Cache\Exception;
+use System\Cache\CacheException;
 use System\Cache\Driver;
 
 /**
@@ -19,13 +19,13 @@ class MemcachedImpl implements Driver
      * 构造函数
      *
      * @param array $options 初始化参数
-     * @throws Exception
+     * @throws CacheException
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcached')) throw new Exception('服务器未安装 memcached 扩展！');
+        if (!extension_loaded('memcached')) throw new CacheException('服务器未安装 memcached 扩展！');
 
-        if (empty($options)) throw new Exception('memcached 配置错误！');
+        if (empty($options)) throw new CacheException('memcached 配置错误！');
 
         $this->handler = new \Memcached;
         $this->handler->addServers($options);
@@ -35,7 +35,6 @@ class MemcachedImpl implements Driver
      * 获取 指定的缓存 值
      *
      * @param string $key 键名
-     * @param mixed $default 默认值
      * @return mixed|false
      */
     public function get($key)

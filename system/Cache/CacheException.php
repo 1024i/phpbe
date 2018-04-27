@@ -4,6 +4,6 @@ namespace System\Cache;
 /**
  * 错误异常
  */
-class Exception extends \Exception
+class CacheException extends \Exception
 {
 }

@@ -2,7 +2,7 @@
 namespace System\Cache\Driver;
 
 use System\Cache\Driver;
-use System\Cache\Exception;
+use System\Cache\CacheException;
 
 /**
  * memcache 缓存类
@@ -19,13 +19,13 @@ class MemcacheImpl implements Driver
      * 构造函数
      *
      * @param array $options 初始化参数
-     * @throws Exception
+     * @throws CacheException
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('memcache')) throw new Exception('服务器未安装 memcache 扩展！');
+        if (!extension_loaded('memcache')) throw new CacheException('服务器未安装 memcache 扩展！');
 
-        if (empty($options)) throw new Exception('memcache 配置错误！');
+        if (empty($options)) throw new CacheException('memcache 配置错误！');
 
         $this->handler = new \Memcache;
         foreach ($options as $option) {
