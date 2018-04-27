@@ -52,7 +52,7 @@ class Redis
      * @param array() $args 传入的参数
      * @return mixed
      */
-    public static function _CallStatic($fn, $args)
+    public static function __callStatic($fn, $args)
     {
         self::connect();
         return call_user_func_array(array(self::$instance,$fn), $args);

@@ -5,7 +5,7 @@ class Validator
 {
 
     /**
-     * 是否是手机号码
+     * 是否是合法的手机号码
      *
      * @param string $mobile 手机号码
      * @return bool
@@ -16,40 +16,63 @@ class Validator
     }
 
     /**
-     * 是否是邮箱
+     * 是否是合法的邮箱
      *
      * @param string $email 邮箱
      * @return bool
      */
     public static function isEmail($email)
     {
-        return preg_match("/^[A-z0-9-]+(\.[A-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
     }
 
     /**
-     * 是否是IP
+     * 是否是合法的IP
      *
      * @param string $ip
      * @return bool
      */
     public static function isIp($ip)
     {
-        return preg_match("/^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$/", $ip);
+        return filter_var($ip, FILTER_VALIDATE_IP);
     }
 
     /**
-     * 是否是IP
+     * 是否是合法的MAC地址
+     *
+     * @param string $mac
+     * @return bool
+     */
+    public static function isMac($mac)
+    {
+        return filter_var($mac, FILTER_VALIDATE_MAC);
+    }
+
+    /**
+     * 是否是合法的域名
+     *
+     * @param string $domain
+     * @return bool
+     */
+    public static function isDomain($domain)
+    {
+        return filter_var($domain, FILTER_VALIDATE_DOMAIN);
+    }
+
+    /**
+     * 是否是合法的IP
      *
      * @param string $url
      * @return bool
      */
     public static function isUrl($url)
     {
-        return preg_match("/^(http:\/\/)?(https:\/\/)?([\w\d-]+\.)+[\w-]+(\/[\d\w-.\/?%&=]*)?$/", $url);
+        return filter_var($url, FILTER_VALIDATE_URL);
     }
 
+
     /**
-     * 是否是身份证号
+     * 是否是合法的身份证号
      *
      * @param string $idCard
      * @return bool
@@ -61,7 +84,7 @@ class Validator
     }
 
     /**
-     * 是否是邮政编码
+     * 是否是合法的邮政编码
      *
      * @param string $postcode
      * @return bool

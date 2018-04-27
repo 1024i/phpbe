@@ -40,16 +40,14 @@ class Cookie
 	/**
 	 * 获取 cookie 值
 	 *
-	 * @param string $name 名称
-	 * @param string $default 默认值
+     * @param string|null $name 参数量
+     * @param string|null $default 默认值
+     * @param string|\Closure $format 格式化
 	 * @return string
 	 */
-	public static function get($name, $default = null)
+	public static function get($name = null, $default = null, $format = 'string')
 	{
-		if (isset($_COOKIE[$name])) {
-			return $_COOKIE[$name];
-		}
-		return $default;
+		return Request::cookie($name, $default, $format);
 	}
 
 

@@ -15,4 +15,4 @@
 !/vendor/index.html
 
 /composer.lock
-
+.DS_store
