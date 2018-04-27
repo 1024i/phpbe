@@ -242,7 +242,7 @@ class Response
     /*
      * 封装 setXxx 方法
      */
-    public static function __call_static($fn, $args)
+    public static function __callStatic($fn, $args)
     {
         if (substr($fn, 0, 3) == 'set' && count($args) == 1) {
             self::$data[substr($fn, 3)] = $args[0];
