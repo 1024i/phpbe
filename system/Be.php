@@ -12,7 +12,7 @@ abstract class Be
 
     private static $cache = array(); // 缓存资源实例
 
-    private static $version = '2.0'; // 系统版本号
+    private static $version = '2.0.0'; // 系统版本号
 
 
     /**
@@ -24,7 +24,7 @@ abstract class Be
      */
     public static function getDb($db = 'master')
     {
-        $key = 'db:' . $db;
+        $key = 'Db:' . $db;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $config = Be::getConfig('System.Db');
@@ -38,6 +38,48 @@ abstract class Be
         if (!class_exists($class)) throw new \Exception('数据库配置项（' . $db . '）指定的数据库驱动' . $config['driver'] . '不支持！');
 
         self::$cache[$key] = new $class($config);
+        return self::$cache[$key];
+    }
+
+    /**
+     * 获取Redis对象
+     *
+     * @param string $redis Redis名
+     * @return \System\Redis\Driver
+     * @throws \Exception
+     */
+    public static function getRedis($redis = 'master')
+    {
+        $key = 'Redis:' . $redis;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
+
+        $config = Be::getConfig('System.Redis');
+        if (!isset($config->$redis)) {
+            throw new \Exception('Redis配置项（' . $redis . '）不存在！');
+        }
+
+        self::$cache[$key] = new \System\Redis\Driver($config->$redis);
+        return self::$cache[$key];
+    }
+
+    /**
+     * 获取MongoDB对象
+     *
+     * @param string $mongoDB MongoDB名
+     * @return \System\Redis\Driver
+     * @throws \Exception
+     */
+    public static function getMongoDB($mongoDB = 'master')
+    {
+        $key = 'MongoDB:' . $mongoDB;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
+
+        $config = Be::getConfig('System.MongoDB');
+        if (!isset($config->$mongoDB)) {
+            throw new \Exception('MongoDB配置项（' . $mongoDB . '）不存在！');
+        }
+
+        self::$cache[$key] = new \System\MongoDB\Driver($config->$mongoDB);
         return self::$cache[$key];
     }
 
@@ -98,7 +140,7 @@ abstract class Be
      */
     public static function getConfig($config)
     {
-        $key = 'config:' . $config;
+        $key = 'Config:' . $config;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $pos = strpos($config, '.');
@@ -136,7 +178,7 @@ abstract class Be
      */
     public static function getService($service)
     {
-        $key = 'service:' . $service;
+        $key = 'Service:' . $service;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $pos = strpos($service, '.');
@@ -450,7 +492,7 @@ abstract class Be
      */
     public static function getRouter($app, $router)
     {
-        $key = 'router:' . $app . ':' . $router;
+        $key = 'Router:' . $app . ':' . $router;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = PATH_ROOT . '/App/' .  $app . '/Router/' .  $router . '.php';
@@ -473,7 +515,7 @@ abstract class Be
      */
     public static function getAdminRouter($app, $router)
     {
-        $key = 'adminRouter:' . $app . ':' . $router;
+        $key = 'AdminRouter:' . $app . ':' . $router;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = PATH_ROOT . '/App/' .  $app . '/AdminRouter/' .  $router . '.php';
@@ -494,7 +536,7 @@ abstract class Be
      */
     public static function getUser($id = 0)
     {
-        $key = 'user:' . $id;
+        $key = 'User:' . $id;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $user = null;
@@ -530,7 +572,7 @@ abstract class Be
      */
     public static function getAdminUser($id = 0)
     {
-        $key = 'adminUser:' . $id;
+        $key = 'AdminUser:' . $id;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $user = null;
