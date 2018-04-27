@@ -1,10 +1,8 @@
 <?php
-
 namespace System\Db\Driver;
 
-use System\Be;
 use System\Db\Driver;
-use System\Db\Exception;
+use System\Db\DbException;
 
 /**
  * 数据库类
@@ -15,20 +13,20 @@ class MysqlImpl extends Driver
     /**
      * 连接数据库
      *
-     * @return bool 是否连接成功
-     * @throws
+     * @throws DbException
      */
     public function connect()
     {
-        $config = $this->config;
-        $connection = new \PDO('mysql:dbname=' . $config['name'] . ';host=' . $config['host'] . ';port=' . $config['port'] . ';charset=utf8', $config['user'], $config['pass']);
-        if (!$connection) throw new Exception('连接 数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
+        if ($this->connection === null) {
+            $config = $this->config;
+            $connection = new \PDO('mysql:dbname=' . $config['name'] . ';host=' . $config['host'] . ';port=' . $config['port'] . ';charset=utf8', $config['user'], $config['pass']);
+            if (!$connection) throw new DbException('连接 数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
-        // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
-        $connection->query('SET NAMES utf8');
+            // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认标准字符集编码
+            $connection->query('SET NAMES utf8');
 
-        $this->connection = $connection;
-        return true;
+            $this->connection = $connection;
+        }
     }
 
     /**
@@ -64,7 +62,7 @@ class MysqlImpl extends Driver
      * @param object $obj 要插入数据库的对象，对象属性需要和该表字段一致
      * @param string $primaryKey 主键
      * @return bool
-     * @throws Exception
+     * @throws DbException
      */
     public function update($table, $obj, $primaryKey)
     {
@@ -94,7 +92,7 @@ class MysqlImpl extends Driver
         }
 
         if ($where == null) {
-            throw new Exception('更新数据时未指定条件！');
+            throw new DbException('更新数据时未指定条件！');
         }
 
         $sql = 'UPDATE `' . $table . '` SET ' . implode(',', $fields) . ' WHERE ' . $where;

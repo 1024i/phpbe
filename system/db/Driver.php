@@ -50,15 +50,15 @@ class Driver
      *
      * @param string $sql 查询语句
      * @return \PDOStatement SQL预编译结果对象
-     * @throws
+     * @throws DbException
      */
     public function prepare($sql, array $driverOptions = [])
     {
-        if (!isset($this->connection)) $this->connect();
+        $this->connect();
 
         $statement = $this->connection->prepare($sql, $driverOptions);
         if (!$statement) {
-            throw new Exception($statement->errorCode() . '：' . $statement->errorInfo() . ' SQL=' . $sql);
+            throw new DbException($statement->errorCode() . '：' . $statement->errorInfo() . ' SQL=' . $sql);
         }
 
         $this->statement = $statement;
@@ -71,19 +71,19 @@ class Driver
      * @param string $sql 查询语句
      * @param array $bind 占位参数
      * @return true 执行成功
-     * @throws Exception
+     * @throws DbException
      */
     public function execute($sql = null, $bind = [])
     {
         if ($sql === null) {
             if ($this->statement == null) {
-                throw new Exception('没有预编译SQL！');
+                throw new DbException('没有预编译SQL！');
             }
 
             if (!$this->statement->execute($bind)) {
                 $error = $this->statement->errorInfo();
                 //printR($error);
-                throw new Exception($error[1] . '：' . $error[2]);
+                throw new DbException($error[1] . '：' . $error[2]);
             }
 
             return true;
@@ -100,7 +100,7 @@ class Driver
                 if ($statement === false) {
                     $error = $this->connection->errorInfo();
                     // printR($error);
-                    throw new Exception($error[1] . '：' . $error[2] . ' SQL=' . $sql);
+                    throw new DbException($error[1] . '：' . $error[2] . ' SQL=' . $sql);
                 }
                 $this->statement = $statement;
 
@@ -134,12 +134,12 @@ class Driver
     /**
      * 最后一次查询影响到的记录条数
      * @return int | bool 条数/失败
-     * @throws Exception
+     * @throws DbException
      */
     public function rowCount()
     {
         if ($this->statement == null) {
-            throw new Exception('没有预编译SQL！');
+            throw new DbException('没有预编译SQL！');
         }
         return $this->statement->rowCount();
     }
@@ -359,7 +359,7 @@ class Driver
      * @param object $obj 要插入数据库的对象，对象属性需要和该表字段一致
      * @param string $primaryKey 主键
      * @return bool
-     * @throws Exception
+     * @throws DbException
      */
     public function update($table, $obj, $primaryKey)
     {
@@ -389,7 +389,7 @@ class Driver
         }
 
         if ($where == null) {
-            throw new Exception('更新数据时未指定条件！');
+            throw new DbException('更新数据时未指定条件！');
         }
 
         $sql = 'UPDATE ' . $table . ' SET ' . implode(',', $fields) . ' WHERE ' . $where;
@@ -406,8 +406,7 @@ class Driver
      */
     public function quote($string)
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return $string;
+        $this->connect();
         return $this->connection->quote($string);
     }
 
@@ -418,8 +417,7 @@ class Driver
      */
     public function getLastInsertId()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return false;
+        $this->connect();
         return $this->connection->lastInsertId();
     }
 
@@ -473,8 +471,7 @@ class Driver
 
     public function beginTransaction()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return false;
+        $this->connect();
         return $this->connection->beginTransaction();
     }
 
@@ -485,8 +482,7 @@ class Driver
      */
     public function rollback()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return false;
+        $this->connect();
         return $this->connection->rollBack();
     }
 
@@ -497,8 +493,7 @@ class Driver
      */
     public function commit()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return false;
+        $this->connect();
         return $this->connection->commit();
     }
 
@@ -509,8 +504,7 @@ class Driver
      */
     public function inTransaction()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return false;
+        $this->connect();
         return $this->connection->inTransaction();
     }
 
@@ -521,7 +515,7 @@ class Driver
      */
     public function getConnection()
     {
-        if (!isset($this->connection)) $this->connect();
+        $this->connect();
         return $this->connection;
     }
 
@@ -532,8 +526,7 @@ class Driver
      */
     public function getVersion()
     {
-        if (!isset($this->connection)) $this->connect();
-        if (!isset($this->connection)) return '';
+        $this->connect();
         return $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
     }
 }
