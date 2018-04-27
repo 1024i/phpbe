@@ -4,8 +4,8 @@ namespace System;
 /**
  * 缓存类
  *
- * @method mixed get(string $key, mixed $default = null) static 获取 指定的缓存 值
- * @method array multiGet(array $keys, mixed $default = null) static 获取 多个指定的缓存 值
+ * @method mixed get(string $key) static 获取 指定的缓存 值
+ * @method array multiGet(array $keys) static 获取 多个指定的缓存 值
  * @method bool set(string $key, mixed $value, int $expire = 0) static 设置缓存
  * @method bool multiSet(array $values, int $expire = 0) static 设置缓存
  * @method bool has(string $key) static 指定键名的缓存是否存在
