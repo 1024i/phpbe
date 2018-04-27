@@ -13,11 +13,12 @@ class Redis
      * 连接数据库
      *
      * @return bool 是否连接成功
+     * @throws \Exception
      */
     public static function connect()
     {
         if (self::$instance === null) {
-            if (!extension_loaded('Redis')) response::end('服务器未安装 Redis 扩展！');
+            if (!extension_loaded('Redis')) throw new \Exception('服务器未安装 Redis 扩展！');
 
             $config = Be::getConfig('System.Redis');
             $instance = new \redis();
