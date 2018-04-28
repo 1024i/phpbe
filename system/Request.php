@@ -29,25 +29,30 @@ class Request
 
     /**
      * 获取请求者的 IP 地址
+     *
+     * @param bool $detectProxy 是否检测代理服务器
+     * @return string
      */
-    public static function ip() {
-        $ip = null;
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $pos = strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',');
-            if (false !== $pos) {
-                $ip = substr($_SERVER['HTTP_X_FORWARDED_FOR'], 0, $pos);
-            } else {
-                $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-            }
+    public static function ip($detectProxy = true) {
 
-            if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-                $ip = $_SERVER['REMOTE_ADDR'];
+        if ($detectProxy) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $pos = strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',');
+
+                $ip = null;
+                if (false !== $pos) {
+                    $ip = substr($_SERVER['HTTP_X_FORWARDED_FOR'], 0, $pos);
+                } else {
+                    $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+                }
+
+                if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
             }
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
         }
 
-        return $ip;
+        return $_SERVER['REMOTE_ADDR'];
     }
 
     /**
