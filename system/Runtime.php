@@ -13,19 +13,9 @@ class Runtime
 
     private $urlRoot = null;
 
-    private $dirAdmin = 'admin';
-
     private $dirData = 'data';
 
     private $dirCache = 'cache';
-
-    /**
-     * @return null
-     */
-    public function getPathRoot()
-    {
-        return $this->pathRoot;
-    }
 
     /**
      * @param null $pathRoot
@@ -38,11 +28,10 @@ class Runtime
     /**
      * @return null
      */
-    public function getPathAdmin()
+    public function getPathRoot()
     {
-        return $this->pathRoot.'/'.$this->dirAdmin;
+        return $this->pathRoot;
     }
-
 
     /**
      * @return null
@@ -52,21 +41,12 @@ class Runtime
         return $this->pathRoot.'/'.$this->dirCache;
     }
 
-
     /**
      * @return null
      */
     public function getPathData()
     {
         return $this->pathRoot.'/'.$this->dirData;
-    }
-
-    /**
-     * @return null
-     */
-    public function getUrlRoot()
-    {
-        return $this->urlRoot;
     }
 
     /**
@@ -80,42 +60,17 @@ class Runtime
     /**
      * @return null
      */
-    public function getUrlData()
+    public function getUrlRoot()
     {
-        return $this->urlRoot.'/'.$this->dirAdmin;
+        return $this->urlRoot;
     }
 
     /**
      * @return null
      */
-    public function getUrlAdmin()
+    public function getUrlData()
     {
-        return $this->urlRoot.'/'.$this->dirAdmin;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getDirAdmin()
-    {
-        return $this->dirAdmin;
-    }
-
-    /**
-     * @param string $dirAdmin
-     */
-    public function setDirAdmin($dirAdmin)
-    {
-        $this->dirAdmin = $dirAdmin;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDirData()
-    {
-        return $this->dirData;
+        return $this->urlRoot.'/'.$this->dirData;
     }
 
     /**
@@ -124,6 +79,14 @@ class Runtime
     public function setDirData($dirData)
     {
         $this->dirData = $dirData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirData()
+    {
+        return $this->dirData;
     }
 
     /**

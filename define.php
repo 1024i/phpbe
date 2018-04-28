@@ -1,22 +1,17 @@
 <?php
 /*
 定义BE框架最常用的常量
-
-DS: 目录分格符
-	windows 下为右斜杠, 如 C:\windnow\system\
-	linux 下为左斜杠。 /var/www/
-
-PATH_ROOT：BE框架的根路径
-ADMIN: 后台目录名
-PATH_ADMIN: 后台绝对路径
 */
-define('DS', DIRECTORY_SEPARATOR);
 
-define('PATH_ROOT', __DIR__);
+define('DS', DIRECTORY_SEPARATOR); // DS: 目录分格符 windows 下为右斜杠（C:\windows\），linux下为左斜杠（/var/www/)
+
+define('CACHE', 'cache'); // 缓存 目录名
+define('DATA', 'data'); // 可写文件存储 目录名
+
 // define('PATH_ROOT', str_replace('\\', '/', __DIR__));
-
-define('ADMIN', 'admin');
-define('PATH_ADMIN', PATH_ROOT . '/' . ADMIN);
+define('PATH_ROOT', __DIR__); // BE框架的根路径 绝对路径
+define('PATH_CACHE', PATH_ROOT . '/' . CACHE); // 缓存 绝对路径
+define('PATH_DATA', PATH_ROOT . '/' . DATA); // 可写文件存储 绝对路径
 
 /*
  * URL_ROOT: 网站网址
@@ -32,17 +27,4 @@ if (!defined('URL_ROOT')) { // 后台管理
     $url .= substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/index' . (defined('ENV') ? ('.' . ENV) : '') . '.php'));
     define('URL_ROOT', $url);
 }
-
-define('URL_ADMIN', URL_ROOT . '/' . ADMIN);
-
-// 可写文件存储路径
-define('PATH_CACHE', PATH_ROOT . '/cache');
-
-// 可写文件存储 目录名
-define('DATA', 'data');
-
-// 可写文件存储路径
-define('PATH_DATA', PATH_ROOT . '/' . DATA);
-
-// 可写文件存储 网址
-define('URL_DATA', URL_ROOT . '/' . DATA);
+define('URL_DATA', URL_ROOT . '/' . DATA); // 可写文件存储 网址
