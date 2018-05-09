@@ -1,11 +1,11 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/userProfile/js/edit.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/userProfile/js/edit.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -13,7 +13,7 @@ use System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include PATH_ROOT . '/template/userProfile/west.php'
+        include Be::getRuntime()->getPathRoot() . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>

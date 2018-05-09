@@ -1,6 +1,8 @@
 <?php
 namespace App\System\Config;
 
+use Phpbe\System\Be;
+
 class MongoDB
 {
 
@@ -12,7 +14,7 @@ class MongoDB
 
     public function __construct()
     {
-        if (ENV == 'prod') {
+        if (Be::getRuntime()->getEnv() == 'prod') {
             $this->master = [
                 'host' => '172.24.0.120', // 主机名
                 'port' => 27017, // 端口号

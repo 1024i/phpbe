@@ -20,7 +20,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: URL_ROOT + "/?controller=user&task=ajax_forgot_password_save",
+                url: Be::getRuntime()->getUrlRoot() + "/?controller=user&task=ajax_forgot_password_save",
                 data: $(form).serialize(),
                 dataType: "json",
                 success: function (json) {

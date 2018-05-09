@@ -1,9 +1,9 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/register.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/register.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/register.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/js/register.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -78,7 +78,7 @@ $configUser = Be::getConfig('System.User');
 					<div class="col-12">
 						<div class="val">
 							<input type="text" name="captcha" class="input" style="width:90px;" />
-							<img src="<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin" onclick="javascript:this.src='<?php echo URL_ROOT; ?>/?controller=user&task=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
+							<img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/?controller=user&task=captchaLogin" onclick="javascript:this.src='<?php echo Be::getRuntime()->getUrlRoot(); ?>/?controller=user&task=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -98,13 +98,13 @@ $configUser = Be::getConfig('System.User');
 						<?php
 						if ($configUser->connectQq == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/System/template/user/images/qqLogin.png" /></a> &nbsp;
+						<a href="<?php echo url('controller=user&task=qqLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/images/qqLogin.png" /></a> &nbsp;
 						<?php
 						}
 						
 						if ($configUser->connectSina == '1') {
 						?>
-						<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo URL_ROOT; ?>/app/System/template/user/images/sinaLogin.png" /></a>
+						<a href="<?php echo url('controller=user&task=sinaLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/images/sinaLogin.png" /></a>
 						<?php
 						}
 						?>

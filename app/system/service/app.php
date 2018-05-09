@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class App extends \System\Service
+class App extends \Phpbe\System\Service
 {
 
     private $beApi = 'http://api.phpbe.com/';
@@ -62,10 +62,10 @@ class App extends \System\Service
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'appDownload/'.$app->version->id.'/');
 
-		$zip = PATH_DATA.'/system/tmp/app_'.$app->name.'.zip';
+		$zip = Be::getRuntime()->getPathData().'/system/tmp/app_'.$app->name.'.zip';
         file_put_contents($zip, $Response);
 
-		$dir = PATH_DATA.'/system/tmp/app_'.$app->name;
+		$dir = Be::getRuntime()->getPathData().'/system/tmp/app_'.$app->name;
         $libZip = Be::getLib('zip');
         $libZip->open($zip);
         if (!$libZip->extractTo($dir)) {
@@ -85,7 +85,7 @@ class App extends \System\Service
         $serviceSystem = Be::getService('system');
 		if (!in_array($app->name, $adminConfigSystem->apps)) {
 			$adminConfigSystem->apps[] = $app->name;
-            $serviceSystem->updateConfig($adminConfigSystem, PATH_DATA.'/adminConfig/system.php');
+            $serviceSystem->updateConfig($adminConfigSystem, Be::getRuntime()->getPathData().'/adminConfig/system.php');
 		}
 
 		// 删除临时文件
@@ -111,7 +111,7 @@ class App extends \System\Service
 		}
 
 		$adminConfigSystem->apps = $apps;
-        Be::getService('system')->updateConfig($adminConfigSystem, PATH_DATA.'/adminConfig/system.php');
+        Be::getService('system')->updateConfig($adminConfigSystem, Be::getRuntime()->getPathData().'/adminConfig/system.php');
 
 		$app = Be::getApp($name);
 		$app->uninstall();

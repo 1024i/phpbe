@@ -1,10 +1,10 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class Mail extends \System\Service
+class Mail extends \Phpbe\System\Service
 {
     private $mailer = null;
 

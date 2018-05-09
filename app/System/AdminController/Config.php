@@ -1,16 +1,16 @@
 <?php
 namespace App\System\AdminController;
 
-use System\Be;
-use System\Request;
-use System\Response;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
 
 /**
  * 配置中心
  *
  * @package App\System\AdminController
  */
-class Config extends \System\AdminController
+class Config extends \Phpbe\System\AdminController
 {
 
     // 配置中心

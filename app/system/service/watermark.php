@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class Watermark extends \System\Service
+class Watermark extends \Phpbe\System\Service
 {
 
     public function save($image)
@@ -74,7 +74,7 @@ class Watermark extends \System\Service
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
             // 添加图像水印
-            $libImage->watermark(PATH_DATA . '/System/Watermark/' .  $configWatermark->image, $x, $y);
+            $libImage->watermark(Be::getRuntime()->getPathData() . '/System/Watermark/' .  $configWatermark->image, $x, $y);
         }
 
         $libImage->save($image);

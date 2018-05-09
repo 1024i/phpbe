@@ -1,11 +1,11 @@
 <?php
 namespace App\System\AdminController;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\Session;
-use System\AdminController;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\Session;
+use Phpbe\System\AdminController;
 
 // 文件管理器
 class FileManager extends AdminController

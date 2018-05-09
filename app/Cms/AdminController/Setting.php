@@ -2,10 +2,10 @@
 
 namespace App\Cms\Controller;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\AdminController;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\AdminController;
 
 class Setting extends AdminController
 {
@@ -42,9 +42,9 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailL['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailLName = date('YmdHis') . 'L.' . $libImage->getType();
-                $defaultThumbnailLPath = PATH_DATA . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
+                $defaultThumbnailLPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
                 if (move_uploaded_file($defaultThumbnailL['tmpName'], $defaultThumbnailLPath)) {
-                    // @unlink(PATH_DATA.'/article/thumbnail/default/'.$configArticle->defaultThumbnailL);
+                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailL);
                     $configArticle->defaultThumbnailL = $defaultThumbnailLName;
                 }
             }
@@ -57,9 +57,9 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailM['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailMName = date('YmdHis') . 'M.' . $libImage->getType();
-                $defaultThumbnailMPath = PATH_DATA . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
+                $defaultThumbnailMPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
                 if (move_uploaded_file($defaultThumbnailM['tmpName'], $defaultThumbnailMPath)) {
-                    // @unlink(PATH_DATA.'/article/thumbnail/default/'.$configArticle->defaultThumbnailM);
+                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailM);
                     $configArticle->defaultThumbnailM = $defaultThumbnailMName;
                 }
             }
@@ -72,16 +72,16 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailS['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailSName = date('YmdHis') . 'S.' . $libImage->getType();
-                $defaultThumbnailSPath = PATH_DATA . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
+                $defaultThumbnailSPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
                 if (move_uploaded_file($defaultThumbnailS['tmpName'], $defaultThumbnailSPath)) {
-                    // @unlink(PATH_DATA.'/article/thumbnail/default/'.$configArticle->defaultThumbnailS);
+                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailS);
                     $configArticle->defaultThumbnailS = $defaultThumbnailSName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('System.Admin');
-        $serviceSystem->updateConfig($configArticle, PATH_ROOT . '/Config/Article.php');
+        $serviceSystem->updateConfig($configArticle, Be::getRuntime()->getPathRoot() . '/Config/Article.php');
 
         systemLog('设置文章系统参数');
 

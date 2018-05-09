@@ -1,12 +1,12 @@
 <?php
-use System\Be;
-use System\Request;
-use System\Response;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
 
-require PATH_ROOT . '/System/Loader.php';
+require Be::getRuntime()->getPathRoot() . '/System/Loader.php';
 spl_autoload_register(array('\\System\\Loader', 'autoload'));
 
-require PATH_ROOT . '/System/Tool.php';
+require Be::getRuntime()->getPathRoot() . '/System/Tool.php';
 require PATH_ADMIN . '/System/Tool.php';
 
 $configSystem = Be::getConfig('System.System');
@@ -16,7 +16,7 @@ date_default_timezone_set($configSystem->timezone);
 
 try {
     // 启动 session
-    \system\session::start();
+    \Phpbe\System\Session::start();
 
     $my = Be::getAdminUser();
     if ($my->id == 0) {
@@ -30,7 +30,7 @@ try {
 
     $instance = Be::getAdminController($app, $controller);
     if ($instance === null) {
-        header('location: ' . URL_ROOT . '/404.html');
+        header('location: ' . Be::getRuntime()->getUrlRoot() . '/404.html');
         exit;
     }
 
@@ -60,28 +60,11 @@ try {
 
         $instance->$task();
     } else {
-        \system\Response::end('未定义的任务: ' . $task);
+        \Phpbe\System\Response::end('未定义的任务: ' . $task);
     }
-} catch (\Exception $e) { // 兼容 < php 7 版本
-    \system\Log::log($e);
-    $db = Be::getDb();
-    if ($db->inTransaction()) $db->rollback();
 
-    if (Request::isAjax()) {
-        if ($configSystem->debug) {
-            Response::error('系统错误：' . $e->getTraceAsString(), null, -500);
-        } else {
-            Response::error('系统错误！', null, -500);
-        }
-    } else {
-        if ($configSystem->debug) {
-            Response::end('系统错误：' . $e->getMessage());
-        } else {
-            Response::redirect(URL_ROOT . '/theme/' . $configSystem->theme . '/500.html');
-        }
-    }
 } catch (\throwable $e) {
-    \system\Log::log($e);
+    \Phpbe\System\Log::log($e);
     $db = Be::getDb();
     if ($db->inTransaction()) $db->rollback();
 
@@ -95,7 +78,7 @@ try {
         if ($configSystem->debug) {
             Response::end('系统错误：' . $e->getMessage());
         } else {
-            Response::redirect(URL_ROOT . '/theme/' . $configSystem->theme . '/500.html');
+            Response::redirect(Be::getRuntime()->getUrlRoot() . '/theme/' . $configSystem->theme . '/500.html');
         }
     }
 }

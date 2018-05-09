@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class Announcement extends \System\Service
+class Announcement extends \Phpbe\System\Service
 {
 
     public function getSystemAnnouncements($conditions = [])

@@ -2,13 +2,13 @@
 
 namespace App\System\Service;
 
-use System\Util\String;
-use System\Util\System;
-use System\Be;
-use System\Db;
-use System\db\Exception;
+use Phpbe\Util\String;
+use Phpbe\Util\System;
+use Phpbe\System\Be;
+use Phpbe\System\Db;
+use Phpbe\System\db\Exception;
 
-class Cache extends \System\Service
+class Cache extends \Phpbe\System\Service
 {
 
     /**
@@ -193,7 +193,7 @@ class Cache extends \System\Service
                 $configSystem = Be::getConfig('System.System');
                 if (serialize($configSystem->homeParams) != serialize($homeParams)) {
                     $configSystem->homeParams = $homeParams;
-                    $this->updateConfig($configSystem, PATH_ROOT . '/config/system.php');
+                    $this->updateConfig($configSystem, Be::getRuntime()->getPathRoot() . '/config/system.php');
                 }
             }
 
@@ -341,13 +341,13 @@ class Cache extends \System\Service
      */
     public function updateTemplate($app, $template, $theme, $admin = false)
     {
-        $fileTheme = ($admin ? PATH_ADMIN : PATH_ROOT) . '/theme/' . $theme . '/' . $theme . '.php';
+        $fileTheme = ($admin ? PATH_ADMIN : Be::getRuntime()->getPathRoot()) . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             $this->setError('主题 ' . $theme . ' 不存在！');
             return false;
         }
 
-        $fileTemplate = PATH_ROOT . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
+        $fileTemplate = Be::getRuntime()->getPathRoot() . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
         if (!file_exists($fileTemplate)) {
             $this->setError('模板 ' . $template . ' 不存在！');
             return false;
@@ -485,7 +485,7 @@ class Cache extends \System\Service
         }
 
         $codeVars = '';
-        $configPath = ($admin ? PATH_ADMIN : PATH_ROOT) . '/theme/' . $theme . '/config.php';
+        $configPath = ($admin ? PATH_ADMIN : Be::getRuntime()->getPathRoot()) . '/theme/' . $theme . '/config.php';
         if (file_exists($configPath)) {
             include $configPath;
             $themeConfigClassName = ($admin ? 'admin\\' : '') . 'theme\\' . $theme . '\\config';

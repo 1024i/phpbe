@@ -1,11 +1,11 @@
 <?php
-use System\Be;
-use System\Request;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
 ?>
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/forgotPasswordReset.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/forgotPasswordReset.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/forgotPasswordReset.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/js/forgotPasswordReset.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->

@@ -1,11 +1,11 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
-use System\Session;
-use System\Cookie;
+use Phpbe\System\Be;
+use Phpbe\System\Session;
+use Phpbe\System\Cookie;
 
-class AdminUser extends \System\Service
+class AdminUser extends \Phpbe\System\Service
 {
 
     /**
@@ -332,9 +332,9 @@ class AdminUser extends \System\Service
             $rowAdminUser->load($userId);
 
             $files = [];
-            if ($rowAdminUser->avatar_s != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
-            if ($rowAdminUser->avatar_m != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
-            if ($rowAdminUser->avatar_l != '') $files[] = PATH_DATA . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
+            if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
+            if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
+            if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
 
             $rowAdminUser->avatar_s = '';
             $rowAdminUser->avatar_m = '';

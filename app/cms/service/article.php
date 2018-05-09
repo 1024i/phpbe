@@ -1,8 +1,8 @@
 <?php
 namespace App\Cms\Service;
 
-use System\Be;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Service;
 
 class Article extends Service
 {
@@ -297,9 +297,9 @@ class Article extends Service
                 $rowArticle = Be::getRow('Cms.Article');
                 $rowArticle->load($id);
 
-                if ($rowArticle->thumbnail_l != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
-                if ($rowArticle->thumbnail_m != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
-                if ($rowArticle->thumbnail_s != '') $files[] = PATH_DATA . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
+                if ($rowArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
+                if ($rowArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
+                if ($rowArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
 
                 if (!$rowArticle->delete()) {
                     throw new \Exception($rowArticle->getError());

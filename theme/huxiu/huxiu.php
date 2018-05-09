@@ -1,6 +1,6 @@
 <?php
-use System\Be;
-use System\Request;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
 ?>
 <!--{html}-->
 <?php
@@ -16,15 +16,15 @@ $config = Be::getConfig('System.System');
     <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery-1.12.4.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery.validate.min.js"></script>
-    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/jquery.cookie.js"></script>
+    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery.validate.min.js"></script>
+    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/huxiu/css/be.css" />
-    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/be.js"></script>
+    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/css/be.css" />
+    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/be.js"></script>
 
-    <link rel="stylesheet" href="<?php echo URL_ROOT; ?>/system/theme/huxiu/css/theme.css" />
-    <script src="<?php echo URL_ROOT; ?>/system/theme/huxiu/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/css/theme.css" />
+    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/theme.js"></script>
 
     <!--{head}-->
     <!--{/head}-->
@@ -49,7 +49,7 @@ $config = Be::getConfig('System.System');
         ?>
         <div class="row">
             <div class="col-3">
-                <img src="<?php echo URL_ROOT; ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $configSystem->siteName; ?>" />
+                <img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $configSystem->siteName; ?>" />
             </div>
             <div class="col-17">
 
@@ -62,7 +62,7 @@ $config = Be::getConfig('System.System');
                         <?php
                     } else {
                         ?>
-                        <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
+                        <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
                         <a href="<?php echo url('controller=userProfile&task=home'); ?>"><?php echo $my->name; ?></a>
                         <input type="button" class="btn btn-small btn-warning" onclick="javascript:window.location.href='<?php echo url('controller=user&task=logout'); ?>';" value="退出" />
                         <?php
@@ -98,7 +98,7 @@ $config = Be::getConfig('System.System');
                                     echo '<li>';
                                 echo '<a href="';
                                 if ($menu->home)
-                                    echo URL_ROOT;
+                                    echo Be::getRuntime()->getUrlRoot();
                                 else
                                     echo $menu->url;
                                 echo '" target="'.$menu->target.'"><span>'.$menu->name.'</span></a>';
@@ -166,7 +166,7 @@ $config = Be::getConfig('System.System');
             foreach ($southMenuTree as $menu) {
                 echo '<li><a href="';
                 if ($menu->home)
-                    echo URL_ROOT;
+                    echo Be::getRuntime()->getUrlRoot();
                 else
                     echo $menu->url;
                 echo '" target="'.$menu->target.'"><span>'.$menu->name.'</span></a></li>';

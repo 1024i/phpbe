@@ -1,13 +1,13 @@
 <?php
 namespace App\System\Service;
 
-use System\Util\Random;
-use System\Util\Validator;
-use System\Be;
-use System\Cookie;
-use System\Session;
+use Phpbe\Util\Random;
+use Phpbe\Util\Validator;
+use Phpbe\System\Be;
+use Phpbe\System\Cookie;
+use Phpbe\System\Session;
 
-class User extends \System\Service
+class User extends \Phpbe\System\Service
 {
 
     /**
@@ -16,7 +16,7 @@ class User extends \System\Service
      * @param string $username 用户名
      * @param string $password 密码
      * @param bool $rememberMe 记住我
-     * @return \system\row
+     * @return \Phpbe\System\Row
      * @throws \Exception
      */
     public function login($username, $password, $rememberMe = false)
@@ -118,7 +118,7 @@ class User extends \System\Service
      * @param string $email 邮箱
      * @param string $password 密码
      * @param string $name 名称
-     * @return \System\Row
+     * @return \Phpbe\System\Row
      * @throws \Exception
      *
      */
@@ -144,7 +144,7 @@ class User extends \System\Service
 
         $configUser = Be::getConfig('System.User');
 
-        $salt = random::complex(32);
+        $salt = Random::complex(32);
 
         $rowUser = Be::getRow('System.User');
         $rowUser->username = $username;
@@ -152,7 +152,7 @@ class User extends \System\Service
         $rowUser->name = $name;
         $rowUser->password = $this->encryptPassword($password, $salt);
         $rowUser->salt = $salt;
-        $rowUser->token = random::complex(32);
+        $rowUser->token = Random::complex(32);
         $rowUser->register_time = $t;
         $rowUser->last_login_time = $t;
         $rowUser->block = ($configUser->emailValid == '1' ? 1 : 0);
@@ -249,7 +249,7 @@ class User extends \System\Service
             throw new \Exception('超级管理禁止使用该功能！');
         }
 
-        $rowUser->token = random::complex(32);
+        $rowUser->token = Random::complex(32);
         $rowUser->save();
 
         $configSystem = Be::getConfig('System.System');
@@ -292,7 +292,7 @@ class User extends \System\Service
             else
                 throw new \Exception('重设密码链接已失效！');
         }
-        $salt = random::complex(32);
+        $salt = Random::complex(32);
         $rowUser->password = $this->encryptPassword($password, $salt);
         $rowUser->salt = $salt;
         $rowUser->token = '';
@@ -302,7 +302,7 @@ class User extends \System\Service
 
         $data = array(
             'siteName' => $configSystem->siteName,
-            'siteUrl' => URL_ROOT
+            'siteUrl' => Be::getRuntime()->getUrlRoot()
         );
 
         $configUser = Be::getConfig('System.User');
@@ -527,9 +527,9 @@ class User extends \System\Service
                 $rowUser = Be::getRow('System.User');
                 $rowUser->load($id);
 
-                if ($rowUser->avatar_s != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_s;
-                if ($rowUser->avatar_m != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_m;
-                if ($rowUser->avatar_l != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_l;
+                if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_s;
+                if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_m;
+                if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_l;
 
                 if (!$rowUser->delete()) {
                     throw new \Exception($rowUser->getError());
@@ -564,9 +564,9 @@ class User extends \System\Service
             $rowUser->load($userId);
 
             $files = [];
-            if ($rowUser->avatar_s != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_s;
-            if ($rowUser->avatar_m != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_m;
-            if ($rowUser->avatar_l != '') $files[] = PATH_DATA . '/System/User/Avatar/' .  $rowUser->avatar_l;
+            if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_s;
+            if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_m;
+            if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' .  $rowUser->avatar_l;
 
             $rowUser->avatar_s = '';
             $rowUser->avatar_m = '';

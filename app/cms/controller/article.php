@@ -1,10 +1,10 @@
 <?php
 namespace App\Cms\Controller;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\Controller;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\Controller;
 
 /**
  *

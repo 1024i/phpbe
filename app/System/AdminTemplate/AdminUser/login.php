@@ -1,6 +1,6 @@
 <?php
-use System\Be;
-use System\Request;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
 ?>
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="template/adminUser/css/login.css">

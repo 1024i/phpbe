@@ -1,9 +1,9 @@
 <?php
 namespace App\Cms\Service;
 
-use System\Be;
-use System\Cache;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Cache;
+use Phpbe\System\Service;
 
 class CategoryCache extends Service
 {

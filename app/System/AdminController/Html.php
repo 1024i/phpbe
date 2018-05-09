@@ -1,10 +1,10 @@
 <?php
 namespace App\System\AdminController;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\AdminController;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\AdminController;
 
 // 自定义模块
 class Html extends AdminController
@@ -85,7 +85,7 @@ class Html extends AdminController
 
         if ($rowSystemHtml->save()) {
             $cleanBody = Request::post('body', '', 'html');
-            $dir = PATH_DATA . '/System/Html';
+            $dir = Be::getRuntime()->getPathData() . '/System/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);

@@ -1,11 +1,11 @@
 <?php
 namespace controller;
 
-use System\Be;
-use System\Request;
-use System\Db;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Db;
 
-class Setup extends \System\Controller
+class Setup extends \Phpbe\System\Controller
 {
 
 	public function __construct()
@@ -44,7 +44,7 @@ class Setup extends \System\Controller
 		$configDb->dbName = Request::post('dbName', '');
 
 		$serviceSetup = Be::getService('setup');
-		$serviceSetup->saveConfig($configDb, PATH_ROOT . '/configs/db.php');
+		$serviceSetup->saveConfig($configDb, Be::getRuntime()->getPathRoot() . '/configs/db.php');
 
 		db::connect();
 		if (db::hasError()) {

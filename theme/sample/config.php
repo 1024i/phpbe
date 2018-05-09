@@ -23,7 +23,7 @@ class config
     /*
      * 缩略图文件路径
      */
-    public $thumbnailL = URL_ROOT . '/theme/sample/l.jpg';  // 缩略图大图 800 x 800 px
-    public $thumbnailM = URL_ROOT . '/theme/sample/m.jpg';  // 缩略图中图 400 x 400 px
-    public $thumbnailS = URL_ROOT . '/theme/sample/s.jpg';  // 缩略图小图 200 x 200 px
+    public $thumbnailL = Be::getRuntime()->getUrlRoot() . '/theme/sample/l.jpg';  // 缩略图大图 800 x 800 px
+    public $thumbnailM = Be::getRuntime()->getUrlRoot() . '/theme/sample/m.jpg';  // 缩略图中图 400 x 400 px
+    public $thumbnailS = Be::getRuntime()->getUrlRoot() . '/theme/sample/s.jpg';  // 缩略图小图 200 x 200 px
 }

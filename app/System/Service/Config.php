@@ -1,7 +1,7 @@
 <?php
 namespace App\System\Service;
 
-use System\Service;
+use Phpbe\System\Service;
 
 class Config extends Service
 {

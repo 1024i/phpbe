@@ -1,10 +1,10 @@
 <?php
 namespace App\System\AdminController;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\AdminController;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\AdminController;
 
 // 友情链接
 class Link extends AdminController

@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class log extends \System\Service
+class log extends \Phpbe\System\Service
 {
 
     public function newLog($log)

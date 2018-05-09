@@ -1,8 +1,8 @@
 <?php
 namespace App\Cms\Router;
 
-use System\Be;
-use System\Router;
+use Phpbe\System\Be;
+use Phpbe\System\Router;
 
 class Article extends Router
 {
@@ -14,17 +14,17 @@ class Article extends Router
         if ($task == 'articles') {
             if (isset($params['categoryId'])) {
                 if (isset($params['page'])) {
-                    return URL_ROOT . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
+                    return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
                 }
-                return URL_ROOT . '/Cms/Article/c' . $params['categoryId'] . '/';
+                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/';
             }
         } elseif ($task == 'detail') {
             if (isset($params['articleId'])) {
-                return URL_ROOT . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
+                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
             }
         } elseif ($task == 'user') {
             if (isset($params['userId'])) {
-                return URL_ROOT . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
+                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
             }
         }
 

@@ -1,11 +1,11 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/user/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/System/template/userProfile/js/editAvatar.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/userProfile/js/editAvatar.js"></script>
 <!--{/head}-->
 
 
@@ -14,7 +14,7 @@ use System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include PATH_ROOT . '/template/userProfile/west.php'
+        include Be::getRuntime()->getPathRoot() . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -45,7 +45,7 @@ use System\Be;
                             </div>
                             <div class="col-15">
                                 <div class="val">
-                                    <img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
+                                    <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
                                     <?php
                                     $configUser = Be::getConfig('System.User');
                                     if ($my->avatarL != '') {

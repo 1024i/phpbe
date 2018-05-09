@@ -1,6 +1,8 @@
 <?php
 namespace App\System\Config;
 
+use Phpbe\System\Be;
+
 class Redis
 {
 
@@ -16,7 +18,7 @@ class Redis
 
     public function __construct()
     {
-        if (ENV == 'prod') {
+        if (Be::getRuntime()->getEnv() == 'prod') {
             $this->master = [
                 'host' => '127.0.0.1', // 主机名
                 'port' => 6379, // 端口号

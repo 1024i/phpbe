@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class Html extends \System\Service
+class Html extends \Phpbe\System\Service
 {
 
     /**

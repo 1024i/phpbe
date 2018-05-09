@@ -1,7 +1,7 @@
 <?php
 namespace app;
 
-use System\Be;
+use Phpbe\System\Be;
 
 class system extends \system\app
 {

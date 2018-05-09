@@ -1,8 +1,8 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/System/template/user/css/registerSuccess.css">
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/registerSuccess.css">
 <!--{/head}-->
 
 <!--{middle}-->

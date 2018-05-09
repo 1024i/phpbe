@@ -1,7 +1,7 @@
 <?php
 namespace table;
 
-use System\Db;
+use Phpbe\System\Db;
 
 class userGroup extends \system\table
 {

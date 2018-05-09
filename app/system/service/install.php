@@ -1,7 +1,7 @@
 <?php
 namespace service;
 
-class install extends \System\Service
+class install extends \Phpbe\System\Service
 {
 
 

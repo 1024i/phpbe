@@ -1,10 +1,10 @@
 <?php
 namespace App\System\AdminController;
 
-use System\Be;
-use System\Request;
-use System\Response;
-use System\AdminController;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
+use Phpbe\System\AdminController;
 
 class AdminUser extends AdminController
 {
@@ -207,15 +207,15 @@ class AdminUser extends AdminController
                 $t = date('YmdHis');
 
                 $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
-                $libImage->save(PATH_DATA . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType());
+                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType());
                 $rowAdminUser->avatarL = $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType();
 
                 $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
-                $libImage->save(PATH_DATA . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType());
+                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType());
                 $rowAdminUser->avatarM = $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType();
 
                 $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
-                $libImage->save(PATH_DATA . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType());
+                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType());
                 $rowAdminUser->avatarS = $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType();
 
                 $rowAdminUser->save();
@@ -528,9 +528,9 @@ class AdminUser extends AdminController
             $libImage->open($defaultAvatarL['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarLName = date('YmdHis') . 'L.' . $libImage->getType();
-                $defaultAvatarLPath = PATH_DATA . '/adminUser/avatar/Default/' .  $defaultAvatarLName;
+                $defaultAvatarLPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarLName;
                 if (move_uploaded_file($defaultAvatarL['tmpName'], $defaultAvatarLPath)) {
-                    // @unlink(PATH_DATA.'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarL);
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarL);
                     $adminConfigAdminUser->defaultAvatarL = $defaultAvatarLName;
                 }
             }
@@ -544,9 +544,9 @@ class AdminUser extends AdminController
             $libImage->open($defaultAvatarM['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarMName = date('YmdHis') . 'M.' . $libImage->getType();
-                $defaultAvatarMPath = PATH_DATA . '/adminUser/avatar/Default/' .  $defaultAvatarMName;
+                $defaultAvatarMPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarMName;
                 if (move_uploaded_file($defaultAvatarM['tmpName'], $defaultAvatarMPath)) {
-                    // @unlink(PATH_DATA.'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarM);
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarM);
                     $adminConfigAdminUser->defaultAvatarM = $defaultAvatarMName;
                 }
             }
@@ -559,16 +559,16 @@ class AdminUser extends AdminController
             $libImage->open($defaultAvatarS['tmpName']);
             if ($libImage->isImage()) {
                 $defaultAvatarSName = date('YmdHis') . 'S.' . $libImage->getType();
-                $defaultAvatarSPath = PATH_DATA . '/adminUser/avatar/Default/' .  $defaultAvatarSName;
+                $defaultAvatarSPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarSName;
                 if (move_uploaded_file($defaultAvatarS['tmpName'], $defaultAvatarSPath)) {
-                    // @unlink(PATH_DATA.'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarS);
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarS);
                     $adminConfigAdminUser->defaultAvatarS = $defaultAvatarSName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($adminConfigAdminUser, PATH_DATA . '/adminConfig/adminUser.php');
+        $serviceSystem->updateConfig($adminConfigAdminUser, Be::getRuntime()->getPathData() . '/adminConfig/adminUser.php');
 
         systemLog('设置管理员系统参数');
 

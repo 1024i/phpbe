@@ -1,7 +1,7 @@
 function deleteAvatar() {
     $.ajax({
         type: "GET",
-        url: URL_ROOT + "/?controller=user_profile&task=ajax_delete_avatar",
+        url: Be::getRuntime()->getUrlRoot() + "/?controller=user_profile&task=ajax_delete_avatar",
         dataType: "json",
         success: function (json) {
             alert(json.message);

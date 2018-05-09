@@ -1,8 +1,8 @@
 <?php
 namespace App\Cms\Service;
 
-use System\Be;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Service;
 
 class Category extends Service
 {

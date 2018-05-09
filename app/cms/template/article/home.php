@@ -1,5 +1,5 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 
 <!--{head}-->
@@ -7,11 +7,11 @@ use System\Be;
 $config = Be::getConfig('System.System');
 $configArticle = Be::getConfig('Cms.Article');
 ?>
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/css/bjqs.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/js/bjqs-1.3.min.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/bjqs.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/js/bjqs-1.3.min.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/css/home.css">
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/js/home.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/home.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/js/home.js"></script>
 
 <style type="text/css">
 ol.bjqs-markers li a{
@@ -56,7 +56,7 @@ $categories = $this->categories;
             ?>
                 <li>
                 <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'.$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" title="<?php echo $article->title; ?>" style="max-width:100%;">
+                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'.$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" title="<?php echo $article->title; ?>" style="max-width:100%;">
                 </a>
                 </li>
             <?php
@@ -136,7 +136,7 @@ foreach ($categories as $category) {
                         ?>
                         <div class="col-5 text-center">
                             <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$categoryThumbnailArticle->id); ?>" title="<?php echo $categoryThumbnailArticle->title; ?>">
-                              <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'.$categoryThumbnailArticle->thumbnailM; ?>" alt="<?php echo $categoryThumbnailArticle->title; ?>" />
+                              <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'.$categoryThumbnailArticle->thumbnailM; ?>" alt="<?php echo $categoryThumbnailArticle->title; ?>" />
                             </a>
                         </div>
                         <div class="col-15">
@@ -189,7 +189,7 @@ $configUser = Be::getConfig('System.User');
 				<li style="width:<?php echo $configUser->avatarMW; ?>px;">
 					<div class="active-user-avatar">
 					<a href="<?php echo url('app=Cms&controller=Article&task=user&userId='.$activeUser->id); ?>" title="查看 <?php echo $activeUser->name; ?> 的动态">
-					<img src="<?php echo URL_ROOT.'/'.DATA.'/user/avatar/'.(isset($activeUser->avatarM)?$activeUser->avatarM:('default/'.$configUser->defaultAvatarM)); ?>" alt="<?php echo $activeUser->name; ?>" />
+					<img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.(isset($activeUser->avatarM)?$activeUser->avatarM:('default/'.$configUser->defaultAvatarM)); ?>" alt="<?php echo $activeUser->name; ?>" />
 					</a>
 					</div>
 					<div class="active-user-name">
@@ -225,7 +225,7 @@ if (count($monthHottestArticles)) {
 				
 					<div class="month-hottest-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
 						<a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-						<img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>">
+						<img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>">
 						</a>
 					</div>
 					

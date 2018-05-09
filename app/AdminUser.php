@@ -1,7 +1,7 @@
 <?php
 namespace App;
 
-class AdminUser extends \System\App
+class AdminUser extends \Phpbe\System\App
 {
 
 	public function __construct()

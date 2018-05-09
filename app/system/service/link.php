@@ -1,8 +1,8 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Service;
 
 class Link extends Service
 {
@@ -145,7 +145,7 @@ class Link extends Service
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($configSystemLink, PATH_DATA . '/config/systemLink.php');
+        $serviceSystem->updateConfig($configSystemLink, Be::getRuntime()->getPathData() . '/config/systemLink.php');
     }
 
 }

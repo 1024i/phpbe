@@ -1,5 +1,5 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 
 <!--{head}-->
@@ -199,12 +199,12 @@ foreach ($files as $file) {
         ?>
         <li>
             <div class="file">
-                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo URL_ROOT.'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
+                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
                     <?php
                     if (in_array($file['type'], $configSystem->allowUploadImageTypes)) {
                         ?>
                         <div class="file-icon">
-                            <img src="<?php echo URL_ROOT.'/'.DATA.$path.'/'.$file['name']; ?>" />
+                            <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.$path.'/'.$file['name']; ?>" />
                         </div>
                         <?php
                     }
@@ -286,11 +286,11 @@ foreach ($files as $file) {
         <tr>
             <td>
                 <div class="file-icon">
-                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo URL_ROOT.'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
+                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
                     <?php
                     if (in_array($file['type'], $configSystem->allowUploadImageTypes)) {
                         ?>
-                        <img src="<?php echo URL_ROOT.'/'.DATA.$path.'/'.$file['name']; ?>" />
+                        <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.$path.'/'.$file['name']; ?>" />
                         <?php
                     }
                     elseif (in_array($file['type'], $configSystem->allowUploadFileTypes)) {
@@ -307,7 +307,7 @@ foreach ($files as $file) {
                 </div>
             </td>
             <td>
-                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo URL_ROOT.'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
+                <a href="javascript:;" onclick="javascript:<?php echo $filterImage == 1?'selectImage':'selectFile'; ?>('<?php echo $file['name']; ?>', '<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.$path.'/'.$file['name']; ?>', '<?php echo $srcId ?>');">
                     <?php echo $file['name']; ?>
                 </a>
             </td>

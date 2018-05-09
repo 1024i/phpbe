@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Controller;
 
-use System\Be;
-use System\Response;
-use System\Controller;
+use Phpbe\System\Be;
+use Phpbe\System\Response;
+use Phpbe\System\Controller;
 
 class Home extends Controller
 {

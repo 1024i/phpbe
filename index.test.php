@@ -1,5 +1,7 @@
 <?php
-define('ENV', 'test'); // 测试环境
-require __DIR__ . DIRECTORY_SEPARATOR . 'define.php';
-require PATH_ROOT . '/vendor/autoload.php';
-require PATH_ROOT . '/system/Boot.php';
+require __DIR__ . '/vendor/autoload.php';
+
+$runtime = \Phpbe\System\Be::getRuntime();
+$runtime->setEnv('test');  // 测试环境
+$runtime->setPathRoot(__DIR__);
+$runtime->execute();

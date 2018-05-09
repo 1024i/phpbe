@@ -3,7 +3,7 @@
 function changeLanguage(sLanguage)
 {
 	$.ajax({
-		url: URL_ROOT+'/?controller=system&task=ajax_change_language&language='+sLanguage,
+		url: Be::getRuntime()->getUrlRoot()+'/?controller=system&task=ajax_change_language&language='+sLanguage,
 		dataType: 'json',
 		success: function(json)
 		{

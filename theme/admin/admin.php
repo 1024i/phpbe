@@ -1,6 +1,6 @@
 <?php
-use System\Be;
-use System\Session;
+use Phpbe\System\Be;
+use Phpbe\System\Session;
 ?>
 
 <!--{html}-->
@@ -14,7 +14,7 @@ $my = Be::getAdminUser();
 <meta charset="utf-8" />
 <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-<base href="<?php echo URL_ADMIN; ?>/" />
+<base href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/" />
 
 <script src="theme/admin/js//jquery-1.12.4.min.js"></script>
 <script src="theme/admin/js//jquery.validate.min.js"></script>
@@ -24,13 +24,13 @@ $my = Be::getAdminUser();
 <script src="theme/admin/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" language="javascript">
-	var gSLoadingImage = '<img src="theme/classic/images/loading.gif" alt="加载中..." align="absmiddle" /> ';
+	var gSLoadingImage = '<img src="theme/admin/images/loading.gif" alt="加载中..." align="absmiddle" /> ';
 	var gSLoading = gSLoadingImage + ' 加载中...';
 	var gSHandling = gSLoadingImage + ' 处理中...';
 </script>
 
 <link rel="stylesheet" href="theme/admin/classic/css/theme.css" />
-<script src="theme/admin/classic/js/theme.js"></script>
+<script src="theme/admin/admin/js/theme.js"></script>
 
     <!--{head}-->
     <!--{/head}-->

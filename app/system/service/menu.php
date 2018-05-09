@@ -1,8 +1,8 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Service;
 
 class menu extends Service
 {

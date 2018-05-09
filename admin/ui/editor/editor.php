@@ -1,7 +1,7 @@
 <?php
 namespace admin\ui\editor;
 
-use System\Be;
+use Phpbe\System\Be;
 
 class editor extends \system\ui
 {

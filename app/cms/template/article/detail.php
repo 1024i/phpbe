@@ -1,13 +1,13 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 $config = Be::getConfig('System.System');
 $configArticle = Be::getConfig('Cms.Article');
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/css/listing.css">
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/listing.css">
 	
-<script type="text/javascript" language="javascript" src="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/js/detail.js"></script>
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/css/detail.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/js/detail.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/detail.css">
 <!--{/head}-->
 
 

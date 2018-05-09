@@ -2,7 +2,7 @@
 
 namespace app;
 
-use System\Be;
+use Phpbe\System\Be;
 
 class user extends \system\app
 {

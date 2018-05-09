@@ -1,6 +1,8 @@
 <?php
 namespace App\System\Config;
 
+use Phpbe\System\Be;
+
 class Db
 {
     public $master = [
@@ -15,7 +17,7 @@ class Db
 
     public function __construct()
     {
-        if (ENV == 'prod') {
+        if (Be::getRuntime()->getEnv() == 'prod') {
             $this->master = [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1', // 主机名

@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
-use System\Session;
-use System\Service;
+use Phpbe\System\Be;
+use Phpbe\System\Session;
+use Phpbe\System\Service;
 
 /**
  */
@@ -13,7 +13,7 @@ class FileManager extends Service
     public function getFiles($option = array())
     {
         $absPath = $this->getAbsPath($option['path']);
-        if ($absPath == false) $absPath = PATH_DATA;
+        if ($absPath == false) $absPath = Be::getRuntime()->getPathData();
 
         $return = array();
 
@@ -175,7 +175,7 @@ class FileManager extends Service
         }
 
         // 绝对路径
-        $absPath = PATH_DATA . str_replace('/', DS, $path);
+        $absPath = Be::getRuntime()->getPathData() . str_replace('/', DS, $path);
         if (!is_dir($absPath)) {
             $this->setError('路径不存在！');
             return false;

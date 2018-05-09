@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Service;
 
-use System\Be;
+use Phpbe\System\Be;
 
-class Theme extends \System\Service
+class Theme extends \Phpbe\System\Service
 {
     private $beApi = 'http://api.phpbe.com/';
 
@@ -14,11 +14,11 @@ class Theme extends \System\Service
         if ($this->theme === null) {
             $this->theme = array();
 
-            $dir = dir(PATH_ROOT . '/theme');
+            $dir = dir(Be::getRuntime()->getPathRoot() . '/theme');
             while (($file = $dir->read()) !== false) {
-                if ($file != '.' && $file != '..' && is_dir(PATH_ROOT . '/theme/' .  $file)) {
-                    if (file_exists(PATH_ROOT . '/theme/' .  $file . '/config.php')) {
-                        include(PATH_ROOT . '/theme/' .  $file . '/config.php');
+                if ($file != '.' && $file != '..' && is_dir(Be::getRuntime()->getPathRoot() . '/theme/' .  $file)) {
+                    if (file_exists(Be::getRuntime()->getPathRoot() . '/theme/' .  $file . '/config.php')) {
+                        include(Be::getRuntime()->getPathRoot() . '/theme/' .  $file . '/config.php');
                         $className = 'configTheme_' . $file;
                         if (class_exists($className)) {
                             $this->theme[$file] = new $className();
@@ -42,7 +42,7 @@ class Theme extends \System\Service
         $configSystem = Be::getConfig('System.System');
         $configSystem->theme = $theme;
 
-        Be::getService('system')->updateConfig($configSystem, PATH_ROOT . '/Config/system.php');
+        Be::getService('system')->updateConfig($configSystem, Be::getRuntime()->getPathRoot() . '/Config/system.php');
 
         return true;
     }
@@ -70,7 +70,7 @@ class Theme extends \System\Service
     // 安装应用文件
     public function installTheme($theme)
     {
-        $dir = PATH_ROOT . '/theme/' .  $theme->name;
+        $dir = Be::getRuntime()->getPathRoot() . '/theme/' .  $theme->name;
         if (file_exists($dir)) {
             throw new \Exception('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
         }
@@ -100,7 +100,7 @@ class Theme extends \System\Service
             throw new \Exception('正在使用的默认主题不能删除');
         }
 
-        $themePath = PATH_ROOT . '/theme/' .  $theme;
+        $themePath = Be::getRuntime()->getPathRoot() . '/theme/' .  $theme;
 
         $libFso = Be::getLib('fso');
         $libFso->rmDir($themePath);

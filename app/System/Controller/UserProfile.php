@@ -1,9 +1,9 @@
 <?php
 namespace App\System\Controller;
 
-use System\Be;
-use System\Request;
-use System\Response;
+use Phpbe\System\Be;
+use Phpbe\System\Request;
+use Phpbe\System\Response;
 
 class UserProfile extends UserAuth
 {
@@ -51,7 +51,7 @@ class UserProfile extends UserAuth
 
                     $configUser = Be::getConfig('System.User');
 
-                    $avatarDir = PATH_DATA . '/system/user/avatar/';
+                    $avatarDir = Be::getRuntime()->getPathData() . '/system/user/avatar/';
                     if (!file_exists($avatarDir)) {
                         mkdir($avatarDir, 0777, true);
                     }
@@ -117,7 +117,7 @@ class UserProfile extends UserAuth
 
         $configUser = Be::getConfig('System.User');
 
-        $avatarDir = PATH_DATA . '/system/user/avatar/';
+        $avatarDir = Be::getRuntime()->getPathData() . '/system/user/avatar/';
 
         // 删除旧头像
         if ($rowUser->avatarS != '') @unlink($avatarDir . $rowUser->avatarS);

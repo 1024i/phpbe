@@ -1,12 +1,12 @@
 <?php
-use System\Be;
+use Phpbe\System\Be;
 ?>
 
 <!--{theme:admin}-->
 <!--{template:cms.article.detail}-->
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo URL_ROOT; ?>/app/Cms/Template/Article/css/articles.css">
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/articles.css">
 <!--{/head}-->
 
 <!--{middle}-->
@@ -36,7 +36,7 @@ use System\Be;
                         <div class="head-article-summary"><?php echo $article->summary; ?></div>
                         <div class="head-article-thumbnail">
                             <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailL == ''?('default/'.$configArticle->defaultThumbnailL):$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" />
+                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailL == ''?('default/'.$configArticle->defaultThumbnailL):$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" />
                             </a>
                         </div>
                         <?php
@@ -51,7 +51,7 @@ use System\Be;
                         <div class="article">
                             <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailMW; ?>px; height:<?php echo $configArticle->thumbnailMH; ?>px;">
                                 <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                    <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailM == ''?('default/'.$configArticle->defaultThumbnailM):$article->thumbnailM; ?>" alt="<?php echo $article->title; ?>" />
+                                    <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailM == ''?('default/'.$configArticle->defaultThumbnailM):$article->thumbnailM; ?>" alt="<?php echo $article->title; ?>" />
                                 </a>
                             </div>
 
@@ -101,7 +101,7 @@ use System\Be;
 
                                         <div class="hottest-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
                                             <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
@@ -138,7 +138,7 @@ use System\Be;
 
                                         <div class="top-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
                                             <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo URL_ROOT.'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
