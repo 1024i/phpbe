@@ -11,12 +11,12 @@ use Phpbe\System\Be;
 $roles = $this->get('roles');
 
 $adminUiCategory = Be::getUi('category');
-$adminUiCategory->setAction('save', './?app=System&controller=AdminUser&task=rolesSave');
-$adminUiCategory->setAction('delete', './?app=System&controller=AdminUser&task=ajaxRoleDelete');
+$adminUiCategory->setAction('save', './?app=System&controller=AdminUser&action=rolesSave');
+$adminUiCategory->setAction('delete', './?app=System&controller=AdminUser&action=ajaxRoleDelete');
 
 foreach ($roles as $role) {
     $role->htmlUserCount = '<span class="badge'.($role->userCount>0?' badge-success userCount':'').'">'.$role->userCount.'</span>';
-    $role->htmlPermission = '<a href="./?controller=adminUser&task=rolePermissions&roleId='.$role->id.'" class="btn btn-small btn-success">权限管理</a>';
+    $role->htmlPermission = '<a href="./?controller=adminUser&action=rolePermissions&roleId='.$role->id.'" class="btn btn-small btn-success">权限管理</a>';
 }
 
 $adminUiCategory->setData($roles);

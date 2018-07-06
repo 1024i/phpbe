@@ -49,7 +49,7 @@ foreach ($themes as $theme) {
 }
 
 $uiList = Be::getUi('grid');
-$uiList->setAction('listing', './?app=System&controller=System&task=remoteThemes');
+$uiList->setAction('listing', './?app=System&controller=System&action=remoteThemes');
 
 $uiList->setData($themes);
 

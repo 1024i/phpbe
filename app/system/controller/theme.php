@@ -91,7 +91,7 @@ class Theme extends \Phpbe\System\AdminController
         systemLog('修改菜单：' . $rowSystemMenuGroup->name);
 
         Response::setMessage('保存菜单成功！');
-        Response::redirect('./?app=System&controller=System&task=menus&groupId=' . $groupId);
+        Response::redirect('./?app=System&controller=System&action=menus&groupId=' . $groupId);
     }
 
 
@@ -213,7 +213,7 @@ class Theme extends \Phpbe\System\AdminController
         $rowMenuGroup->load(array('className' => $className));
         if ($rowMenuGroup->id > 0) {
             Response::setMessage('已存在(' . $className . ')类名！', 'error');
-            Response::redirect('./?app=System&controller=System&task=menuGroupEdit&id=' . $id);
+            Response::redirect('./?app=System&controller=System&action=menuGroupEdit&id=' . $id);
         }
 
         if ($id != 0) $rowMenuGroup->load($id);
@@ -222,10 +222,10 @@ class Theme extends \Phpbe\System\AdminController
             systemLog($id == 0 ? ('添加新菜单组：' . $rowMenuGroup->name) : ('修改菜单组：' . $rowMenuGroup->name));
             Response::setMessage($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！');
 
-            Response::redirect('./?app=System&controller=System&task=menuGroups');
+            Response::redirect('./?app=System&controller=System&action=menuGroups');
         } else {
             Response::setMessage($rowMenuGroup->getError(), 'error');
-            Response::redirect('./?app=System&controller=System&task=menuGroupEdit&id=' . $id);
+            Response::redirect('./?app=System&controller=System&action=menuGroupEdit&id=' . $id);
         }
     }
 
@@ -255,7 +255,7 @@ class Theme extends \Phpbe\System\AdminController
         }
 
 
-        Response::redirect('./?app=System&controller=System&task=menuGroups');
+        Response::redirect('./?app=System&controller=System&action=menuGroups');
 
     }
 
@@ -498,7 +498,7 @@ class Theme extends \Phpbe\System\AdminController
         systemLog('改动系统基本设置');
 
         Response::setMessage('保存成功！');
-        Response::redirect('./?app=System&controller=System&task=config');
+        Response::redirect('./?app=System&controller=System&action=config');
     }
 
 
@@ -531,7 +531,7 @@ class Theme extends \Phpbe\System\AdminController
         systemLog('改动发送邮件设置');
 
         Response::setMessage('保存成功！');
-        Response::redirect('./?app=System&controller=System&task=configMail');
+        Response::redirect('./?app=System&controller=System&action=configMail');
     }
 
     public function configMailTest()
@@ -561,7 +561,7 @@ class Theme extends \Phpbe\System\AdminController
             Response::setMessage('发送邮件失败：' . $error, 'error');
         }
 
-        Response::redirect('./?app=System&controller=System&task=configMailTest&toEmail=' . $toEmail);
+        Response::redirect('./?app=System&controller=System&action=configMailTest&toEmail=' . $toEmail);
     }
 
 
@@ -628,7 +628,7 @@ class Theme extends \Phpbe\System\AdminController
         systemLog('修改水印设置');
 
         Response::setMessage('保存成功！');
-        Response::redirect('./?app=System&controller=System&task=configWatermark');
+        Response::redirect('./?app=System&controller=System&action=configWatermark');
     }
 
     public function configWatermarkTest()
@@ -666,7 +666,7 @@ class Theme extends \Phpbe\System\AdminController
         systemLog('删除缓存（' . $type . '）');
 
         Response::setMessage('删除缓存成功！');
-        Response::redirect('./?app=System&controller=System&task=cache');
+        Response::redirect('./?app=System&controller=System&action=cache');
     }
 
     // 错误日志

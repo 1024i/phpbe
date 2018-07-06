@@ -19,12 +19,12 @@ foreach ($systemAnnouncements as $systemAnnouncement) {
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemAnnouncement&task=announcements');
-$uiList->setAction('create', './?controller=systemAnnouncement&task=edit');
-$uiList->setAction('edit', './?controller=systemAnnouncement&task=edit');
-$uiList->setAction('unblock', './?controller=systemAnnouncement&task=unblock');
-$uiList->setAction('block', './?controller=systemAnnouncement&task=block');
-$uiList->setAction('delete', './?controller=systemAnnouncement&task=delete');
+$uiList->setAction('list', './?controller=systemAnnouncement&action=announcements');
+$uiList->setAction('create', './?controller=systemAnnouncement&action=edit');
+$uiList->setAction('edit', './?controller=systemAnnouncement&action=edit');
+$uiList->setAction('unblock', './?controller=systemAnnouncement&action=unblock');
+$uiList->setAction('block', './?controller=systemAnnouncement&action=block');
+$uiList->setAction('delete', './?controller=systemAnnouncement&action=delete');
 
 
 $uiList->setFilters(

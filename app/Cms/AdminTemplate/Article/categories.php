@@ -7,8 +7,8 @@ $categories = $this->get('categories');
 
 $uiCategoryTree = Be::getUi('categoryTree');
 $uiCategoryTree->setData($categories);
-$uiCategoryTree->setAction('save', './?app=Cms&controller=Article&task=saveCategories');
-$uiCategoryTree->setAction('delete', './?app=Cms&controller=Article&task=ajaxDeleteCategory');
+$uiCategoryTree->setAction('save', './?app=Cms&controller=Article&action=saveCategories');
+$uiCategoryTree->setAction('delete', './?app=Cms&controller=Article&action=ajaxDeleteCategory');
 $uiCategoryTree->setFields(
     array(
         'name'=>'id',

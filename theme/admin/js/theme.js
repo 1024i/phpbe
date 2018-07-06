@@ -41,7 +41,7 @@ $(function(){
 function changeLanguage(sLanguage)
 {
 	$.ajax({
-		url: './?controller=system&task=ajax_change_language&language='+sLanguage,
+		url: './?controller=system&action=ajax_change_language&language='+sLanguage,
 		dataType: 'json',
 		success: function(json)
 		{

@@ -58,13 +58,13 @@ $config = Be::getConfig('System.System');
                     <?php
                     if (!isset($my->id) || $my->id == 0) {
                         ?>
-                        <a href="<?php echo url('controller=user&task=login'); ?>">登陆</a><a href="<?php echo url('controller=user&task=register'); ?>">注册</a>
+                        <a href="<?php echo url('controller=user&action=login'); ?>">登陆</a><a href="<?php echo url('controller=user&action=register'); ?>">注册</a>
                         <?php
                     } else {
                         ?>
                         <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
-                        <a href="<?php echo url('controller=userProfile&task=home'); ?>"><?php echo $my->name; ?></a>
-                        <input type="button" class="btn btn-small btn-warning" onclick="javascript:window.location.href='<?php echo url('controller=user&task=logout'); ?>';" value="退出" />
+                        <a href="<?php echo url('controller=userProfile&action=home'); ?>"><?php echo $my->name; ?></a>
+                        <input type="button" class="btn btn-small btn-warning" onclick="javascript:window.location.href='<?php echo url('controller=user&action=logout'); ?>';" value="退出" />
                         <?php
                     }
                     ?>

@@ -18,15 +18,15 @@ class user extends \system\app
         return array(
             array(
                 'name' => '登陆页面',
-                'url' => 'controller=user&task=login'
+                'url' => 'controller=user&action=login'
             ),
             array(
                 'name' => '注册页面',
-                'url' => 'controller=user&task=register'
+                'url' => 'controller=user&action=register'
             ),
             array(
                 'name' => '找回密码页面',
-                'url' => 'controller=user&task=forgetPassword'
+                'url' => 'controller=user&action=forgetPassword'
             )
         );
     }
@@ -36,17 +36,17 @@ class user extends \system\app
         return array(
             array(
                 'name' => '用户列表',
-                'url' => './?controller=user&task=users',
+                'url' => './?controller=user&action=users',
                 'icon' => 'template/user/images/users.gif'
             ),
             array(
                 'name' => '用户角色',
-                'url' => './?controller=user&task=roles',
+                'url' => './?controller=user&action=roles',
                 'icon' => 'template/user/images/roles.png'
             ),
             array(
                 'name' => '设置',
-                'url' => './?controller=user&task=setting',
+                'url' => './?controller=user&action=setting',
                 'icon' => 'template/user/images/setting.png'
             )
         );

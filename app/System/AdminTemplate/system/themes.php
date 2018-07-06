@@ -20,8 +20,8 @@ $themes = $this->get('themes');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&task=themes');
-$uiList->setAction('create', './?app=System&controller=System&task=remoteThemes', '安装新主题');
+$uiList->setAction('listing', './?app=System&controller=System&action=themes');
+$uiList->setAction('create', './?app=System&controller=System&action=remoteThemes', '安装新主题');
 
 
 $configSystem = Be::getConfig('System.System');

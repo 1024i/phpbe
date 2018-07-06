@@ -26,7 +26,7 @@ foreach ($roles as $role) {
 }
 
 $uiEditor = Be::getUi('editor');
-$uiEditor->setAction('save', './?app=System&controller=AdminUser&task=editSave');	// 显示提交按钮
+$uiEditor->setAction('save', './?app=System&controller=AdminUser&action=editSave');	// 显示提交按钮
 $uiEditor->setAction('reset');// 显示重设按钮
 $uiEditor->setAction('back');	// 显示返回按钮
 $fieldUsername = array(
@@ -79,10 +79,10 @@ $filedConfirmPassword = array(
     );
 
 if (($adminUser->id == 0)) {
-    $fieldUsername['validate']['remote'] = './?app=System&controller=AdminUser&task=checkUsername';
+    $fieldUsername['validate']['remote'] = './?app=System&controller=AdminUser&action=checkUsername';
     $fieldUsername['message']['remote'] = '用户名已被占用！';
 
-    $fieldEmail['validate']['remote'] = './?app=System&controller=AdminUser&task=checkEmail';
+    $fieldEmail['validate']['remote'] = './?app=System&controller=AdminUser&action=checkEmail';
     $fieldEmail['message']['remote'] = '邮箱已被占用！';
 
     $filedPassword['validate']['required'] = true;

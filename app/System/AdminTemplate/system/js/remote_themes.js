@@ -7,7 +7,7 @@ function install(e, iThemeID)
 	$e.addClass('disabled');
 	
 	$.ajax({
-		url: './?controller=system&task=ajax_install_theme&theme_id='+iThemeID,
+		url: './?controller=system&action=ajax_install_theme&theme_id='+iThemeID,
 		dataType: 'json',
 		success: function(json)
 		{

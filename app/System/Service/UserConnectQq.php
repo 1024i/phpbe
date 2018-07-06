@@ -28,7 +28,7 @@ class UserConnectQq extends \Phpbe\System\Service
         $url = 'https://graph.qq.com/oauth2.0/authorize';
         $url .= '?ResponseType=code';
         $url .= '&clientId=' . $this->appId;
-        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&task=qqLoginCallback');
+        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&action=qqLoginCallback');
         $url .= '&state=' . $state;
 
         header("Location:$url");
@@ -55,7 +55,7 @@ class UserConnectQq extends \Phpbe\System\Service
         $url .= '&clientId=' . $this->appId;
         $url .= '&clientSecret=' . $this->appKey;
         $url .= '&code=' . Request::get('code', '');
-        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&task=qqLoginCallback');
+        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&action=qqLoginCallback');
 
         $libHttp = Be::getLib('Http');
         $response = $libHttp->get($url);

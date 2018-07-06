@@ -107,7 +107,7 @@ class FileManager extends AdminController
             Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?app=System&controller=FileManager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&action=browser');
     }
 
     // 删除文件夹
@@ -122,7 +122,7 @@ class FileManager extends AdminController
             Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?app=System&controller=FileManager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&action=browser');
     }
 
     // 修改文件夹名称
@@ -138,7 +138,7 @@ class FileManager extends AdminController
             Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?app=System&controller=FileManager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&action=browser');
     }
 
 
@@ -146,7 +146,7 @@ class FileManager extends AdminController
     {
         $configSystem = Be::getConfig('System.System');
 
-        $return = './?app=System&controller=FileManager&task=browser';
+        $return = './?app=System&controller=FileManager&action=browser';
 
         $file = $_FILES['file'];
         if ($file['error'] == 0) {
@@ -235,7 +235,7 @@ class FileManager extends AdminController
             Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?app=System&controller=FileManager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&action=browser');
     }
 
     // 修改文件名称
@@ -251,7 +251,7 @@ class FileManager extends AdminController
             Response::setMessage($serviceSystemFileManager->getError(), 'error');
         }
 
-        Response::redirect('./?app=System&controller=FileManager&task=browser');
+        Response::redirect('./?app=System&controller=FileManager&action=browser');
     }
 
     public function downloadFile()

@@ -15,7 +15,7 @@ $systemAnnouncement = $this->get('systemAnnouncement');
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', './?controller=systemAnnouncement&task=editSave');	// 显示提交按钮
+$uiEditor->setAction('save', './?controller=systemAnnouncement&action=editSave');	// 显示提交按钮
 $uiEditor->setAction('reset');	// 显示重设按钮
 $uiEditor->setAction('back');	// 显示返回按钮
 

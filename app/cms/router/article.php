@@ -7,28 +7,28 @@ use Phpbe\System\Router;
 class Article extends Router
 {
 
-    public function encodeUrl($app, $controller, $task, $params = [])
+    public function encodeUrl($app, $controller, $action, $params = [])
     {
         $configSystem = Be::getConfig('System.System');
 
-        if ($task == 'articles') {
+        if ($action == 'articles') {
             if (isset($params['categoryId'])) {
                 if (isset($params['page'])) {
                     return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
                 }
                 return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/';
             }
-        } elseif ($task == 'detail') {
+        } elseif ($action == 'detail') {
             if (isset($params['articleId'])) {
                 return Be::getRuntime()->getUrlRoot() . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
             }
-        } elseif ($task == 'user') {
+        } elseif ($action == 'user') {
             if (isset($params['userId'])) {
                 return Be::getRuntime()->getUrlRoot() . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
             }
         }
 
-        return parent::encodeUrl($app, $controller, $task, $params);
+        return parent::encodeUrl($app, $controller, $action, $params);
     }
 
     public function decodeUrl($urls)
@@ -36,12 +36,12 @@ class Article extends Router
         $len = count($urls);
         if ($len > 2) {
             if (is_numeric($urls[2])) {
-                $_GET['task'] = $_REQUEST['task'] = 'detail';
+                $_GET['action'] = $_REQUEST['action'] = 'detail';
                 $_GET['articleId'] = $_REQUEST['articleId'] = $urls[2];
 
                 return true;
             } elseif (substr($urls[2], 0, 1) == 'c') {
-                $_GET['task'] = $_REQUEST['task'] = 'articles';
+                $_GET['action'] = $_REQUEST['action'] = 'articles';
                 $_GET['categoryId'] = $_REQUEST['categoryId'] = substr($urls[2], 1);
 
                 if ($len > 3 && substr($urls[3], 0, 1) == 'p') {
@@ -49,7 +49,7 @@ class Article extends Router
                 }
                 return true;
             } elseif ($urls[2] == 'user') {
-                $_GET['task'] = $_REQUEST['task'] = 'user';
+                $_GET['action'] = $_REQUEST['action'] = 'user';
                 $_GET['userId'] = $_REQUEST['userId'] = $urls[3];
 
                 return true;

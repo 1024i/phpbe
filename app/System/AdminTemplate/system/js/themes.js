@@ -5,7 +5,7 @@ function setDefault( theme )
 	
 	$.ajax({
 		type: "GET",
-		url: "./?controller=system&task=ajax_theme_set_default&theme="+theme,
+		url: "./?controller=system&action=ajax_theme_set_default&theme="+theme,
 		dataType: "json",
 		success: function(json){
 			if(json.error=="0")
@@ -38,7 +38,7 @@ function deleteTheme(e, theme)
 	$e.addClass('disabled');
 	
 	$.ajax({
-		url: './?controller=system&task=ajax_uninstall_theme&theme='+theme,
+		url: './?controller=system&action=ajax_uninstall_theme&theme='+theme,
 		dataType: 'json',
 		success: function(json)
 		{

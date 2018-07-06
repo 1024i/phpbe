@@ -114,21 +114,21 @@ $config = Be::getConfig('System.System');
                             <li><label>密码: </label><input title="密码" type="password" name="password" id="west-password"/></li>
                             <li><label>记住我: </label><input title="记住我" type="checkbox" name="rememberme" value="1"></li>
                             <li><label>&nbsp;</label><input type="submit" value="登陆"/>
-                                <a href="<?php echo url('controller=user&task=register'); ?>">注册</a>
-                                <a href="<?php echo url('controller=user&task=forgetPassword'); ?>">忘记密码?</a></li>
+                                <a href="<?php echo url('controller=user&action=register'); ?>">注册</a>
+                                <a href="<?php echo url('controller=user&action=forgetPassword'); ?>">忘记密码?</a></li>
 
                         </ul>
                         <input type="hidden" name="controller" value="user"/>
-                        <input type="hidden" name="task" value="loginCheck"/>
+                        <input type="hidden" name="action" value="loginCheck"/>
                     </form>
                     <?php
                 } else {
                     ?>
                     <p>你好, <?php echo $my->username; ?></p>
-                    <p><a href="<?php echo url('controller=user&task=edit'); ?>">修改资料</a> <a
-                                href="<?php echo url('controller=user&task=resetPassword'); ?>">修改密码</a></p>
+                    <p><a href="<?php echo url('controller=user&action=edit'); ?>">修改资料</a> <a
+                                href="<?php echo url('controller=user&action=resetPassword'); ?>">修改密码</a></p>
                     <p><input type="button" value="退出"
-                              onClick="window.location.href='<?php echo url('controller=user&task=logout'); ?>';"/></p>
+                              onClick="window.location.href='<?php echo url('controller=user&action=logout'); ?>';"/></p>
                     <?php
                 }
                 ?>

@@ -44,7 +44,7 @@ function login()
 	
 	$.ajax({
 		type: "POST",
-		url: "./?controller=admin_user&task=ajax_login_check",
+		url: "./?controller=admin_user&action=ajax_login_check",
 		data: $("#form-login").serialize(),
 		dataType: "json",
 		success: function(json){
@@ -54,7 +54,7 @@ function login()
 				$("#login-msg").attr("class", "message-success").html(json.message);
 				
 				var sReturn = $("#return").val();
-				if(sReturn=="") sReturn = "./?controller=system&task=dashboard";
+				if(sReturn=="") sReturn = "./?controller=system&action=dashboard";
 				window.location.href = sReturn;
 			}
 			else

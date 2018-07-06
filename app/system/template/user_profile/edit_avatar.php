@@ -38,7 +38,7 @@ use Phpbe\System\Be;
                 <div class="theme-box-title"><?php echo $this->title; ?></div>
                 <div class="theme-box-body">
 
-                    <form action="<?php echo url('controller=userProfile&task=editAvatarSave'); ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?php echo url('controller=userProfile&action=editAvatarSave'); ?>" method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-5">
                                 <div class="key">当前头像: </div>
@@ -50,7 +50,7 @@ use Phpbe\System\Be;
                                     $configUser = Be::getConfig('System.User');
                                     if ($my->avatarL != '') {
                                         ?>
-                                        <a href="<?php echo url('controller=userProfile&task=initAvatar'); ?>" style="font-size:18px;">&times;</a>
+                                        <a href="<?php echo url('controller=userProfile&action=initAvatar'); ?>" style="font-size:18px;">&times;</a>
                                         <?php
                                     }
                                     ?>

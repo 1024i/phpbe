@@ -36,7 +36,7 @@ $errorLogCount = $this->errorLogCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo './?app=System&controller=System&task=errorLogs&year=' . $x; ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo './?app=System&controller=System&action=errorLogs&year=' . $x; ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -57,7 +57,7 @@ $errorLogCount = $this->errorLogCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo './?app=System&controller=System&task=errorLogs&year=' . $year . '&month=' . $x; ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo './?app=System&controller=System&action=errorLogs&year=' . $year . '&month=' . $x; ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -78,7 +78,7 @@ $errorLogCount = $this->errorLogCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo './?app=System&controller=System&task=errorLogs&year=' . $year . '&month=' . $month . '&day=' . $x; ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo './?app=System&controller=System&action=errorLogs&year=' . $year . '&month=' . $month . '&day=' . $x; ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -93,11 +93,11 @@ $errorLogCount = $this->errorLogCount;
 if (count($errorLogs)) {
     $uiList = Be::getUi('grid');
 
-    $uiList->setAction('listing', './?app=System&controller=System&task=errorLogs');
+    $uiList->setAction('listing', './?app=System&controller=System&action=errorLogs');
 
     $formattedErrorLogs = [];
     foreach ($errorLogs as $i => $errorLog) {
-        $errorLog['operation'] = '<a href="./?app=System&controller=System&task=errorLog&year=' . $year . '&month=' . $month . '&day=' . $day . '&index=' . $i . '" target="Blank">查看</a>';
+        $errorLog['operation'] = '<a href="./?app=System&controller=System&action=errorLog&year=' . $year . '&month=' . $month . '&day=' . $day . '&index=' . $i . '" target="Blank">查看</a>';
         $errorLog['time'] = date('H:i:s', $errorLog['time']);
         $errorLog['message'] = limit($errorLog['message'], 50);
 

@@ -88,23 +88,23 @@ class User extends AdminController
 
         if (Request::post('username', '') == '') {
             Response::setMessage('请输入用户名！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         if (Request::post('email', '') == '') {
             Response::setMessage('请输入邮箱！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         $password = Request::post('password', '');
         if ($password != Request::post('password2', '')) {
             Response::setMessage('两次输入的密码不匹配！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         if ($id == 0 && $password == '') {
             Response::setMessage('密码不能为空！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         $rowUser = Be::getRow('System.User');
@@ -116,12 +116,12 @@ class User extends AdminController
 
         if (!$adminServiceUser->isUsernameAvailable($rowUser->username, $id)) {
             Response::setMessage('用户名(' . $rowUser->username . ')已被占用！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         if (!$adminServiceUser->isEmailAvailable($rowUser->email, $id)) {
             Response::setMessage('邮箱(' . $rowUser->email . ')已被占用！', 'error');
-            Response::redirect('./?controller=user&task=edit&id=' . $id);
+            Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
         if ($password != '') {
@@ -325,7 +325,7 @@ class User extends AdminController
         systemLog('修改用户角色');
 
         Response::setMessage('修改用户角色成功！');
-        Response::redirect('./?controller=user&task=roles');
+        Response::redirect('./?controller=user&action=roles');
     }
 
     public function ajaxSetDefaultRole()
@@ -453,7 +453,7 @@ class User extends AdminController
         systemLog('修改用户角色 ' . $rowUserRole->name . ' 权限');
 
         Response::setMessage('修改用户角色权限成功！');
-        Response::redirect('./?controller=user&task=roles');
+        Response::redirect('./?controller=user&action=roles');
     }
 
     public function setting()
@@ -538,6 +538,6 @@ class User extends AdminController
         systemLog('设置用户系统参数');
 
         Response::setMessage('成功保存用户系统设置！');
-        Response::redirect('./?controller=user&task=setting');
+        Response::redirect('./?controller=user&action=setting');
     }
 }

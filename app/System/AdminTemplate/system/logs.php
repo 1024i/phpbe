@@ -15,7 +15,7 @@ $logs = $this->get('logs');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&task=logs');
+$uiList->setAction('listing', './?app=System&controller=System&action=logs');
 
 $options = array();
 $options['0'] = '所有';

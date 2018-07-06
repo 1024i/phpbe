@@ -18,8 +18,8 @@ $config = $this->get('config');
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', './?app=System&controller=System&task=configWatermarkSave');
-$uiEditor->setAction('back', './?app=System&controller=System&task=configWatermarkTest', '预览');
+$uiEditor->setAction('save', './?app=System&controller=System&action=configWatermarkSave');
+$uiEditor->setAction('back', './?app=System&controller=System&action=configWatermarkTest', '预览');
 
 
 $htmlPosition = '';

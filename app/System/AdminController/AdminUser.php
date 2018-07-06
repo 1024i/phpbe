@@ -15,7 +15,7 @@ class AdminUser extends AdminController
         $my = Be::getAdminUser();
 
         if ($my->id > 0) {
-            Response::redirect('./?app=System&controller=System&task=dashboard');
+            Response::redirect('./?app=System&controller=System&action=dashboard');
         }
 
         Response::setTitle('登录');
@@ -63,7 +63,7 @@ class AdminUser extends AdminController
         $adminServiceAdminUser->logout();
 
         Response::setMessage('成功退出！');
-        Response::redirect('./?app=System&controller=AdminUser&task=login');
+        Response::redirect('./?app=System&controller=AdminUser&action=login');
     }
 
     // 管理管理员列表
@@ -145,23 +145,23 @@ class AdminUser extends AdminController
 
         if (Request::post('username', '') == '') {
             Response::setMessage('请输入管理员名！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         if (Request::post('email', '') == '') {
             Response::setMessage('请输入邮箱！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         $password = Request::post('password', '');
         if ($password != Request::post('password2', '')) {
             Response::setMessage('两次输入的密码不匹配！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         if ($id == 0 && $password == '') {
             Response::setMessage('密码不能为空！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         $rowAdminUser = Be::getRow('adminUser');
@@ -172,12 +172,12 @@ class AdminUser extends AdminController
 
         if (!$adminServiceAdminUser->isUsernameAvailable($rowAdminUser->username, $id)) {
             Response::setMessage('管理员名(' . $rowAdminUser->username . ')已被占用！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         if (!$adminServiceAdminUser->isEmailAvailable($rowAdminUser->email, $id)) {
             Response::setMessage('邮箱(' . $rowAdminUser->email . ')已被占用！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&task=edit&id=' . $id);
+            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
         }
 
         if ($password != '') {
@@ -354,7 +354,7 @@ class AdminUser extends AdminController
         systemLog('修改后台管理员组');
 
         Response::setMessage('修改后台管理员组成功！');
-        Response::redirect('./?app=System&controller=AdminUser&task=roles');
+        Response::redirect('./?app=System&controller=AdminUser&action=roles');
     }
 
     public function ajaxDeleteRole()
@@ -450,7 +450,7 @@ class AdminUser extends AdminController
         systemLog('修改管理员组(' . $rowAdminUserRole->name . ')权限');
 
         Response::setMessage('修改管理员组权限成功！');
-        Response::redirect('./?app=System&controller=AdminUser&task=roles');
+        Response::redirect('./?app=System&controller=AdminUser&action=roles');
     }
 
 
@@ -573,7 +573,7 @@ class AdminUser extends AdminController
         systemLog('设置管理员系统参数');
 
         Response::setMessage('成功保存管理员系统设置！');
-        Response::redirect('./?app=System&controller=AdminUser&task=setting');
+        Response::redirect('./?app=System&controller=AdminUser&action=setting');
     }
 }
 

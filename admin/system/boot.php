@@ -26,7 +26,7 @@ try {
 
     $app = Request::request('app', 'System');
     $controller = Request::request('controller', 'AdminUser');
-    $task = Request::request('task', 'login');
+    $action = Request::request('action', 'login');
 
     $instance = Be::getAdminController($app, $controller);
     if ($instance === null) {
@@ -34,17 +34,17 @@ try {
         exit;
     }
 
-    if (method_exists($instance, $task)) {
+    if (method_exists($instance, $action)) {
 
-        if ($controller != 'AdminUser' || !in_array($task, ['login', 'ajaxLoginCheck', 'logout'])) {
+        if ($controller != 'AdminUser' || !in_array($action, ['login', 'ajaxLoginCheck', 'logout'])) {
 
             if ($my->id == 0) {
-                Response::error('登录超时，请重新登录！', adminUrl('./?app=system&adminController=adminUser&task=login'));
+                Response::error('登录超时，请重新登录！', adminUrl('./?app=system&adminController=adminUser&action=login'));
             }
 
             // 检查用户权限
             $role = Be::getAdminUserRole($my->roleId);
-            if (!$role->hasPermission($app, $controller, $task)) {
+            if (!$role->hasPermission($app, $controller, $action)) {
                 $permissionText = '您没有权限操作该功能！';
                 if (Request::isAjax()) {
                     $Response = new \stdClass();
@@ -58,9 +58,9 @@ try {
             }
         }
 
-        $instance->$task();
+        $instance->$action();
     } else {
-        \Phpbe\System\Response::end('未定义的任务: ' . $task);
+        \Phpbe\System\Response::end('未定义的任务: ' . $action);
     }
 
 } catch (\throwable $e) {

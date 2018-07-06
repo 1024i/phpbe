@@ -145,7 +145,7 @@ use Phpbe\System\Be;
                                             <td></td>
                                             <td>
                                                 <p style="text-align:right; padding-top:10px;">
-                                                    <a href="<?php echo url('controller=userProfile&task=edit'); ?>" class="btn btn-primary">
+                                                    <a href="<?php echo url('controller=userProfile&action=edit'); ?>" class="btn btn-primary">
                                                         修改
                                                     </a>
                                                 </p>

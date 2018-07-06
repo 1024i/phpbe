@@ -15,12 +15,12 @@ $systemLinks = $this->get('systemLinks');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemLink&task=links');
-$uiList->setAction('create', './?controller=systemLink&task=edit');
-$uiList->setAction('edit', './?controller=systemLink&task=edit');
-$uiList->setAction('unblock', './?controller=systemLink&task=unblock');
-$uiList->setAction('block', './?controller=systemLink&task=block');
-$uiList->setAction('delete', './?controller=systemLink&task=delete');
+$uiList->setAction('list', './?controller=systemLink&action=links');
+$uiList->setAction('create', './?controller=systemLink&action=edit');
+$uiList->setAction('edit', './?controller=systemLink&action=edit');
+$uiList->setAction('unblock', './?controller=systemLink&action=unblock');
+$uiList->setAction('block', './?controller=systemLink&action=block');
+$uiList->setAction('delete', './?controller=systemLink&action=delete');
 
 $uiList->setFilters(
     array(

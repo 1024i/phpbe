@@ -104,7 +104,7 @@ class UserProfile extends UserAuth
             Response::setMessage('上传失败' . '(' . $error . ')', 'error');
         }
 
-        Response::redirect(url('controller=userProfile&task=editAvatar'));
+        Response::redirect(url('controller=userProfile&action=editAvatar'));
     }
 
     // 删除头像，即改成系统默认头像
@@ -129,7 +129,7 @@ class UserProfile extends UserAuth
         $my->avatarM = $rowUser->avatarM = '';
         $my->avatarL = $rowUser->avatarL = '';
 
-        $return = url('controller=userProfile&task=editAvatar');
+        $return = url('controller=userProfile&action=editAvatar');
         if ($rowUser->save()) {
             Response::success('您的头像已删除！', $return);
         } else {

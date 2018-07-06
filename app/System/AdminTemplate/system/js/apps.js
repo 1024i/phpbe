@@ -10,7 +10,7 @@ function deleteApp(e, sAppName)
 	$e.addClass('disabled');
 	
 	$.ajax({
-		url: './?controller=system&task=ajax_uninstall_app&app_name='+sAppName,
+		url: './?controller=system&action=ajax_uninstall_app&app_name='+sAppName,
 		dataType: 'json',
 		success: function(json)
 		{

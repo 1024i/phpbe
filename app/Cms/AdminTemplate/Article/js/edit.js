@@ -14,7 +14,7 @@ function getSummary(e)
 
 	$.ajax({
 		type: "POST",
-		url: "./?app=Cms&controller=Article&task=ajax_get_summary",
+		url: "./?app=Cms&controller=Article&action=ajax_get_summary",
 		data: $("#admin_ui_editor_form").serialize(),
 		dataType: "json",
 		success: function(json){
@@ -34,7 +34,7 @@ function getMetaKeywords(e)
 
 	$.ajax({
 		type: "POST",
-		url: "./?app=Cms&controller=Article&task=ajax_get_meta_keywords",
+		url: "./?app=Cms&controller=Article&action=ajax_get_meta_keywords",
 		data: $("#admin_ui_editor_form").serialize(),
 		dataType: "json",
 		success: function(json){
@@ -54,7 +54,7 @@ function getMetaDescription(e)
 
 	$.ajax({
 		type: "POST",
-		url: "./?app=Cms&controller=Article&task=ajax_get_meta_description",
+		url: "./?app=Cms&controller=Article&action=ajax_get_meta_description",
 		data: $("#admin_ui_editor_form").serialize(),
 		dataType: "json",
 		success: function(json){
@@ -69,7 +69,7 @@ function selectImage( src_id )
 {
 	tinymce.activeEditor.windowManager.open({
 		title: "上传的文件",
-		file: './?controller=system_filemanager&task=browser&filter_image=1&src_id='+src_id,
+		file: './?controller=system_filemanager&action=browser&filter_image=1&src_id='+src_id,
 		width: 880,
 		height: 600
 	});

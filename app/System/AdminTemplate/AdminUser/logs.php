@@ -16,7 +16,7 @@ $logs = $this->logs;
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=AdminUser&task=logs');
+$uiList->setAction('listing', './?app=System&controller=AdminUser&action=logs');
 
 $uiList->setFilters(
     array(

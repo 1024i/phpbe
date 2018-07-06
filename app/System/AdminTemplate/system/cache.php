@@ -59,7 +59,7 @@ $x->name = '管理员角色';
 $data[] = $x;
 
 foreach ($data as $x) {
-    $x->operation = '<a href="./?app=System&controller=System&task=clearCache&type=' . $x->id . '">清除</a>';
+    $x->operation = '<a href="./?app=System&controller=System&action=clearCache&type=' . $x->id . '">清除</a>';
 }
 
 $uiList = Be::getUi('grid');

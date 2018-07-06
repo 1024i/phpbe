@@ -15,12 +15,12 @@ $systemHtmls = $this->get('systemHtmls');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemHtml&task=htmls');
-$uiList->setAction('create', './?controller=systemHtml&task=edit');
-$uiList->setAction('edit', './?controller=systemHtml&task=edit');
-$uiList->setAction('unblock', './?controller=systemHtml&task=unblock');
-$uiList->setAction('block', './?controller=systemHtml&task=block');
-$uiList->setAction('delete', './?controller=systemHtml&task=delete');
+$uiList->setAction('list', './?controller=systemHtml&action=htmls');
+$uiList->setAction('create', './?controller=systemHtml&action=edit');
+$uiList->setAction('edit', './?controller=systemHtml&action=edit');
+$uiList->setAction('unblock', './?controller=systemHtml&action=unblock');
+$uiList->setAction('block', './?controller=systemHtml&action=block');
+$uiList->setAction('delete', './?controller=systemHtml&action=delete');
 
 
 $uiList->setFilters(

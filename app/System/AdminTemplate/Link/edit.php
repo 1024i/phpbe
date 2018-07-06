@@ -15,7 +15,7 @@ $systemLink = $this->get('systemLink');
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', './?controller=systemLink&task=editSave');	// 显示提交按钮
+$uiEditor->setAction('save', './?controller=systemLink&action=editSave');	// 显示提交按钮
 $uiEditor->setAction('reset');	// 显示重设按钮
 $uiEditor->setAction('back');	// 显示返回按钮
 

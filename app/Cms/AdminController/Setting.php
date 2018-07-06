@@ -86,7 +86,7 @@ class Setting extends AdminController
         systemLog('设置文章系统参数');
 
         Response::setMessage('设置成功！');
-        Response::redirect('./?app=Cms&controller=Article&task=setting');
+        Response::redirect('./?app=Cms&controller=Article&action=setting');
     }
 
 }

@@ -7,7 +7,7 @@ function install(e, iAppID)
 	$e.addClass('disabled');
 	
 	$.ajax({
-		url: './?controller=system&task=ajax_install_app&app_id='+iAppID,
+		url: './?controller=system&action=ajax_install_app&app_id='+iAppID,
 		dataType: 'json',
 		success: function(json)
 		{

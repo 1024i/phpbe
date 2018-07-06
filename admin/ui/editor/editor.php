@@ -291,7 +291,7 @@ class editor extends \system\ui
         if ($this->actions['reset'] !== false) echo '<input type="reset" class="btn btn-danger" value="'.$this->actions['reset']['label'].'" /> &nbsp;';
         if ($this->actions['back'] !== false) {
             echo '<input type="button" class="btn" value="'.$this->actions['back']['label'].'" onclick="javascript:';
-            echo  'window.location.href=\''.(($this->actions['back']['url'] === null)?'./?app=System&controller=System&task=historyBack':$this->actions['back']['url']).'\'';
+            echo  'window.location.href=\''.(($this->actions['back']['url'] === null)?'./?app=System&controller=System&action=historyBack':$this->actions['back']['url']).'\'';
             echo ';" />';
         }
         echo '</div>';

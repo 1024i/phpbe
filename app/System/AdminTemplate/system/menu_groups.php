@@ -8,10 +8,10 @@ $groups = $this->get('groups');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&task=menuGroups');
-$uiList->setAction('create', './?app=System&controller=System&task=menuGroupEdit');
-$uiList->setAction('edit', './?app=System&controller=System&task=menuGroupEdit');
-$uiList->setAction('delete', './?app=System&controller=System&task=menuGroupDelete');
+$uiList->setAction('listing', './?app=System&controller=System&action=menuGroups');
+$uiList->setAction('create', './?app=System&controller=System&action=menuGroupEdit');
+$uiList->setAction('edit', './?app=System&controller=System&action=menuGroupEdit');
+$uiList->setAction('delete', './?app=System&controller=System&action=menuGroupDelete');
 
 $uiList->setData($groups);
 

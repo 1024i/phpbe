@@ -23,12 +23,12 @@ foreach ($roles as $role) {
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=user&task=users');
-$uiList->setAction('create', './?controller=user&task=edit');
-$uiList->setAction('edit', './?controller=user&task=edit');
-$uiList->setAction('unblock', './?controller=user&task=unblock', '启用');
-$uiList->setAction('block', './?controller=user&task=block');
-$uiList->setAction('delete', './?controller=user&task=delete');
+$uiList->setAction('list', './?controller=user&action=users');
+$uiList->setAction('create', './?controller=user&action=edit');
+$uiList->setAction('edit', './?controller=user&action=edit');
+$uiList->setAction('unblock', './?controller=user&action=unblock', '启用');
+$uiList->setAction('block', './?controller=user&action=block');
+$uiList->setAction('delete', './?controller=user&action=delete');
 
 $uiList->setFilters(
     array(

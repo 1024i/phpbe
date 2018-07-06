@@ -53,7 +53,7 @@ function deleteDir( sDirName )
 	if(!confirm("即将删除 "+sDirName+" 文件夹和文件夹下的所有文件，确认要删除吗？")) return false;
 	if(!confirm("本操作不可恢复，请再次确认要删除吗？")) return false;
 	
-	window.location.href = './?controller=system_filemanager&task=delete_dir&dir_name='+sDirName;
+	window.location.href = './?controller=system_filemanager&action=delete_dir&dir_name='+sDirName;
 }
 
 function editFileName( sFileName )
@@ -67,5 +67,5 @@ function deleteFile( sFileName )
 	if(!confirm("即将删除文件 "+sFileName+" ，确认要删除吗？")) return false;
 	if(!confirm("本操作不可恢复，请再次确认要删除吗？")) return false;
 	
-	window.location.href = './?controller=system_filemanager&task=delete_file&file_name='+sFileName;
+	window.location.href = './?controller=system_filemanager&action=delete_file&file_name='+sFileName;
 }

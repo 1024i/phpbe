@@ -11,7 +11,7 @@ class UserAuth extends Controller
     {
 		$my = Be::getUser();
         if ($my->id == 0) {
-            Response::error('登陆超时，请重新登陆！', url('controller=user&task=login&return=httpReferer'), -1);
+            Response::error('登陆超时，请重新登陆！', url('controller=user&action=login&return=httpReferer'), -1);
 		}
     }
 }

@@ -22,7 +22,7 @@ class User extends Controller
         // 登陆成功后跳转到的网址
         $return = Request::get('return', '');
         if ($return == 'httpReferer' && isset($_SERVER['HTTP_REFERER'])) $return = base64_encode($_SERVER['HTTP_REFERER']);
-        if ($return == '') $return = url('controller=userProfile&task=home');
+        if ($return == '') $return = url('controller=userProfile&action=home');
 
         $my = Be::getUser();
         if ($my->id > 0) Response::redirect($return);
@@ -64,7 +64,7 @@ class User extends Controller
         $rememberMe = Request::post('rememberMe', '0');
 
         $return = Request::post('return', '');
-        $errorReturn = url('controller=user&task=login&return=' . $return);
+        $errorReturn = url('controller=user&action=login&return=' . $return);
 
         if ($username == '') {
             Response::error('用户名不能为空！', $errorReturn);
@@ -87,7 +87,7 @@ class User extends Controller
 
             $redirectUrl = null;
             if ($return == '') {
-                $redirectUrl = url('controller=userProfile&task=home');
+                $redirectUrl = url('controller=userProfile&action=home');
             } else {
                 $redirectUrl = base64_decode($return);
             }
@@ -141,7 +141,7 @@ class User extends Controller
         $rowUserConnectQq->openid = $openid;
         $rowUserConnectQq->save();
 
-        Response::redirect(url('controller=userProfile&task=home'));
+        Response::redirect(url('controller=userProfile&action=home'));
     }
 
 
@@ -188,7 +188,7 @@ class User extends Controller
         $rowUserConnectSina->uid = $uid;
         $rowUserConnectSina->save();
 
-        Response::redirect(url('controller=userProfile&task=home'));
+        Response::redirect(url('controller=userProfile&action=home'));
     }
 
 
@@ -269,7 +269,7 @@ class User extends Controller
         if ($serviceUser->register($username, $email, $password, $name)) {
             if ($configUser->captchaRegister) session::delete('captchaRegister');
 
-            Response::success('您的账号已成功创建！', url('controller=user&task=registerSuccess&username=' . $username . '&email=' . $email));
+            Response::success('您的账号已成功创建！', url('controller=user&action=registerSuccess&username=' . $username . '&email=' . $email));
         } else {
             Response::error($serviceUser->getError());
         }
@@ -361,7 +361,7 @@ class User extends Controller
         $model = Be::getService('System.User');
         $model->logout();
 
-        Response::success('成功退出！', url('controller=user&task=login'));
+        Response::success('成功退出！', url('controller=user&action=login'));
     }
 
 }

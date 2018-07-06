@@ -162,7 +162,7 @@ class User extends \Phpbe\System\Service
 
         $configUser = Be::getConfig('System.User');
         if ($configUser->emailValid == '1') {
-            $activationUrl = url('app=System&controller=User&task=forgetPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+            $activationUrl = url('app=System&controller=User&action=forgetPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
             $data = array(
                 'siteName' => $configSystem->siteName,
@@ -254,7 +254,7 @@ class User extends \Phpbe\System\Service
 
         $configSystem = Be::getConfig('System.System');
 
-        $activationUrl = url('app=System&controller=User&task=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+        $activationUrl = url('app=System&controller=User&action=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
         $data = array(
             'siteName' => $configSystem->siteName,

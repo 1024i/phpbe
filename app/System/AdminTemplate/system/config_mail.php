@@ -17,8 +17,8 @@ $config = $this->get('config');
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', './?app=System&controller=System&task=configMailSave');
-$uiEditor->setAction('back', './?app=System&controller=System&task=configMailTest', '发送邮件测试');
+$uiEditor->setAction('save', './?app=System&controller=System&action=configMailSave');
+$uiEditor->setAction('back', './?app=System&controller=System&action=configMailTest', '发送邮件测试');
 
 $uiEditor->setFields(
     array(

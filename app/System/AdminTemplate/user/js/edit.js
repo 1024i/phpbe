@@ -19,7 +19,7 @@ function deleteAvatar(e, iUserID)
 	$e.hide();
 	
 	$.ajax({
-		url : './?controller=user&task=ajax_init_avatar&user_id='+iUserID,
+		url : './?controller=user&action=ajax_init_avatar&user_id='+iUserID,
 		dataType : 'json',
 		success : function(json)
 		{

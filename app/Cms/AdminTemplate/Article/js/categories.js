@@ -427,7 +427,7 @@ function deleteSingleCategory(iCategoryID)
 	$("#name-"+iCategoryID).after(" &nbsp; "+g_sLoadingImage+"删除中...");
 	// 提交服务器删除操作
 	$.ajax({
-		url: "./?app=Cms&controller=Article&task=ajax_delete_category&category_id="+iCategoryID,
+		url: "./?app=Cms&controller=Article&action=ajax_delete_category&category_id="+iCategoryID,
 		success: function(msg){
 			$("#row-"+iCategoryID).remove();
 		}

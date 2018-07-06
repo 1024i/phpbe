@@ -17,11 +17,11 @@ class system extends \system\app
 		return array(
 			array(
 				'name'=>'用户使用条款',
-				'url'=>'controller=system&task=termsAndConditions'
+				'url'=>'controller=system&action=termsAndConditions'
 			),
 			array(
 				'name'=>'隐私保护',
-				'url'=>'controller=system&task=privacyPolicy'
+				'url'=>'controller=system&action=privacyPolicy'
 			)
 		);
     }
@@ -34,17 +34,17 @@ class system extends \system\app
 		return array(
 			array(
                 'name'=>'公告',
-                'url'=>'./?controller=systemAnnouncement&task=announcements',
+                'url'=>'./?controller=systemAnnouncement&action=announcements',
                 'icon'=>'template/systemAnnouncement/images/announcement.png'
             ),
 			array(
 				'name'=>'友情链接',
-				'url'=>'./?controller=systemLink&task=links',
+				'url'=>'./?controller=systemLink&action=links',
 				'icon'=>'template/systemLink/images/link.png'
 			),
 			array(
 				'name'=>'自定义模块',
-				'url'=>'./?controller=systemHtml&task=htmls',
+				'url'=>'./?controller=systemHtml&action=htmls',
 				'icon'=>'template/systemHtml/images/html.png'
 			)
 		);
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `beSystemMenu` (
 
 		$db->execute("
 INSERT INTO `beSystemMenu` (`id`, `groupId`, `parentId`, `name`, `url`, `target`, `params`, `home`, `block`, `ordering`) VALUES
-(1, 1, 0, '首页', 'controller=article&task=detail&id=1', 'Self', '', 1, 0, 0)
+(1, 1, 0, '首页', 'controller=article&action=detail&id=1', 'Self', '', 1, 0, 0)
 		");
 
 

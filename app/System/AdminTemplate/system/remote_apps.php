@@ -35,7 +35,7 @@ foreach ($apps as $app) {
 }
 
 $uiList = Be::getUi('grid');
-$uiList->setAction('listing', './?app=System&controller=System&task=remoteApps');
+$uiList->setAction('listing', './?app=System&controller=System&action=remoteApps');
 
 $uiList->setData($apps);
 
@@ -92,7 +92,7 @@ $uiList->setFields(
     array(
         'align'=>'center',
         'width'=>'120',
-        'template'=>'<a class="btn btn-success" onclick="javascript:window.location.href=\'./?app=System&controller=System&task=remoteApp&appId={id}\';"><i class="icon-white icon-search"></i> 查看</a>'
+        'template'=>'<a class="btn btn-success" onclick="javascript:window.location.href=\'./?app=System&controller=System&action=remoteApp&appId={id}\';"><i class="icon-white icon-search"></i> 查看</a>'
     )
 
 );

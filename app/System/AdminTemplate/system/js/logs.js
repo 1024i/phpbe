@@ -7,7 +7,7 @@ function deleteLogs(e)
 	$e.val("删除中...").prop("disabled", true);
 
 	$.ajax({
-		url : "./?controller=system&task=ajax_delete_logs",
+		url : "./?controller=system&action=ajax_delete_logs",
 		dataType : "json",
 		success : function(json)
 		{

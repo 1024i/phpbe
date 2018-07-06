@@ -8,7 +8,7 @@ function deleteLogs(e)
 	$e.val(g_sHandling).prop("disabled", true);
 
 	$.ajax({
-		url : "./?controller=admin_user&task=ajax_delete_logs",
+		url : "./?controller=admin_user&action=ajax_delete_logs",
 		dataType : "json",
 		success : function(json)
 		{

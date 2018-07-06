@@ -33,7 +33,7 @@ $categoryHtml .= '</select>';
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', './?app=Cms&controller=Article&task=editSave');	// 显示提交按钮
+$uiEditor->setAction('save', './?app=Cms&controller=Article&action=editSave');	// 显示提交按钮
 $uiEditor->setAction('reset');	// 显示重设按钮
 $uiEditor->setAction('back');	// 显示返回按钮
 

@@ -15,7 +15,7 @@ $uiEditor->head();
 $configUser = $this->get('configUser');
 
 $uiEditor = Be::getUi('editor');
-$uiEditor->setAction('save', './?controller=user&task=settingSave');
+$uiEditor->setAction('save', './?controller=user&action=settingSave');
 
 $htmlDefaultAvatarL = '<img src="../'.DATA.'/user/avatar/default/'.$configUser->defaultAvatarL.'" />';
 $htmlDefaultAvatarL .= '<br /><input type="file" name="defaultAvatarL" />';

@@ -15,22 +15,22 @@ class AdminUser extends \Phpbe\System\App
 		return [
 			[
 				'name'=>'管理员列表',
-				'url'=>'./?controller=AdminUser&task=users',
+				'url'=>'./?controller=AdminUser&action=users',
 				'icon'=>'template/adminUser/images/users.gif'
 			],
 			[
 				'name'=>'管理员角色',
-				'url'=>'./?controller=AdminUser&task=roles',
+				'url'=>'./?controller=AdminUser&action=roles',
 				'icon'=>'template/adminUser/images/roles.png'
 			],
             [
                 'name'=>'设置',
-                'url'=>'./?controller=AdminUser&task=setting',
+                'url'=>'./?controller=AdminUser&action=setting',
                 'icon'=>'template/adminUser/images/setting.png'
             ],
             [
                 'name'=>'登陆日志',
-                'url'=>'./?controller=AdminUser&task=logs',
+                'url'=>'./?controller=AdminUser&action=logs',
                 'icon'=>'template/adminUser/images/logs.gif'
             ]
 		];

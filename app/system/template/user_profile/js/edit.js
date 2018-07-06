@@ -49,7 +49,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: Be::getRuntime()->getUrlRoot() + "/?controller=user_profile&task=ajax_edit_save",
+                url: Be::getRuntime()->getUrlRoot() + "/?controller=user_profile&action=ajax_edit_save",
                 data: $(form).serialize(),
                 dataType: "json",
                 success: function (json) {

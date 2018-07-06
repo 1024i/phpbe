@@ -11,8 +11,8 @@ use Phpbe\System\Be;
 $roles = $this->get('roles');
 
 $adminUiCategory = Be::getUi('category');
-$adminUiCategory->setAction('save', './?controller=user&task=rolesSave');
-$adminUiCategory->setAction('delete', './?controller=user&task=ajaxDeleteRole');
+$adminUiCategory->setAction('save', './?controller=user&action=rolesSave');
+$adminUiCategory->setAction('delete', './?controller=user&action=ajaxDeleteRole');
 
 foreach ($roles as $role) {
     if ($role->id == 1) {
@@ -51,7 +51,7 @@ $adminUiCategory->setFields(
         'label'=>'权限管理',
         'align'=>'center',
         'width'=>'180',
-        'template'=>'<a class="btn btn-small btn-success" href="./?controller=user&task=rolePermissions&roleId={id}">权限管理</a>'
+        'template'=>'<a class="btn btn-small btn-success" href="./?controller=user&action=rolePermissions&roleId={id}">权限管理</a>'
     )
 );
 

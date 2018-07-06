@@ -113,7 +113,7 @@ class Article extends Controller
                     if (
                         isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
                         isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                        isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
+                        isset($menu->params['action']) && $menu->params['action'] == 'listing' &&
                         isset($menu->params['categoryId']) && $menu->params['categoryId'] == $parentCategory->id
                     ) {
                         Response::set('menuId', $menu->id);
@@ -134,7 +134,7 @@ class Article extends Controller
         $pagination->setLimit($limit);
         $pagination->setTotal($serviceArticleCache->getArticleCount($option));
         $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->setUrl('app=Cms&controller=Article&task=articles&categoryId=' . $categoryId);
+        $pagination->setUrl('app=Cms&controller=Article&action=articles&categoryId=' . $categoryId);
         Response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->getOffset();
@@ -214,7 +214,7 @@ class Article extends Controller
                 if (
                     isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
                     isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                    isset($menu->params['task']) && $menu->params['task'] == 'detail' &&
+                    isset($menu->params['action']) && $menu->params['action'] == 'detail' &&
                     isset($menu->params['articleId']) && $menu->params['articleId'] == $articleId
                 ) {
                     Response::set('menuId', $menu->id);
@@ -229,7 +229,7 @@ class Article extends Controller
                     if (
                         isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
                         isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                        isset($menu->params['task']) && $menu->params['task'] == 'listing' &&
+                        isset($menu->params['action']) && $menu->params['action'] == 'listing' &&
                         isset($menu->params['categoryId']) && $menu->params['categoryId'] == $rowArticle->categoryId
                     ) {
                         Response::set('menuId', $menu->id);

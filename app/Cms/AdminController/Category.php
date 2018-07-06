@@ -50,7 +50,7 @@ class Category extends AdminController
             systemLog('修改文章分类信息');
 
             Response::setMessage('保存分类成功！');
-            Response::redirect(adminUrl('app=Cms&controller=Article&task=categories'));
+            Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
 
         } catch (Exception $e) {
             $db->rollback();
@@ -58,7 +58,7 @@ class Category extends AdminController
             Log::log($e);
 
             Response::setMessage('保存分类失败：'.$e->getMessage());
-            Response::redirect(adminUrl('app=Cms&controller=Article&task=categories'));
+            Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
         }
     }
 

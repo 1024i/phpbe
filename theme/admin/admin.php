@@ -43,25 +43,25 @@ $my = Be::getAdminUser();
         $adminConfigAdminUser = Be::getConfig('System.AdminUser');
         ?>
         <div class="theme-north-header">
-            <?php echo '您好： '; ?><img src="../<?php echo DATA.'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$adminConfigAdminUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" /> <?php echo $my->name; ?> &nbsp; &nbsp; <a href="./?controller=adminUser&task=logout" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
+            <?php echo '您好： '; ?><img src="../<?php echo DATA.'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$adminConfigAdminUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" /> <?php echo $my->name; ?> &nbsp; &nbsp; <a href="./?controller=adminUser&action=logout" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
         </div>
 
         <div class="theme-north-menu" id="north-menu">
 
             <ul class="nav nav-pills">
-                <li><a href="./?app=System&controller=System&task=dashboard">后台首页</a></li>
+                <li><a href="./?app=System&controller=System&action=dashboard">后台首页</a></li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">菜单<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&task=menus">菜单列表</a></li>
-                        <li><a href="./?app=System&controller=System&task=menuGroups">菜单分组</a></li>
+                        <li><a href="./?app=System&controller=System&action=menus">菜单列表</a></li>
+                        <li><a href="./?app=System&controller=System&action=menuGroups">菜单分组</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">主题<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&task=themes">已安装的主题</a></li>
-                        <li><a href="./?app=System&controller=System&task=remoteThemes">安装新主题</a></li>
+                        <li><a href="./?app=System&controller=System&action=themes">已安装的主题</a></li>
+                        <li><a href="./?app=System&controller=System&action=remoteThemes">安装新主题</a></li>
                     </ul>
                 </li>
 
@@ -72,21 +72,21 @@ $my = Be::getAdminUser();
                         $serviceApp = Be::getService('System.app');
                         $apps = $serviceApp->getApps();
                         ?>
-                        <li><a href="./?app=System&controller=System&task=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
-                        <li><a href="./?app=System&controller=System&task=remoteApps">安装新应用</a></li>
+                        <li><a href="./?app=System&controller=System&action=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
+                        <li><a href="./?app=System&controller=System&action=remoteApps">安装新应用</a></li>
                     </ul>
                 </li>
 
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">系统管理<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&task=config">系统基本设置</a></li>
-                        <li><a href="./?app=System&controller=System&task=configMail">发送邮件设置</a></li>
-                        <li><a href="./?app=System&controller=System&task=configWatermark">水印设置</a></li>
+                        <li><a href="./?app=System&controller=System&action=config">系统基本设置</a></li>
+                        <li><a href="./?app=System&controller=System&action=configMail">发送邮件设置</a></li>
+                        <li><a href="./?app=System&controller=System&action=configWatermark">水印设置</a></li>
                         <li class="divider"></li>
-                        <li><a href="./?app=System&controller=System&task=cache">缓存管理</a></li>
-                        <li><a href="./?app=System&controller=System&task=errorLogs">错误日志</a></li>
-                        <li><a href="./?app=System&controller=System&task=logs">系统日志</a></li>
+                        <li><a href="./?app=System&controller=System&action=cache">缓存管理</a></li>
+                        <li><a href="./?app=System&controller=System&action=errorLogs">错误日志</a></li>
+                        <li><a href="./?app=System&controller=System&action=logs">系统日志</a></li>
                     </ul>
                 </li>
 

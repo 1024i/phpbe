@@ -21,7 +21,7 @@ function setMenu(e)
 
 	$("#modal-menu").modal();
 	disableSaveMenu(true);
-	$("#modal-menu-body").load( './?controller=system&task=menu_set_link&id='+id+'&url='+base64.encode(sUrl) );
+	$("#modal-menu-body").load( './?controller=system&action=menu_set_link&id='+id+'&url='+base64.encode(sUrl) );
 }
 
 
@@ -46,7 +46,7 @@ function setHome(id)
 	$e = $(".home-1");
 	$.ajax({
 		type: "GET",
-		url: "./?controller=system&task=ajax_menu_set_home&id="+id,
+		url: "./?controller=system&action=ajax_menu_set_home&id="+id,
 		dataType: "json",
 		success: function(json){
 			if(json.error=="0")

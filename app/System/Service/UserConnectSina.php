@@ -27,7 +27,7 @@ class UserConnectSina extends \Phpbe\System\Service
         $url = 'https://api.weibo.com/oauth2/authorize';
 		$url .= '?clientId='.$this->appKey;
 		$url .= '&ResponseType=code';
-		$url .= '&redirectUri='.urlencode(Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&task=sinaLoginCallback');
+		$url .= '&redirectUri='.urlencode(Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&action=sinaLoginCallback');
 		$url .= '&state='.$state;
 
         header("Location:$url");
@@ -55,7 +55,7 @@ class UserConnectSina extends \Phpbe\System\Service
 		$data['clientId'] = $this->appKey;
 		$data['clientSecret'] = $this->appSecret;
 		$data['grantType'] = 'authorizationCode';
-		$data['redirectUri'] = Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&task=sinaLoginCallback';
+		$data['redirectUri'] = Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&action=sinaLoginCallback';
 		$data['code'] = Request::get('code','');
 
 		$libHttp = Be::getLib('Http');

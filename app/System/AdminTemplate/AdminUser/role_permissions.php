@@ -17,9 +17,9 @@ $apps = $this->apps;
 
 $adminUiEditor = Be::getUi('editor');
 
-$adminUiEditor->setAction('save', './?app=System&controller=AdminUser&task=rolePermissionsSave');	// 显示提交按钮
+$adminUiEditor->setAction('save', './?app=System&controller=AdminUser&action=rolePermissionsSave');	// 显示提交按钮
 $adminUiEditor->setAction('reset');// 显示重设按钮
-$adminUiEditor->setAction('back', './?app=System&controller=AdminUser&task=roles');	// 显示返回按钮
+$adminUiEditor->setAction('back', './?app=System&controller=AdminUser&action=roles');	// 显示返回按钮
 
 
 $adminUiEditor->addField(

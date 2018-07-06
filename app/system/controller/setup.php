@@ -10,13 +10,13 @@ class Setup extends \Phpbe\System\Controller
 
 	public function __construct()
 	{
-		$task = Request::_('task');
-		if ($task!='complete') {
+		$action = Request::_('action');
+		if ($action!='complete') {
 			db::connect();
 			if (!db::hasError()) {
 				$rows = db::getTables();
 				//printR($rows);
-				//if (in_array($rows, 'beUser')) $this->redirect(url('controller=setup&task=complete'));
+				//if (in_array($rows, 'beUser')) $this->redirect(url('controller=setup&action=complete'));
 			}
 		}
 	}
@@ -49,10 +49,10 @@ class Setup extends \Phpbe\System\Controller
 		db::connect();
 		if (db::hasError()) {
 			$this->setMessage(db::getError(), 'error');
-			$this->redirect(url('controller=setup&task=setting'));
+			$this->redirect(url('controller=setup&action=setting'));
 		} else {
 			$serviceSetup->install();
-			$this->redirect(url('controller=setup&task=complete'));
+			$this->redirect(url('controller=setup&action=complete'));
 		}
 	}
 

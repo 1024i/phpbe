@@ -29,7 +29,7 @@ function setDefault( e, iGroupID )
 	
 	$.ajax({
 		type: "GET",
-		url: "./?controller=user&task=ajax_group_set_default&group_id="+iGroupID,
+		url: "./?controller=user&action=ajax_group_set_default&group_id="+iGroupID,
 		dataType: "json",
 		success: function(json){
 			if(json.error=="0")

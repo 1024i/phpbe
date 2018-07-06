@@ -16,12 +16,12 @@ $categories = $this->get('categories');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?app=Cms&controller=Article&task=articles');
-$uiList->setAction('create', './?app=Cms&controller=Article&task=edit');
-$uiList->setAction('edit', './?app=Cms&controller=Article&task=edit');
-$uiList->setAction('unblock', './?app=Cms&controller=Article&task=unblock');
-$uiList->setAction('block', './?app=Cms&controller=Article&task=block');
-$uiList->setAction('delete', './?app=Cms&controller=Article&task=delete');
+$uiList->setAction('list', './?app=Cms&controller=Article&action=articles');
+$uiList->setAction('create', './?app=Cms&controller=Article&action=edit');
+$uiList->setAction('edit', './?app=Cms&controller=Article&action=edit');
+$uiList->setAction('unblock', './?app=Cms&controller=Article&action=unblock');
+$uiList->setAction('block', './?app=Cms&controller=Article&action=block');
+$uiList->setAction('delete', './?app=Cms&controller=Article&action=delete');
 
 $categoryOptions = array();
 $categoryOptions['-1'] = '所有文章';
@@ -72,7 +72,7 @@ foreach ($categories as $category) {
 $configArticle = Be::getConfig('Cms.Article');
 
 foreach ($articles as $article) {
-    $article->titleHtml = '<span class="text-warning">['.$indexCategories[$article->categoryId].']</span> <a href="'.url('app=Cms&controller=Article&task=detail&articleId='.$article->id).'" title="'.$article->title.'" target="Blank" data-toggle="tooltip">'.limit($article->title, 50).'</a>';
+    $article->titleHtml = '<span class="text-warning">['.$indexCategories[$article->categoryId].']</span> <a href="'.url('app=Cms&controller=Article&action=detail&articleId='.$article->id).'" title="'.$article->title.'" target="Blank" data-toggle="tooltip">'.limit($article->title, 50).'</a>';
     $article->createTime =	date('Y-m-d H:i',$article->createTime);
 
     $creator = Be::getUser($article->createById);
@@ -84,7 +84,7 @@ foreach ($articles as $article) {
         $article->thunbmailHtml = '<img src="../'.DATA.'/Article/Thumbnail/'.$article->thumbnailS.'" width="48" />';
     }
 
-    $article->comment = '<a href="./?app=Cms&controller=Article&task=comments&articleId='.$article->id.'" class="label'.($article->commentCount>0?' label-info':'').'">'.$article->commentCount.'</a>';
+    $article->comment = '<a href="./?app=Cms&controller=Article&action=comments&articleId='.$article->id.'" class="label'.($article->commentCount>0?' label-info':'').'">'.$article->commentCount.'</a>';
     $article->ordering = '<span class="label'.($article->ordering>0?' label-success':'').'">'.$article->ordering.'</span>';
     $article->top = '<span class="label'.($article->top>0?' label-warning':'').'">'.$article->top.'</span>';
 }

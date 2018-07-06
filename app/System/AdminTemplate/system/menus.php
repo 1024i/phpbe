@@ -28,7 +28,7 @@ foreach ($groups as $group) {
         $currentGroup = $group;
         echo ' class="active"';
     }
-    echo '><a href="./?app=System&controller=System&task=menus&groupId='.$group->id.'">'.$group->name.'</a></li>';
+    echo '><a href="./?app=System&controller=System&action=menus&groupId='.$group->id.'">'.$group->name.'</a></li>';
 }
 echo '</ul>';
 echo '</div>';
@@ -52,8 +52,8 @@ $targetDefault .= '</select>';
 
 $uiCategoryTree = Be::getUi('categoryTree');
 
-$uiCategoryTree->setAction('save', './?app=System&controller=System&task=menusSave');
-$uiCategoryTree->setAction('delete', './?app=System&controller=System&task=ajaxMenuDelete');
+$uiCategoryTree->setAction('save', './?app=System&controller=System&action=menusSave');
+$uiCategoryTree->setAction('delete', './?app=System&controller=System&action=ajaxMenuDelete');
 
 $uiCategoryTree->setData($menus);
 

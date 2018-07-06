@@ -69,7 +69,7 @@ if (count($similarArticles)>0) {
     foreach ($similarArticles as $similarArticle) {
     ?>
     <li class="similarArticle">
-        <a href="<?php echo url('app=Cms&controller=Article&task=detail&articleId='.$similarArticle->id); ?>">
+        <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$similarArticle->id); ?>">
             <?php echo $similarArticle->title; ?>
         </a>
     </li>

@@ -15,10 +15,10 @@ $comments = $this->get('comments');
 
 $uiList = Be::getUi('grid');
 
-$uiList->setAction('list', './?app=Cms&controller=Article&task=comments');
-$uiList->setAction('unblock', './?app=Cms&controller=Article&task=commentsUnblock');
-$uiList->setAction('block', './?app=Cms&controller=Article&task=commentsBlock');
-$uiList->setAction('delete', './?app=Cms&controller=Article&task=commentsDelete');
+$uiList->setAction('list', './?app=Cms&controller=Article&action=comments');
+$uiList->setAction('unblock', './?app=Cms&controller=Article&action=commentsUnblock');
+$uiList->setAction('block', './?app=Cms&controller=Article&action=commentsBlock');
+$uiList->setAction('delete', './?app=Cms&controller=Article&action=commentsDelete');
 
 $uiList->setFilters(
     array(
@@ -48,7 +48,7 @@ $uiList->setFilters(
 
 $libIp = Be::getLib('ip');
 foreach ($comments as $comment) {
-    $comment->articleHtml = '<a href="'.url('app=Cms&controller=Article&task=detail&articleId='.$comment->articleId).'" title="'.$comment->article->title.'" target="Blank" data-toggle="tooltip">'.limit($comment->article->title, 20).'</a>';
+    $comment->articleHtml = '<a href="'.url('app=Cms&controller=Article&action=detail&articleId='.$comment->articleId).'" title="'.$comment->article->title.'" target="Blank" data-toggle="tooltip">'.limit($comment->article->title, 20).'</a>';
 
     $bodyHtml = '';
 

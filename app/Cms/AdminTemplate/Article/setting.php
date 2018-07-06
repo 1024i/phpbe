@@ -15,7 +15,7 @@ $uiEditor->head();
 $configArticle = $this->get('configArticle');
 
 $uiEditor = Be::getUi('editor');
-$uiEditor->setAction('save', './?app=Cms&controller=Article&task=settingSave');
+$uiEditor->setAction('save', './?app=Cms&controller=Article&action=settingSave');
 
 $htmlDefaultThumbnailL = '<img src="../'.DATA.'/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailL.'" />';
 $htmlDefaultThumbnailL .= '<br /><input type="file" name="defaultThumbnailL" />';

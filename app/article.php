@@ -15,19 +15,19 @@ class article extends \system\app
 		return array(
 			array(
 				'name'=>'文章首页',
-				'url'=>'controller=article&task=home'
+				'url'=>'controller=article&action=home'
 			),
 			array(
 				'name'=>'文章列表页面',
-				'url'=>'controller=article&task=articles'
+				'url'=>'controller=article&action=articles'
 			),
 			array(
 				'name'=>'指定分类文章列表页面',
-				'url'=>'controller=article&task=articles&categoryId={ID}'
+				'url'=>'controller=article&action=articles&categoryId={ID}'
 			),
 			array(
 				'name'=>'指定的一篇文章',
-				'url'=>'controller=article&task=detail&articleId={ID}'
+				'url'=>'controller=article&action=detail&articleId={ID}'
 			)
 		);
     }
@@ -37,22 +37,22 @@ class article extends \system\app
 		return array(
 			array(
 				'name'=>'文章列表',
-				'url'=>'./?app=Cms&controller=Article&task=articles',
+				'url'=>'./?app=Cms&controller=Article&action=articles',
 				'icon'=>'template/article/images/articles.png'
 			),
 			array(
 				'name'=>'分类管理',
-				'url'=>'./?app=Cms&controller=Article&task=categories',
+				'url'=>'./?app=Cms&controller=Article&action=categories',
 				'icon'=>'template/article/images/category.gif'
 			),
 			array(
 				'name'=>'评论',
-				'url'=>'./?app=Cms&controller=Article&task=comments',
+				'url'=>'./?app=Cms&controller=Article&action=comments',
 				'icon'=>'template/article/images/comments.png'
 			),
 			array(
 				'name'=>'设置',
-				'url'=>'./?app=Cms&controller=Article&task=setting',
+				'url'=>'./?app=Cms&controller=Article&action=setting',
 				'icon'=>'template/article/images/setting.png'
 			)
 		);

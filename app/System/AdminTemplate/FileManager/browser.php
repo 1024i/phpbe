@@ -24,14 +24,14 @@ $configSystem = Be::getConfig('System.System');
 $configWatermark = Be::getConfig('System.Watermark');
 
 ?>
-<form action="./?controller=systemFilemanager&task=browser" method="post" id="form-systemFilemanager">
+<form action="./?controller=systemFilemanager&action=browser" method="post" id="form-systemFilemanager">
     <input type="hidden" id="systemFilemanagerPath" name="path" value="<?php echo $path; ?>" />
     <input type="hidden" id="systemFilemanagerView" name="view" value="<?php echo $view; ?>" />
     <input type="hidden" id="systemFilemanagerSort" name="sort" value="<?php echo $sort; ?>" />
 </form>
 
 
-<form action="./?controller=systemFilemanager&task=createDir" method="post" class="form-horizontal">
+<form action="./?controller=systemFilemanager&action=createDir" method="post" class="form-horizontal">
     <div class="modal hide fade" id="modal-createDir" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -50,7 +50,7 @@ $configWatermark = Be::getConfig('System.Watermark');
     </div>
 </form>
 
-<form action="./?controller=systemFilemanager&task=editDirName" method="post" class="form-horizontal">
+<form action="./?controller=systemFilemanager&action=editDirName" method="post" class="form-horizontal">
     <div class="modal hide fade" id="modal-editDirName" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -70,7 +70,7 @@ $configWatermark = Be::getConfig('System.Watermark');
     <input type="hidden" name="oldDirName" id="editDirName-oldDirName" />
 </form>
 
-<form action="./?controller=systemFilemanager&task=uploadFile" method="post" class="form-horizontal" enctype="multipart/form-data">
+<form action="./?controller=systemFilemanager&action=uploadFile" method="post" class="form-horizontal" enctype="multipart/form-data">
     <div class="modal hide fade" id="modal-upload" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -99,7 +99,7 @@ $configWatermark = Be::getConfig('System.Watermark');
 </form>
 
 
-<form action="./?controller=systemFilemanager&task=editFileName" method="post" class="form-horizontal">
+<form action="./?controller=systemFilemanager&action=editFileName" method="post" class="form-horizontal">
     <div class="modal hide fade" id="modal-editFileName" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -314,7 +314,7 @@ foreach ($files as $file) {
             <td style="text-align:center;"><span class="size"><?php echo $file['size']; ?></span></td>
             <td style="text-align:center;"><span class="time"><?php echo date('Y-m-d H:i:s', $file['date']); ?></span></td>
             <td style="text-align:right;">
-                <a href="./?controller=systemFilemanager&task=downloadFile&fileName=<?php echo $file['name']; ?>" target="Blank"><i class="icon-download-alt"></i></a>
+                <a href="./?controller=systemFilemanager&action=downloadFile&fileName=<?php echo $file['name']; ?>" target="Blank"><i class="icon-download-alt"></i></a>
                 <a href="javascript:;" onclick="javascript:editFileName('<?php echo $file['name']; ?>');"><i class="icon-pencil"></i></a>
                 <a href="javascript:;" onclick="javascript:deleteFile('<?php echo $file['name']; ?>');"><i class="icon-trash"></i></a>
             </td>
