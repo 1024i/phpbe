@@ -107,13 +107,15 @@ class Link extends AdminController
         $ids = Request::post('id', '');
 
         $adminServiceSystemLink = Be::getService('System.Link');
-        if ($adminServiceSystemLink->unblock($ids)) {
-            $adminServiceSystemLink->update();
 
+        try {
+            $adminServiceSystemLink->unblock($ids);
+            $adminServiceSystemLink->update();
             Response::setMessage('公开友情链接成功！');
             systemLog('公开友情链接：#' . $ids);
-        } else
-            Response::setMessage($adminServiceSystemLink->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
+        }
 
         $libHistory = Be::getLib('History');
         $libHistory->back();
@@ -124,13 +126,15 @@ class Link extends AdminController
         $ids = Request::post('id', '');
 
         $adminServiceSystemLink = Be::getService('System.Link');
-        if ($adminServiceSystemLink->block($ids)) {
-            $adminServiceSystemLink->update();
 
+        try {
+            $adminServiceSystemLink->block($ids);
+            $adminServiceSystemLink->update();
             Response::setMessage('屏蔽友情链接成功！');
             systemLog('屏蔽友情链接：#' . $ids);
-        } else
-            Response::setMessage($adminServiceSystemLink->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
+        }
 
         $libHistory = Be::getLib('History');
         $libHistory->back();
@@ -141,13 +145,14 @@ class Link extends AdminController
         $ids = Request::post('id', '');
 
         $adminServiceSystemLink = Be::getService('System.Link');
-        if ($adminServiceSystemLink->delete($ids)) {
+        try {
+            $adminServiceSystemLink->delete($ids);
             $adminServiceSystemLink->update();
-
             Response::setMessage('删除友情链接成功！');
             systemLog('删除友情链接：#' . $ids);
-        } else
-            Response::setMessage($adminServiceSystemLink->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
+        }
 
         $libHistory = Be::getLib('History');
         $libHistory->back();

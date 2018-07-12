@@ -54,74 +54,17 @@ class Link extends Service
 
     public function unblock($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Link');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     public function block($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Link');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 1])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     public function delete($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Link');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->delete()
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->delete();
     }
 
     public function update()

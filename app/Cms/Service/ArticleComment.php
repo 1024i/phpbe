@@ -83,87 +83,75 @@ class ArticleComment extends Service
      *
      * @param int $articleId 文章编号
      * @param string $commentBody 评论内容
-     * @return bool
+     * @throws \Exception
      */
     public function comment($articleId, $commentBody)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticle = Be::getRow('Cms.article');
-            $rowArticle->load($articleId);
-            if ($rowArticle->id == 0 || $rowArticle->block == 1) {
-                throw new \Exception('文章不存在！');
-            }
-
-            $commentBody = trim($commentBody);
-            $commentBodyLength = strlen($commentBody);
-            if ($commentBodyLength == 0) {
-                throw new \Exception('请输入评论内容！');
-            }
-
-            if ($commentBodyLength > 2000) {
-                throw new \Exception('评论内容过长！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.ArticleComment');
-            $rowArticleComment->article_id = $articleId;
-            $rowArticleComment->user_id = $my->id;
-            $rowArticleComment->user_name = $my->name;
-            $rowArticleComment->body = $commentBody;
-            $rowArticleComment->ip = $_SERVER['REMOTE_ADDR'];
-            $rowArticleComment->create_time = time();
-
-            $configArticle = Be::getConfig('Cms.Article');
-            $rowArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
-
-            $rowArticleComment->save();
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+        $my = Be::getUser();
+        if ($my->id == 0) {
+            throw new \Exception('请先登陆！');
         }
 
-        return true;
+        $rowArticle = Be::getRow('Cms.article');
+        $rowArticle->load($articleId);
+        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+            throw new \Exception('文章不存在！');
+        }
+
+        $commentBody = trim($commentBody);
+        $commentBodyLength = strlen($commentBody);
+        if ($commentBodyLength == 0) {
+            throw new \Exception('请输入评论内容！');
+        }
+
+        if ($commentBodyLength > 2000) {
+            throw new \Exception('评论内容过长！');
+        }
+
+        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment->article_id = $articleId;
+        $rowArticleComment->user_id = $my->id;
+        $rowArticleComment->user_name = $my->name;
+        $rowArticleComment->body = $commentBody;
+        $rowArticleComment->ip = $_SERVER['REMOTE_ADDR'];
+        $rowArticleComment->create_time = time();
+
+        $configArticle = Be::getConfig('Cms.Article');
+        $rowArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
+
+        $rowArticleComment->save();
     }
 
     /**
      * 顶
      *
      * @param int $commentId 文章评论编号
-     * @return bool
+     * @throws \Exception
      */
     public function commentLike($commentId)
     {
+
+        $my = Be::getUser();
+        if ($my->id == 0) {
+            throw new \Exception('请先登陆！');
+        }
+
+        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment->load($commentId);
+        if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
+            throw new \Exception('评论不存在！');
+        }
+
+        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
+        if ($rowArticleVoteLog->id > 0) {
+            throw new \Exception('您已经表过态啦！');
+        }
+
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.ArticleComment');
-            $rowArticleComment->load($commentId);
-            if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
-                throw new \Exception('评论不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
-            $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
             $rowArticleVoteLog->comment_id = $commentId;
             $rowArticleVoteLog->userId = $my->id;
             $rowArticleVoteLog->save();
@@ -174,41 +162,39 @@ class ArticleComment extends Service
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 踩
      *
      * @param int $commentId 文章评论编号
-     * @return bool
+     * @throws \Exception
      */
     public function commentDislike($commentId)
     {
+        $my = Be::getUser();
+        if ($my->id == 0) {
+            throw new \Exception('请先登陆！');
+        }
+
+        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment->load($commentId);
+        if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
+            throw new \Exception('评论不存在！');
+        }
+
+        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
+        if ($rowArticleVoteLog->id > 0) {
+            throw new \Exception('您已经表过态啦！');
+        }
+
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticleComment = Be::getRow('Cms.ArticleComment');
-            $rowArticleComment->load($commentId);
-            if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
-                throw new \Exception('评论不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
-            $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
             $rowArticleVoteLog->comment_id = $commentId;
             $rowArticleVoteLog->userId = $my->id;
             $rowArticleVoteLog->save();
@@ -219,86 +205,23 @@ class ArticleComment extends Service
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
-
-
 
     public function commentsUnblock($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('Cms.ArticleComment');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     public function commentsBlock($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('Cms.ArticleComment');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 1])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     public function commentsDelete($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('Cms.ArticleComment');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->delete()
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->delete();
     }
-
 
 }

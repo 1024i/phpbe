@@ -52,10 +52,8 @@ class Category extends AdminController
             Response::setMessage('保存分类成功！');
             Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
-
-            Log::log($e);
 
             Response::setMessage('保存分类失败：'.$e->getMessage());
             Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
@@ -66,21 +64,25 @@ class Category extends AdminController
     {
         $categoryId = Request::post('id', 0, 'int');
         if (!$categoryId) {
-            Response::set('error', 1);
+            Response::set('success', false);
             Response::set('message', '参数(id)缺失！');
         } else {
-            $rowCategory = Be::getRow('Cms.Category');
-            $rowCategory->load($categoryId);
 
-            $serviceCategory = Be::getService('Cms.Category');
-            if ($serviceCategory->deleteCategory($categoryId)) {
-                Response::set('error', 0);
+            try {
+                $rowCategory = Be::getRow('Cms.Category');
+                $rowCategory->load($categoryId);
+
+                $serviceCategory = Be::getService('Cms.Category');
+                $serviceCategory->deleteCategory($categoryId);
+
+                Response::set('success', true);
                 Response::set('message', '分类删除成功！');
 
                 systemLog('删除文章分类：#' . $categoryId . ': ' . $rowCategory->title);
-            } else {
-                Response::set('error', 2);
-                Response::set('message', $serviceCategory->getError());
+
+            } catch (\Exception $e) {
+                Response::set('success', false);
+                Response::set('message', $e->getMessage());
             }
         }
         Response::ajax();

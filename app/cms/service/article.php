@@ -6,7 +6,6 @@ use Phpbe\System\Service;
 
 class Article extends Service
 {
-
     /**
      * 获取符合条件的文章列表
      *
@@ -120,7 +119,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \system\row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Row | mixed $rowArticle 当前文章
      * @param int $n 查询出最多多少条记录
      * @return array
      */
@@ -156,7 +155,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \system\row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Row | mixed $rowArticle 当前文章
      * @param array $keywords 关键词
      * @param int $n 查询出最多多少条记录
      * @return array
@@ -203,95 +202,44 @@ class Article extends Service
      * 屏蔽文章
      *
      * @param $ids
-     * @return bool
+     * @throws \Exception
      */
     public function unblock($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('Cms.Article');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('Cms.Article')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     /**
      * 公开文章
      *
      * @param $ids
-     * @return bool
+     * @throws \Exception
      */
     public function block($ids)
     {
-        $db = Be::getDb();
-        try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('Cms.Article');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 1])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
-        }
-
-        return true;
+        Be::getTable('Cms.Article')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     /**
      * 删除文章
      *
      * @param $ids
-     * @return bool
+     * @throws \Exception
      */
     public function delete($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
             $files = [];
-
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
                 $articleCommentIds = Be::getTable('Cms.ArticleComment')->where('article_id', $id)->getArray('id');
                 if (count($articleCommentIds)) {
-                    $table = Be::getTable('Cms.ArticleVoteLog');
-                    if (!$table->where('comment_id', 'in', $articleCommentIds)->delete()) {
-                        throw new \Exception($table->getError());
-                    }
-
-                    $table = Be::getTable('Cms.ArticleVoteLog');
-                    if (!$table->where('article_id', $id)->delete()) {
-                        throw new \Exception($table->getError());
-                    }
-
-                    $table = Be::getTable('Cms.ArticleComment');
-                    if (!$table->where('article_id', $id)->delete()) {
-                        throw new \Exception($table->getError());
-                    }
+                    Be::getTable('Cms.ArticleVoteLog')->where('comment_id', 'in', $articleCommentIds)->delete();
+                    Be::getTable('Cms.ArticleVoteLog')->where('article_id', $id)->delete();
+                    Be::getTable('Cms.ArticleComment')->where('article_id', $id)->delete();
                 }
 
                 $rowArticle = Be::getRow('Cms.Article');
@@ -301,9 +249,7 @@ class Article extends Service
                 if ($rowArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
                 if ($rowArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
 
-                if (!$rowArticle->delete()) {
-                    throw new \Exception($rowArticle->getError());
-                }
+                $rowArticle->delete();
             }
 
             foreach ($files as $file) {
@@ -313,42 +259,39 @@ class Article extends Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 顶
      *
      * @param int $articleId 文章编号
-     * @return bool
+     * @throws \Exception
      */
     public function like($articleId)
     {
+        $my = Be::getUser();
+        if ($my->id == 0) {
+            throw new \Exception('请先登陆！');
+        }
+
+        $rowArticle = Be::getRow('Cms.Article');
+        $rowArticle->load($articleId);
+        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+            throw new \Exception('文章不存在！');
+        }
+
+        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
+        if ($rowArticleVoteLog->id > 0) {
+            throw new \Exception('您已经表过态啦！');
+        }
+
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticle = Be::getRow('Cms.Article');
-            $rowArticle->load($articleId);
-            if ($rowArticle->id == 0 || $rowArticle->block == 1) {
-                throw new \Exception('文章不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
-            $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
             $rowArticleVoteLog->article_id = $articleId;
             $rowArticleVoteLog->user_id = $my->id;
             $rowArticleVoteLog->save();
@@ -359,41 +302,39 @@ class Article extends Service
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 踩
      *
      * @param int $articleId 文章编号
-     * @return bool
+     * @throws \Exception
      */
     public function dislike($articleId)
     {
+        $my = Be::getUser();
+        if ($my->id == 0) {
+            throw new \Exception('请先登陆！');
+        }
+
+        $rowArticle = Be::getRow('Cms.Article');
+        $rowArticle->load($articleId);
+        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+            throw new \Exception('文章不存在！');
+        }
+
+        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
+        if ($rowArticleVoteLog->id > 0) {
+            throw new \Exception('您已经表过态啦！');
+        }
+
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
-            $my = Be::getUser();
-            if ($my->id == 0) {
-                throw new \Exception('请先登陆！');
-            }
-
-            $rowArticle = Be::getRow('Cms.Article');
-            $rowArticle->load($articleId);
-            if ($rowArticle->id == 0 || $rowArticle->block == 1) {
-                throw new \Exception('文章不存在！');
-            }
-
-            $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
-            $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
-            if ($rowArticleVoteLog->id > 0) {
-                throw new \Exception('您已经表过态啦！');
-            }
             $rowArticleVoteLog->article_id = $articleId;
             $rowArticleVoteLog->user_id = $my->id;
             $rowArticleVoteLog->save();
@@ -404,11 +345,8 @@ class Article extends Service
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
 

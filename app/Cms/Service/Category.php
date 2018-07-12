@@ -32,7 +32,6 @@ class Category extends Service
         return $this->categories;
     }
 
-
     /**
      * 获取分类总数
      *
@@ -40,8 +39,7 @@ class Category extends Service
      */
     public function getCategoryCount()
     {
-        return Be::getTable('Cms.ArticleCategory')
-            ->count();
+        return Be::getTable('Cms.ArticleCategory')->count();
     }
 
     /**
@@ -52,9 +50,7 @@ class Category extends Service
     public function getCategoryTree()
     {
         if ($this->categoryTree === null) {
-            $categories = Be::getTable('Cms.ArticleCategory')
-                ->getObjects();
-
+            $categories = Be::getTable('Cms.ArticleCategory')->getObjects();
             $this->categoryTree = $this->_createCategoryTree($categories);
         }
         return $this->categoryTree;
@@ -139,16 +135,18 @@ class Category extends Service
      * 获取分类
      *
      * @param $categoryId
+     * @return \Phpbe\System\Row
      */
     public function getCategory($categoryId) {
         $rowCategory = Be::getRow('Cms.Category');
         $rowCategory->load($categoryId);
+        return $rowCategory;
     }
 
     /**
      * 获取指定分类的最高父级分类
      * @param $categoryId
-     * @return mixed|null|\System\Row
+     * @return mixed | null | \Phpbe\System\Row
      */
     public function getTopParentCategory($categoryId) {
         $rowCategory = Be::getRow('Cms.Category');
@@ -170,37 +168,23 @@ class Category extends Service
     /**
      * 删除分类
      * @param int $categoryId 分类编号
-     * @return bool
+     * @throws \Exception
      */
     public function deleteCategory($categoryId)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
-            $table = Be::getTable('Cms.Article');
-            if (!$table->where('category_id', $categoryId)->update(['category_id' => 0])) {
-                throw new \Exception($table->getError());
-            }
-
-            $table = Be::getTable('Cms.Category');
-            if (!$table->where('parent_id', $categoryId)->update(['parent_id' => 0])) {
-                throw new \Exception($table->getError());
-            }
-
-            $row = Be::getRow('Cms.Category');
-            if (!$row->delete($categoryId)) {
-                throw new \Exception($row->getError());
-            }
+            Be::getTable('Cms.Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
+            Be::getTable('Cms.Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
+            Be::getRow('Cms.Category')->delete($categoryId);
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 }

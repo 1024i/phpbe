@@ -54,9 +54,7 @@ class Article extends AdminController
             $article->commentCount = $serviceArticleComment->getCommentCount(array('articleId' => $article->id));
         }
         Response::set('articles', $articles);
-
         Response::set('categories', $serviceCategory->getCategories());
-
         Response::display();
 
         $libHistory = Be::getLib('History');
@@ -311,13 +309,13 @@ class Article extends AdminController
     public function unblock()
     {
         $ids = Request::post('id', '');
-
-        $serviceArticle = Be::getService('Cms.Article');
-        if ($serviceArticle->unblock($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->unblock($ids);
             Response::setMessage('公开文章成功！');
             systemLog('公开文章：#' . $ids);
-        } else {
-            Response::setMessage($serviceArticle->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -327,13 +325,13 @@ class Article extends AdminController
     public function block()
     {
         $ids = Request::post('id', '');
-
-        $serviceArticle = Be::getService('Cms.Article');
-        if ($serviceArticle->block($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->block($ids);
             Response::setMessage('屏蔽文章成功！');
             systemLog('屏蔽文章：#' . $ids);
-        } else {
-            Response::setMessage($serviceArticle->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -344,12 +342,13 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $serviceArticle = Be::getService('Cms.Article');
-        if ($serviceArticle->delete($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->delete($ids);
             Response::setMessage('删除文章成功！');
             systemLog('删除文章：#' . $ids);
-        } else {
-            Response::setMessage($serviceArticle->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -359,11 +358,9 @@ class Article extends AdminController
 
     private function cleanHtml($html)
     {
-        if (get_magic_quotes_gpc()) $html = stripslashes($html);
         $html = trim($html);
         $html = strip_tags($html);
         $html = str_replace(array('&nbsp;', '&ldquo;', '&rdquo;', '　'), '', $html);
-
         $html = preg_replace("/\t/", "", $html);
         $html = preg_replace("/\r\n/", "", $html);
         $html = preg_replace("/\r/", "", $html);
@@ -481,13 +478,13 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $model = Be::getService('Cms.Article');
-
-        if ($model->commentsUnblock($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->commentsUnblock($ids);
             Response::setMessage('公开评论成功！');
             systemLog('公开文章评论：#' . $ids);
-        } else {
-            Response::setMessage($model->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -498,12 +495,13 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $model = Be::getService('Cms.Article');
-        if ($model->commentsBlock($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->commentsBlock($ids);
             Response::setMessage('屏蔽评论成功！');
             systemLog('屏蔽文章评论：#' . $ids);
-        } else {
-            Response::setMessage($model->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -514,12 +512,13 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $model = Be::getService('Cms.Article');
-        if ($model->commentsDelete($ids)) {
+        try {
+            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle->commentsDelete($ids);
             Response::setMessage('删除评论成功！');
             systemLog('删除文章评论：#' . $ids . ')');
-        } else {
-            Response::setMessage($model->getError(), 'error');
+        } catch (\Exception $e) {
+            Response::setMessage($e->getMessage(), 'error');
         }
 
         $libHistory = Be::getLib('History');
