@@ -37,7 +37,7 @@ $config = Be::getConfig('System.System');
 				</div>
 				
 				<div style="text-align:right; width:220px;">
-					<input type="button" class="btn btn-danger" id="btn-login" onclick="javascript:login();" value="登陆" />
+					<input type="button" class="btn btn-danger" id="btn-login" onclick="login();" value="登陆" />
 				</div>
 				
 				<?php

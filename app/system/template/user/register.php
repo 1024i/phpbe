@@ -2,8 +2,8 @@
 use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/css/register.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/js/register.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/css/register.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/js/register.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -98,13 +98,13 @@ $configUser = Be::getConfig('System.User');
 						<?php
 						if ($configUser->connectQq == '1') {
 						?>
-						<a href="<?php echo url('controller=user&action=qqLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/images/qqLogin.png" /></a> &nbsp;
+						<a href="<?php echo url('controller=user&action=qqLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/images/qqLogin.png" /></a> &nbsp;
 						<?php
 						}
 						
 						if ($configUser->connectSina == '1') {
 						?>
-						<a href="<?php echo url('controller=user&action=sinaLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/template/user/images/sinaLogin.png" /></a>
+						<a href="<?php echo url('controller=user&action=sinaLogin'); ?>"><img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/images/sinaLogin.png" /></a>
 						<?php
 						}
 						?>

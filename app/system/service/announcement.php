@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 
 class Announcement extends \Phpbe\System\Service
 {
@@ -60,18 +61,18 @@ class Announcement extends \Phpbe\System\Service
     public function unblock($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $table = Be::getTable('System.Announcement');
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 0])
             ) {
-                throw new \Exception($table->getError());
+                throw new ServiceException($table->getError());
             }
 
             $db->commit();
-        } catch (\Exception $e) {
+        } catch (ServiceException $e) {
             $db->rollback();
 
             $this->setError($e->getMessage());
@@ -91,7 +92,7 @@ class Announcement extends \Phpbe\System\Service
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->update(['block' => 1])
             ) {
-                throw new \Exception($table->getError());
+                throw new ServiceException($table->getError());
             }
 
             $db->commit();
@@ -115,7 +116,7 @@ class Announcement extends \Phpbe\System\Service
             if (!$table->where('id', 'in', explode(',', $ids))
                 ->delete()
             ) {
-                throw new \Exception($table->getError());
+                throw new ServiceException($table->getError());
             }
 
             $db->commit();

@@ -2,11 +2,12 @@
 
 namespace App\System\Service;
 
+use Phpbe\System\Service\ServiceException;
 use Phpbe\Util\String;
 use Phpbe\Util\System;
 use Phpbe\System\Be;
 use Phpbe\System\Db;
-use Phpbe\System\db\Exception;
+use Phpbe\System\db\DbException;
 
 class Cache extends \Phpbe\System\Service
 {
@@ -33,15 +34,14 @@ class Cache extends \Phpbe\System\Service
         }
 
         $libFso = Be::getLib('Fso');
-        if ($file === null) return $libFso->rmDir(PATH_CACHE . DS . $dir);
-        return $libFso->rmDir(PATH_CACHE . DS . $dir . '/' . $file);
+        if ($file === null) return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir);
+        return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir . '/' . $file);
     }
 
     /**
      * 更新 数据库行记灵对象
      *
      * @param string $name 数据库行记灵对象名称
-     * @return bool 是否更新成功
      * @throws |Exception
      */
     public function updateRow($app, $name)
@@ -49,118 +49,59 @@ class Cache extends \Phpbe\System\Service
         $tableName = String::snakeCase($app) . '_' . String::snakeCase($name);
         $db = Be::getDb();
         if (!$db->getValue('SHOW TABLES LIKE \'' . $tableName . '\'')) {
-            throw new \Exception('未找到名称为 ' . $tableName . ' 的数据库表！');
+            throw new ServiceException('未找到名称为 ' . $tableName . ' 的数据库表！');
         }
 
-        $primaryKey = 'id';
         $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
+
+        $primaryKey = 'id';
+        foreach ($fields as $field) {
+            if ($field->Key == 'PRI') {
+                $primaryKey = $field->Field;
+            }
+        }
+
+        $formattedFields = $this->formatTableFields($name, $fields);
 
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\Row\\' . $app . ';' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $name . ' extends \\System\\Row' . "\n";
-        $code .= '{' . "\n";
-
-        foreach ($fields as $field) {
-            if ($field->Key == 'PRI') {
-                $primaryKey = $field->Field;
-            }
-
-            $numberTypes = array('int', 'tinyint', 'smallint', 'bigint', 'decimal', 'float', 'double', 'real', 'bit', 'boolean', 'serial');
-
-            $isNumber = 0;
-            foreach ($numberTypes as $numberType) {
-                if (substr($field->Type, 0, strlen($numberType)) == $numberType) {
-                    $isNumber = 1;
-                    break;
-                }
-            }
-
-            $val = null;
-            if ($isNumber) {
-                $val = $field->Default ? $field->Default : 0;
-            } else {
-                $val = $field->Default ? ('\'' . addslashes($field->Default) . '\'') : '\'\'';
-            }
-
-            $code .= '    public $' . $field->Field . ' = ' . $val . ';';
-            if ($field->Comment) $code .= ' // ' . $field->Comment;
-            $code .= "\n";
-        }
-
-        $code .= "\n";
-        $code .= '    public function __construct()' . "\n";
-        $code .= '    {' . "\n";
-        $code .= '        parent::__construct(\'' . $tableName . '\', \'' . $primaryKey . '\');' . "\n";
-        $code .= '    }' . "\n";
-        $code .= '}' . "\n";
-        $code .= "\n";
-
-        $path = PATH_CACHE . '/Row/' . $app . '/' . $name . '.php';
-        $dir = dirname($path);
-        if (!is_dir($dir)) mkdir($dir, 0777, true);
-
-        file_put_contents($path, $code, LOCK_EX);
-        chmod($path, 0755);
-
-        return true;
-    }
-
-    /**
-     * 更新表
-     *
-     * @param string $name 要表新的表名
-     * @return bool 是否更新成功
-     */
-    public function updateTable($app, $name)
-    {
-        $tableName = String::snakeCase($app) . '_' . String::snakeCase($name);
-        $db = Be::getDb();
-        $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
-        $primaryKey = 'id';
-        $fieldNames = array();
-        foreach ($fields as $field) {
-            if ($field->Key == 'PRI') {
-                $primaryKey = $field->Field;
-            }
-
-            $fieldNames[] = $field->Field;
-        }
-
-        $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\Table\\' . $app . ';' . "\n";
-        $code .= "\n";
-        $code .= 'class ' . $name . ' extends \\System\\Table' . "\n";
+        $code .= 'class ' . $name . ' extends \\Phpbe\\System\\Db\\Row' . "\n";
         $code .= '{' . "\n";
         $code .= '    protected $tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
-        $code .= '    protected $fields = [\'' . implode('\', \'', $fieldNames) . '\']; // 字段列表' . "\n";
+        $code .= '    protected $fields = ' . var_export($formattedFields, true) . '; // 字段列表' . "\n";
+
+        foreach ($formattedFields as $key => $field) {
+            $code .= '    public $' . $field['field'] . ' = ' . ($field['isNumber'] ? $field['default'] : ('\'' . $field['default'] . '\'')) . ';';
+            if ($field->comment) $code .= ' // ' . $field['comment'];
+            $code .= "\n";
+        }
+
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = PATH_CACHE . '/Table/' . $app . '/' . $name . '.php';
+        $path = Be::getRuntime()->getPathCache() . '/Row/' . $app . '/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
+
 
     /**
      * 更新菜单
      *
      * @param string $menuName 菜单名
-     * @return bool 是否更新成功
+     * @throws \Exception
      */
     public function updateMenu($menuName)
     {
         $group = Be::getRow('System.MenuGroup');
         $group->load(array('className' => $menuName));
         if (!$group->id) {
-            $this->setError('未找到调用类名为 ' . $menuName . ' 的菜单！');
-            return false;
+            throw new ServiceException('未找到调用类名为 ' . $menuName . ' 的菜单！');
         }
 
         $menus = Be::getTable('System.Menu')
@@ -171,7 +112,7 @@ class Cache extends \Phpbe\System\Service
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\Menu;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $group->className . ' extends \\System\\Menu' . "\n";
+        $code .= 'class ' . $group->className . ' extends \\Phpbe\\System\\Menu' . "\n";
         $code .= '{' . "\n";
         $code .= '  public function __construct()' . "\n";
         $code .= '  {' . "\n";
@@ -224,109 +165,98 @@ class Cache extends \Phpbe\System\Service
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE . '/Menu/' . $group->className . '.php';
+        $path = Be::getRuntime()->getPathCache() . '/Menu/' . $group->className . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
 
     /**
      * 更新前台用户角色
      *
      * @param int $roleId 用户角色ID
-     * @return bool
+     * @throws \Exception
      */
     public function updateUserRole($roleId)
     {
         $row = Be::getRow('System.UserRole');
         $row->load($roleId);
         if (!$row->id) {
-            $this->setError('未找到指定编号（#' . $roleId . '）的用户角色！');
-            return false;
+            throw new ServiceException('未找到指定编号（#' . $roleId . '）的用户角色！');
         }
 
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\UserRole;' . "\n";
         $code .= "\n";
-        $code .= 'class UserRole' . $roleId . ' extends \\System\\Role' . "\n";
+        $code .= 'class UserRole' . $roleId . ' extends \\Phpbe\\System\\Role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \'' . $row->name . '\';' . "\n";
         $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
         $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE . '/UserRole/UserRole' . $roleId . '.php';
+        $path = Be::getRuntime()->getPathCache() . '/UserRole/UserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
 
     /**
      * 更新后台管理员角色
      *
      * @param int $roleId 管理员角色ID
-     * @return bool
+     * @throws \Exception
      */
     public function updateAdminUserRole($roleId)
     {
         $row = Be::getRow('System.AdminUserRole');
         $row->load($roleId);
         if (!$row->id) {
-            $this->setError('未找到指定编号（#' . $roleId . '）的管理员角色！');
-            return false;
+            throw new ServiceException('未找到指定编号（#' . $roleId . '）的管理员角色！');
         }
 
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\AdminUserRole;' . "\n";
         $code .= "\n";
-        $code .= 'class AdminUserRole' . $roleId . ' extends \\System\\Role' . "\n";
+        $code .= 'class AdminUserRole' . $roleId . ' extends \\Phpbe\\System\\Role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \'' . $row->name . '\';' . "\n";
         $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
         $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = PATH_CACHE . '/AdminUserRole/AdminUserRole' . $roleId . '.php';
+        $path = Be::getRuntime()->getPathCache() . '/AdminUserRole/AdminUserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
 
     /**
      * 更新自定义 html 内容
      *
      * @param string $class 调用类名
-     * @return bool 是否更新成功
+     * @throws \Exception
      */
     public function updateHtml($class)
     {
         $row = Be::getRow('System.Html');
         $row->load(array('class' => $class));
         if (!$row->id) {
-            $this->setError('未找到调用类名为 ' . $class . ' 的 html 内容！');
-            return false;
+            throw new ServiceException('未找到调用类名为 ' . $class . ' 的 html 内容！');
         }
 
-        $path = PATH_CACHE . '/Html/' . $class . '.html';
+        $path = Be::getRuntime()->getPathCache() . '/Html/' . $class . '.html';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         file_put_contents($path, $row->body, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
 
 
@@ -337,23 +267,21 @@ class Cache extends \Phpbe\System\Service
      * @param string $template 模析名
      * @param string $theme 主题名
      * @param bool $admin 是否是后台模析
-     * @return bool 是否更新成功
+     * @throws \Exception
      */
     public function updateTemplate($app, $template, $theme, $admin = false)
     {
         $fileTheme = ($admin ? PATH_ADMIN : Be::getRuntime()->getPathRoot()) . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
-            $this->setError('主题 ' . $theme . ' 不存在！');
-            return false;
+            throw new ServiceException('主题 ' . $theme . ' 不存在！');
         }
 
         $fileTemplate = Be::getRuntime()->getPathRoot() . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
         if (!file_exists($fileTemplate)) {
-            $this->setError('模板 ' . $template . ' 不存在！');
-            return false;
+            throw new ServiceException('模板 ' . $template . ' 不存在！');
         }
 
-        $path = PATH_CACHE . DS . ($admin ? 'AdminTemplate' : 'Template') . '/' . $theme . '/' . $app . '/' . str_replace('.', '/', $template) . '.php';
+        $path = Be::getRuntime()->getPathCache() . '/' . ($admin ? 'AdminTemplate' : 'Template') . '/' . $theme . '/' . $app . '/' . str_replace('.', '/', $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -502,7 +430,7 @@ class Cache extends \Phpbe\System\Service
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";
-        $codePhp .= 'class ' . $className . ' extends \\System\\Template' . "\n";
+        $codePhp .= 'class ' . $className . ' extends \\Phpbe\\System\\Template' . "\n";
         $codePhp .= '{' . "\n";
         $codePhp .= $codeVars;
         $codePhp .= "\n";
@@ -518,8 +446,6 @@ class Cache extends \Phpbe\System\Service
 
         file_put_contents($path, $codePhp, LOCK_EX);
         chmod($path, 0755);
-
-        return true;
     }
 
     /**
@@ -624,7 +550,7 @@ class Cache extends \Phpbe\System\Service
         }
         $buf .= "}\n";
 
-        return file_put_contents($path, $buf);
+        return file_put_contents($path, $buf, LOCK_EX);
     }
 
 

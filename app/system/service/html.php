@@ -90,24 +90,22 @@ class Html extends \Phpbe\System\Service
      * 公开
      *
      * @param string $ids 以逗号分隔的多个模块ID
-     * @return bool
+     * @throws \Exception
      */
     public function unblock($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
             $table = Be::getTable('System.Html');
-            if (!$table->where('id', 'in', $ids)->update(['block' => 0])) {
-                throw new \Exception($table->getError());
-            }
+            $table->where('id', 'in', $ids)->update(['block' => 0]);
 
             $objects = $table->where('id', 'in', $ids)->getObjects();
 
-            $dir = PATH_CACHE . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);
@@ -121,35 +119,30 @@ class Html extends \Phpbe\System\Service
         } catch (\Exception $e) {
             $db->rollback();
 
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 屏蔽
      *
      * @param string $ids 以逗号分隔的多个模块ID
-     * @return bool
+     * @throws \Exception
      */
     public function block($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
             $table = Be::getTable('System.Html');
-            if (!$table->where('id', 'in', $ids)->update(['block' => 1])) {
-                throw new \Exception($table->getError());
-            }
+            $table->where('id', 'in', $ids)->update(['block' => 1]);
 
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = PATH_CACHE . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Html';
             foreach ($classes as $class) {
                 $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
@@ -158,50 +151,40 @@ class Html extends \Phpbe\System\Service
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 删除
      *
      * @param string $ids 以逗号分隔的多个模块ID
-     * @return bool
+     * @throws \Exception
      */
     public function delete($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $ids = explode(',', $ids);
 
             $table = Be::getTable('System.Html');
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = PATH_CACHE . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Html';
             foreach ($classes as $class) {
                 $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
             }
 
-            if (!$table->where('id', 'in', $ids)->delete()) {
-                throw new \Exception($table->getError());
-            }
+            $table->where('id', 'in', $ids)->delete();
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
 

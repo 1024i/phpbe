@@ -12,58 +12,38 @@ class AdminUser extends AdminController
     // 登陆页面
     public function login()
     {
-        $my = Be::getAdminUser();
+        if (Request::isPost()) {
+            $username = Request::post('username', '');
+            $password = Request::post('password', '');
 
-        if ($my->id > 0) {
-            Response::redirect('./?app=System&controller=System&action=dashboard');
-        }
+            $ip = Request::ip();
+            try {
+                $serviceAdminUser = Be::getService('System.AdminUser');
+                $serviceAdminUser->login($username, $password, $ip);
+             } catch (\Exception $e) {
+                Response::error($e->getMessage());
+            }
 
-        Response::setTitle('登录');
-        Response::display();
-    }
+            Response::success('登录成功！');
 
-    // 登陆检查
-    public function ajaxLoginCheck()
-    {
-        $username = Request::post('username', '');
-        $password = Request::post('password', '');
-
-        if ($username == '') {
-            Response::set('error', 1);
-            Response::set('message', '请输入管理员名！');
-            Response::ajax();
-        }
-
-        if ($password == '') {
-            Response::set('error', 2);
-            Response::set('message', '请输入密码！');
-            Response::ajax();
-        }
-
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $user = $adminServiceAdminUser->login($username, $password);
-
-        if ($user) {
-            systemLog('登录后台');
-
-            Response::set('error', 0);
-            Response::set('message', '登录成功！');
-            Response::ajax();
         } else {
-            Response::set('error', 2);
-            Response::set('message', $adminServiceAdminUser->getError());
-            Response::ajax();
+
+            $my = Be::getAdminUser();
+            if ($my->id > 0) {
+                Response::redirect('./?app=System&controller=System&action=dashboard');
+            }
+
+            Response::setTitle('登录');
+            Response::display();
         }
     }
+
 
     // 退出登陆
     public function logout()
     {
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $adminServiceAdminUser->logout();
-
-        Response::setMessage('成功退出！');
-        Response::redirect('./?app=System&controller=AdminUser&action=login');
+        Be::getService('System.AdminUser')->logout();
+        Response::success('成功退出！', './?app=System&controller=AdminUser&action=login');
     }
 
     // 管理管理员列表
@@ -87,13 +67,13 @@ class AdminUser extends AdminController
         );
         if ($roleId > 0) $option['roleId'] = $roleId;
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System.AdminUser');
 
         Response::setTitle('管理员列表');
 
         $pagination = Be::getUi('Pagination');
         $pagination->setLimit($limit);
-        $pagination->setTotal($adminServiceAdminUser->getUserCount($option));
+        $pagination->setTotal($serviceAdminUser->getUserCount($option));
         $pagination->setPage(Request::post('page', 1, 'int'));
 
         Response::set('pagination', $pagination);
@@ -108,9 +88,9 @@ class AdminUser extends AdminController
         $option['offset'] = $pagination->getOffset();
         $option['limit'] = $limit;
 
-        Response::set('users', $adminServiceAdminUser->getUsers($option));
+        Response::set('users', $serviceAdminUser->getUsers($option));
 
-        Response::set('roles', $adminServiceAdminUser->getRoles());
+        Response::set('roles', $serviceAdminUser->getRoles());
         Response::display();
 
         $libHistory = Be::getLib('History');
@@ -120,141 +100,135 @@ class AdminUser extends AdminController
     // 修改管理员
     public function edit()
     {
-        $id = Request::request('id', 0, 'int');
+        if (Request::isPost()) {
+            $id = Request::post('id', 0, 'int');
 
-        $adminUser = Be::getRow('adminUser');
-        if ($id != 0) $adminUser->load($id);
-
-        if ($id != 0)
-            Response::setTitle('修改管理员资料');
-        else
-            Response::setTitle('添加新管理员');
-
-        Response::set('adminUser', $adminUser);
-
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        Response::set('roles', $adminServiceAdminUser->getRoles());
-
-        Response::display();
-    }
-
-    // 保存修改管理员
-    public function editSave()
-    {
-        $id = Request::post('id', 0, 'int');
-
-        if (Request::post('username', '') == '') {
-            Response::setMessage('请输入管理员名！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        if (Request::post('email', '') == '') {
-            Response::setMessage('请输入邮箱！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        $password = Request::post('password', '');
-        if ($password != Request::post('password2', '')) {
-            Response::setMessage('两次输入的密码不匹配！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        if ($id == 0 && $password == '') {
-            Response::setMessage('密码不能为空！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        $rowAdminUser = Be::getRow('adminUser');
-        if ($id > 0) $rowAdminUser->load($id);
-
-        $rowAdminUser->bind(Request::post());
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-
-        if (!$adminServiceAdminUser->isUsernameAvailable($rowAdminUser->username, $id)) {
-            Response::setMessage('管理员名(' . $rowAdminUser->username . ')已被占用！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        if (!$adminServiceAdminUser->isEmailAvailable($rowAdminUser->email, $id)) {
-            Response::setMessage('邮箱(' . $rowAdminUser->email . ')已被占用！', 'error');
-            Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
-        }
-
-        if ($password != '') {
-            $rowAdminUser->password = $adminServiceAdminUser->encryptPassword($password);
-        } else
-            unset($rowAdminUser->password);
-
-        if ($id == 0) {
-            $rowAdminUser->createTime = time();
-            $rowAdminUser->lastVisitTime = time();
-        } else {
-            unset($rowAdminUser->createTime);
-            unset($rowAdminUser->lastVisitTime);
-        }
-
-        $rowAdminUser->save();
-
-        $configUser = Be::getConfig('System.AdminUser');
-
-        $avatar = $_FILES['avatar'];
-        if ($avatar['error'] == 0) {
-            $libImage = Be::getLib('image');
-            $libImage->open($avatar['tmpName']);
-            if ($libImage->isImage()) {
-                $adminServiceAdminUser->deleteAvatarFile($rowAdminUser);
-
-                $t = date('YmdHis');
-
-                $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
-                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType());
-                $rowAdminUser->avatarL = $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType();
-
-                $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
-                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType());
-                $rowAdminUser->avatarM = $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType();
-
-                $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
-                $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType());
-                $rowAdminUser->avatarS = $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType();
-
-                $rowAdminUser->save();
+            if (Request::post('username', '') == '') {
+                Response::setMessage('请输入管理员名！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
             }
+
+            if (Request::post('email', '') == '') {
+                Response::setMessage('请输入邮箱！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
+            }
+
+            $password = Request::post('password', '');
+            if ($password != Request::post('password2', '')) {
+                Response::setMessage('两次输入的密码不匹配！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
+            }
+
+            if ($id == 0 && $password == '') {
+                Response::setMessage('密码不能为空！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
+            }
+
+            $rowAdminUser = Be::getRow('adminUser');
+            if ($id > 0) $rowAdminUser->load($id);
+
+            $rowAdminUser->bind(Request::post());
+            $serviceAdminUser = Be::getService('System.AdminUser');
+
+            if (!$serviceAdminUser->isUsernameAvailable($rowAdminUser->username, $id)) {
+                Response::setMessage('管理员名(' . $rowAdminUser->username . ')已被占用！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
+            }
+
+            if (!$serviceAdminUser->isEmailAvailable($rowAdminUser->email, $id)) {
+                Response::setMessage('邮箱(' . $rowAdminUser->email . ')已被占用！', 'error');
+                Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
+            }
+
+            if ($password != '') {
+                $rowAdminUser->password = $serviceAdminUser->encryptPassword($password);
+            } else
+                unset($rowAdminUser->password);
+
+            if ($id == 0) {
+                $rowAdminUser->createTime = time();
+                $rowAdminUser->lastVisitTime = time();
+            } else {
+                unset($rowAdminUser->createTime);
+                unset($rowAdminUser->lastVisitTime);
+            }
+
+            $rowAdminUser->save();
+
+            $configUser = Be::getConfig('System.AdminUser');
+
+            $avatar = $_FILES['avatar'];
+            if ($avatar['error'] == 0) {
+                $libImage = Be::getLib('image');
+                $libImage->open($avatar['tmpName']);
+                if ($libImage->isImage()) {
+                    $serviceAdminUser->deleteAvatarFile($rowAdminUser);
+
+                    $t = date('YmdHis');
+
+                    $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
+                    $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType());
+                    $rowAdminUser->avatarL = $rowAdminUser->id . '_' . $t . 'L.' . $libImage->getType();
+
+                    $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
+                    $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType());
+                    $rowAdminUser->avatarM = $rowAdminUser->id . '_' . $t . 'M.' . $libImage->getType();
+
+                    $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
+                    $libImage->save(Be::getRuntime()->getPathData() . '/adminUser/avatar/' .  $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType());
+                    $rowAdminUser->avatarS = $rowAdminUser->id . '_' . $t . 'S.' . $libImage->getType();
+
+                    $rowAdminUser->save();
+                }
+            }
+
+            Response::setMessage($id == 0 ? '成功添加新管理员！' : '成功修改管理员资料！');
+            systemLog($id == 0 ? ('添加新管理员：' . $rowAdminUser->username) : ('修改管理员(' . $rowAdminUser->username . ')资料'));
+
+            $libHistory = Be::getLib('History');
+            $libHistory->back();
+        } else {
+            $id = Request::request('id', 0, 'int');
+
+            $adminUser = Be::getRow('System.AdminUser');
+            if ($id != 0) $adminUser->load($id);
+
+            if ($id != 0)
+                Response::setTitle('修改管理员资料');
+            else
+                Response::setTitle('添加新管理员');
+
+            Response::set('adminUser', $adminUser);
+
+            $serviceAdminUser = Be::getService('System.AdminUser');
+            Response::set('roles', $serviceAdminUser->getRoles());
+
+            Response::display();
         }
-
-        Response::setMessage($id == 0 ? '成功添加新管理员！' : '成功修改管理员资料！');
-        systemLog($id == 0 ? ('添加新管理员：' . $rowAdminUser->username) : ('修改管理员(' . $rowAdminUser->username . ')资料'));
-
-        $libHistory = Be::getLib('History');
-        $libHistory->back();
     }
 
     public function checkUsername()
     {
         $username = Request::get('username', '');
-
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        echo $adminServiceAdminUser->isUsernameAvailable($username) ? 'true' : 'false';
+        echo Be::getService('System.AdminUser')->isUsernameAvailable($username) ? 'true' : 'false';
     }
 
     public function checkEmail()
     {
         $email = Request::get('email', '');
-
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        echo $adminServiceAdminUser->isEmailAvailable($email) ? 'true' : 'false';
+        echo Be::getService('System.AdminUser')->isEmailAvailable($email) ? 'true' : 'false';
     }
 
     public function unblock()
     {
         $ids = Request::post('id', '');
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        if ($adminServiceAdminUser->unblock($ids)) {
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        if ($serviceAdminUser->unblock($ids)) {
             Response::setMessage('启用管理员账号成功！');
             systemLog('启用管理员账号：#' . $ids);
         } else
-            Response::setMessage($adminServiceAdminUser->getError(), 'error');
+            Response::setMessage($serviceAdminUser->getError(), 'error');
 
         $libHistory = Be::getLib('History');
         $libHistory->back();
@@ -264,12 +238,12 @@ class AdminUser extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        if ($adminServiceAdminUser->block($ids)) {
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        if ($serviceAdminUser->block($ids)) {
             Response::setMessage('屏蔽管理员账号成功！');
             systemLog('屏蔽管理员账号：#' . $ids);
         } else
-            Response::setMessage($adminServiceAdminUser->getError(), 'error');
+            Response::setMessage($serviceAdminUser->getError(), 'error');
 
         $libHistory = Be::getLib('History');
         $libHistory->back();
@@ -279,15 +253,15 @@ class AdminUser extends AdminController
     {
         $userId = Request::get('userId', 0, 'int');
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        if ($adminServiceAdminUser->initAvatar($userId)) {
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        if ($serviceAdminUser->initAvatar($userId)) {
             systemLog('删除 #' . $userId . ' 管理员头像');
 
             Response::set('error', 0);
             Response::set('message', '删除头像成功！');
         } else {
             Response::set('error', 2);
-            Response::set('message', $adminServiceAdminUser->getError());
+            Response::set('message', $serviceAdminUser->getError());
         }
 
         Response::ajax();
@@ -298,12 +272,12 @@ class AdminUser extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        if ($adminServiceAdminUser->delete($ids)) {
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        if ($serviceAdminUser->delete($ids)) {
             Response::setMessage('删除管理员账号成功！');
             systemLog('删除管理员账号：#' . $ids);
         } else
-            Response::setMessage($adminServiceAdminUser->getError(), 'error');
+            Response::setMessage($serviceAdminUser->getError(), 'error');
 
         $libHistory = Be::getLib('History');
         $libHistory->back();
@@ -312,11 +286,11 @@ class AdminUser extends AdminController
 
     public function roles()
     {
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $roles = $adminServiceAdminUser->getRoles();
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        $roles = $serviceAdminUser->getRoles();
 
         foreach ($roles as $role) {
-            $role->userCount = $adminServiceAdminUser->getUserCount(array('roleId' => $role->id));
+            $role->userCount = $serviceAdminUser->getUserCount(array('roleId' => $role->id));
         }
 
         Response::setTitle('管理员角色');
@@ -348,8 +322,8 @@ class AdminUser extends AdminController
             }
         }
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $adminServiceAdminUser->updateAdminUserRoles();
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser->updateAdminUserRoles();
 
         systemLog('修改后台管理员组');
 
@@ -444,8 +418,8 @@ class AdminUser extends AdminController
 
         $rowAdminUserRole->save();
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $adminServiceAdminUser->updateAdminUserRole($roleId);
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser->updateAdminUserRole($roleId);
 
         systemLog('修改管理员组(' . $rowAdminUserRole->name . ')权限');
 
@@ -471,12 +445,12 @@ class AdminUser extends AdminController
             'success' => $success
         );
 
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System.AdminUser');
         Response::setTitle('登陆日志');
 
         $pagination = Be::getUi('Pagination');
         $pagination->setLimit($limit);
-        $pagination->setTotal($adminServiceAdminUser->getLogCount($option));
+        $pagination->setTotal($serviceAdminUser->getLogCount($option));
         $pagination->setPage(Request::post('page', 1, 'int'));
 
         $option['offset'] = $pagination->getOffset();
@@ -485,7 +459,7 @@ class AdminUser extends AdminController
         Response::set('pagination', $pagination);
         Response::set('key', $key);
         Response::set('success', $success);
-        Response::set('logs', $adminServiceAdminUser->getLogs($option));
+        Response::set('logs', $serviceAdminUser->getLogs($option));
 
         Response::display();
     }
@@ -493,8 +467,8 @@ class AdminUser extends AdminController
     // 后台登陆日志
     public function ajaxDeleteLogs()
     {
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
-        $adminServiceAdminUser->deleteLogs();
+        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser->deleteLogs();
 
         systemLog('删除管理员登陆日志');
 
@@ -513,13 +487,13 @@ class AdminUser extends AdminController
 
     public function settingSave()
     {
-        $adminConfigAdminUser = Be::getConfig('System.AdminUser');
-        $adminConfigAdminUser->avatarSW = Request::post('avatarSW', 0, 'int');
-        $adminConfigAdminUser->avatarSH = Request::post('avatarSH', 0, 'int');
-        $adminConfigAdminUser->avatarMW = Request::post('avatarMW', 0, 'int');
-        $adminConfigAdminUser->avatarMH = Request::post('avatarMH', 0, 'int');
-        $adminConfigAdminUser->avatarLW = Request::post('avatarLW', 0, 'int');
-        $adminConfigAdminUser->avatarLH = Request::post('avatarLH', 0, 'int');
+        $configAdminUser = Be::getConfig('System.AdminUser');
+        $configAdminUser->avatarSW = Request::post('avatarSW', 0, 'int');
+        $configAdminUser->avatarSH = Request::post('avatarSH', 0, 'int');
+        $configAdminUser->avatarMW = Request::post('avatarMW', 0, 'int');
+        $configAdminUser->avatarMH = Request::post('avatarMH', 0, 'int');
+        $configAdminUser->avatarLW = Request::post('avatarLW', 0, 'int');
+        $configAdminUser->avatarLH = Request::post('avatarLH', 0, 'int');
 
         // 缩图图大图
         $defaultAvatarL = $_FILES['defaultAvatarL'];
@@ -530,8 +504,8 @@ class AdminUser extends AdminController
                 $defaultAvatarLName = date('YmdHis') . 'L.' . $libImage->getType();
                 $defaultAvatarLPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarLName;
                 if (move_uploaded_file($defaultAvatarL['tmpName'], $defaultAvatarLPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarL);
-                    $adminConfigAdminUser->defaultAvatarL = $defaultAvatarLName;
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$configAdminUser->defaultAvatarL);
+                    $configAdminUser->defaultAvatarL = $defaultAvatarLName;
                 }
             }
         }
@@ -546,8 +520,8 @@ class AdminUser extends AdminController
                 $defaultAvatarMName = date('YmdHis') . 'M.' . $libImage->getType();
                 $defaultAvatarMPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarMName;
                 if (move_uploaded_file($defaultAvatarM['tmpName'], $defaultAvatarMPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarM);
-                    $adminConfigAdminUser->defaultAvatarM = $defaultAvatarMName;
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$configAdminUser->defaultAvatarM);
+                    $configAdminUser->defaultAvatarM = $defaultAvatarMName;
                 }
             }
         }
@@ -561,14 +535,14 @@ class AdminUser extends AdminController
                 $defaultAvatarSName = date('YmdHis') . 'S.' . $libImage->getType();
                 $defaultAvatarSPath = Be::getRuntime()->getPathData() . '/adminUser/avatar/Default/' .  $defaultAvatarSName;
                 if (move_uploaded_file($defaultAvatarS['tmpName'], $defaultAvatarSPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$adminConfigAdminUser->defaultAvatarS);
-                    $adminConfigAdminUser->defaultAvatarS = $defaultAvatarSName;
+                    // @unlink(Be::getRuntime()->getPathData().'/user/avatar/default/'.$configAdminUser->defaultAvatarS);
+                    $configAdminUser->defaultAvatarS = $defaultAvatarSName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($adminConfigAdminUser, Be::getRuntime()->getPathData() . '/adminConfig/adminUser.php');
+        $serviceSystem->updateConfig($configAdminUser, Be::getRuntime()->getPathData() . '/adminConfig/adminUser.php');
 
         systemLog('设置管理员系统参数');
 

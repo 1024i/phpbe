@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail extends \Phpbe\System\Service
@@ -69,7 +70,7 @@ class Mail extends \Phpbe\System\Service
     public function cc($email, $name = '')
     {
         if (!$this->mailer->AddCC($email, $name)) {
-            throw new \Exception($this->mailer->ErrorInfo);
+            throw new ServiceException($this->mailer->ErrorInfo);
         }
     }
 
@@ -78,7 +79,7 @@ class Mail extends \Phpbe\System\Service
     public function bcc($email, $name = '')
     {
         if (!$this->mailer->AddBCC($email, $name)) {
-            throw new \Exception($this->mailer->ErrorInfo);
+            throw new ServiceException($this->mailer->ErrorInfo);
         }
     }
 
@@ -86,7 +87,7 @@ class Mail extends \Phpbe\System\Service
     public function addAttachment($path)
     {
         if (!$this->mailer->AddAttachment($path)) {
-            throw new \Exception($this->mailer->ErrorInfo);
+            throw new ServiceException($this->mailer->ErrorInfo);
         }
     }
 
@@ -123,7 +124,7 @@ class Mail extends \Phpbe\System\Service
     public function send()
     {
         if (!$this->mailer->Send()) {
-            throw new \Exception($this->mailer->ErrorInfo);
+            throw new ServiceException($this->mailer->ErrorInfo);
         }
     }
 

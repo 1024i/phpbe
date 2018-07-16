@@ -4,6 +4,7 @@ namespace App\System\Service;
 use Phpbe\System\Be;
 use Phpbe\System\Session;
 use Phpbe\System\Service;
+use Phpbe\System\Service\ServiceException;
 
 /**
  */
@@ -50,14 +51,12 @@ class FileManager extends Service
         if ($absPath == false) return false;
 
         if (strpos($dirName, '/') !== false) {
-            $this->setError('文件夹名称不合法！');
-            return false;
+            throw new ServiceException('文件夹名称不合法！');
         }
 
         $dirPath = $absPath . '/' . $dirName;
         if (file_exists($dirPath)) {
-            $this->setError('已存在名称为 ' . $dirName . ' 的文件夹！');
-            return false;
+            throw new ServiceException('已存在名称为 ' . $dirName . ' 的文件夹！');
         }
 
         mkdir($dirPath, 0777, true);
@@ -82,25 +81,21 @@ class FileManager extends Service
         if ($absPath == false) return false;
 
         if (strpos($oldDirName, '/') !== false || strpos($newDirName, '/') !== false) {
-            $this->setError('文件夹名称不合法！');
-            return false;
+            throw new ServiceException('文件夹名称不合法！');
         }
 
         $srcPath = $absPath . '/' . $oldDirName;
         if (!file_exists($srcPath)) {
-            $this->setError('文件夹 ' . $oldDirName . ' 不存在！');
-            return false;
+            throw new ServiceException('文件夹 ' . $oldDirName . ' 不存在！');
         }
 
         $dstPath = $absPath . '/' . $newDirName;
         if (file_exists($dstPath)) {
-            $this->setError('已存在名称为 ' . $newDirName . ' 的文件夹！');
-            return false;
+            throw new ServiceException('已存在名称为 ' . $newDirName . ' 的文件夹！');
         }
 
         if (!rename($srcPath, $dstPath)) {
-            $this->setError('重命名文件夹失败！');
-            return false;
+            throw new ServiceException('重命名文件夹失败！');
         }
 
         return true;
@@ -113,8 +108,7 @@ class FileManager extends Service
         if ($absFilePath == false) return false;
 
         if (!unlink($absFilePath)) {
-            $this->setError('删除文件失败，请检查是否有权限！');
-            return false;
+            throw new ServiceException('删除文件失败，请检查是否有权限！');
         }
 
         return true;
@@ -127,32 +121,27 @@ class FileManager extends Service
         if ($absPath == false) return false;
 
         if (strpos($oldFileName, '/') !== false || strpos($newFileName, '/') !== false) {
-            $this->setError('文件名称不合法！');
-            return false;
+            throw new ServiceException('文件名称不合法！');
         }
 
         $srcPath = $absPath . '/' . $oldFileName;
         if (!file_exists($srcPath)) {
-            $this->setError('文件 ' . $oldFileName . ' 不存在！');
-            return false;
+            throw new ServiceException('文件 ' . $oldFileName . ' 不存在！');
         }
 
         $type = strtolower(substr(strrchr($newFileName, '.'), 1));
         $config = Be::getConfig('System.System');
         if (!in_array($type, $config->allowUploadFileTypes)) {
-            $this->setError('不允许的文件格式！');
-            return false;
+            throw new ServiceException('不允许的文件格式！');
         }
 
         $dstPath = $absPath . '/' . $newFileName;
         if (file_exists($dstPath)) {
-            $this->setError('文件 ' . $newFileName . ' 已存在！');
-            return false;
+            throw new ServiceException('文件 ' . $newFileName . ' 已存在！');
         }
 
         if (!rename($srcPath, $dstPath)) {
-            $this->setError('修改文件名失败，请检查名称是否合法！');
-            return false;
+            throw new ServiceException('修改文件名失败，请检查名称是否合法！');
         }
 
         return true;
@@ -165,20 +154,17 @@ class FileManager extends Service
 
         // 禁止用户查看其它目录
         if (strpos($path, './') != false) {
-            $this->setError('路径不合法！');
-            return false;
+            throw new ServiceException('路径不合法！');
         }
 
         if (substr($path, -1, 1) == '/') {
-            $this->setError('路径不合法！');
-            return false;
+            throw new ServiceException('路径不合法！');
         }
 
         // 绝对路径
         $absPath = Be::getRuntime()->getPathData() . str_replace('/', DS, $path);
         if (!is_dir($absPath)) {
-            $this->setError('路径不存在！');
-            return false;
+            throw new ServiceException('路径不存在！');
         }
 
         return $absPath;
@@ -191,14 +177,12 @@ class FileManager extends Service
         if ($absPath == false) return false;
 
         if (strpos($dirName, '/') !== false) {
-            $this->setError('文件夹名称不合法！');
-            return false;
+            throw new ServiceException('文件夹名称不合法！');
         }
 
         $absDirPath = $absPath . '/' . $dirName;
         if (!file_exists($absDirPath) || !is_dir($absDirPath)) {
-            $this->setError('文件夹 ' . $dirName . ' 不存在！');
-            return false;
+            throw new ServiceException('文件夹 ' . $dirName . ' 不存在！');
         }
 
         return $absDirPath;
@@ -211,14 +195,12 @@ class FileManager extends Service
         if ($absPath == false) return false;
 
         if (strpos($fileName, '/') !== false) {
-            $this->setError('文件名称不合法！');
-            return false;
+            throw new ServiceException('文件名称不合法！');
         }
 
         $absFilePath = $absPath . '/' . $fileName;
         if (!file_exists($absFilePath) || is_dir($absFilePath)) {
-            $this->setError('文件 ' . $fileName . ' 不存在！');
-            return false;
+            throw new ServiceException('文件 ' . $fileName . ' 不存在！');
         }
 
         return $absFilePath;

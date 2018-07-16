@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 use Phpbe\System\Session;
 use Phpbe\System\Request;
 
@@ -68,7 +69,7 @@ class UserConnectQq extends \Phpbe\System\Service
             $msg = json_decode($response);
 
             if (isset($msg->error)) {
-                throw new \Exception($msg->error . ': ' . $msg->errorDescription);
+                throw new ServiceException($msg->error . ': ' . $msg->errorDescription);
             }
         }
 
@@ -96,7 +97,7 @@ class UserConnectQq extends \Phpbe\System\Service
 
         $response = json_decode($response);
         if (isset($response->error)) {
-            throw new \Exception($response->error . ': ' . $response->errorDescription);
+            throw new ServiceException($response->error . ': ' . $response->errorDescription);
         }
 
         return $response->openid;
@@ -116,7 +117,7 @@ class UserConnectQq extends \Phpbe\System\Service
         $response = json_decode($response);
 
         if ($response->ret != 0) {
-            throw new \Exception($response->msg);
+            throw new ServiceException($response->msg);
         }
 
         return $response;

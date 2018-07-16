@@ -2,27 +2,45 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service;
+use Phpbe\System\Service\ServiceException;
 use Phpbe\System\Session;
 use Phpbe\System\Cookie;
+use Phpbe\Util\Random;
 
-class AdminUser extends \Phpbe\System\Service
+class AdminUser extends Service
 {
 
     /**
      * 登录
      * @param string $username 用户名
      * @param string $password 密码
-     * @return bool|\stdClass
+     * @param string $ip IP 地址
+     * @return \stdClass
+     * @throws \Exception
      */
-    public function login($username, $password)
+    public function login($username, $password, $ip)
     {
-        $ip = $_SERVER["REMOTE_ADDR"];
+        $username = trim($username);
+        if (!$username) {
+            throw new ServiceException('参数用户名或邮箱（username）缺失！');
+        }
+
+        $password = trim($password);
+        if (!$password) {
+            throw new ServiceException('参数密码（password）缺失！');
+        }
+
+        $ip = trim($ip);
+        if (!$ip) {
+            throw new ServiceException('参数IP（$ip）缺失！');
+        }
+
         $times = Session::get($ip);
         if (!$times) $times = 0;
         $times++;
-        if ($times > 100) {
-            $this->setError('登陆失败次数过多，请稍后再试！');
-            return false;
+        if ($times > 10) {
+            throw new ServiceException('登陆失败次数过多，请稍后再试！');
         }
         Session::set($ip, $times);
 
@@ -31,74 +49,94 @@ class AdminUser extends \Phpbe\System\Service
         $rowAdminUserAdminLog->ip = $ip;
         $rowAdminUserAdminLog->create_time = time();
 
-        $rowAdminUser = Be::getRow('adminUser');
-        $rowAdminUser->load('username', $username);
+        $db = Be::getDb();
+        $db->beginTransaction();
+        try {
 
-        $result = false;
-        if ($rowAdminUser->id) {
-            if ($rowAdminUser->password == $this->encryptPassword($password)) {
-                if ($rowAdminUser->block == 1) {
-                    $rowAdminUserAdminLog->description = '管理员账号已被停用！';
-                    $this->setError('管理员账号已被停用！');
+            $rowAdminUser = Be::getRow('System.AdminUser');
+            $rowAdminUser->load('username', $username);
+
+            if ($rowAdminUser->id == 0) {
+                $rowAdminUser->load(['email' => $username]);
+            }
+
+            if ($rowAdminUser->id > 0) {
+
+                $password = $this->encryptPassword($password, $rowAdminUser->salt);
+
+                if ($rowAdminUser->password == $password) {
+                    if ($rowAdminUser->block == 1) {
+                        throw new ServiceException('管理员账号已被停用！');
+                    } else {
+                        session::delete($ip);
+                        Session::set('_admin_user', $rowAdminUser->toObject());
+
+                        $rowAdminUserAdminLog->success = 1;
+                        $rowAdminUserAdminLog->description = '登陆成功！';
+
+                        $rememberMeToken = null;
+                        do {
+                            $rememberMeToken = Random::complex(32);
+                        } while (Be::getRow('System.AdminUser')->where('remember_me_token', $rememberMeToken)->count() > 0);
+
+                        $rowAdminUser->last_login_time = time();
+                        $rowAdminUser->remember_me_token = $rememberMeToken;
+                        $rowAdminUser->save();
+
+                        cookie::setExpire(time() + 30 * 86400);
+                        cookie::set('_admin_remember_me', $rememberMeToken);
+
+                    }
                 } else {
-                    session::delete($ip);
-                    $beAdminUser = Be::getAdminUser($rowAdminUser->id);
-
-                    Session::set('AdminUser', $beAdminUser);
-
-                    $rowAdminUserAdminLog->success = 1;
-                    $rowAdminUserAdminLog->description = '登陆成功！';
-
-                    $rowAdminUser->last_login_time = time();
-                    $rowAdminUser->save();
-
-                    $adminConfigAdminUser = Be::getConfig('System.AdminUser');
-                    $rememberMeAdmin = $username . '|||' . $this->encryptPassword($rowAdminUser->password);
-                    $rememberMeAdmin = $this->rc4($rememberMeAdmin, $adminConfigAdminUser->remember_me_key);
-                    $rememberMeAdmin = base64_encode($rememberMeAdmin);
-                    cookie::setExpire(time() + 30 * 86400);
-                    cookie::set('_remember_me_admin', $rememberMeAdmin);
-                    $result = $beAdminUser;
+                    throw new ServiceException('密码错误！');
                 }
             } else {
-                $rowAdminUserAdminLog->description = '密码错误！';
-                $this->setError('密码错误！');
+                throw new ServiceException('管理员名不存在！');
             }
-        } else {
-            $rowAdminUserAdminLog->description = '管理员名不存在！';
-            $this->setError('管理员名不存在！');
+
+            $rowAdminUserAdminLog->save();
+
+            $db->commit();
+            return $rowAdminUser;
+
+        } catch (\Exception $e) {
+            $db->rollback();
+
+            $rowAdminUserAdminLog->description = $e->getMessage();
+            $rowAdminUserAdminLog->save();
+            throw $e;
         }
-        $rowAdminUserAdminLog->save();
-        return $result;
     }
 
     /**
      * 记住我
      *
-     * @return bool|mixed|\system\row
+     * @throws \Exception
+     * @return bool | \Phpbe\System\Db\Row
      */
     public function rememberMe()
     {
-        if (cookie::has('_remember_me_admin')) {
-            $rememberMeAdmin = cookie::get('_remember_me_admin', '');
-            if ($rememberMeAdmin) {
-                $adminConfigAdminUser = Be::getConfig('System.AdminUser');
-                $rememberMeAdmin = base64_decode($rememberMeAdmin);
-                $rememberMeAdmin = $this->rc4($rememberMeAdmin, $adminConfigAdminUser->rememberMeKey);
-                $rememberMeAdmin = explode('|||', $rememberMeAdmin);
-                if (count($rememberMeAdmin) == 2) {
-                    $username = $rememberMeAdmin[0];
-                    $password = $rememberMeAdmin[0];
+        if (cookie::has('_admin_remember_me')) {
+            $adminRememberMe = cookie::get('_admin_remember_me', '');
+            if ($adminRememberMe) {
+                $rowAdminUser = Be::getRow('System.AdminUser');
+                $rowAdminUser->load('remember_me_token', $adminRememberMe);
+                if ($rowAdminUser->id && $rowAdminUser->block == 0) {
+                    Session::set('_admin_user', Be::getAdminUser($rowAdminUser->id));
 
-                    $rowAdminUser = Be::getRow('adminUser');
-                    $rowAdminUser->load('username', $username);
-
-                    if ($rowAdminUser->id && $this->encryptPassword($rowAdminUser->password) == $password && $rowAdminUser->block == 0) {
-                        Session::set('AdminUser', Be::getAdminUser($rowAdminUser->id));
+                    $db = Be::getDb();
+                    $db->beginTransaction();
+                    try {
 
                         $rowAdminUser->lastLoginTime = time();
                         $rowAdminUser->save();
+
+                        $db->commit();
                         return $rowAdminUser;
+
+                    } catch (\Exception $e) {
+                        $db->rollback();
+                        throw $e;
                     }
                 }
             }
@@ -109,13 +147,12 @@ class AdminUser extends \Phpbe\System\Service
     /**
      * 退出
      *
-     * @return bool
+     * @throws ServiceException
      */
     public function logout()
     {
         session::delete('_admin_user');
-        cookie::delete('_remember_me_admin');
-        return true;
+        cookie::delete('_admin_remember_me');
     }
 
     /**
@@ -192,96 +229,71 @@ class AdminUser extends \Phpbe\System\Service
      * 屏蔽管理员账号
      *
      * @param string $ids 以逗号分隔的多个管理员ID
-     * @return bool
+     * @throws \Exception
      */
     public function unblock($ids)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.AdminUser');
-            if (!$table->where('id', 'in', explode(',', $ids))
-                ->update(['block' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
+            Be::getTable('System.AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 启用管理员账号
      *
      * @param string $ids 以逗号分隔的多个管理员ID
-     * @return bool
+     * @throws \Exception
      */
     public function block($ids)
     {
         $array = explode(',', $ids);
         if (in_array(1, $array)) {
-            $this->setError('默认管理员不能屏蔽');
-            return false;
+            throw new ServiceException('默认管理员不能屏蔽');
         }
 
         $my = Be::getAdminUser();
         if (in_array($my->id, $array)) {
-            $this->setError('不能屏蔽自已');
-            return false;
+            throw new ServiceException('不能屏蔽自已');
         }
 
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.AdminUser');
-            if (!$table->where('id', 'in', $array)
-                ->update(['block' => 1])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
+            Be::getTable('System.AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-        return true;
     }
 
     /**
      * 删除管理员账号
      *
      * @param string $ids 以逗号分隔的多个管理员ID
-     * @return bool
+     * @throws \Exception
      */
     public function delete($ids)
     {
         $array = explode(',', $ids);
         if (in_array(1, $array)) {
-            $this->setError('默认管理员不能删除');
-            return false;
+            throw new ServiceException('默认管理员不能删除');
         }
 
         $my = Be::getAdminUser();
         if (in_array($my->id, $array)) {
-            $this->setError('不能删除自已');
-            return false;
+            throw new ServiceException('不能删除自已');
         }
 
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $files = [];
 
@@ -291,13 +303,11 @@ class AdminUser extends \Phpbe\System\Service
                 $rowAdminUser = Be::getRow('System.AdminUser');
                 $rowAdminUser->load($id);
 
-                if ($rowAdminUser->avatar_s != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
-                if ($rowAdminUser->avatar_m != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
-                if ($rowAdminUser->avatar_l != '') $files[] = PATH_CACHE . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
+                if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
+                if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
+                if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
 
-                if (!$rowAdminUser->delete()) {
-                    throw new \Exception($rowAdminUser->getError());
-                }
+                $rowAdminUser->delete();
             }
 
             $db->commit();
@@ -308,41 +318,35 @@ class AdminUser extends \Phpbe\System\Service
 
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
      * 初始化管理员头像
      *
      * @param int $userId 管理员ID
-     * @return bool
+     * @throws \Exception
      */
     public function initAvatar($userId)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
 
             $rowAdminUser = Be::getRow('System.AdminUser');
             $rowAdminUser->load($userId);
 
             $files = [];
-            if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_s;
-            if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_m;
-            if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' .  $rowAdminUser->avatar_l;
+            if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
+            if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
+            if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
 
             $rowAdminUser->avatar_s = '';
             $rowAdminUser->avatar_m = '';
             $rowAdminUser->avatar_l = '';
 
-            if (!$rowAdminUser->save()) {
-                throw new \Exception($rowAdminUser->getError());
-            }
+            $rowAdminUser->save();
 
             $db->commit();
 
@@ -352,12 +356,8 @@ class AdminUser extends \Phpbe\System\Service
 
         } catch (\Exception $e) {
             $db->rollback();
-
-            $this->setError($e->getMessage());
-            return false;
+            throw $e;
         }
-
-        return true;
     }
 
     /**
@@ -467,80 +467,31 @@ class AdminUser extends \Phpbe\System\Service
     /**
      * 删除三个月(90天)前的后台管理员登陆日志
      *
-     * @return bool
+     * @throws \Exception
      */
     public function deleteLogs()
     {
-        $table = Be::getTable('System.AdminUserLog');
-        if (!$table->where('create_time', '<', time() - 90 * 86400)
-            ->delete()
-        ) {
-            $this->setError($table->getError());
-            return false;
+        $db = Be::getDb();
+        $db->beginTransaction();
+        try {
+            Be::getTable('System.AdminUserLog')->where('create_time', '<', time() - 90 * 86400)->delete();
+            $db->commit();
+        } catch (\Exception $e) {
+            $db->rollback();
+            throw $e;
         }
-        return true;
     }
 
     /**
      * 管理员密码加密算法
      *
      * @param string $password 密码
+     * @param string $salt 盐值
      * @return string
      */
-    public function encryptPassword($password)
+    public function encryptPassword($password, $salt)
     {
-        // return md5($password.md5('BE'));
-        return md5($password . 'd3dcf429c679f9af82eb9a3b31c4df44');
-    }
-
-    /**
-     * 文本加密与解密
-     *
-     * @param string $txt 需要加解密的文本
-     * @param string $pwd 加密解密文本密码
-     * @param int $level 加密级别 1=简单线性加密, >1 = RC4加密数字越大越安全越慢, 默认=256
-     *
-     * @return string 加密或解密后的明码字符串
-     */
-    public function rc4($txt, $pwd, $level = 256)
-    {
-        $result = '';
-        $kL = strlen($pwd);
-        $tL = strlen($txt);
-
-        $key = array();
-        $box = array();
-
-        if ($level > 1) {                                                                                               //非线性加密
-            for ($i = 0; $i < $level; ++$i) {
-                $key[$i] = ord($pwd[$i % $kL]);
-                $box[$i] = $i;
-            }
-
-            for ($j = $i = 0; $i < $level; ++$i) {
-                $j = ($j + $box[$i] + $key[$i]) % $level;
-                $tmp = $box[$i];
-                $box[$i] = $box[$j];
-                $box[$j] = $tmp;
-            }
-
-            for ($a = $j = $i = 0; $i < $tL; ++$i) {
-                $a = ($a + 1) % $level;
-                $j = ($j + $box[$a]) % $level;
-
-                $tmp = $box[$a];
-                $box[$a] = $box[$j];
-                $box[$j] = $tmp;
-
-                $k = $box[($box[$a] + $box[$j]) % $level];
-                $result .= chr(ord($txt[$i]) ^ $k);
-            }
-        } else {                                                                                                        //简单线性加密
-            for ($i = 0; $i < $tL; ++$i) {
-                $result .= $txt[$i] ^ $pwd[$i % $kL];
-            }
-        }
-        return $result;
+        return sha1(sha1($password) . $salt);
     }
 
     /**

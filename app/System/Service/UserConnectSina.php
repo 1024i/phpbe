@@ -46,7 +46,7 @@ class UserConnectSina extends \Phpbe\System\Service
 	public function callback()
 	{
 		if (Request::get('state', '')!=Session::get('user_connect_sina_state')) {
-            throw new \Exception('返回信息被篡改！');
+            throw new ServiceException('返回信息被篡改！');
 		}
 
         $url = 'https://api.weibo.com/oauth2/accessToken';
@@ -63,7 +63,7 @@ class UserConnectSina extends \Phpbe\System\Service
 		$response = json_decode($response);
 
 		if (isset($response->error)) {
-            throw new \Exception($response->errorCode.': '.$response->error);
+            throw new ServiceException($response->errorCode.': '.$response->error);
 		}
 
 		return $response->accessToken;
@@ -79,7 +79,7 @@ class UserConnectSina extends \Phpbe\System\Service
         $response = json_decode($response);
 
         if (isset($response->error)) {
-            throw new \Exception($response->errorCode.': '.$response->error);
+            throw new ServiceException($response->errorCode.': '.$response->error);
         }
 
         return $response->uid;
@@ -98,7 +98,7 @@ class UserConnectSina extends \Phpbe\System\Service
 		$response = json_decode($response);
 
         if (isset($response->error)) {
-            throw new \Exception($response->errorCode.': '.$response->error);
+            throw new ServiceException($response->errorCode.': '.$response->error);
         }
 
 		return $response;

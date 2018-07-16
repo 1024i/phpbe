@@ -3,6 +3,7 @@ namespace App\System\Service;
 
 use Phpbe\System\Be;
 use Phpbe\System\Service;
+use Phpbe\System\Service\ServiceException;
 
 class menu extends Service
 {
@@ -30,21 +31,10 @@ class menu extends Service
     public function deleteMenu($menuId)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Menu');
-            if (!$table->where('parent_id', $menuId)
-                ->update(['parent_id' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $row = Be::getRow('System.Menu');
-            if (!$row->delete($menuId)) {
-                throw new \Exception($row->getError());
-            }
-
+            Be::getTable('System.Menu')->where('parent_id', $menuId)->update(['parent_id' => 0]);
+            Be::getRow('System.Menu')->delete($menuId);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -61,22 +51,10 @@ class menu extends Service
     public function setHomeMenu($menuId)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Menu');
-            if (!$table->where('home', 1)
-                ->update(['home' => 0])
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $table = Be::getTable('System.Menu');
-            if (!$table->where('id', $menuId)
-                ->update(['home' => 1])
-            ) {
-                throw new \Exception($table->getError());
-            }
+            Be::getTable('System.Menu')->where('home', 1)->update(['home' => 0]);
+            Be::getTable('System.Menu')->where('id', $menuId)->update(['home' => 1]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -113,20 +91,10 @@ class menu extends Service
     public function deleteMenuGroup($groupId)
     {
         $db = Be::getDb();
+        $db->beginTransaction();
         try {
-            $db->beginTransaction();
-
-            $table = Be::getTable('System.Menu');
-            if (!$table->where('group_id', $groupId)
-                ->delete()
-            ) {
-                throw new \Exception($table->getError());
-            }
-
-            $row = Be::getRow('System.MenuGroup');
-            if (!$row->delete($groupId)) {
-                throw new \Exception($row->getError());
-            }
+            Be::getTable('System.Menu')->where('group_id', $groupId)->delete();
+            Be::getRow('System.MenuGroup')->delete($groupId);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();

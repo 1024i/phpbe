@@ -35,7 +35,7 @@ class User
     public $registerMailToAdminBody = '您好管理员，<br /><br />一个新用户在{siteName}注册。<br />账号信息如下：<br /><br />名称：{name}<br />邮箱：{email}<br />用户名：{username}。';
 
     public $forgotPasswordMailSubject = '找回您在{siteName}的密码';
-    public $forgotPasswordMailBody = '您好，<br /><br />您请求重设在{siteName}的账号密码。点击以下链接重置密码：<br /><br /><a href="{activationUrl}" target="Blank">{activationUrl}</a>';
+    public $forgotPasswordMailBody = '您好，<br /><br />您请求重设在{siteName}的账号密码。点击以下链接重置密码：<br /><br /><a href="{resetPasswordUrl}" target="Blank">{resetPasswordUrl}</a>';
 
     public $forgotPasswordResetMailSubject = '重设您在{siteName}上的密码成功';
     public $forgotPasswordResetMailBody = '您好,<br /><br />您的密码重设成功。您现在可以使用您的新密码登陆<a href="{siteUrl}" target="Blank">{siteName}</a>。';

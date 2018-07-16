@@ -119,7 +119,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Phpbe\System\Row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Db\Row | mixed $rowArticle 当前文章
      * @param int $n 查询出最多多少条记录
      * @return array
      */
@@ -155,7 +155,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Phpbe\System\Row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Db\Row | mixed $rowArticle 当前文章
      * @param array $keywords 关键词
      * @param int $n 查询出最多多少条记录
      * @return array

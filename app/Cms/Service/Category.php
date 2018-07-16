@@ -135,7 +135,7 @@ class Category extends Service
      * 获取分类
      *
      * @param $categoryId
-     * @return \Phpbe\System\Row
+     * @return \Phpbe\System\Db\Row
      */
     public function getCategory($categoryId) {
         $rowCategory = Be::getRow('Cms.Category');
@@ -146,7 +146,7 @@ class Category extends Service
     /**
      * 获取指定分类的最高父级分类
      * @param $categoryId
-     * @return mixed | null | \Phpbe\System\Row
+     * @return mixed | null | \Phpbe\System\Db\Row
      */
     public function getTopParentCategory($categoryId) {
         $rowCategory = Be::getRow('Cms.Category');

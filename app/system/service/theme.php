@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 
 class Theme extends \Phpbe\System\Service
 {
@@ -72,19 +73,19 @@ class Theme extends \Phpbe\System\Service
     {
         $dir = Be::getRuntime()->getPathRoot() . '/theme/' .  $theme->name;
         if (file_exists($dir)) {
-            throw new \Exception('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
+            throw new ServiceException('安装主题所需要的文件夹（/theme/' . $theme->name . '/）已被占用，请删除后重新安装！');
         }
 
         $libHttp = Be::getLib('Http');
         $Response = $libHttp->get($this->beApi . 'themeDownload/' . $theme->id . '/');
 
-        $zip = PATH_ADMIN . '/tmp/theme_' . $theme->name . '.zip';
+        $zip = Be::getRuntime()->getPathCache() . '/tmp/theme_' . $theme->name . '.zip';
         file_put_contents($zip, $Response);
 
         $libZip = Be::getLib('zip');
         $libZip->open($zip);
         if (!$libZip->extractTo($dir)) {
-            throw new \Exception($libZip->getError());
+            throw new ServiceException($libZip->getError());
         }
 
         // 删除临时文件
@@ -97,7 +98,7 @@ class Theme extends \Phpbe\System\Service
         $configSystem = Be::getConfig('System.System');
 
         if ($configSystem->theme == $theme) {
-            throw new \Exception('正在使用的默认主题不能删除');
+            throw new ServiceException('正在使用的默认主题不能删除');
         }
 
         $themePath = Be::getRuntime()->getPathRoot() . '/theme/' .  $theme;
