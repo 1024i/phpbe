@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$config = Be::getConfig('System.System');
-$configArticle = Be::getConfig('Cms.Article');
+$config = Be::getConfig('System', 'System');
+$configArticle = Be::getConfig('Cms', 'Article');
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/bjqs.css">
 <script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/js/bjqs-1.3.min.js"></script>
@@ -171,10 +171,10 @@ foreach ($categories as $category) {
 $activeUsers = $this->activeUsers;
 $monthHottestArticles = $this->monthHottestArticles;
 
-$configArticle = Be::getConfig('Cms.Article');
+$configArticle = Be::getConfig('Cms', 'Article');
 
 if (count($activeUsers)) {
-$configUser = Be::getConfig('System.User');
+$configUser = Be::getConfig('System', 'User');
 ?>
 <div class="theme-box-container">
 	<div class="theme-box">

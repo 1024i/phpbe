@@ -24,10 +24,10 @@ use Phpbe\System\Be;
 
                 $pagination = $this->pagination;
 
-                $configArticle = Be::getConfig('Cms.Article');
+                $configArticle = Be::getConfig('Cms', 'Article');
 
                 if (count($articles)) {
-                    $configArticle = Be::getConfig('Cms.Article');
+                    $configArticle = Be::getConfig('Cms', 'Article');
 
                     if ($pagination->getPage() == 1) {
                         $article = array_shift($articles);
@@ -85,7 +85,7 @@ use Phpbe\System\Be;
                 $hottestArticles = $this->hottestArticles;
                 $topArticles = $this->topArticles;
 
-                $configArticle = Be::getConfig('Cms.Article');
+                $configArticle = Be::getConfig('Cms', 'Article');
 
                 if (count($hottestArticles)) {
                     ?>

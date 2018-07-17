@@ -9,7 +9,7 @@ use Phpbe\System\Request;
 
 <!--{body}-->
 <?php
-$config = Be::getConfig('System.System');
+$config = Be::getConfig('System', 'System');
 ?>
 <div class="body">
 	

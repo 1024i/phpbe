@@ -13,13 +13,13 @@ class Setting extends AdminController
     public function setting()
     {
         Response::setTitle('设置文章系统参数');
-        Response::set('configArticle', Be::getConfig('Cms.Article'));
+        Response::set('configArticle', Be::getConfig('Cms', 'Article'));
         Response::display();
     }
 
     public function settingSave()
     {
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
 
         $configArticle->getSummary = Request::post('getSummary', 0, 'int');
         $configArticle->getMetaKeywords = Request::post('getMetaKeywords', 0, 'int');
@@ -80,7 +80,7 @@ class Setting extends AdminController
             }
         }
 
-        $serviceSystem = Be::getService('System.Admin');
+        $serviceSystem = Be::getService('System', 'Admin');
         $serviceSystem->updateConfig($configArticle, Be::getRuntime()->getPathRoot() . '/Config/Article.php');
 
         systemLog('设置文章系统参数');

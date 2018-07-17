@@ -69,7 +69,7 @@ foreach ($categories as $category) {
     $indexCategories[$category->id] = $category->name;
 }
 
-$configArticle = Be::getConfig('Cms.Article');
+$configArticle = Be::getConfig('Cms', 'Article');
 
 foreach ($articles as $article) {
     $article->titleHtml = '<span class="text-warning">['.$indexCategories[$article->categoryId].']</span> <a href="'.url('app=Cms&controller=Article&action=detail&articleId='.$article->id).'" title="'.$article->title.'" target="Blank" data-toggle="tooltip">'.limit($article->title, 50).'</a>';

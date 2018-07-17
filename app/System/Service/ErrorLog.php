@@ -2,6 +2,9 @@
 namespace App\System\Service;
 
 
+use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
+
 class ErrorLog extends \Phpbe\System\Service
 {
 
@@ -126,32 +129,27 @@ class ErrorLog extends \Phpbe\System\Service
     {
         $dataPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.data';
         if (!is_file($dataPath)) {
-            $this->setError('打开日志数据文件不存在！');
-            return false;
+            throw new ServiceException('打开日志数据文件不存在！');
         }
 
         $indexPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.index';
         if (!is_file($indexPath)) {
-            $this->setError('日志索引文件不存在！');
-            return false;
+            throw new ServiceException('日志索引文件不存在！');
         }
 
         $fData = fopen($dataPath, 'rb');
         $fIndex = fopen($indexPath, 'rb');
         if (!$fData) {
-            $this->setError('打开日志数据文件出错！');
-            return false;
+            throw new ServiceException('打开日志数据文件出错！');
         }
 
         if (!$fIndex) {
-            $this->setError('打开日志索引文件出错！');
-            return false;
+            throw new ServiceException('打开日志索引文件出错！');
         }
 
         $max = intval(filesize($indexPath) / 4) - 1;
         if ($index < 0 || $index > $max) {
-            $this->setError('读取日志文件索引位置错误！');
-            return false;
+            throw new ServiceException('读取日志文件索引位置错误！');
         }
 
         fseek($fIndex, $index * 4);

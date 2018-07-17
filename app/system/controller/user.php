@@ -28,7 +28,7 @@ class User extends Controller
             $return = Request::post('return', '');
             $errorReturn = url('app=System&controller=User&action=login&return=' . $return);
 
-            $configUser = Be::getConfig('System.User');
+            $configUser = Be::getConfig('System', 'User');
             if ($configUser->captchaLogin) {
                 if (Request::post('captcha', '') != Session::get('captchaLogin')) {
                     Response::error('验证码错误！', $errorReturn);
@@ -36,7 +36,7 @@ class User extends Controller
             }
 
             try {
-                Be::getService('System.User')->login($username, $password, $ip, $rememberMe);
+                Be::getService('System', 'User')->login($username, $password, $ip, $rememberMe);
 
                 if ($configUser->captchaLogin) session::delete('captchaLogin');
 
@@ -62,7 +62,7 @@ class User extends Controller
             $my = Be::getUser();
             if ($my->id > 0) Response::redirect($return);
 
-            $model = Be::getService('System.User');
+            $model = Be::getService('System', 'User');
             $user = $model->rememberMe();
             if ($user) Response::redirect($return);
 
@@ -93,7 +93,7 @@ class User extends Controller
 
     public function qqLogin()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
         $serviceUserConnectQq = Be::getService('userConnectQq');
@@ -102,7 +102,7 @@ class User extends Controller
 
     public function qqLoginCallback()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
         $serviceUserConnectQq = Be::getService('userConnectQq');
@@ -140,7 +140,7 @@ class User extends Controller
 
     public function sinaLogin()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
         $serviceUserConnectSina = Be::getService('userConnectSina');
@@ -149,7 +149,7 @@ class User extends Controller
 
     public function sinaLoginCallback()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
         $serviceUserConnectSina = Be::getService('userConnectSina');
@@ -188,7 +188,7 @@ class User extends Controller
     // 注册新用户
     public function register()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         if (!$configUser->register) {
             Response::error('注册功能已禁用！');
@@ -220,7 +220,7 @@ class User extends Controller
             ];
 
             try {
-                Be::getService('System.User')->register($data);
+                Be::getService('System', 'User')->register($data);
 
                 if ($configUser->captchaRegister) Session::delete('captchaRegister');
 
@@ -274,7 +274,7 @@ class User extends Controller
         $token = Request::get('token', '');
 
         try {
-            Be::getService('System.User')->activate($userId, $token);
+            Be::getService('System', 'User')->activate($userId, $token);
             Response::setMessage('您的账号已更新！');
         } catch (\Exception $e) {
             Response::setMessage($e->getMessage(), 'error');
@@ -291,7 +291,7 @@ class User extends Controller
         if (Request::isPost()) {
             $username = Request::post('username', '');
             try {
-                Be::getService('System.User')->forgotPassword($username);
+                Be::getService('System', 'User')->forgotPassword($username);
                 Response::success('找回密码链接已发送到您的邮箱。');
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
@@ -320,7 +320,7 @@ class User extends Controller
                     Response::error('两次输入的密码不匹配！');
                 }
 
-                Be::getService('System.User')->forgotPasswordReset($userId, $token, $password);
+                Be::getService('System', 'User')->forgotPasswordReset($userId, $token, $password);
 
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
@@ -330,7 +330,7 @@ class User extends Controller
             $token = Request::get('token', '');
             if ($userId == 0 || $token == '') Response::end('找回密码链接已失效！');
 
-            $rowUser = Be::getRow('System.User');
+            $rowUser = Be::getRow('System', 'User');
             $rowUser->load($userId);
 
             if ($rowUser->token == '') Response::end('您的密码已重设！');
@@ -348,7 +348,7 @@ class User extends Controller
      */
     public function logout()
     {
-        $model = Be::getService('System.User');
+        $model = Be::getService('System', 'User');
         $model->logout();
 
         Response::success('成功退出！', url('app=System&controller=User&action=login'));

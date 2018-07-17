@@ -18,7 +18,7 @@ class AdminUser extends AdminController
 
             $ip = Request::ip();
             try {
-                $serviceAdminUser = Be::getService('System.AdminUser');
+                $serviceAdminUser = Be::getService('System', 'AdminUser');
                 $serviceAdminUser->login($username, $password, $ip);
              } catch (\Exception $e) {
                 Response::error($e->getMessage());
@@ -42,7 +42,7 @@ class AdminUser extends AdminController
     // 退出登陆
     public function logout()
     {
-        Be::getService('System.AdminUser')->logout();
+        Be::getService('System', 'AdminUser')->logout();
         Response::success('成功退出！', './?app=System&controller=AdminUser&action=login');
     }
 
@@ -57,7 +57,7 @@ class AdminUser extends AdminController
         $roleId = Request::post('roleId', 0, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.admin');
+            $adminConfigSystem = Be::getConfig('System', 'admin');
             $limit = $adminConfigSystem->limit;
         }
 
@@ -67,7 +67,7 @@ class AdminUser extends AdminController
         );
         if ($roleId > 0) $option['roleId'] = $roleId;
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
 
         Response::setTitle('管理员列表');
 
@@ -124,11 +124,11 @@ class AdminUser extends AdminController
                 Response::redirect('./?app=System&controller=AdminUser&action=edit&id=' . $id);
             }
 
-            $rowAdminUser = Be::getRow('adminUser');
+            $rowAdminUser = Be::getRow('System', 'AdminUser');
             if ($id > 0) $rowAdminUser->load($id);
 
             $rowAdminUser->bind(Request::post());
-            $serviceAdminUser = Be::getService('System.AdminUser');
+            $serviceAdminUser = Be::getService('System', 'AdminUser');
 
             if (!$serviceAdminUser->isUsernameAvailable($rowAdminUser->username, $id)) {
                 Response::setMessage('管理员名(' . $rowAdminUser->username . ')已被占用！', 'error');
@@ -155,7 +155,7 @@ class AdminUser extends AdminController
 
             $rowAdminUser->save();
 
-            $configUser = Be::getConfig('System.AdminUser');
+            $configUser = Be::getConfig('System', 'AdminUser');
 
             $avatar = $_FILES['avatar'];
             if ($avatar['error'] == 0) {
@@ -190,7 +190,7 @@ class AdminUser extends AdminController
         } else {
             $id = Request::request('id', 0, 'int');
 
-            $adminUser = Be::getRow('System.AdminUser');
+            $adminUser = Be::getRow('System', 'AdminUser');
             if ($id != 0) $adminUser->load($id);
 
             if ($id != 0)
@@ -200,7 +200,7 @@ class AdminUser extends AdminController
 
             Response::set('adminUser', $adminUser);
 
-            $serviceAdminUser = Be::getService('System.AdminUser');
+            $serviceAdminUser = Be::getService('System', 'AdminUser');
             Response::set('roles', $serviceAdminUser->getRoles());
 
             Response::display();
@@ -210,20 +210,20 @@ class AdminUser extends AdminController
     public function checkUsername()
     {
         $username = Request::get('username', '');
-        echo Be::getService('System.AdminUser')->isUsernameAvailable($username) ? 'true' : 'false';
+        echo Be::getService('System', 'AdminUser')->isUsernameAvailable($username) ? 'true' : 'false';
     }
 
     public function checkEmail()
     {
         $email = Request::get('email', '');
-        echo Be::getService('System.AdminUser')->isEmailAvailable($email) ? 'true' : 'false';
+        echo Be::getService('System', 'AdminUser')->isEmailAvailable($email) ? 'true' : 'false';
     }
 
     public function unblock()
     {
         $ids = Request::post('id', '');
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         if ($serviceAdminUser->unblock($ids)) {
             Response::setMessage('启用管理员账号成功！');
             systemLog('启用管理员账号：#' . $ids);
@@ -238,7 +238,7 @@ class AdminUser extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         if ($serviceAdminUser->block($ids)) {
             Response::setMessage('屏蔽管理员账号成功！');
             systemLog('屏蔽管理员账号：#' . $ids);
@@ -253,7 +253,7 @@ class AdminUser extends AdminController
     {
         $userId = Request::get('userId', 0, 'int');
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         if ($serviceAdminUser->initAvatar($userId)) {
             systemLog('删除 #' . $userId . ' 管理员头像');
 
@@ -272,7 +272,7 @@ class AdminUser extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         if ($serviceAdminUser->delete($ids)) {
             Response::setMessage('删除管理员账号成功！');
             systemLog('删除管理员账号：#' . $ids);
@@ -286,7 +286,7 @@ class AdminUser extends AdminController
 
     public function roles()
     {
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         $roles = $serviceAdminUser->getRoles();
 
         foreach ($roles as $role) {
@@ -313,7 +313,7 @@ class AdminUser extends AdminController
 
                 if ($id == 0 && $names[$i] == '') continue;
 
-                $rowAdminUserRole = Be::getRow('System.AdminUserRole');
+                $rowAdminUserRole = Be::getRow('System', 'AdminUserRole');
                 if ($id != 0) $rowAdminUserRole->load($id);
                 $rowAdminUserRole->name = $names[$i];
                 $rowAdminUserRole->note = $notes[$i];
@@ -322,7 +322,7 @@ class AdminUser extends AdminController
             }
         }
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         $serviceAdminUser->updateAdminUserRoles();
 
         systemLog('修改后台管理员组');
@@ -340,7 +340,7 @@ class AdminUser extends AdminController
             Response::ajax();
         }
 
-        $rowAdminUserRole = Be::getRow('System.AdminUserRole');
+        $rowAdminUserRole = Be::getRow('System', 'AdminUserRole');
         $rowAdminUserRole->load($roleId);
         if ($rowAdminUserRole->id == 0) {
             Response::set('error', 2);
@@ -348,7 +348,7 @@ class AdminUser extends AdminController
             Response::ajax();
         }
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         $userCount = $adminServiceUser->getUserCount(array('roleId' => $roleId));
         if ($userCount > 0) {
             Response::set('error', 3);
@@ -370,11 +370,11 @@ class AdminUser extends AdminController
         $roleId = Request::get('roleId', 0, 'int');
         if ($roleId == 0) Response::end('参数(roleId)缺失！');
 
-        $rowAdminUserRole = Be::getRow('System.AdminUserRole');
+        $rowAdminUserRole = Be::getRow('System', 'AdminUserRole');
         $rowAdminUserRole->load($roleId);
         if ($rowAdminUserRole->id == 0) Response::end('不存在的分组！');
 
-        $adminServiceApp = Be::getService('System.app');
+        $adminServiceApp = Be::getService('System', 'app');
         $apps = $adminServiceApp->getApps();
 
         Response::setTitle('管理员组(' . $rowAdminUserRole->name . ')权限设置');
@@ -388,14 +388,14 @@ class AdminUser extends AdminController
         $roleId = Request::post('roleId', 0, 'int');
         if ($roleId == 0) Response::end('参数(roleId)缺失！');
 
-        $rowAdminUserRole = Be::getRow('System.AdminUserRole');
+        $rowAdminUserRole = Be::getRow('System', 'AdminUserRole');
         $rowAdminUserRole->load($roleId);
         if ($rowAdminUserRole->id == 0) Response::end('不存在的分组！');
         $rowAdminUserRole->permission = Request::post('permission', 0, 'int');
 
         if ($rowAdminUserRole->permission == -1) {
             $publicPermissions = [];
-            $adminServiceApp = Be::getService('System.app');
+            $adminServiceApp = Be::getService('System', 'app');
             $apps = $adminServiceApp->getApps();
             foreach ($apps as $app) {
                 $appPermissions = $app->getAdminPermissions();
@@ -418,7 +418,7 @@ class AdminUser extends AdminController
 
         $rowAdminUserRole->save();
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         $serviceAdminUser->updateAdminUserRole($roleId);
 
         systemLog('修改管理员组(' . $rowAdminUserRole->name . ')权限');
@@ -436,7 +436,7 @@ class AdminUser extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.admin');
+            $adminConfigSystem = Be::getConfig('System', 'admin');
             $limit = $adminConfigSystem->limit;
         }
 
@@ -445,7 +445,7 @@ class AdminUser extends AdminController
             'success' => $success
         );
 
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         Response::setTitle('登陆日志');
 
         $pagination = Be::getUi('Pagination');
@@ -467,7 +467,7 @@ class AdminUser extends AdminController
     // 后台登陆日志
     public function ajaxDeleteLogs()
     {
-        $serviceAdminUser = Be::getService('System.AdminUser');
+        $serviceAdminUser = Be::getService('System', 'AdminUser');
         $serviceAdminUser->deleteLogs();
 
         systemLog('删除管理员登陆日志');
@@ -481,13 +481,13 @@ class AdminUser extends AdminController
     public function setting()
     {
         Response::setTitle('管理员系统设置');
-        Response::set('configAdminUser', Be::getConfig('System.AdminUser'));
+        Response::set('configAdminUser', Be::getConfig('System', 'AdminUser'));
         Response::display();
     }
 
     public function settingSave()
     {
-        $configAdminUser = Be::getConfig('System.AdminUser');
+        $configAdminUser = Be::getConfig('System', 'AdminUser');
         $configAdminUser->avatarSW = Request::post('avatarSW', 0, 'int');
         $configAdminUser->avatarSH = Request::post('avatarSH', 0, 'int');
         $configAdminUser->avatarMW = Request::post('avatarMW', 0, 'int');
@@ -541,7 +541,7 @@ class AdminUser extends AdminController
             }
         }
 
-        $serviceSystem = Be::getService('system');
+        $serviceSystem = Be::getService('System', 'System');
         $serviceSystem->updateConfig($configAdminUser, Be::getRuntime()->getPathData() . '/adminConfig/adminUser.php');
 
         systemLog('设置管理员系统参数');

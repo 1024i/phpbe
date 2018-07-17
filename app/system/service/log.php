@@ -9,7 +9,7 @@ class log extends \Phpbe\System\Service
     public function newLog($log)
     {
         $my = Be::getAdminUser();
-        $rowSystemLog = Be::getRow('System.log');
+        $rowSystemLog = Be::getRow('System', 'log');
         $rowSystemLog->user_id = $my->id;
         $rowSystemLog->title = $log;
         $rowSystemLog->ip = $_SERVER['REMOTE_ADDR'];
@@ -25,7 +25,7 @@ class log extends \Phpbe\System\Service
      */
     public function getLogs($conditions = array())
     {
-        $tableSystemLog = Be::getTable('system.log');
+        $tableSystemLog = Be::getTable('system', 'log');
 
         $where = $this->createLogWhere($conditions);
         $tableSystemLog->where($where);
@@ -54,7 +54,7 @@ class log extends \Phpbe\System\Service
      */
     public function getLogCount($conditions = array())
     {
-        return Be::getTable('System.Log')
+        return Be::getTable('System', 'Log')
             ->where($this->createLogWhere($conditions))
             ->count();
     }
@@ -88,7 +88,7 @@ class log extends \Phpbe\System\Service
      */
     public function deleteLogs()
     {
-        return Be::getTable('System.Log')->where('create_time', '<', (time() - 90 * 86400))->delete();
+        return Be::getTable('System', 'Log')->where('create_time', '<', (time() - 90 * 86400))->delete();
     }
 
 

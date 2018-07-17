@@ -23,8 +23,8 @@ $articleCount = $this->get('articleCount');
 $comments = $this->get('comments');
 $commentCount = $this->get('commentCount');
 
-$configUser = Be::getConfig('System.User');
-$configArticle = Be::getConfig('Cms.Article');
+$configUser = Be::getConfig('System', 'User');
+$configArticle = Be::getConfig('Cms', 'Article');
 ?>
 <div style="border:#eee 1px solid; border-left:<?php echo $this->primaryColor; ?> 5px solid;  background-color:#FFFFFF; padding:20px; box-shadow:1px 1px 3px #ccc;">
     <div class="row">

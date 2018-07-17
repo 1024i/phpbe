@@ -16,7 +16,7 @@ class App extends \Phpbe\System\Service
 		if ($this->apps == null) {
 			$apps = array();
 
-			$configAdmin = Be::getConfig('System.admin');
+			$configAdmin = Be::getConfig('System', 'admin');
 			if (count($configAdmin->apps)) {
 				foreach ($configAdmin->apps as $app) {
 					$apps[] = Be::getApp($app);
@@ -31,7 +31,7 @@ class App extends \Phpbe\System\Service
 
 	public function getAppCount()
     {
-		$configAdmin = Be::getConfig('System.admin');
+		$configAdmin = Be::getConfig('System', 'admin');
 		return count($configAdmin->apps);
     }
     
@@ -81,7 +81,7 @@ class App extends \Phpbe\System\Service
 		$appObj->setName($app->name);
 		$appObj->install();
 
-		$adminConfigSystem = Be::getConfig('System.admin');
+		$adminConfigSystem = Be::getConfig('System', 'admin');
         $serviceSystem = Be::getService('system');
 		if (!in_array($app->name, $adminConfigSystem->apps)) {
 			$adminConfigSystem->apps[] = $app->name;
@@ -101,7 +101,7 @@ class App extends \Phpbe\System\Service
     // 删除应用
     public function uninstall($name)
     {
-		$adminConfigSystem = Be::getConfig('System.admin');
+		$adminConfigSystem = Be::getConfig('System', 'admin');
 
 		$apps = array();
 		foreach ($adminConfigSystem->apps as $app) {

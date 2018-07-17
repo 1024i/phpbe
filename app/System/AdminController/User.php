@@ -20,7 +20,7 @@ class User extends AdminController
         $roleId = Request::post('roleId', 0, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.Admin');
+            $adminConfigSystem = Be::getConfig('System', 'Admin');
             $limit = $adminConfigSystem->limit;
         }
 
@@ -30,7 +30,7 @@ class User extends AdminController
         );
         if ($roleId > 0) $option['roleId'] = $roleId;
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
 
         Response::setTitle('用户列表');
 
@@ -65,7 +65,7 @@ class User extends AdminController
     {
         $id = Request::request('id', 0, 'int');
 
-        $user = Be::getRow('System.User');
+        $user = Be::getRow('System', 'User');
         if ($id != 0) $user->load($id);
 
         if ($id != 0)
@@ -75,7 +75,7 @@ class User extends AdminController
 
         Response::set('user', $user);
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         Response::set('roles', $adminServiceUser->getRoles());
 
         Response::display();
@@ -107,12 +107,12 @@ class User extends AdminController
             Response::redirect('./?controller=user&action=edit&id=' . $id);
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         if ($id > 0) $rowUser->load($id);
 
         $rowUser->bind(Request::post());
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
 
         if (!$adminServiceUser->isUsernameAvailable($rowUser->username, $id)) {
             Response::setMessage('用户名(' . $rowUser->username . ')已被占用！', 'error');
@@ -125,7 +125,7 @@ class User extends AdminController
         }
 
         if ($password != '') {
-            $serviceUser = Be::getService('System.User');
+            $serviceUser = Be::getService('System', 'User');
             $rowUser->password = $serviceUser->encryptPassword($password);
         } else
             unset($rowUser->password);
@@ -142,7 +142,7 @@ class User extends AdminController
             Response::end($rowUser->getError());
         }
 
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         $avatar = $_FILES['avatar'];
         if ($avatar['error'] == 0) {
@@ -172,7 +172,7 @@ class User extends AdminController
         }
 
         if ($id == 0) {
-            $configSystem = Be::getConfig('System.System');
+            $configSystem = Be::getConfig('System', 'System');
 
             $data = array(
                 'siteName' => $configSystem->siteName,
@@ -206,7 +206,7 @@ class User extends AdminController
     {
         $username = Request::get('username', '');
 
-        $serviceUser = Be::getService('System.User');
+        $serviceUser = Be::getService('System', 'User');
         echo $serviceUser->isUsernameAvailable($username) ? 'true' : 'false';
     }
 
@@ -214,7 +214,7 @@ class User extends AdminController
     {
         $email = Request::get('email', '');
 
-        $serviceUser = Be::getService('System.User');
+        $serviceUser = Be::getService('System', 'User');
         echo $serviceUser->isEmailAvailable($email) ? 'true' : 'false';
     }
 
@@ -222,7 +222,7 @@ class User extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $serviceUser = Be::getService('System.User');
+        $serviceUser = Be::getService('System', 'User');
         if ($serviceUser->unblock($ids)) {
             Response::setMessage('启用用户账号成功！');
             systemLog('启用用户账号：#' . $ids);
@@ -237,7 +237,7 @@ class User extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $serviceUser = Be::getService('System.User');
+        $serviceUser = Be::getService('System', 'User');
         if ($serviceUser->block($ids)) {
             Response::setMessage('屏蔽用户账号成功！');
             systemLog('屏蔽用户账号：#' . $ids);
@@ -252,7 +252,7 @@ class User extends AdminController
     {
         $userId = Request::get('userId', 0, 'int');
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         if ($adminServiceUser->initAvatar($userId)) {
             systemLog('删除 #' . $userId . ' 用户头像');
 
@@ -271,7 +271,7 @@ class User extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         if ($adminServiceUser->delete($ids)) {
             Response::setMessage('删除用户账号成功！');
             systemLog('删除用户账号：#' . $ids);
@@ -284,7 +284,7 @@ class User extends AdminController
 
     public function roles()
     {
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         $roles = $adminServiceUser->getRoles();
 
         foreach ($roles as $role) {
@@ -319,7 +319,7 @@ class User extends AdminController
             }
         }
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         $adminServiceUser->updateUserRoles();
 
         systemLog('修改用户角色');
@@ -363,7 +363,7 @@ class User extends AdminController
             Response::ajax();
         }
 
-        $rowUserRole = Be::getRow('System.user_role');
+        $rowUserRole = Be::getRow('System', 'user_role');
         $rowUserRole->load($roleId);
         if ($rowUserRole->id == 0) {
             Response::set('error', 2);
@@ -377,7 +377,7 @@ class User extends AdminController
             Response::ajax();
         }
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         $userCount = $adminServiceUser->getUserCount(array('roleId' => $roleId));
         if ($userCount > 0) {
             Response::set('error', 4);
@@ -403,7 +403,7 @@ class User extends AdminController
         $rowUserRole->load($roleId);
         if ($rowUserRole->id == 0) Response::end('不存在的角色！');
 
-        $adminServiceApp = Be::getService('System.App');
+        $adminServiceApp = Be::getService('System', 'App');
         $apps = $adminServiceApp->getApps();
 
         Response::setTitle('用户角色(' . $rowUserRole->name . ')权限设置');
@@ -425,7 +425,7 @@ class User extends AdminController
 
         if ($rowUserRole->permission == -1) {
             $publicPermissions = [];
-            $adminServiceApp = Be::getService('System.App');
+            $adminServiceApp = Be::getService('System', 'App');
             $apps = $adminServiceApp->getApps();
             foreach ($apps as $app) {
                 $appPermissions = $app->getPermissions();
@@ -447,7 +447,7 @@ class User extends AdminController
 
         $rowUserRole->save();
 
-        $adminServiceUser = Be::getService('System.User');
+        $adminServiceUser = Be::getService('System', 'User');
         $adminServiceUser->updateUserRole($roleId);
 
         systemLog('修改用户角色 ' . $rowUserRole->name . ' 权限');
@@ -459,13 +459,13 @@ class User extends AdminController
     public function setting()
     {
         Response::setTitle('用户系统设置');
-        Response::set('configUser', Be::getConfig('System.User'));
+        Response::set('configUser', Be::getConfig('System', 'User'));
         Response::display();
     }
 
     public function settingSave()
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         $configUser->register = Request::post('register', 0, 'int');
         $configUser->captchaLogin = Request::post('captchaLogin', 0, 'int');
         $configUser->captchaRegister = Request::post('captchaRegister', 0, 'int');
@@ -532,7 +532,7 @@ class User extends AdminController
             }
         }
 
-        $serviceSystem = Be::getService('System.Cache');
+        $serviceSystem = Be::getService('System', 'Cache');
         $serviceSystem->updateConfig($configUser, Be::getRuntime()->getPathData() . '/Config/User.php');
 
         systemLog('设置用户系统参数');

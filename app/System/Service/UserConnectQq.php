@@ -15,7 +15,7 @@ class UserConnectQq extends \Phpbe\System\Service
     // 构造函数
     public function __construct()
     {
-        $config = Be::getConfig('System.User');
+        $config = Be::getConfig('System', 'User');
         $this->appId = $config->connectQqAppId;
         $this->appKey = $config->connectQqAppKey;
     }
@@ -125,10 +125,10 @@ class UserConnectQq extends \Phpbe\System\Service
 
     public function register($userInfo)
     {
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         $t = time();
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->connect = 'qq';
         $rowUser->name = $userInfo->nickname;
         $rowUser->register_time = $t;

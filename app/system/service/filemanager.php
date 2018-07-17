@@ -18,7 +18,7 @@ class FileManager extends Service
 
         $return = array();
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         // 分析目录
         $files = scandir($absPath);
@@ -130,7 +130,7 @@ class FileManager extends Service
         }
 
         $type = strtolower(substr(strrchr($newFileName, '.'), 1));
-        $config = Be::getConfig('System.System');
+        $config = Be::getConfig('System', 'System');
         if (!in_array($type, $config->allowUploadFileTypes)) {
             throw new ServiceException('不允许的文件格式！');
         }

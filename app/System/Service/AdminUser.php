@@ -44,7 +44,7 @@ class AdminUser extends Service
         }
         Session::set($ip, $times);
 
-        $rowAdminUserAdminLog = Be::getRow('System.AdminUserLog');
+        $rowAdminUserAdminLog = Be::getRow('System', 'AdminUserLog');
         $rowAdminUserAdminLog->username = $username;
         $rowAdminUserAdminLog->ip = $ip;
         $rowAdminUserAdminLog->create_time = time();
@@ -53,7 +53,7 @@ class AdminUser extends Service
         $db->beginTransaction();
         try {
 
-            $rowAdminUser = Be::getRow('System.AdminUser');
+            $rowAdminUser = Be::getRow('System', 'AdminUser');
             $rowAdminUser->load('username', $username);
 
             if ($rowAdminUser->id == 0) {
@@ -77,7 +77,7 @@ class AdminUser extends Service
                         $rememberMeToken = null;
                         do {
                             $rememberMeToken = Random::complex(32);
-                        } while (Be::getRow('System.AdminUser')->where('remember_me_token', $rememberMeToken)->count() > 0);
+                        } while (Be::getRow('System', 'AdminUser')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
                         $rowAdminUser->last_login_time = time();
                         $rowAdminUser->remember_me_token = $rememberMeToken;
@@ -119,7 +119,7 @@ class AdminUser extends Service
         if (cookie::has('_admin_remember_me')) {
             $adminRememberMe = cookie::get('_admin_remember_me', '');
             if ($adminRememberMe) {
-                $rowAdminUser = Be::getRow('System.AdminUser');
+                $rowAdminUser = Be::getRow('System', 'AdminUser');
                 $rowAdminUser->load('remember_me_token', $adminRememberMe);
                 if ($rowAdminUser->id && $rowAdminUser->block == 0) {
                     Session::set('_admin_user', Be::getAdminUser($rowAdminUser->id));
@@ -163,7 +163,7 @@ class AdminUser extends Service
      */
     public function getUsers($conditions = array())
     {
-        $tableAdminUser = Be::getTable('System.AdminUser');
+        $tableAdminUser = Be::getTable('System', 'AdminUser');
         $tableAdminUser->where($this->createUserWhere($conditions));
 
         if (isset($conditions['orderByString']) && $conditions['orderByString']) {
@@ -190,7 +190,7 @@ class AdminUser extends Service
      */
     public function getUserCount($conditions = array())
     {
-        return Be::getTable('System.AdminUser')
+        return Be::getTable('System', 'AdminUser')
             ->where($this->createUserWhere($conditions))
             ->count();
     }
@@ -236,7 +236,7 @@ class AdminUser extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
+            Be::getTable('System', 'AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -265,7 +265,7 @@ class AdminUser extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
+            Be::getTable('System', 'AdminUser')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -300,7 +300,7 @@ class AdminUser extends Service
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $rowAdminUser = Be::getRow('System.AdminUser');
+                $rowAdminUser = Be::getRow('System', 'AdminUser');
                 $rowAdminUser->load($id);
 
                 if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
@@ -334,7 +334,7 @@ class AdminUser extends Service
         $db->beginTransaction();
         try {
 
-            $rowAdminUser = Be::getRow('System.AdminUser');
+            $rowAdminUser = Be::getRow('System', 'AdminUser');
             $rowAdminUser->load($userId);
 
             $files = [];
@@ -369,7 +369,7 @@ class AdminUser extends Service
      */
     public function isUsernameAvailable($username, $userId = 0)
     {
-        $table = Be::getTable('System.AdminUser');
+        $table = Be::getTable('System', 'AdminUser');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -386,7 +386,7 @@ class AdminUser extends Service
      */
     public function isEmailAvailable($email, $userId = 0)
     {
-        $table = Be::getTable('System.AdminUser');
+        $table = Be::getTable('System', 'AdminUser');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -401,7 +401,7 @@ class AdminUser extends Service
      */
     public function getRoles()
     {
-        return Be::getTable('System.AdminUserRole')->orderBy('ordering', 'ASC')->getObjects();
+        return Be::getTable('System', 'AdminUserRole')->orderBy('ordering', 'ASC')->getObjects();
     }
 
     /**
@@ -412,7 +412,7 @@ class AdminUser extends Service
      */
     public function getLogs($conditions = array())
     {
-        $tableAdminUserLog = Be::getTable('System.AdminUserLog');
+        $tableAdminUserLog = Be::getTable('System', 'AdminUserLog');
         $tableAdminUserLog->where($this->createLogWhere($conditions));
 
         if (isset($conditions['orderByString']) && $conditions['orderByString']) {
@@ -439,7 +439,7 @@ class AdminUser extends Service
      */
     public function getLogCount($conditions = array())
     {
-        return Be::getTable('System.AdminUserLog')
+        return Be::getTable('System', 'AdminUserLog')
             ->where($this->createLogWhere($conditions))
             ->count();
     }
@@ -474,7 +474,7 @@ class AdminUser extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.AdminUserLog')->where('create_time', '<', time() - 90 * 86400)->delete();
+            Be::getTable('System', 'AdminUserLog')->where('create_time', '<', time() - 90 * 86400)->delete();
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -501,7 +501,7 @@ class AdminUser extends Service
     {
         $roles = $this->getRoles();
 
-        $service = Be::getService('System.Cache');
+        $service = Be::getService('System', 'Cache');
         foreach ($roles as $role) {
             $service->updateCacheAdminUserRole($role->id);
         }
@@ -514,7 +514,7 @@ class AdminUser extends Service
      */
     public function updateAdminUserRole($roleId)
     {
-        $service = Be::getService('System.Cache');
+        $service = Be::getService('System', 'Cache');
         $service->updateCacheAdminUserRole($roleId);
     }
 }

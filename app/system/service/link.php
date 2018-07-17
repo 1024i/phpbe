@@ -9,7 +9,7 @@ class Link extends Service
 
     public function getSystemLinks($conditions = array())
     {
-        $tableSystemLink = Be::getTable('System.Link');
+        $tableSystemLink = Be::getTable('System', 'Link');
 
         $where = $this->createSystemLinkWhere($conditions);
         $tableSystemLink->where($where);
@@ -32,7 +32,7 @@ class Link extends Service
 
     public function getSystemLinkCount($conditions = array())
     {
-        return Be::getTable('System.Link')
+        return Be::getTable('System', 'Link')
             ->where($this->createSystemLinkWhere($conditions))
             ->count();
     }
@@ -54,27 +54,27 @@ class Link extends Service
 
     public function unblock($ids)
     {
-        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
+        Be::getTable('System', 'Link')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     public function block($ids)
     {
-        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
+        Be::getTable('System', 'Link')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     public function delete($ids)
     {
-        Be::getTable('System.Link')->where('id', 'in', explode(',', $ids))->delete();
+        Be::getTable('System', 'Link')->where('id', 'in', explode(',', $ids))->delete();
     }
 
     public function update()
     {
-        $links = Be::getTable('System.Link')
+        $links = Be::getTable('System', 'Link')
             ->where('block', 0)
             ->orderBy('ordering', 'desc')
             ->getObjects();
 
-        $configSystemLink = Be::getConfig('System.Link');
+        $configSystemLink = Be::getConfig('System', 'Link');
         $properties = get_object_vars($configSystemLink);
         foreach ($properties as $key => $val) {
             unset($configSystemLink->$key);

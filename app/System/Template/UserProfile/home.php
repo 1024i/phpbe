@@ -33,7 +33,7 @@ use Phpbe\System\Be;
 
         <!--{center}-->
         <?php
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         $my = Be::getUser();
         ?>
         <div class="theme-box-container">

@@ -30,7 +30,7 @@ class UserProfile extends Controller
         if (Request::isPost()) {
             $my = Be::getUser();
             try {
-                Be::getService('System.User')->uploadAvatar($my->id, Request::files('avatar'));
+                Be::getService('System', 'User')->uploadAvatar($my->id, Request::files('avatar'));
                 Response::setMessage('您的头像已更新！');
             } catch (\Exception $e) {
                 Response::setMessage($e->getMessage(), 'error');
@@ -50,7 +50,7 @@ class UserProfile extends Controller
 
         $return = url('controller=userProfile&action=editAvatar');
         try {
-            Be::getService('System.User')->initAvatar($my->id);
+            Be::getService('System', 'User')->initAvatar($my->id);
         } catch (\Exception $e) {
             Response::error($e->getMessage(), $return);
         }
@@ -72,7 +72,7 @@ class UserProfile extends Controller
             try {
                 $my = Be::getUser();
 
-                $rowUser = Be::getService('System.User')->edit($my->id, Request::post());
+                $rowUser = Be::getService('System', 'User')->edit($my->id, Request::post());
 
                 $my->name = $rowUser->name;
                 $my->gender = $rowUser->gender;
@@ -104,7 +104,7 @@ class UserProfile extends Controller
             }
 
             try {
-                Be::getService('System.User')->changePassword(Be::getUser()->id, $password, $password1);
+                Be::getService('System', 'User')->changePassword(Be::getUser()->id, $password, $password1);
             } catch (\Exception $e) {
                 Response::error($e->getMessage(), 'error');
             }

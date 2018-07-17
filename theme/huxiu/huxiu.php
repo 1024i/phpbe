@@ -4,7 +4,7 @@ use Phpbe\System\Request;
 ?>
 <!--{html}-->
 <?php
-$config = Be::getConfig('System.System');
+$config = Be::getConfig('System', 'System');
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,8 +40,8 @@ $config = Be::getConfig('System.System');
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $configSystem = Be::getConfig('System.System');
-        $configUser = Be::getConfig('System.user');
+        $configSystem = Be::getConfig('System', 'System');
+        $configUser = Be::getConfig('System', 'user');
 
         $menuId = Request::get('menuId', 0, 'int');
 

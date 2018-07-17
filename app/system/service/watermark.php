@@ -19,7 +19,7 @@ class Watermark extends \Phpbe\System\Service
         $width = $libImage->getWidth();
         $height = $libImage->getHeight();
 
-        $configWatermark = Be::getConfig('System.Watermark');
+        $configWatermark = Be::getConfig('System', 'Watermark');
 
         $x = 0;
         $y = 0;

@@ -15,7 +15,7 @@ class ArticleComment extends Service
      */
     public function getComments($conditions = [])
     {
-        $tableArticleComment= Be::getTable('Cms.ArticleComment');
+        $tableArticleComment= Be::getTable('Cms', 'ArticleComment');
 
         $where = $this->createCommentWhere($conditions);
         $tableArticleComment->where($where);
@@ -44,7 +44,7 @@ class ArticleComment extends Service
      */
     public function getCommentCount($conditions = [])
     {
-        return Be::getTable('Cms.ArticleComment')
+        return Be::getTable('Cms', 'ArticleComment')
             ->where($this->createCommentWhere($conditions))
             ->count();
     }
@@ -92,7 +92,7 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms.article');
+        $rowArticle = Be::getRow('Cms', 'article');
         $rowArticle->load($articleId);
         if ($rowArticle->id == 0 || $rowArticle->block == 1) {
             throw new \Exception('文章不存在！');
@@ -108,7 +108,7 @@ class ArticleComment extends Service
             throw new \Exception('评论内容过长！');
         }
 
-        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
         $rowArticleComment->article_id = $articleId;
         $rowArticleComment->user_id = $my->id;
         $rowArticleComment->user_name = $my->name;
@@ -116,7 +116,7 @@ class ArticleComment extends Service
         $rowArticleComment->ip = $_SERVER['REMOTE_ADDR'];
         $rowArticleComment->create_time = time();
 
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
         $rowArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
 
         $rowArticleComment->save();
@@ -136,13 +136,13 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
         $rowArticleComment->load($commentId);
         if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
             throw new \Exception('评论不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
         $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
         if ($rowArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
@@ -179,13 +179,13 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticleComment = Be::getRow('Cms.ArticleComment');
+        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
         $rowArticleComment->load($commentId);
         if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
             throw new \Exception('评论不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
         $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
         if ($rowArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
@@ -211,17 +211,17 @@ class ArticleComment extends Service
 
     public function commentsUnblock($ids)
     {
-        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
+        Be::getTable('Cms', 'ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     public function commentsBlock($ids)
     {
-        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
+        Be::getTable('Cms', 'ArticleComment')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     public function commentsDelete($ids)
     {
-        Be::getTable('Cms.ArticleComment')->where('id', 'in', explode(',', $ids))->delete();
+        Be::getTable('Cms', 'ArticleComment')->where('id', 'in', explode(',', $ids))->delete();
     }
 
 }

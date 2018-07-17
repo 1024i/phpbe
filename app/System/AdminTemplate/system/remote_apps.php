@@ -11,7 +11,7 @@ $uiList->head();
 
 <!--{center}-->
 <?php
-$serviceApp = Be::getService('System.app');
+$serviceApp = Be::getService('System', 'app');
 $installedApps = $serviceApp->getApps();
 
 $remoteApps = $this->get('remoteApps');

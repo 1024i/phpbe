@@ -48,7 +48,7 @@ class User extends \Phpbe\System\Service
         }
         Session::set($ip, $times);
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load(['username' => $username]);
 
         if ($rowUser->id == 0) {
@@ -72,7 +72,7 @@ class User extends \Phpbe\System\Service
                     $rememberMeToken = null;
                     do {
                         $rememberMeToken = Random::complex(32);
-                    } while (Be::getRow('System.User')->where('remember_me_token', $rememberMeToken)->count() > 0);
+                    } while (Be::getRow('System', 'User')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
                     $rowUser->remember_me_token = $rememberMeToken;
 
@@ -102,7 +102,7 @@ class User extends \Phpbe\System\Service
         if (cookie::has('_remember_me')) {
             $rememberMe = cookie::get('_remember_me', '');
             if ($rememberMe) {
-                $rowUser = Be::getRow('System.User');
+                $rowUser = Be::getRow('System', 'User');
                 $rowUser->load('remember_me_token', $rememberMe);
 
                 if ($rowUser->id > 0 && $rowUser->block == 0) {
@@ -165,7 +165,7 @@ class User extends \Phpbe\System\Service
             $name = $username;
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load(['username' => $username]);
 
         if ($rowUser->id > 0) {
@@ -179,11 +179,11 @@ class User extends \Phpbe\System\Service
 
         $t = time();
 
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         $salt = Random::complex(32);
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->username = $username;
         $rowUser->email = $email;
         $rowUser->name = $name;
@@ -195,9 +195,9 @@ class User extends \Phpbe\System\Service
         $rowUser->block = ($configUser->emailValid == '1' ? 1 : 0);
         $rowUser->save();
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
         if ($configUser->emailValid == '1') {
             $activationUrl = url('app=System&controller=User&action=activate&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
@@ -280,7 +280,7 @@ class User extends \Phpbe\System\Service
             throw new ServiceException('参数Token（token）缺失！');
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load($userId);
 
         if ($rowUser->id == 0) {
@@ -312,7 +312,7 @@ class User extends \Phpbe\System\Service
             throw new ServiceException('用户名不能为空！');
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load('username', $username);
 
         if ($rowUser->id == 0) {
@@ -326,7 +326,7 @@ class User extends \Phpbe\System\Service
         $rowUser->token = Random::complex(32);
         $rowUser->save();
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         $resetPasswordUrl = url('app=System&controller=User&action=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
 
@@ -334,7 +334,7 @@ class User extends \Phpbe\System\Service
             'siteName' => $configSystem->siteName,
             'resetPasswordUrl' => $resetPasswordUrl
         );
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         $libMail = Be::getLib('Mail');
 
@@ -371,7 +371,7 @@ class User extends \Phpbe\System\Service
             throw new ServiceException('参数密码（password）缺失！');
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load($userId);
 
         if ($rowUser->token != $token) {
@@ -386,14 +386,14 @@ class User extends \Phpbe\System\Service
         $rowUser->token = '';
         $rowUser->save();
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         $data = array(
             'siteName' => $configSystem->siteName,
             'siteUrl' => Be::getRuntime()->getUrlRoot()
         );
 
-        $configUser = Be::getConfig('System.User');
+        $configUser = Be::getConfig('System', 'User');
 
         $libMail = Be::getLib('Mail');
 
@@ -431,7 +431,7 @@ class User extends \Phpbe\System\Service
             throw new ServiceException('参数新密码（newPassword）缺失！');
         }
 
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load($userId);
 
         if ($this->encryptPassword($password, $rowUser->salt) != $rowUser->password) {
@@ -446,7 +446,7 @@ class User extends \Phpbe\System\Service
 
     public function edit($userId, $data = [])
     {
-        $rowUser = Be::getRow('System.User');
+        $rowUser = Be::getRow('System', 'User');
         $rowUser->load($userId);
         $rowUser->bind($data);
         $rowUser->save();
@@ -472,7 +472,7 @@ class User extends \Phpbe\System\Service
      */
     public function getUsers($conditions = [])
     {
-        $tableUser = Be::getTable('System.User');
+        $tableUser = Be::getTable('System', 'User');
 
         $where = $this->createUserWhere($conditions);
         $tableUser->where($where);
@@ -501,7 +501,7 @@ class User extends \Phpbe\System\Service
      */
     public function getUserCount($conditions = [])
     {
-        return Be::getTable('System.User')
+        return Be::getTable('System', 'User')
             ->where($this->createUserWhere($conditions))
             ->count();
     }
@@ -549,7 +549,7 @@ class User extends \Phpbe\System\Service
         $db->beginTransaction();
 
         try {
-            Be::getTable('System.User')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
+            Be::getTable('System', 'User')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -568,7 +568,7 @@ class User extends \Phpbe\System\Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.User')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
+            Be::getTable('System', 'User')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -593,7 +593,7 @@ class User extends \Phpbe\System\Service
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $rowUser = Be::getRow('System.User');
+                $rowUser = Be::getRow('System', 'User');
                 $rowUser->load($id);
 
                 if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_s;
@@ -617,7 +617,7 @@ class User extends \Phpbe\System\Service
 
     public function uploadAvatar($userId, $avatarFile)
     {
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         if ($avatarFile['error'] == 0) {
             $name = strtolower($avatarFile['name']);
@@ -634,10 +634,10 @@ class User extends \Phpbe\System\Service
                 if (!$libImage->isImage()) {
                     throw new ServiceException('您上传的不是合法的图像文件！');
                 } else {
-                    $rowUser = Be::getRow('System.User');
+                    $rowUser = Be::getRow('System', 'User');
                     $rowUser->load($userId);
 
-                    $configUser = Be::getConfig('System.User');
+                    $configUser = Be::getConfig('System', 'User');
 
                     $avatarDir = Be::getRuntime()->getPathData() . '/system/user/avatar/';
                     if (!file_exists($avatarDir)) {
@@ -702,7 +702,7 @@ class User extends \Phpbe\System\Service
         $db->beginTransaction();
         try {
 
-            $rowUser = Be::getRow('System.User');
+            $rowUser = Be::getRow('System', 'User');
             $rowUser->load($userId);
 
             $files = [];
@@ -739,7 +739,7 @@ class User extends \Phpbe\System\Service
      */
     public function isUsernameAvailable($username, $userId = 0)
     {
-        $table = Be::getTable('System.User');
+        $table = Be::getTable('System', 'User');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -756,7 +756,7 @@ class User extends \Phpbe\System\Service
      */
     public function isEmailAvailable($email, $userId = 0)
     {
-        $table = Be::getTable('System.User');
+        $table = Be::getTable('System', 'User');
         if ($userId > 0) {
             $table->where('id', '!=', $userId);
         }
@@ -771,7 +771,7 @@ class User extends \Phpbe\System\Service
      */
     public function getRoles()
     {
-        return Be::getTable('System.UserRole')->orderBy('ordering', 'asc')->getObjects();
+        return Be::getTable('System', 'UserRole')->orderBy('ordering', 'asc')->getObjects();
     }
 
     /**
@@ -780,7 +780,7 @@ class User extends \Phpbe\System\Service
     public function updateUserRoles()
     {
         $roles = $this->getRoles();
-        $service = Be::getService('System.Cache');
+        $service = Be::getService('System', 'Cache');
         foreach ($roles as $role) {
             $service->updateCacheUserRole($role->id);
         }
@@ -793,7 +793,7 @@ class User extends \Phpbe\System\Service
      */
     public function updateUserRole($roleId)
     {
-        $service = Be::getService('System.Cache');
+        $service = Be::getService('System', 'Cache');
         $service->updateCacheUserRole($roleId);
     }
 }

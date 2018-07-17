@@ -24,7 +24,7 @@ $uiList->setAction('listing', './?app=System&controller=System&action=themes');
 $uiList->setAction('create', './?app=System&controller=System&action=remoteThemes', '安装新主题');
 
 
-$configSystem = Be::getConfig('System.System');
+$configSystem = Be::getConfig('System', 'System');
 foreach ($themes as $key=>$theme) {
     $theme->key = $key;
 

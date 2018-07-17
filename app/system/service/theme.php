@@ -40,7 +40,7 @@ class Theme extends \Phpbe\System\Service
 
     public function setDefaultTheme($theme)
     {
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
         $configSystem->theme = $theme;
 
         Be::getService('system')->updateConfig($configSystem, Be::getRuntime()->getPathRoot() . '/Config/system.php');
@@ -95,7 +95,7 @@ class Theme extends \Phpbe\System\Service
     // 删除主题
     public function uninstallTheme($theme)
     {
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         if ($configSystem->theme == $theme) {
             throw new ServiceException('正在使用的默认主题不能删除');

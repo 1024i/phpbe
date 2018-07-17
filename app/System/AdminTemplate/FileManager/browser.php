@@ -20,8 +20,8 @@ $srcId = $this->get('srcId');
 
 $files = $this->get('files');
 
-$configSystem = Be::getConfig('System.System');
-$configWatermark = Be::getConfig('System.Watermark');
+$configSystem = Be::getConfig('System', 'System');
+$configWatermark = Be::getConfig('System', 'Watermark');
 
 ?>
 <form action="./?controller=systemFilemanager&action=browser" method="post" id="form-systemFilemanager">
@@ -168,7 +168,7 @@ $configWatermark = Be::getConfig('System.Watermark');
 </ul>
 
 <?php
-$configSystem = Be::getConfig('System.System');
+$configSystem = Be::getConfig('System', 'System');
 
 // 缩图图方式显示
 if ($view == 'thumbnail') {

@@ -20,11 +20,11 @@ class Link extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.Admin');
+            $adminConfigSystem = Be::getConfig('System', 'Admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $adminServiceSystemLink = Be::getService('System.Link');
+        $adminServiceSystemLink = Be::getService('System', 'Link');
         Response::setTitle('友情链接');
 
         $option = array('key' => $key, 'status' => $status);
@@ -59,7 +59,7 @@ class Link extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowSystemLink = Be::getRow('System.link');
+        $rowSystemLink = Be::getRow('System', 'link');
         if ($id > 0) $rowSystemLink->load($id);
 
         if ($id == 0)
@@ -77,13 +77,13 @@ class Link extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowSystemLink = Be::getRow('System.link');
+        $rowSystemLink = Be::getRow('System', 'link');
         if ($id > 0) $rowSystemLink->load($id);
 
         $rowSystemLink->bind(Request::post());
 
         if ($rowSystemLink->save()) {
-            $adminServiceSystemLink = Be::getService('System.Link');
+            $adminServiceSystemLink = Be::getService('System', 'Link');
             $adminServiceSystemLink->update();
 
             if ($id == 0) {
@@ -106,7 +106,7 @@ class Link extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemLink = Be::getService('System.Link');
+        $adminServiceSystemLink = Be::getService('System', 'Link');
 
         try {
             $adminServiceSystemLink->unblock($ids);
@@ -125,7 +125,7 @@ class Link extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemLink = Be::getService('System.Link');
+        $adminServiceSystemLink = Be::getService('System', 'Link');
 
         try {
             $adminServiceSystemLink->block($ids);
@@ -144,7 +144,7 @@ class Link extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemLink = Be::getService('System.Link');
+        $adminServiceSystemLink = Be::getService('System', 'Link');
         try {
             $adminServiceSystemLink->delete($ids);
             $adminServiceSystemLink->update();

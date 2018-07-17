@@ -5,7 +5,7 @@ use Phpbe\System\Request;
 
 <!--{html}-->
 <?php
-$config = Be::getConfig('System.System');
+$config = Be::getConfig('System', 'System');
 ?>
 <!DOCTYPE html>
 <html>

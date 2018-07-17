@@ -16,7 +16,7 @@ class menu extends Service
      */
     public function getMenus($groupId)
     {
-        return Be::getTable('System.Menu')
+        return Be::getTable('System', 'Menu')
             ->where('group_id', $groupId)
             ->orderBy('ordering', 'ASC')
             ->getObjects();
@@ -33,8 +33,8 @@ class menu extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.Menu')->where('parent_id', $menuId)->update(['parent_id' => 0]);
-            Be::getRow('System.Menu')->delete($menuId);
+            Be::getTable('System', 'Menu')->where('parent_id', $menuId)->update(['parent_id' => 0]);
+            Be::getRow('System', 'Menu')->delete($menuId);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -53,8 +53,8 @@ class menu extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.Menu')->where('home', 1)->update(['home' => 0]);
-            Be::getTable('System.Menu')->where('id', $menuId)->update(['home' => 1]);
+            Be::getTable('System', 'Menu')->where('home', 1)->update(['home' => 0]);
+            Be::getTable('System', 'Menu')->where('id', $menuId)->update(['home' => 1]);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();
@@ -69,7 +69,7 @@ class menu extends Service
      */
     public function getMenuGroups()
     {
-        return Be::getTable('System.MenuGroup')->orderBy('id', 'asc')->getObjects();
+        return Be::getTable('System', 'MenuGroup')->orderBy('id', 'asc')->getObjects();
     }
 
     /**
@@ -79,7 +79,7 @@ class menu extends Service
      */
     public function getMenuGroupSum()
     {
-        return Be::getTable('System.MenuGroup')->count();
+        return Be::getTable('System', 'MenuGroup')->count();
     }
 
     /**
@@ -93,8 +93,8 @@ class menu extends Service
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-            Be::getTable('System.Menu')->where('group_id', $groupId)->delete();
-            Be::getRow('System.MenuGroup')->delete($groupId);
+            Be::getTable('System', 'Menu')->where('group_id', $groupId)->delete();
+            Be::getRow('System', 'MenuGroup')->delete($groupId);
             $db->commit();
         } catch (\Exception $e) {
             $db->rollback();

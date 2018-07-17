@@ -14,7 +14,7 @@ class Article extends Service
      */
     public function getArticles($conditions = [])
     {
-        $tableArticle = Be::getTable('Cms.Article');
+        $tableArticle = Be::getTable('Cms', 'Article');
 
         $where = $this->createArticleWhere($conditions);
         $tableArticle->where($where);
@@ -43,7 +43,7 @@ class Article extends Service
      */
     public function getArticleCount($conditions = [])
     {
-        return Be::getTable('Cms.Article')
+        return Be::getTable('Cms', 'Article')
             ->where($this->createArticleWhere($conditions))
             ->count();
     }
@@ -70,7 +70,7 @@ class Article extends Service
             if ($conditions['categoryId'] == 0)
                 $where[] = ['category_id', 0];
             elseif ($conditions['categoryId'] > 0) {
-                $ids = Be::getService('Cms.Category')->getSubCategoryIds($conditions['categoryId']);
+                $ids = Be::getService('Cms', 'Category')->getSubCategoryIds($conditions['categoryId']);
                 if (count($ids) > 0) {
                     $ids[] = $conditions['categoryId'];
                     $where[] = ['category_id', 'in', $ids];
@@ -166,7 +166,7 @@ class Article extends Service
 
         $keywordsCount = count($keywords);
         if ($keywordsCount > 0) {
-            $tableArticle = Be::getTable('Cms.Article');
+            $tableArticle = Be::getTable('Cms', 'Article');
             $tableArticle->where('id', '!=', $rowArticle->id);
             $tableArticle->where('(');
             for ($i = 0; $i < $keywordsCount; $i++) {
@@ -206,7 +206,7 @@ class Article extends Service
      */
     public function unblock($ids)
     {
-        Be::getTable('Cms.Article')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
+        Be::getTable('Cms', 'Article')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
     }
 
     /**
@@ -217,7 +217,7 @@ class Article extends Service
      */
     public function block($ids)
     {
-        Be::getTable('Cms.Article')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
+        Be::getTable('Cms', 'Article')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
     }
 
     /**
@@ -235,14 +235,14 @@ class Article extends Service
             $array = explode(',', $ids);
             foreach ($array as $id) {
 
-                $articleCommentIds = Be::getTable('Cms.ArticleComment')->where('article_id', $id)->getArray('id');
+                $articleCommentIds = Be::getTable('Cms', 'ArticleComment')->where('article_id', $id)->getArray('id');
                 if (count($articleCommentIds)) {
-                    Be::getTable('Cms.ArticleVoteLog')->where('comment_id', 'in', $articleCommentIds)->delete();
-                    Be::getTable('Cms.ArticleVoteLog')->where('article_id', $id)->delete();
-                    Be::getTable('Cms.ArticleComment')->where('article_id', $id)->delete();
+                    Be::getTable('Cms', 'ArticleVoteLog')->where('comment_id', 'in', $articleCommentIds)->delete();
+                    Be::getTable('Cms', 'ArticleVoteLog')->where('article_id', $id)->delete();
+                    Be::getTable('Cms', 'ArticleComment')->where('article_id', $id)->delete();
                 }
 
-                $rowArticle = Be::getRow('Cms.Article');
+                $rowArticle = Be::getRow('Cms', 'Article');
                 $rowArticle->load($id);
 
                 if ($rowArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
@@ -276,13 +276,13 @@ class Article extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms.Article');
+        $rowArticle = Be::getRow('Cms', 'Article');
         $rowArticle->load($articleId);
         if ($rowArticle->id == 0 || $rowArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
         $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
         if ($rowArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
@@ -319,13 +319,13 @@ class Article extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms.Article');
+        $rowArticle = Be::getRow('Cms', 'Article');
         $rowArticle->load($articleId);
         if ($rowArticle->id == 0 || $rowArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms.ArticleVoteLog');
+        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
         $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
         if ($rowArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
@@ -358,7 +358,7 @@ class Article extends Service
      */
     public function getActiveUsers($limit = 10)
     {
-        $userIds = Be::getTable('Cms.ArticleComment')
+        $userIds = Be::getTable('Cms', 'ArticleComment')
             ->groupBy('user_id')
             ->orderBy('COUNT(*) DESC')
             ->limit($limit)

@@ -57,7 +57,7 @@ $uiList->setFilters(
    )
 );
 
-$configAdminUser = Be::getConfig('System.AdminUser');
+$configAdminUser = Be::getConfig('System', 'AdminUser');
 
 foreach ($users as $user) {
     $user->registerTime =	date('Y-m-d H:i',$user->registerTime);

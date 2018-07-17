@@ -98,13 +98,13 @@ class Cache extends \Phpbe\System\Service
      */
     public function updateMenu($menuName)
     {
-        $group = Be::getRow('System.MenuGroup');
+        $group = Be::getRow('System', 'MenuGroup');
         $group->load(array('className' => $menuName));
         if (!$group->id) {
             throw new ServiceException('未找到调用类名为 ' . $menuName . ' 的菜单！');
         }
 
-        $menus = Be::getTable('System.Menu')
+        $menus = Be::getTable('System', 'Menu')
             ->where('group_id', $group->id)
             ->orderBy('ordering', 'ASC')
             ->getObjects();
@@ -131,7 +131,7 @@ class Cache extends \Phpbe\System\Service
                     }
                 }
 
-                $configSystem = Be::getConfig('System.System');
+                $configSystem = Be::getConfig('System', 'System');
                 if (serialize($configSystem->homeParams) != serialize($homeParams)) {
                     $configSystem->homeParams = $homeParams;
                     $this->updateConfig($configSystem, Be::getRuntime()->getPathRoot() . '/config/system.php');
@@ -181,7 +181,7 @@ class Cache extends \Phpbe\System\Service
      */
     public function updateUserRole($roleId)
     {
-        $row = Be::getRow('System.UserRole');
+        $row = Be::getRow('System', 'UserRole');
         $row->load($roleId);
         if (!$row->id) {
             throw new ServiceException('未找到指定编号（#' . $roleId . '）的用户角色！');
@@ -213,7 +213,7 @@ class Cache extends \Phpbe\System\Service
      */
     public function updateAdminUserRole($roleId)
     {
-        $row = Be::getRow('System.AdminUserRole');
+        $row = Be::getRow('System', 'AdminUserRole');
         $row->load($roleId);
         if (!$row->id) {
             throw new ServiceException('未找到指定编号（#' . $roleId . '）的管理员角色！');
@@ -245,7 +245,7 @@ class Cache extends \Phpbe\System\Service
      */
     public function updateHtml($class)
     {
-        $row = Be::getRow('System.Html');
+        $row = Be::getRow('System', 'Html');
         $row->load(array('class' => $class));
         if (!$row->id) {
             throw new ServiceException('未找到调用类名为 ' . $class . ' 的 html 内容！');

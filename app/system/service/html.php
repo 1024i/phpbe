@@ -14,7 +14,7 @@ class Html extends \Phpbe\System\Service
      */
     public function getSystemHtmls($conditions = array())
     {
-        $tableSystemHtml = Be::getTable('System.Html');
+        $tableSystemHtml = Be::getTable('System', 'Html');
 
         $where = $this->createSystemHtmlWhere($conditions);
         $tableSystemHtml->where($where);
@@ -43,7 +43,7 @@ class Html extends \Phpbe\System\Service
      */
     public function getSystemHtmlCount($conditions = array())
     {
-        return Be::getTable('System.Html')
+        return Be::getTable('System', 'Html')
             ->where($this->createSystemHtmlWhere($conditions))
             ->count();
     }
@@ -78,7 +78,7 @@ class Html extends \Phpbe\System\Service
      */
     public function isClassAvailable($class, $id)
     {
-        $table = Be::getTable('System.Html');
+        $table = Be::getTable('System', 'Html');
         if ($id > 0) {
             $table->where('id', '!=', $id);
         }
@@ -100,7 +100,7 @@ class Html extends \Phpbe\System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('System.Html');
+            $table = Be::getTable('System', 'Html');
             $table->where('id', 'in', $ids)->update(['block' => 0]);
 
             $objects = $table->where('id', 'in', $ids)->getObjects();
@@ -137,7 +137,7 @@ class Html extends \Phpbe\System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('System.Html');
+            $table = Be::getTable('System', 'Html');
             $table->where('id', 'in', $ids)->update(['block' => 1]);
 
             $classes = $table->where('id', 'in', $ids)->getValues('class');
@@ -169,7 +169,7 @@ class Html extends \Phpbe\System\Service
 
             $ids = explode(',', $ids);
 
-            $table = Be::getTable('System.Html');
+            $table = Be::getTable('System', 'Html');
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
             $dir = Be::getRuntime()->getPathCache() . '/Html';

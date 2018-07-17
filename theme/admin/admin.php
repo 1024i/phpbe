@@ -5,7 +5,7 @@ use Phpbe\System\Session;
 
 <!--{html}-->
 <?php
-$config = Be::getConfig('System.System');
+$config = Be::getConfig('System', 'System');
 $my = Be::getAdminUser();
 ?>
 <!DOCTYPE html>
@@ -40,7 +40,7 @@ $my = Be::getAdminUser();
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $adminConfigAdminUser = Be::getConfig('System.AdminUser');
+        $adminConfigAdminUser = Be::getConfig('System', 'AdminUser');
         ?>
         <div class="theme-north-header">
             <?php echo '您好： '; ?><img src="../<?php echo DATA.'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$adminConfigAdminUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" /> <?php echo $my->name; ?> &nbsp; &nbsp; <a href="./?controller=adminUser&action=logout" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
@@ -69,7 +69,7 @@ $my = Be::getAdminUser();
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">应用<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <?php
-                        $serviceApp = Be::getService('System.app');
+                        $serviceApp = Be::getService('System', 'app');
                         $apps = $serviceApp->getApps();
                         ?>
                         <li><a href="./?app=System&controller=System&action=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
@@ -150,7 +150,7 @@ $my = Be::getAdminUser();
         <div class="theme-west">
             <!--{west}-->
             <?php
-            $serviceApp = Be::getService('System.app');
+            $serviceApp = Be::getService('System', 'app');
             $apps = $serviceApp->getApps();
             ?>
             <div class="west-title"><div class="title-icon">已安装的应用</div></div>

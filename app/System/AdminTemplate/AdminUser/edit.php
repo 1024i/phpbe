@@ -92,7 +92,7 @@ if (($adminUser->id == 0)) {
     $filedPassword['label'] = '<input type="checkbox" id="changePassword" onclick="javascript:changePassword(this.checked);"> 重设密码';
 }
 
-$configAdminUser = Be::getConfig('System.AdminUser');
+$configAdminUser = Be::getConfig('System', 'AdminUser');
 $htmlAvatar = '<img src="../'.DATA.'/adminUser/avatar/'.($adminUser->avatarM == ''?('default/'.$configAdminUser->defaultAvatarM):$adminUser->avatarM).'" />';
 if ($adminUser->id>0 && $adminUser->avatarM !='') $htmlAvatar .= ' <a href="javascript:;" onclick="javascript:deleteAvatar(this, '.$adminUser->id.');" style="font-size:16px;">&times;</a>';
 $htmlAvatar .= '<br /><input type="file" name="avatar" />';

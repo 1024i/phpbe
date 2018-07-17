@@ -83,7 +83,7 @@ class FileManager extends AdminController
         $option['sort'] = $sort;
         $option['filterImage'] = $filterImage;
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         $files = $serviceSystemFileManager->getFiles($option);
 
         Response::set('path', $path);
@@ -100,7 +100,7 @@ class FileManager extends AdminController
     {
         $dirName = Request::post('dirName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         if ($serviceSystemFileManager->createDir($dirName)) {
             Response::setMessage('创建文件夹(' . $dirName . ')成功！');
         } else {
@@ -115,7 +115,7 @@ class FileManager extends AdminController
     {
         $dirName = Request::get('dirName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         if ($serviceSystemFileManager->deleteDir($dirName)) {
             Response::setMessage('删除文件夹(' . $dirName . ')成功！');
         } else {
@@ -131,7 +131,7 @@ class FileManager extends AdminController
         $oldDirName = Request::post('oldDirName', '');
         $newDirName = Request::post('newDirName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         if ($serviceSystemFileManager->editDirName($oldDirName, $newDirName)) {
             Response::setMessage('重命名文件夹成功！');
         } else {
@@ -144,7 +144,7 @@ class FileManager extends AdminController
 
     public function uploadFile()
     {
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         $return = './?app=System&controller=FileManager&action=browser';
 
@@ -163,7 +163,7 @@ class FileManager extends AdminController
                 Response::redirect($return);
             }
 
-            $serviceSystemFileManager = Be::getService('System.FileManager');
+            $serviceSystemFileManager = Be::getService('System', 'FileManager');
             $absPath = $serviceSystemFileManager->getAbsPath();
             if ($absPath == false) {
                 Response::setMessage($serviceSystemFileManager->getError(), 'error');
@@ -188,7 +188,7 @@ class FileManager extends AdminController
             if (move_uploaded_file($file['tmpName'], $dstPath)) {
                 $watermark = Request::post('watermark', 0, 'int');
                 if ($watermark == 1 && in_array($type, $configSystem->allowUploadImageTypes)) {
-                    $serviceSystem = Be::getService('System.Admin');
+                    $serviceSystem = Be::getService('System', 'Admin');
                     $serviceSystem->watermark($dstPath);
                 }
 
@@ -228,7 +228,7 @@ class FileManager extends AdminController
     {
         $fileName = Request::get('fileName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         if ($serviceSystemFileManager->deleteFile($fileName)) {
             Response::setMessage('删除文件(' . $fileName . ')成功！');
         } else {
@@ -244,7 +244,7 @@ class FileManager extends AdminController
         $oldFileName = Request::post('oldFileName', '');
         $newFileName = Request::post('newFileName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         if ($serviceSystemFileManager->editFileName($oldFileName, $newFileName)) {
             Response::setMessage('重命名文件成功！');
         } else {
@@ -258,7 +258,7 @@ class FileManager extends AdminController
     {
         $fileName = Request::get('fileName', '');
 
-        $serviceSystemFileManager = Be::getService('System.FileManager');
+        $serviceSystemFileManager = Be::getService('System', 'FileManager');
         $absFilePath = $serviceSystemFileManager->getAbsFilePath($fileName);
         if ($absFilePath == false) {
             echo $serviceSystemFileManager->getError();

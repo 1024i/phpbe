@@ -9,7 +9,7 @@ spl_autoload_register(array('\\System\\Loader', 'autoload'));
 require Be::getRuntime()->getPathRoot() . '/System/Tool.php';
 require PATH_ADMIN . '/System/Tool.php';
 
-$configSystem = Be::getConfig('System.System');
+$configSystem = Be::getConfig('System', 'System');
 
 // 默认时区
 date_default_timezone_set($configSystem->timezone);
@@ -20,7 +20,7 @@ try {
 
     $my = Be::getAdminUser();
     if ($my->id == 0) {
-        $adminServiceAdminUser = Be::getService('System.AdminUser');
+        $adminServiceAdminUser = Be::getService('System', 'AdminUser');
         $adminServiceAdminUser->rememberMe();
     }
 

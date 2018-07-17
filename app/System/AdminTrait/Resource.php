@@ -14,8 +14,7 @@ trait Resource
      * 在子类中必须定义 $config 属性，示例值如下：
     protected $config = [
         'base' => [
-            'name' => '用户管理',
-            'table' => 'user'
+            'name' => '用户管理'
         ],
 
         'lists' => [
@@ -64,8 +63,11 @@ trait Resource
      */
     public function lists()
     {
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
 
-        $table = Be::getTable($this->config['base']['table']);
+        $table = Be::getTable($app, $controller);
+
         $primaryKey = $table->getPrimaryKey();
 
         if (Request::isPost()) {
@@ -76,8 +78,7 @@ trait Resource
             $limit = Request::post('limit', 0, 'int');
             if ($limit < 0) $limit = 0;
 
-            $app = Be::getRuntime()->getApp();
-            $controller = Be::getRuntime()->getController();
+
             $cookieLimitKey = '_'.$app.'_'.$controller.'_limit';
 
             if (!$limit) {
@@ -85,7 +86,7 @@ trait Resource
                 if ($cookieLimit > 0) {
                     $limit = $cookieLimit;
                 } else {
-                    $limit = Be::getConfig('System.Admin')->limit;
+                    $limit = Be::getConfig('System', 'Admin')->limit;
                 }
             } else {
                 Cookie::set($cookieLimitKey, $limit, 86400 * 30);
@@ -123,7 +124,10 @@ trait Resource
      */
     public function detail()
     {
-        $row = Be::getRow($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $row = Be::getRow($app, $controller);
 
         $primaryKey = $row->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -150,7 +154,10 @@ trait Resource
      */
     public function create()
     {
-        $row = Be::getRow($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $row = Be::getRow($app, $controller);
 
         if (Request::isPost()) {
 
@@ -182,7 +189,11 @@ trait Resource
      */
     public function edit()
     {
-        $row = Be::getRow($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $row = Be::getRow($app, $controller);
+
         $primaryKey = $row->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
 
@@ -224,7 +235,10 @@ trait Resource
      */
     public function export()
     {
-        $table = Be::getTable($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $table = Be::getTable($app, $controller);
 
         $this->buildWhere($table, Request::post(null, null, ''));
 
@@ -257,7 +271,7 @@ trait Resource
 
     public function exportTaskNew()
     {
-        $exportTaskService = Be::getService('ExportTask');
+        $exportTaskService = Be::getService('System', 'ExportTask');
         $name = $this->config['base']['name'] . '（' . date('YmdHis') . '）';
         $condition = array(
             'get' => Request::get(),
@@ -287,7 +301,7 @@ trait Resource
         if (!$return) $return = $_SERVER['HTTP_REFERER'];
         Session::set($sessionReturnKey, $return);
 
-        $exportTaskService = Be::getService('ExportTask');
+        $exportTaskService = Be::getService('System', 'ExportTask');
         $tasks = $exportTaskService->getTasks();
 
         if (Request::isAjax()) {
@@ -315,7 +329,7 @@ trait Resource
         echo '已启动！<script>setTimeout(function(){window.close()}, 3000)</script>';
 
         $taskId = Request::get('taskId');
-        $exportTaskService = Be::getService('ExportTask');
+        $exportTaskService = Be::getService('System', 'ExportTask');
         $task = $exportTaskService->getTask($taskId);
 
         try {
@@ -347,7 +361,7 @@ trait Resource
     {
         $taskId = Request::get('taskId');
 
-        $exportTaskService = Be::getService('ExportTask');
+        $exportTaskService = Be::getService('System', 'ExportTask');
         $task = $exportTaskService->getTask($taskId);
 
         if (Request::isAjax()) {
@@ -370,7 +384,7 @@ trait Resource
             $namespace = substr(strrchr($namespace, '\\'), 1);
         }
 
-        $exportTaskService = Be::getService('ExportTask');
+        $exportTaskService = Be::getService('System', 'ExportTask');
         $task = $exportTaskService->getTask($namespace, $taskId);
 
         if ($task['progress'] < 100) {
@@ -404,7 +418,7 @@ trait Resource
         $taskId = Request::get('taskId');
 
         try {
-            $exportTaskService = Be::getService('ExportTask');
+            $exportTaskService = Be::getService('System', 'ExportTask');
             $exportTaskService->delete($taskId);
 
             Response::set('success', true);
@@ -422,7 +436,11 @@ trait Resource
      */
     public function delete()
     {
-        $row = Be::getRow($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $row = Be::getRow($app, $controller);
+
         $primaryKey = $row->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
 
@@ -456,7 +474,10 @@ trait Resource
      */
     public function setting()
     {
-        $table = Be::getTable($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $table = Be::getTable($app, $controller);
 
         if (Request::isPost()) {
 
@@ -488,7 +509,7 @@ trait Resource
                 );
             }
 
-            $serviceSystem = Be::getService('Cache');
+            $serviceSystem = Be::getService('System', 'Cache');
             $serviceSystem->updateTableConfig($this->config['base']['table'], $formattedFields);
 
             Response::success('修改配置成功！');
@@ -507,7 +528,10 @@ trait Resource
         $aggField = Request::get('aggField', '');
         $aggLimit = Request::get('aggLimit', 10, 'int');
 
-        $table = Be::getTable($this->config['base']['table']);
+        $app = Be::getRuntime()->getApp();
+        $controller = Be::getRuntime()->getController();
+
+        $table = Be::getTable($app, $controller);
 
         Response::set('table', $table);
         Response::set('aggField', $aggField);

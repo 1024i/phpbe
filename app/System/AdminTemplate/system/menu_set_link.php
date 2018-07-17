@@ -4,7 +4,7 @@ use Phpbe\System\Be;
 
 <!--{html}-->
 <?php
-$config = Be::getConfig('System.System');
+$config = Be::getConfig('System', 'System');
 $apps = $this->get('apps');
 
 $url = $this->get('url');

@@ -16,8 +16,8 @@ $uiEditor->head();
 $article = $this->get('article');
 $categories = $this->get('categories');
 
-$configArticle = Be::getConfig('Cms.Article');
-$configWatermark = Be::getConfig('System.Watermark');
+$configArticle = Be::getConfig('Cms', 'Article');
+$configWatermark = Be::getConfig('System', 'Watermark');
 
 $categoryHtml = '<select name="categoryId">';
 $categoryHtml .= '<option value="">不属于任何分类</option>';

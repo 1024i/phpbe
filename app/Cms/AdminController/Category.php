@@ -14,7 +14,7 @@ class Category extends AdminController
 
     public function categories()
     {
-        $serviceCategory = Be::getService('Cms.Category');
+        $serviceCategory = Be::getService('Cms', 'Category');
 
         Response::setTitle('分类管理');
         Response::set('categories', $serviceCategory->getCategories());
@@ -31,13 +31,13 @@ class Category extends AdminController
         $db->startTransaction();
 
         try {
-            $rowUser = Be::getRow('System.User');
+            $rowUser = Be::getRow('System', 'User');
             $rowUser->load(1);
             if (count($ids)) {
                 for ($i = 0, $n = count($ids); $i < $n; $i++) {
                     if (!$ids[$i] && !$names[$i]) continue;
 
-                    $rowCategory = Be::getRow('Cms.Category');
+                    $rowCategory = Be::getRow('Cms', 'Category');
                     $rowCategory->id = $ids[$i];
                     $rowCategory->parent_id = $parentIds[$i];
                     $rowCategory->name = $names[$i];
@@ -69,10 +69,10 @@ class Category extends AdminController
         } else {
 
             try {
-                $rowCategory = Be::getRow('Cms.Category');
+                $rowCategory = Be::getRow('Cms', 'Category');
                 $rowCategory->load($categoryId);
 
-                $serviceCategory = Be::getService('Cms.Category');
+                $serviceCategory = Be::getService('Cms', 'Category');
                 $serviceCategory->deleteCategory($categoryId);
 
                 Response::set('success', true);

@@ -12,18 +12,21 @@ class Table extends \Phpbe\System\Service
 {
 
 
-    public function getTables()
+    public function getTables($app)
+    {
+        $tables = [];
+
+
+        return $tables;
+    }
+
+
+    public function getTable($app, $table)
     {
 
     }
 
-
-    public function getTable($table)
-    {
-
-    }
-
-    public function updateTableConfig($table)
+    public function updateTableConfig($app, $table)
     {
 
     }

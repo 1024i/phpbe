@@ -23,11 +23,11 @@ class Announcement extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.Admin');
+            $adminConfigSystem = Be::getConfig('System', 'Admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $adminServiceSystemAnnouncement = Be::getService('System.Announcement');
+        $adminServiceSystemAnnouncement = Be::getService('System', 'Announcement');
         Response::setTitle('公告');
 
         $option = array('key' => $key, 'status' => $status);
@@ -62,7 +62,7 @@ class Announcement extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowSystemAnnouncement = Be::getRow('System.announcement');
+        $rowSystemAnnouncement = Be::getRow('System', 'announcement');
         if ($id > 0) $rowSystemAnnouncement->load($id);
 
         if ($id == 0)
@@ -80,7 +80,7 @@ class Announcement extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowSystemAnnouncement = Be::getRow('System.announcement');
+        $rowSystemAnnouncement = Be::getRow('System', 'announcement');
         if ($id > 0) $rowSystemAnnouncement->load($id);
 
         $rowSystemAnnouncement->bind(Request::post());
@@ -109,7 +109,7 @@ class Announcement extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemAnnouncement = Be::getService('System.Announcement');
+        $adminServiceSystemAnnouncement = Be::getService('System', 'Announcement');
         if ($adminServiceSystemAnnouncement->unblock($ids)) {
             Response::setMessage('公开公告成功！');
             systemLog('公开公告：#' . $ids);
@@ -124,7 +124,7 @@ class Announcement extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemAnnouncement = Be::getService('System.Announcement');
+        $adminServiceSystemAnnouncement = Be::getService('System', 'Announcement');
         if ($adminServiceSystemAnnouncement->block($ids)) {
             Response::setMessage('屏蔽公告成功！');
             systemLog('屏蔽公告：' . $ids);
@@ -139,7 +139,7 @@ class Announcement extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemAnnouncement = Be::getService('System.Announcement');
+        $adminServiceSystemAnnouncement = Be::getService('System', 'Announcement');
         if ($adminServiceSystemAnnouncement->delete($ids)) {
             Response::setMessage('删除公告成功！');
             systemLog('删除公告：' . $ids);
