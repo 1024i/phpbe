@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 use Phpbe\System\Session;
 use Phpbe\System\Request;
 

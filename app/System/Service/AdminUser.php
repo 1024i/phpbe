@@ -69,7 +69,7 @@ class AdminUser extends Service
                         throw new ServiceException('管理员账号已被停用！');
                     } else {
                         session::delete($ip);
-                        Session::set('_admin_user', $rowAdminUser->toObject());
+                        Session::set('_adminUser', $rowAdminUser->toObject());
 
                         $rowAdminUserAdminLog->success = 1;
                         $rowAdminUserAdminLog->description = '登陆成功！';
@@ -84,7 +84,7 @@ class AdminUser extends Service
                         $rowAdminUser->save();
 
                         cookie::setExpire(time() + 30 * 86400);
-                        cookie::set('_admin_remember_me', $rememberMeToken);
+                        cookie::set('_adminRememberMe', $rememberMeToken);
 
                     }
                 } else {
@@ -116,13 +116,13 @@ class AdminUser extends Service
      */
     public function rememberMe()
     {
-        if (cookie::has('_admin_remember_me')) {
-            $adminRememberMe = cookie::get('_admin_remember_me', '');
+        if (cookie::has('_adminRememberMe')) {
+            $adminRememberMe = cookie::get('_adminRememberMe', '');
             if ($adminRememberMe) {
                 $rowAdminUser = Be::getRow('System', 'AdminUser');
                 $rowAdminUser->load('remember_me_token', $adminRememberMe);
                 if ($rowAdminUser->id && $rowAdminUser->block == 0) {
-                    Session::set('_admin_user', Be::getAdminUser($rowAdminUser->id));
+                    Session::set('_adminUser', Be::getAdminUser($rowAdminUser->id));
 
                     $db = Be::getDb();
                     $db->beginTransaction();
@@ -151,8 +151,8 @@ class AdminUser extends Service
      */
     public function logout()
     {
-        session::delete('_admin_user');
-        cookie::delete('_admin_remember_me');
+        session::delete('_adminUser');
+        cookie::delete('_adminRememberMe');
     }
 
     /**
@@ -500,21 +500,42 @@ class AdminUser extends Service
     public function updateAdminUserRoles()
     {
         $roles = $this->getRoles();
-
-        $service = Be::getService('System', 'Cache');
         foreach ($roles as $role) {
-            $service->updateCacheAdminUserRole($role->id);
+            $this->updateAdminUserRole($role->id);
         }
     }
 
     /**
-     * 更新指定角色缓存
+     * 更新后台管理员角色缓存
      *
-     * @param int $roleId 角色ID
+     * @param int $roleId 管理员角色ID
+     * @throws \Exception
      */
     public function updateAdminUserRole($roleId)
     {
-        $service = Be::getService('System', 'Cache');
-        $service->updateCacheAdminUserRole($roleId);
+        $row = Be::getRow('System', 'AdminUserRole');
+        $row->load($roleId);
+        if (!$row->id) {
+            throw new ServiceException('未找到指定编号（#' . $roleId . '）的管理员角色！');
+        }
+
+        $code = '<?php' . "\n";
+        $code .= 'namespace Cache\\Runtime\\AdminUserRole;' . "\n";
+        $code .= "\n";
+        $code .= 'class AdminUserRole' . $roleId . ' extends \\Phpbe\\System\\Role' . "\n";
+        $code .= '{' . "\n";
+        $code .= '  public $name = \'' . $row->name . '\';' . "\n";
+        $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
+        $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
+        $code .= '}' . "\n";
+
+        $path = Be::getRuntime()->getPathCache() . '/Runtime/AdminUserRole/AdminUserRole' . $roleId . '.php';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $code, LOCK_EX);
+        chmod($path, 0755);
     }
+
+
 }

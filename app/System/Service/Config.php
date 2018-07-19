@@ -155,6 +155,97 @@ class Config extends Service
         return $result;
     }
 
+    /*
+     * 保存配置文件到指定咱径
+     *
+     * @param string $app 应用名称
+     * @param Object $config 配置对象
+     *
+     * @return bool 是否保存成功
+     */
+    public function updateConfig($app, $config)
+    {
+        $comments = array();
+        if (file_exists($path)) {
+            $f = fopen($path, 'r');
+            while (!feof($f)) {
+                $line = fgets($f, 4096);
+                $line = trim($line);
+                if (strlen($line) > 8 && strtolower(substr($line, 0, 8)) == 'public $') {
+                    $keyStartPos = strpos($line, '$');
+                    $keyEndPos = strpos($line, '=');
+                    if ($keyStartPos !== false && $keyEndPos !== false) {
+                        $key = substr($line, $keyStartPos + 1, $keyEndPos - 1 - $keyStartPos);
+                        $key = trim($key);
+
+                        $commentPos = strrpos($line, '//');
+                        if ($commentPos !== false) {
+                            $comment = substr($line, $commentPos + 2);
+                            $comment = trim($comment);
+
+                            if (substr($comment, -1, 1) != ';') $comments[$key] = $comment;
+                        }
+                    }
+                }
+            }
+            fclose($f);
+        }
+
+        $vars = get_object_vars($config);
+
+        $class = get_class($config);
+
+        $namespace = substr($class, 0, strrpos($class, '\\'));
+        $className = substr($class, strrpos($class, '\\') + 1);
+
+        $buf = "<?php\n";
+        $buf .= 'namespace ' . $namespace . ';' . "\n\n";
+        $buf .= 'class ' . $className . "\n";
+        $buf .= "{\r\n";
+
+        foreach ($vars as $key => $val) {
+            if (is_array($val)) {
+                $indexed = true;
+
+                $i = 0;
+                foreach ($val as $index => $x) {
+                    if ($i !== $index) {
+                        $indexed = false;
+                        break;
+                    }
+                    $i++;
+                }
+
+                $arr = array();
+                foreach ($val as $index => $x) {
+                    $x = str_replace('\'', '&#039;', $x);
+
+                    // 数组含有非数字的索引
+                    if ($indexed) {
+                        $arr[] = '\'' . $x . '\'';
+                    } else {
+                        $arr[] = '\'' . $index . '\'=>\'' . $x . '\'';
+                    }
+                }
+                $buf .= '  public $' . $key . ' = [' . implode(', ', $arr) . '];';
+            } elseif (is_bool($val)) {
+                $buf .= '  public $' . $key . ' = ' . ($val ? 'true' : 'false') . ';';
+            } elseif (is_int($val) || is_float($val)) {
+                $buf .= '  public $' . $key . ' = ' . $val . ';';
+            } else {
+                $val = str_replace('\'', '&#039;', $val);
+                $buf .= '  public $' . $key . ' = \'' . $val . '\';';
+            }
+
+            if (array_key_exists($key, $comments)) $buf .= '  // ' . $comments[$key];
+
+            $buf .= "\n";
+        }
+        $buf .= "}\n";
+
+        return file_put_contents($path, $buf, LOCK_EX);
+    }
+
 }
 
 

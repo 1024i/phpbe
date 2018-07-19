@@ -780,20 +780,41 @@ class User extends \Phpbe\System\Service
     public function updateUserRoles()
     {
         $roles = $this->getRoles();
-        $service = Be::getService('System', 'Cache');
         foreach ($roles as $role) {
-            $service->updateCacheUserRole($role->id);
+            $this->updateUserRole($role->id);
         }
     }
 
     /**
-     * 更新指定角色缓存
+     * 更新前台用户角色缓存
      *
-     * @param int $roleId 角色ID
+     * @param int $roleId 用户角色ID
+     * @throws \Exception
      */
     public function updateUserRole($roleId)
     {
-        $service = Be::getService('System', 'Cache');
-        $service->updateCacheUserRole($roleId);
+        $row = Be::getRow('System', 'UserRole');
+        $row->load($roleId);
+        if (!$row->id) {
+            throw new ServiceException('未找到指定编号（#' . $roleId . '）的用户角色！');
+        }
+
+        $code = '<?php' . "\n";
+        $code .= 'namespace Cache\\Runtime\\UserRole;' . "\n";
+        $code .= "\n";
+        $code .= 'class UserRole' . $roleId . ' extends \\Phpbe\\System\\Role' . "\n";
+        $code .= '{' . "\n";
+        $code .= '  public $name = \'' . $row->name . '\';' . "\n";
+        $code .= '  public $permission = \'' . $row->permission . '\';' . "\n";
+        $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
+        $code .= '}' . "\n";
+
+        $path = Be::getRuntime()->getPathCache() . '/Runtime/UserRole/UserRole' . $roleId . '.php';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $code, LOCK_EX);
+        chmod($path, 0755);
     }
+
 }

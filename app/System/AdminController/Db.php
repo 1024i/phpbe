@@ -5,22 +5,48 @@ use Phpbe\System\Be;
 use Phpbe\System\Request;
 use Phpbe\System\Response;
 
-class Table extends \Phpbe\System\AdminController
+class Db extends \Phpbe\System\AdminController
 {
 
-    public function lists()
+    public function tables()
     {
-        $tables = Be::getService('table')->getTables();
+        $service = Be::getService('System', 'Db');
+        if (Request::isPost()) {
 
-        Response::set('tables', $tables);
-        Response::display();
+            $type = Request::get('type');
+            if ($type == 'lists') {
+                $app = Request::get('app');
+                $tables = $service->getTables($app);
+                Response::set('app', $app);
+                Response::set('tables', $tables);
+                Response::display('System', 'Db.tableLists');
+            } else if ($type == 'config') {
+                $app = Request::get('app');
+                $table = Request::get('table');
+                $tables = $service->getTables($app);
+                Response::set('tables', $tables);
+                Response::display('System', 'Db.tableConfig');
+            } else if ($type == 'save') {
+                $app = Request::get('app');
+                $table = Request::get('table');
+
+            }
+
+        } else {
+            $apps = $service->getApps();
+            Response::set('apps', $apps);
+            Response::setTitle('数据库表配置');
+            Response::display();
+        }
     }
+
 
     /**
      * 配置项
      */
-    public function setting()
+    public function tableConfig()
     {
+        $app = Request::get('app');
         $table = Request::get('table');
 
         if (Request::isPost()) {
@@ -52,14 +78,14 @@ class Table extends \Phpbe\System\AdminController
                 );
             }
 
-            $serviceSystem = Be::getService('Cache');
-            $serviceSystem->updateTableConfig($table, $formattedFields);
+            $serviceSystem = Be::getService('System', 'Db');
+            $serviceSystem->updateTableConfig($app, $table, $formattedFields);
 
             Response::success('修改配置成功！');
 
         } else {
 
-            Response::setTitle($table . ' - 配置');
+            Response::setTitle('数据库'. $app . '/' . $table . ' - 配置');
             Response::set('table', $table);
             Response::display();
         }

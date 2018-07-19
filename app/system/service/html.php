@@ -2,6 +2,7 @@
 namespace App\System\Service;
 
 use Phpbe\System\Be;
+use Phpbe\System\Service\ServiceException;
 
 class Html extends \Phpbe\System\Service
 {
@@ -105,7 +106,7 @@ class Html extends \Phpbe\System\Service
 
             $objects = $table->where('id', 'in', $ids)->getObjects();
 
-            $dir = Be::getRuntime()->getPathCache() . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Runtime/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);
@@ -142,7 +143,7 @@ class Html extends \Phpbe\System\Service
 
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = Be::getRuntime()->getPathCache() . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Runtime/Html';
             foreach ($classes as $class) {
                 $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
@@ -172,7 +173,7 @@ class Html extends \Phpbe\System\Service
             $table = Be::getTable('System', 'Html');
             $classes = $table->where('id', 'in', $ids)->getValues('class');
 
-            $dir = Be::getRuntime()->getPathCache() . '/Html';
+            $dir = Be::getRuntime()->getPathCache() . '/Runtime/Html';
             foreach ($classes as $class) {
                 $path = $dir . '/' . $class . '.html';
                 if (file_exists($path)) @unlink($path);
@@ -187,5 +188,26 @@ class Html extends \Phpbe\System\Service
         }
     }
 
+    /**
+     * 更新自定义 html 内容
+     *
+     * @param string $class 调用类名
+     * @throws \Exception
+     */
+    public function update($class)
+    {
+        $row = Be::getRow('System', 'Html');
+        $row->load(array('class' => $class));
+        if (!$row->id) {
+            throw new ServiceException('未找到调用类名为 ' . $class . ' 的 html 内容！');
+        }
+
+        $path = Be::getRuntime()->getPathCache() . '/Runtime/Html/' . $class . '.html';
+        $dir = dirname($path);
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        file_put_contents($path, $row->body, LOCK_EX);
+        chmod($path, 0755);
+    }
 
 }

@@ -310,7 +310,7 @@ class User extends AdminController
 
                 if ($id == 0 && $names[$i] == '') continue;
 
-                $rowUserRole = Be::getRow('userRole');
+                $rowUserRole = Be::getRow('System', 'UserRole');
                 if ($id != 0) $rowUserRole->load($id);
                 $rowUserRole->name = $names[$i];
                 $rowUserRole->note = $notes[$i];
@@ -337,7 +337,7 @@ class User extends AdminController
             Response::ajax();
         }
 
-        $rowUserRole = Be::getRow('userRole');
+        $rowUserRole = Be::getRow('System', 'UserRole');
         $rowUserRole->load($roleId);
         if ($rowUserRole->id == 0) {
             Response::set('error', 2);
@@ -399,7 +399,7 @@ class User extends AdminController
         $roleId = Request::get('roleId', 0, 'int');
         if ($roleId == 0) Response::end('参数(roleId)缺失！');
 
-        $rowUserRole = Be::getRow('userRole');
+        $rowUserRole = Be::getRow('System', 'UserRole');
         $rowUserRole->load($roleId);
         if ($rowUserRole->id == 0) Response::end('不存在的角色！');
 
@@ -418,7 +418,7 @@ class User extends AdminController
         $roleId = Request::post('roleId', 0, 'int');
         if ($roleId == 0) Response::end('参数(roleId)缺失！');
 
-        $rowUserRole = Be::getRow('userRole');
+        $rowUserRole = Be::getRow('System', 'UserRole');
         $rowUserRole->load($roleId);
         if ($rowUserRole->id == 0) Response::end('不存在的角色！');
         $rowUserRole->permission = Request::post('permission', 0, 'int');

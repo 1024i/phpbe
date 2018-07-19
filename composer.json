@@ -18,7 +18,7 @@
     "require": {
         "php": ">=5.6.0",
 
-        "phpbe/system": "^2.1",
+        "phpbe/system": "dev-master",
 
         "phpbe/lib-ip": "^1.0",
         "phpbe/lib-image": "^1.0",
@@ -32,7 +32,7 @@
         "phpbe/ui-category-tree": "^1.0",
         "phpbe/ui-admin-grid": "^1.0",
 
-        "phpbe/util": "^1.0",
+        "phpbe/util": "^2.0",
 
         "monolog/monolog": "~1.11",
         "guzzlehttp/guzzle" : "6.*",
@@ -43,9 +43,6 @@
         "psr-4": {
             "App\\": "app/",
             "Cache\\": "cache/"
-        },
-        "files": [
-            "app/System/functions.php"
-        ]
+        }
     }
 }

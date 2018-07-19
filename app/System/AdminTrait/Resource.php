@@ -116,7 +116,7 @@ trait Resource
         Response::set('table', $table);
         Response::set('config', $this->config);
 
-        Response::display('Resource.lists');
+        Response::display('System', 'Resource.lists');
     }
 
     /**
@@ -146,7 +146,7 @@ trait Resource
 
         Response::setTitle($this->config['base']['name'] . ' - 明细');
         Response::set('row', $row);
-        Response::display('Resource.detail');
+        Response::display('System', 'Resource.detail');
     }
 
     /**
@@ -180,7 +180,7 @@ trait Resource
         } else {
             Response::setTitle($this->config['base']['name'] . ' - 创建');
             Response::set('row', $row);
-            Response::display('Resource.create');
+            Response::display('System', 'Resource.create');
         }
     }
 
@@ -226,7 +226,7 @@ trait Resource
 
             Response::setTitle($this->config['base']['name'] . ' - 编辑');
             Response::set('row', $row);
-            Response::display('Resource.edit');
+            Response::display('System', 'Resource.edit');
         }
     }
 
@@ -314,7 +314,7 @@ trait Resource
 
             Response::set('tasks', $tasks);
             Response::set('return', $return);
-            Response::display('Resource.exportTasks');
+            Response::display('System', 'Resource.exportTasks');
         }
     }
 
@@ -372,7 +372,7 @@ trait Resource
         } else {
             Response::setTitle($this->config['base']['name'] . ' - 导出任务明细（#' . $taskId . '）');
             Response::set('task', $task);
-            Response::display('Resource.exportTaskDetail');
+            Response::display('System', 'Resource.exportTaskDetail');
         }
     }
 
@@ -509,7 +509,7 @@ trait Resource
                 );
             }
 
-            $serviceSystem = Be::getService('System', 'Cache');
+            $serviceSystem = Be::getService('System', 'Resource');
             $serviceSystem->updateTableConfig($this->config['base']['table'], $formattedFields);
 
             Response::success('修改配置成功！');
@@ -518,7 +518,7 @@ trait Resource
 
             Response::setTitle($this->config['base']['name'] . ' - 配置');
             Response::set('table', $table);
-            Response::display('Resource.setting');
+            Response::display('System', 'Resource.setting');
         }
     }
 
@@ -547,7 +547,7 @@ trait Resource
         }
 
         Response::setTitle($this->config['base']['name'] . ' - 饼图');
-        Response::display('chartPie');
+        Response::display('System', 'Resource.chartPie');
     }
 
 

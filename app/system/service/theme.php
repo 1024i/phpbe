@@ -43,9 +43,7 @@ class Theme extends \Phpbe\System\Service
         $configSystem = Be::getConfig('System', 'System');
         $configSystem->theme = $theme;
 
-        Be::getService('system')->updateConfig($configSystem, Be::getRuntime()->getPathRoot() . '/Config/system.php');
-
-        return true;
+        Be::getService('System', 'Config')->updateConfig('System', $configSystem);
     }
 
 
