@@ -17,7 +17,7 @@ class Template extends \Phpbe\System\Service
      * @param bool $admin 是否是后台模析
      * @throws \Exception
      */
-    public function updateTemplate($app, $template, $theme, $admin = false)
+    public function update($app, $template, $theme, $admin = false)
     {
         $fileTheme = Be::getRuntime()->getPathRoot() . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
@@ -157,7 +157,7 @@ class Template extends \Phpbe\System\Service
 
         $namespaceSuffix = '';
         if (count($templates)) {
-            $namespaceSuffix = '\\' . implode('\\', $templates);
+            $namespaceSuffix = implode('\\', $templates);
         }
 
         $codeVars = '';
@@ -195,19 +195,5 @@ class Template extends \Phpbe\System\Service
         file_put_contents($path, $codePhp, LOCK_EX);
         chmod($path, 0755);
     }
-
-    /**
-     * 更新后台模板
-     *
-     * @param string $app 应用名
-     * @param string $template 模析名
-     * @param string $theme 主题名
-     * @return bool 是否更新成功
-     */
-    public function updateAdminTemplate($app, $template, $theme)
-    {
-        return $this->updateTemplate($app, $template, $theme, true);
-    }
-
 
 }

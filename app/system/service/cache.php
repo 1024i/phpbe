@@ -2,12 +2,7 @@
 
 namespace App\System\Service;
 
-use Phpbe\System\Service\ServiceException;
-use Phpbe\Util\String;
-use Phpbe\Util\System;
 use Phpbe\System\Be;
-use Phpbe\System\Db;
-use Phpbe\System\db\DbException;
 
 class Cache extends \Phpbe\System\Service
 {
@@ -37,9 +32,6 @@ class Cache extends \Phpbe\System\Service
         if ($file === null) return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir);
         return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir . '/' . $file);
     }
-
-
-
 
 
 }

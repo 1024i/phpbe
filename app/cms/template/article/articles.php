@@ -6,7 +6,7 @@ use Phpbe\System\Be;
 <!--{template:cms.article.detail}-->
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/articles.css">
+<link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/articles.css">
 <!--{/head}-->
 
 <!--{middle}-->

@@ -16,15 +16,17 @@ $config = Be::getConfig('System', 'System');
     <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery-1.12.4.min.js"></script>
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery.validate.min.js"></script>
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/jquery.cookie.js"></script>
+    <base href="<?php echo Be::getRuntime()->getUrlRoot(); ?>" />
 
-    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/css/be.css" />
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/be.js"></script>
+    <script src="/theme/huxiu/js/jquery-1.12.4.min.js"></script>
+    <script src="/theme/huxiu/js/jquery.validate.min.js"></script>
+    <script src="/theme/huxiu/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/css/theme.css" />
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/js/theme.js"></script>
+    <link rel="stylesheet" href="/theme/huxiu/css/be.css" />
+    <script src="/theme/huxiu/js/be.js"></script>
+
+    <link rel="stylesheet" href="/theme/huxiu/css/theme.css" />
+    <script src="/theme/huxiu/js/theme.js"></script>
 
     <!--{head}-->
     <!--{/head}-->

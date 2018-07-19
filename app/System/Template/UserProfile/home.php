@@ -2,10 +2,10 @@
 use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/dashboard.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/userProfile/css/home.css" />
+<link type="text/css" rel="stylesheet" href="/app/System/Template/userProfile/css/home.css" />
 
 <style type="text/css">
     .theme-center .profile .profileItem{ background-color:<?php echo $this->getColor(); ?>;}

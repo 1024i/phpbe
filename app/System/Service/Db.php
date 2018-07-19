@@ -95,23 +95,27 @@ class Db extends \Phpbe\System\Service
         }
 
         $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
+        $formattedFields = [];
         $primaryKey = 'id';
         foreach ($fields as $field) {
             if ($field->Key == 'PRI') {
                 $primaryKey = $field->Field;
             }
+
+            $formattedFields[] = $field->Field;
         }
 
-        $formattedFields = $this->formatTableFields($app, $name, $fields);
+        //$formattedFields = $this->formatTableFields($app, $name, $fields);
 
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\Runtime\\App\\' . $app . '\\Table;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $name . ' extends \\Phpbe\\System\\Db\\Table' . "\n";
         $code .= '{' . "\n";
+        $code .= '    protected $app = \'' . $app . '\'; // 应用名' . "\n";
         $code .= '    protected $tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
-        $code .= '    protected $fields = [\'' . var_export($formattedFields, true) . '\']; // 字段列表' . "\n";
+        $code .= '    protected $fields = [\'' . implode('\',\'', $formattedFields) . '\']; // 字段列表' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
 
@@ -154,9 +158,10 @@ class Db extends \Phpbe\System\Service
         $code .= "\n";
         $code .= 'class ' . $name . ' extends \\Phpbe\\System\\Db\\Row' . "\n";
         $code .= '{' . "\n";
+        $code .= '    protected $app = \'' . $app . '\'; // 应用名' . "\n";
         $code .= '    protected $tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
-        $code .= '    protected $fields = ' . var_export($formattedFields, true) . '; // 字段列表' . "\n";
+        $code .= '    protected $fields = [\'' . implode('\',\'', array_keys($formattedFields)) . '\']; // 字段列表' . "\n";
 
         foreach ($formattedFields as $key => $field) {
             $code .= '    public $' . $field['field'] . ' = ' . ($field['isNumber'] ? $field['default'] : ('\'' . $field['default'] . '\'')) . ';';

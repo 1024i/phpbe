@@ -2,8 +2,8 @@
 use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<script type="text/javascript" language="javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/js/user.js"></script>
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/Cms/Template/Article/css/user.css">
+<script type="text/javascript" language="javascript" src="/app/Cms/Template/Article/js/user.js"></script>
+<link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/user.css">
 
 <style type="text/css">
 .theme-center .user-menu-bar li{background-color:<?php echo $this->getColor(3); ?>;}
@@ -29,7 +29,7 @@ $configArticle = Be::getConfig('Cms', 'Article');
 <div style="border:#eee 1px solid; border-left:<?php echo $this->primaryColor; ?> 5px solid;  background-color:#FFFFFF; padding:20px; box-shadow:1px 1px 3px #ccc;">
     <div class="row">
         <div class="col-3 text-center">
-            <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($user->avatarL == ''?('default/'.$configUser->defaultAvatarL):$user->avatarL); ?>" alt="<?php echo $user->name; ?>" />
+            <img src="<?php echo Be::getRuntime()->getUrlData().'/System/User/avatar/'.($user->avatarL == ''?('default/'.$configUser->defaultAvatarL):$user->avatarL); ?>" alt="<?php echo $user->name; ?>" />
 
         </div>
         <div class="col-17">
@@ -57,7 +57,7 @@ $configArticle = Be::getConfig('Cms', 'Article');
             <div class="article">
                 <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
                     <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $comment->article->title; ?>" target="Blank">
-                    <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $comment->article->title; ?>" />
+                    <img src="<?php echo Be::getRuntime()->getUrlData().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $comment->article->title; ?>" />
                     </a>
                 </div>
 

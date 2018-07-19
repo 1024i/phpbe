@@ -109,7 +109,7 @@ class menu extends Service
      * @param string $menuName 菜单名
      * @throws \Exception
      */
-    public function updateMenu($menuName)
+    public function update($menuName)
     {
         $group = Be::getRow('System', 'MenuGroup');
         $group->load(array('className' => $menuName));

@@ -2,7 +2,7 @@
 use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/app/System/Template/User/css/registerSuccess.css">
+<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/registerSuccess.css">
 <!--{/head}-->
 
 <!--{middle}-->
