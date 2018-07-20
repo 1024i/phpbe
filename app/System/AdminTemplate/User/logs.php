@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <script type="text/javascript" language="javascript" src="template/user/js/logs.js"></script>
 <!--{/head}-->
@@ -15,11 +15,11 @@ $uiList->head();
 
 $logs = $this->get('logs');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('listing', './?controller=user&action=logs');
+$uiGrid->setAction('listing', './?controller=user&action=logs');
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -60,9 +60,9 @@ foreach ($logs as $log) {
     $log->address = $libIp->convert($log->ip);
 }
 
-$uiList->setData($logs);
+$uiGrid->setData($logs);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'createTime',
         'label'=>'时间',
@@ -101,7 +101,7 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

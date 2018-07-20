@@ -94,7 +94,7 @@ $adminUserRole = Be::getAdminUserRole($my->roleId);
             </div>
             <div class="box-body">
                 <?php
-                $uiList = Be::getUi('grid');
+                $uiGrid = Be::getUi('grid');
 
                 $libIp = Be::getLib('ip');
 
@@ -110,9 +110,9 @@ $adminUserRole = Be::getAdminUserRole($my->roleId);
                     $log->address = $libIp->convert($log->ip);
                 }
 
-                $uiList->setData($recentLogs);
+                $uiGrid->setData($recentLogs);
 
-                $uiList->setFields(
+                $uiGrid->setFields(
                     array(
                         'name'=>'createTime',
                         'label'=>'时间',
@@ -137,7 +137,7 @@ $adminUserRole = Be::getAdminUserRole($my->roleId);
                         'width'=>'200'
                     )
                 );
-                $uiList->display();
+                $uiGrid->display();
                 ?>
             </div>
         </div>

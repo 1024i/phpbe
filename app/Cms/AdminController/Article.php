@@ -109,9 +109,9 @@ class Article extends AdminController
         // 过滤掉本服务器上的图片
         $remoteImages = array();
         if (count($images) > 0) {
-            $beUrlLen = strlen(Be::getRuntime()->getUrlRoot());
+            $beUrlLen = strlen(url());
             foreach ($images as $image) {
-                if (substr($image, 0, $beUrlLen) != Be::getRuntime()->getUrlRoot()) {
+                if (substr($image, 0, $beUrlLen) != url()) {
                     $remoteImages[] = $image;
                 }
             }
@@ -129,7 +129,7 @@ class Article extends AdminController
 
                 // 下载到本地的文件夹
                 $dirName = date('Y-m-d');
-                $dirPath = Be::getRuntime()->getPathData() . '/Cms/Article/' .  $dirName;
+                $dirPath = Be::getRuntime()->getDataPath() . '/Cms/Article/' .  $dirName;
 
                 // 文件夹不存在时自动创建
                 if (!file_exists($dirPath)) {
@@ -169,7 +169,7 @@ class Article extends AdminController
                 if ($response->getStatusCode() == 200) {
                     $data = $response->getBody();
                     if ($data) {
-                        $tmpImage = Be::getRuntime()->getPathData() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
+                        $tmpImage = Be::getRuntime()->getDataPath() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
                         file_put_contents($tmpImage, $data);
 
                         $libImage = Be::getLib('image');
@@ -177,7 +177,7 @@ class Article extends AdminController
 
                         if ($libImage->isImage()) {
                             $t = date('YmdHis');
-                            $dir = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail';
+                            $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
                             if (!file_exists($dir)) {
                                 $libFso = Be::getLib('Fso');
                                 $libFso->mkDir($dir);
@@ -212,7 +212,7 @@ class Article extends AdminController
                     $libImage->open($thumbnailUpload['tmpName']);
                     if ($libImage->isImage()) {
                         $t = date('YmdHis');
-                        $dir = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail';
+                        $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
                         if (!file_exists($dir)) {
                             $libFso = Be::getLib('Fso');
                             $libFso->mkDir($dir);
@@ -243,7 +243,7 @@ class Article extends AdminController
                     if ($response->getStatusCode() == 200) {
                         $data = $response->getBody();
                         if ($data) {
-                            $tmpImage = Be::getRuntime()->getPathData() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
+                            $tmpImage = Be::getRuntime()->getDataPath() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
                             file_put_contents($tmpImage, $data);
 
                             $libImage = Be::getLib('image');
@@ -251,7 +251,7 @@ class Article extends AdminController
 
                             if ($libImage->isImage()) {
                                 $t = date('YmdHis');
-                                $dir = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail';
+                                $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
                                 if (!file_exists($dir)) {
                                     $libFso = Be::getLib('Fso');
                                     $libFso->mkDir($dir);

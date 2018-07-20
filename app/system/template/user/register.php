@@ -2,8 +2,8 @@
 use Phpbe\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/register.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/register.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo url(); ?>/app/System/Template/User/css/register.css">
+<script type="text/javascript" language="javascript" src="<?php echo url(); ?>/app/System/Template/User/js/register.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -78,7 +78,7 @@ $configUser = Be::getConfig('System', 'User');
 					<div class="col-12">
 						<div class="val">
 							<input type="text" name="captcha" class="input" style="width:90px;" />
-							<img src="<?php echo url('app=System&controller=User&action=captchaLogin'); ?>" onclick="javascript:this.src='/?app=System&controller=User&action=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
+							<img src="<?php echo url('System', 'User', 'captchaLogin'); ?>" onclick="javascript:this.src='/?app=System&controller=User&action=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -98,13 +98,13 @@ $configUser = Be::getConfig('System', 'User');
 						<?php
 						if ($configUser->connectQq == '1') {
 						?>
-						<a href="<?php echo url('app=System&controller=User&action=qqLogin'); ?>"><img src="/app/System/Template/User/images/qqLogin.png" /></a> &nbsp;
+						<a href="<?php echo url('System', 'User', 'qqLogin'); ?>"><img src="<?php echo url(); ?>/app/System/Template/User/images/qq_login.png" /></a> &nbsp;
 						<?php
 						}
 						
 						if ($configUser->connectSina == '1') {
 						?>
-						<a href="<?php echo url('app=System&controller=User&action=sinaLogin'); ?>"><img src="/app/System/Template/User/images/sinaLogin.png" /></a>
+						<a href="<?php echo url('System', 'User', 'sinaLogin'); ?>"><img src="<?php echo url(); ?>/app/System/Template/User/images/sina_login.png" /></a>
 						<?php
 						}
 						?>
@@ -123,7 +123,7 @@ $configUser = Be::getConfig('System', 'User');
 					<div class="col-12">
 						<div class="val">
 							<label for="termsAndConditions">我同意&nbsp;</label>
-							<a href="<?php echo url('app=System&controller=System&action=termsAndConditions'); ?>" target="Blank">用户使用条款</a>
+							<a href="<?php echo url('System', 'System', 'termsAndConditions'); ?>" target="Blank">用户使用条款</a>
 						</div>
 					</div>
 					<div class="clear-left"></div>

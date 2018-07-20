@@ -19,17 +19,17 @@ class Template extends \Phpbe\System\Service
      */
     public function update($app, $template, $theme, $admin = false)
     {
-        $fileTheme = Be::getRuntime()->getPathRoot() . '/theme/' . $theme . '/' . $theme . '.php';
+        $fileTheme = Be::getRuntime()->getRootPath() . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             throw new ServiceException('主题 ' . $theme . ' 不存在！');
         }
 
-        $fileTemplate = Be::getRuntime()->getPathRoot() . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
+        $fileTemplate = Be::getRuntime()->getRootPath() . '/App/' . $app . ($admin ? '/AdminTemplate/' : '/Template/') . str_replace('.', '/', $template) . '.php';
         if (!file_exists($fileTemplate)) {
             throw new ServiceException('模板 ' . $template . ' 不存在！');
         }
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/Theme/' . $theme. '/App/' . $app . '/'. ($admin ? 'AdminTemplate' : 'Template') . '/' . str_replace('.', '/', $template) . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/Theme/' . $theme. '/App/' . $app . '/'. ($admin ? 'AdminTemplate' : 'Template') . '/' . str_replace('.', '/', $template) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -161,7 +161,7 @@ class Template extends \Phpbe\System\Service
         }
 
         $codeVars = '';
-        $configPath = Be::getRuntime()->getPathRoot() . '/theme/' . $theme . '/config.php';
+        $configPath = Be::getRuntime()->getRootPath() . '/theme/' . $theme . '/config.php';
         if (file_exists($configPath)) {
             include $configPath;
             $themeConfigClassName = ($admin ? 'admin\\' : '') . 'theme\\' . $theme . '\\config';

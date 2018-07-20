@@ -51,12 +51,12 @@ class tinymce extends \system\ui
 		if (!$this->head) {
 			$this->head = true;
 ?>
-<script type="text/javascript" src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/ui/tinymce/4.1.5/jquery.tinymce.min.js"></script>
+<script type="text/javascript" src="<?php echo url(); ?>/ui/tinymce/4.1.5/jquery.tinymce.min.js"></script>
 
 <script type="text/javascript">
 	$().ready(function() {
 		$('textarea.tinymce').tinymce({
-			scriptUrl : '<?php echo Be::getRuntime()->getUrlRoot(); ?>/ui/tinymce/4.1.5/tinymce.min.js',
+			scriptUrl : '<?php echo url(); ?>/ui/tinymce/4.1.5/tinymce.min.js',
 			language : "zh_CN",
             forcedRootBlock : false,
             forcePNewlines : false,

@@ -10,7 +10,7 @@ class ErrorLog extends \Phpbe\System\Service
 
     public function getYears()
     {
-        $dir = Be::getRuntime()->getPathData() . '/System/ErrorLog';
+        $dir = Be::getRuntime()->getDataPath() . '/System/ErrorLog';
         $years = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -25,7 +25,7 @@ class ErrorLog extends \Phpbe\System\Service
 
     public function getMonths($year)
     {
-        $dir = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year;
+        $dir = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $year;
         $months = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -40,7 +40,7 @@ class ErrorLog extends \Phpbe\System\Service
 
     public function getDays($year, $month)
     {
-        $dir = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year . '/' . $month;
+        $dir = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $year . '/' . $month;
         $days = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -59,10 +59,10 @@ class ErrorLog extends \Phpbe\System\Service
         if (!isset($options['month'])) return array();
         if (!isset($options['day'])) return array();
 
-        $dataPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.data';
+        $dataPath = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.data';
         if (!is_file($dataPath)) return array();
 
-        $indexPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
+        $indexPath = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
         if (!is_file($indexPath)) return array();
 
         $offset = 0;
@@ -114,7 +114,7 @@ class ErrorLog extends \Phpbe\System\Service
         if (!isset($options['month'])) return 0;
         if (!isset($options['day'])) return 0;
 
-        $path = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
+        $path = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $options['year'] . '/' . $options['month'] . '/' . $options['day'] . '.index';
         if (!is_file($path)) return 0;
 
         return filesize($path) / 4;
@@ -127,12 +127,12 @@ class ErrorLog extends \Phpbe\System\Service
      */
     public function getErrorLog($year, $month, $day, $index)
     {
-        $dataPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.data';
+        $dataPath = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.data';
         if (!is_file($dataPath)) {
             throw new ServiceException('打开日志数据文件不存在！');
         }
 
-        $indexPath = Be::getRuntime()->getPathData() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.index';
+        $indexPath = Be::getRuntime()->getDataPath() . '/System/ErrorLog/' .  $year . '/' . $month . '/' . $day . '.index';
         if (!is_file($indexPath)) {
             throw new ServiceException('日志索引文件不存在！');
         }

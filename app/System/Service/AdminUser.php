@@ -303,9 +303,9 @@ class AdminUser extends Service
                 $rowAdminUser = Be::getRow('System', 'AdminUser');
                 $rowAdminUser->load($id);
 
-                if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
-                if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
-                if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
+                if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
+                if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
+                if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
 
                 $rowAdminUser->delete();
             }
@@ -338,9 +338,9 @@ class AdminUser extends Service
             $rowAdminUser->load($userId);
 
             $files = [];
-            if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
-            if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
-            if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
+            if ($rowAdminUser->avatar_s != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_s;
+            if ($rowAdminUser->avatar_m != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_m;
+            if ($rowAdminUser->avatar_l != '') $files[] = Be::getRuntime()->getDataPath() . '/System/AdminUser/Avatar/' . $rowAdminUser->avatar_l;
 
             $rowAdminUser->avatar_s = '';
             $rowAdminUser->avatar_m = '';
@@ -529,7 +529,7 @@ class AdminUser extends Service
         $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/AdminUserRole/AdminUserRole' . $roleId . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/AdminUserRole/AdminUserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

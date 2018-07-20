@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <link type="text/css" rel="stylesheet" href="bootstrap/2.3.2/css/bootstrap-lightbox.css" />
 <script type="text/javascript" language="javascript" src="bootstrap/2.3.2/js/bootstrap-lightbox.js"></script>
@@ -48,10 +48,10 @@ foreach ($themes as $theme) {
     }
 }
 
-$uiList = Be::getUi('grid');
-$uiList->setAction('listing', './?app=System&controller=System&action=remoteThemes');
+$uiGrid = Be::getUi('grid');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=remoteThemes');
 
-$uiList->setData($themes);
+$uiGrid->setData($themes);
 
 $thumbnailTemplate = '';
 $thumbnailTemplate .= '<a href="javascript:" onclick="javascript:jQuery(\'#themeThumbnail_{id}\').lightbox();" data-title="" data-content="<div style=\'width:400px;height:400px;line-height:400px;text-align:center;\'><img src=\'{imageM}\' style=\'max-width:400px;\' /></div>" data-toggle="popover" data-html="true" data-trigger="hover">';
@@ -84,7 +84,7 @@ $autherTemplate = '<strong>{auther}</strong><br />';
 $autherTemplate .= '{autherEmail}<br />';
 $autherTemplate .= '{autherWebsite}';
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -94,7 +94,7 @@ $uiList->setFilters(
    )
 );
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'thumbnail',
         'label'=>'缩略图',
@@ -139,7 +139,7 @@ $pagination->setTotal($remoteThemes->total);
 $pagination->setLimit($remoteThemes->limit);
 $pagination->setPage($remoteThemes->page);
 
-$uiList->setPagination($pagination);
-$uiList->display();
+$uiGrid->setPagination($pagination);
+$uiGrid->display();
 ?>
 <!--{/center}-->

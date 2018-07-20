@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <script type="text/javascript" language="javascript" src="template/system/js/apps.js"></script>
 <!--{/head}-->
@@ -14,10 +14,10 @@ $uiList->head();
 <?php
 $apps = $this->get('apps');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&action=apps');
-$uiList->setAction('create', './?app=System&controller=System&action=remoteApps', '安装新应用');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=apps');
+$uiGrid->setAction('create', './?app=System&controller=System&action=remoteApps', '安装新应用');
 
 foreach ($apps as $app) {
     //$app->id = $app->name;
@@ -30,10 +30,10 @@ foreach ($apps as $app) {
     }
 }
 
-$uiList->setData($apps);
-$uiList->setFooter('共安装了 <strong>'.count($apps).'</strong> 个应用');
+$uiGrid->setData($apps);
+$uiGrid->setFooter('共安装了 <strong>'.count($apps).'</strong> 个应用');
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'icon',
         'label'=>'',
@@ -71,6 +71,6 @@ $uiList->setFields(
         'width'=>'120'
     )
 );
-$uiList->display();
+$uiGrid->display();
 ?>
 <!--{/center}-->

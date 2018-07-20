@@ -88,7 +88,7 @@ class Link extends Service
         }
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($configSystemLink, Be::getRuntime()->getPathData() . '/config/systemLink.php');
+        $serviceSystem->updateConfig($configSystemLink, Be::getRuntime()->getDataPath() . '/config/systemLink.php');
     }
 
 }

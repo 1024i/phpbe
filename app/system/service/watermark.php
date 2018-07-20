@@ -74,7 +74,7 @@ class Watermark extends \Phpbe\System\Service
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
             // 添加图像水印
-            $libImage->watermark(Be::getRuntime()->getPathData() . '/System/Watermark/' .  $configWatermark->image, $x, $y);
+            $libImage->watermark(Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image, $x, $y);
         }
 
         $libImage->save($image);

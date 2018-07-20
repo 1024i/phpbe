@@ -4,10 +4,10 @@ $config = Be::getConfig('System', 'System');
 $configArticle = Be::getConfig('Cms', 'Article');
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/listing.css">
+<link type="text/css" rel="stylesheet" href="<?php echo url(); ?>/app/Cms/Template/Article/css/listing.css">
 	
-<script type="text/javascript" language="javascript" src="/app/Cms/Template/Article/js/detail.js"></script>
-<link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/detail.css">
+<script type="text/javascript" language="javascript" src="<?php echo url(); ?>/app/Cms/Template/Article/js/detail.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo url(); ?>/app/Cms/Template/Article/css/detail.css">
 <!--{/head}-->
 
 
@@ -32,10 +32,10 @@ $my = Be::getUser();
 <div class="article-vote">
     <div class="row">
         <div class="col-3">
-            <a class="article-like" href="javascript:;" title="喜欢" onclick="javascript:like(<?php echo $article->id; ?>);"><?php echo $article->like; ?></a>
+            <a class="article-like" href="javascript:void(0);" title="喜欢" onclick="like(<?php echo $article->id; ?>);"><?php echo $article->like; ?></a>
         </div>
         <div class="col-3">
-            <a class="article-dislike" href="javascript:;" title="不喜欢" onclick="javascript:dislike(<?php echo $article->id; ?>);"><?php echo $article->dislike; ?></a>
+            <a class="article-dislike" href="javascript:void(0);" title="不喜欢" onclick="dislike(<?php echo $article->id; ?>);"><?php echo $article->dislike; ?></a>
         </div>
 
         <div class="col-14">
@@ -69,7 +69,7 @@ if (count($similarArticles)>0) {
     foreach ($similarArticles as $similarArticle) {
     ?>
     <li class="similarArticle">
-        <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$similarArticle->id); ?>">
+        <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $similarArticle->id]); ?>">
             <?php echo $similarArticle->title; ?>
         </a>
     </li>

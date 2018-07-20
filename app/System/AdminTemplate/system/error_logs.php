@@ -3,8 +3,8 @@ use Phpbe\System\Be;
 ?>
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -91,9 +91,9 @@ $errorLogCount = $this->errorLogCount;
 <?php
 
 if (count($errorLogs)) {
-    $uiList = Be::getUi('grid');
+    $uiGrid = Be::getUi('grid');
 
-    $uiList->setAction('listing', './?app=System&controller=System&action=errorLogs');
+    $uiGrid->setAction('listing', './?app=System&controller=System&action=errorLogs');
 
     $formattedErrorLogs = [];
     foreach ($errorLogs as $i => $errorLog) {
@@ -104,9 +104,9 @@ if (count($errorLogs)) {
         $formattedErrorLogs[] = (object)$errorLog;
     }
 
-    $uiList->setData($formattedErrorLogs);
+    $uiGrid->setData($formattedErrorLogs);
 
-    $uiList->setFields(
+    $uiGrid->setFields(
         [
             'name' => 'type',
             'label' => '类型',
@@ -144,8 +144,8 @@ if (count($errorLogs)) {
         ]
     );
 
-    $uiList->setPagination($this->get('pagination'));
-    $uiList->display();
+    $uiGrid->setPagination($this->get('pagination'));
+    $uiGrid->display();
 }
 ?>
 <!--{/center}-->

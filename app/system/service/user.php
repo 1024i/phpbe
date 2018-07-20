@@ -199,7 +199,7 @@ class User extends \Phpbe\System\Service
 
         $configUser = Be::getConfig('System', 'User');
         if ($configUser->emailValid == '1') {
-            $activationUrl = url('app=System&controller=User&action=activate&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+            $activationUrl = url('System', 'User', 'activate&userId=' . $rowUser->id . '', ['token' => $rowUser->token]);
 
             $data = array(
                 'siteName' => $configSystem->siteName,
@@ -328,7 +328,7 @@ class User extends \Phpbe\System\Service
 
         $configSystem = Be::getConfig('System', 'System');
 
-        $resetPasswordUrl = url('app=System&controller=User&action=forgotPasswordReset&userId=' . $rowUser->id . '&token=' . $rowUser->token);
+        $resetPasswordUrl = url('System', 'User', 'forgotPasswordReset&userId=' . $rowUser->id . '', ['token' => $rowUser->token]);
 
         $data = array(
             'siteName' => $configSystem->siteName,
@@ -390,7 +390,7 @@ class User extends \Phpbe\System\Service
 
         $data = array(
             'siteName' => $configSystem->siteName,
-            'siteUrl' => Be::getRuntime()->getUrlRoot()
+            'siteUrl' => url()
         );
 
         $configUser = Be::getConfig('System', 'User');
@@ -596,9 +596,9 @@ class User extends \Phpbe\System\Service
                 $rowUser = Be::getRow('System', 'User');
                 $rowUser->load($id);
 
-                if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_s;
-                if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_m;
-                if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_l;
+                if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_s;
+                if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_m;
+                if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_l;
 
                 $rowUser->delete();
             }
@@ -639,7 +639,7 @@ class User extends \Phpbe\System\Service
 
                     $configUser = Be::getConfig('System', 'User');
 
-                    $avatarDir = Be::getRuntime()->getPathData() . '/system/user/avatar/';
+                    $avatarDir = Be::getRuntime()->getDataPath() . '/system/user/avatar/';
                     if (!file_exists($avatarDir)) {
                         mkdir($avatarDir, 0777, true);
                     }
@@ -706,9 +706,9 @@ class User extends \Phpbe\System\Service
             $rowUser->load($userId);
 
             $files = [];
-            if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_s;
-            if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_m;
-            if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->avatar_l;
+            if ($rowUser->avatar_s != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_s;
+            if ($rowUser->avatar_m != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_m;
+            if ($rowUser->avatar_l != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->avatar_l;
 
             $rowUser->avatar_s = '';
             $rowUser->avatar_m = '';
@@ -809,7 +809,7 @@ class User extends \Phpbe\System\Service
         $code .= '  public $permissions = [\'' . implode('\',\'', explode(',', $row->permissions)) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/UserRole/UserRole' . $roleId . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/UserRole/UserRole' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

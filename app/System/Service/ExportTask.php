@@ -26,16 +26,16 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $pathIndex = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/index';
+        $pathIndex = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/index';
         $dir = dirname($pathIndex);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         $taskId = uniqid();
-        $pathData = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/data';
+        $pathData = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/data';
         $dir = dirname($pathData);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
-        $bootstrapUrl = adminUrl('app='.$app.'&controller='.$controller.'&action=exportTaskRun&taskId='.$taskId);
+        $bootstrapUrl = adminurl(''.$app.'', ''.$controller.'', 'exportTaskRun', ['taskId' => $taskId]);
         $data = [
             'taskId' => $taskId,
             'name' => $name,
@@ -62,7 +62,7 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $pathIndex = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/index';
+        $pathIndex = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/index';
         if (!file_exists($pathIndex)) {
             return array();
         }
@@ -95,8 +95,8 @@ class ExportTask extends Service
         $controller = Be::getRuntime()->getController();
 
         $task = [];
-        $pathData = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
-        $pathCsvData = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';
+        $pathData = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
+        $pathCsvData = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';
         if (file_exists($pathData)) {
             $task = unserialize(file_get_contents($pathData));
             $task['progress'] = $this->getProgress($task['taskId']);
@@ -159,7 +159,7 @@ class ExportTask extends Service
                 $task['error'] = '-';
             } else {
                 if ($task['error'] != '-') {
-                    $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/error';  // 错误
+                    $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/error';  // 错误
                     $task['errorDetails'] = nl2br(file_get_contents($path));
                 }
             }
@@ -178,7 +178,7 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';  // 数据
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';  // 数据
 
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
@@ -198,7 +198,7 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';  // 数据
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/csvData';  // 数据
 
         $fCsvData = fopen($path, 'r');
         flock($fCsvData, LOCK_EX);
@@ -225,7 +225,7 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/progress';  // 进度
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/progress';  // 进度
 
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
@@ -238,7 +238,7 @@ class ExportTask extends Service
             $task = $this->getTask($taskId);
             $task['completeTime'] = date('Y-m-d H:i:s');
 
-            $pathData = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
+            $pathData = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
             file_put_contents($pathData, serialize($task), LOCK_EX);
         }
     }
@@ -257,10 +257,10 @@ class ExportTask extends Service
         $task = $this->getTask($taskId);
         $task['error'] = $e->getMessage();
 
-        $pathData = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
+        $pathData = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/data';
         file_put_contents($pathData, serialize($task), LOCK_EX);
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/error';  // 错误
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/error';  // 错误
 
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
@@ -286,7 +286,7 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/progress';  // 进度
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId . '/progress';  // 进度
         if (!file_exists($path)) {
             return 0;
         }
@@ -306,15 +306,15 @@ class ExportTask extends Service
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
 
-        $path = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId;
+        $path = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/' . $taskId;
         Be::getLib('Fso')->rmDir($path);
 
-        $pathIndex = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/index';
+        $pathIndex = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/index';
         if (!file_exists($pathIndex)) {
             return true;
         }
 
-        $pathIndex0 = Be::getRuntime()->getPathData() . '/ExportTask/' . $app . '/' . $controller . '/index0';
+        $pathIndex0 = Be::getRuntime()->getDataPath() . '/ExportTask/' . $app . '/' . $controller . '/index0';
 
         $fIndex = fopen($pathIndex, 'r');
         flock($fIndex, LOCK_EX);

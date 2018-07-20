@@ -77,7 +77,7 @@ class Config extends \Phpbe\System\AdminController
         $config->allowUploadImageTypes = $allowUploadImageTypes;
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, Be::getRuntime()->getPathData() . '/config/system.php');
+        $serviceSystem->updateConfig($config, Be::getRuntime()->getDataPath() . '/config/system.php');
 
         systemLog('改动系统基本设置');
 
@@ -110,7 +110,7 @@ class Config extends \Phpbe\System\AdminController
         $config->smtpSecure = Request::post('smtpSecure', '');
 
         $serviceSystem = Be::getService('system');
-        $serviceSystem->updateConfig($config, Be::getRuntime()->getPathData() . '/config/mail.php');
+        $serviceSystem->updateConfig($config, Be::getRuntime()->getDataPath() . '/config/mail.php');
 
         systemLog('改动发送邮件设置');
 
@@ -198,16 +198,16 @@ class Config extends \Phpbe\System\AdminController
             $libImage->open($image['tmpName']);
             if ($libImage->isImage()) {
                 $watermarkName = date('YmdHis') . '.' . $libImage->getType();
-                $watermarkPath = Be::getRuntime()->getPathData() . '/system/watermark/' .  $watermarkName;
+                $watermarkPath = Be::getRuntime()->getDataPath() . '/system/watermark/' .  $watermarkName;
                 if (move_uploaded_file($image['tmpName'], $watermarkPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/system/watermark/'.$config->image);
+                    // @unlink(Be::getRuntime()->getDataPath().'/system/watermark/'.$config->image);
                     $config->image = $watermarkName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('System', 'System');
-        $serviceSystem->updateConfig($config, Be::getRuntime()->getPathData() . '/Config/Watermark.php');
+        $serviceSystem->updateConfig($config, Be::getRuntime()->getDataPath() . '/Config/Watermark.php');
 
         systemLog('修改水印设置');
 
@@ -217,8 +217,8 @@ class Config extends \Phpbe\System\AdminController
 
     public function configWatermarkTest()
     {
-        $src = Be::getRuntime()->getPathData() . '/System/Watermark/test-0.jpg';
-        $dst = Be::getRuntime()->getPathData() . '/System/Watermark/test-1.jpg';
+        $src = Be::getRuntime()->getDataPath() . '/System/Watermark/test-0.jpg';
+        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/test-1.jpg';
 
         if (!file_exists($src)) Response::end(DATA . '/System/Watermark/test-0.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);

@@ -42,9 +42,9 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailL['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailLName = date('YmdHis') . 'L.' . $libImage->getType();
-                $defaultThumbnailLPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
+                $defaultThumbnailLPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
                 if (move_uploaded_file($defaultThumbnailL['tmpName'], $defaultThumbnailLPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailL);
+                    // @unlink(Be::getRuntime()->getDataPath().'/article/thumbnail/default/'.$configArticle->defaultThumbnailL);
                     $configArticle->defaultThumbnailL = $defaultThumbnailLName;
                 }
             }
@@ -57,9 +57,9 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailM['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailMName = date('YmdHis') . 'M.' . $libImage->getType();
-                $defaultThumbnailMPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
+                $defaultThumbnailMPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
                 if (move_uploaded_file($defaultThumbnailM['tmpName'], $defaultThumbnailMPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailM);
+                    // @unlink(Be::getRuntime()->getDataPath().'/article/thumbnail/default/'.$configArticle->defaultThumbnailM);
                     $configArticle->defaultThumbnailM = $defaultThumbnailMName;
                 }
             }
@@ -72,16 +72,16 @@ class Setting extends AdminController
             $libImage->open($defaultThumbnailS['tmpName']);
             if ($libImage->isImage()) {
                 $defaultThumbnailSName = date('YmdHis') . 'S.' . $libImage->getType();
-                $defaultThumbnailSPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
+                $defaultThumbnailSPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
                 if (move_uploaded_file($defaultThumbnailS['tmpName'], $defaultThumbnailSPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/article/thumbnail/default/'.$configArticle->defaultThumbnailS);
+                    // @unlink(Be::getRuntime()->getDataPath().'/article/thumbnail/default/'.$configArticle->defaultThumbnailS);
                     $configArticle->defaultThumbnailS = $defaultThumbnailSName;
                 }
             }
         }
 
         $serviceSystem = Be::getService('System', 'Admin');
-        $serviceSystem->updateConfig($configArticle, Be::getRuntime()->getPathRoot() . '/Config/Article.php');
+        $serviceSystem->updateConfig($configArticle, Be::getRuntime()->getRootPath() . '/Config/Article.php');
 
         systemLog('设置文章系统参数');
 

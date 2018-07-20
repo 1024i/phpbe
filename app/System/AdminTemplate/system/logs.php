@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-    $uiList = Be::getUi('grid');
-    $uiList->head();
+    $uiGrid = Be::getUi('grid');
+    $uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -13,9 +13,9 @@ use Phpbe\System\Be;
 <?php
 $logs = $this->get('logs');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&action=logs');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=logs');
 
 $options = array();
 $options['0'] = '所有';
@@ -23,7 +23,7 @@ foreach ($this->adminUsers as $adminUser) {
     $options[$adminUser->id] = $adminUser->username;
 }
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -61,9 +61,9 @@ foreach ($logs as $log) {
     $log->address = $libIp->convert($log->ip);
 }
 
-$uiList->setData($logs);
+$uiGrid->setData($logs);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'createTime',
         'label'=>'时间',
@@ -95,7 +95,7 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

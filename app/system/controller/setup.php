@@ -44,7 +44,7 @@ class Setup extends \Phpbe\System\Controller
 		$configDb->dbName = Request::post('dbName', '');
 
 		$serviceSetup = Be::getService('setup');
-		$serviceSetup->saveConfig($configDb, Be::getRuntime()->getPathRoot() . '/configs/db.php');
+		$serviceSetup->saveConfig($configDb, Be::getRuntime()->getRootPath() . '/configs/db.php');
 
 		db::connect();
 		if (db::hasError()) {

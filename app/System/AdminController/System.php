@@ -50,7 +50,7 @@ class System extends \Phpbe\System\AdminController
         systemLog('删除缓存（' . $type . '）');
 
         Response::setMessage('删除缓存成功！');
-        Response::redirect(adminUrl('app=System&controller=System&action=cache'));
+        Response::redirect(adminurl('System', 'System', 'cache'));
     }
 
     // 错误日志

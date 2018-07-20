@@ -17,20 +17,20 @@ $config = Be::getConfig('System', 'System');
     <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/js/jquery-1.12.4.min.js"></script>
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/js/jquery.validate.min.js"></script>
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/js/jquery.cookie.js"></script>
+    <script src="<?php echo url(); ?>/system/theme/sample/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo url(); ?>/system/theme/sample/js/jquery.validate.min.js"></script>
+    <script src="<?php echo url(); ?>/system/theme/sample/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="<?php echo url(); ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="<?php echo url(); ?>/system/theme/sample/bootstrap-3.3.7/css/bootstrap-theme.min.css"/>
 
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="<?php echo url(); ?>/system/theme/sample/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/css/theme.css"/>
-    <script src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo url(); ?>/system/theme/sample/css/theme.css"/>
+    <script src="<?php echo url(); ?>/system/theme/sample/js/theme.js"></script>
 
     <script>
-        var Be::getRuntime()->getUrlRoot() = '<?php echo Be::getRuntime()->getUrlRoot(); ?>';
+        var url() = '<?php echo url(); ?>';
     </script>
 
     <!--{head}-->
@@ -46,8 +46,8 @@ $config = Be::getConfig('System', 'System');
 
         <!--{north}-->
         <div class="logo">
-            <a href="<?php echo Be::getRuntime()->getUrlRoot(); ?>" title="<?php echo $config->siteName; ?>">
-                <img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/sample/images/logo.gif" alt="<?php echo $config->siteName; ?>"/>
+            <a href="<?php echo url(); ?>" title="<?php echo $config->siteName; ?>">
+                <img src="<?php echo url(); ?>/system/theme/sample/images/logo.gif" alt="<?php echo $config->siteName; ?>"/>
             </a>
         </div>
 
@@ -79,7 +79,7 @@ $config = Be::getConfig('System', 'System');
                             echo '<li class="menu-off">';
                         echo '<a href="';
                         if ($menu->home)
-                            echo Be::getRuntime()->getUrlRoot();
+                            echo url();
                         else
                             echo $menu->url;
                         echo '" target="' . $menu->target . '"><span>' . $menu->name . '</span></a>';
@@ -169,7 +169,7 @@ $config = Be::getConfig('System', 'System');
             foreach ($southMenuTree as $menu) {
                 echo '<li><a href="';
                 if ($menu->home)
-                    echo Be::getRuntime()->getUrlRoot();
+                    echo url();
                 else
                     echo url($menu->url);
                 echo '" target="' . $menu->target . '"><span>' . $menu->name . '</span></a></li>';

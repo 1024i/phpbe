@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -19,16 +19,16 @@ foreach ($roles as $role) {
     $roleMap[$role->id] = $role->name;
 }
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('list', './?app=System&controller=AdminUser&action=users');
-$uiList->setAction('create', './?app=System&controller=AdminUser&action=edit');
-$uiList->setAction('edit', './?app=System&controller=AdminUser&action=edit');
-$uiList->setAction('unblock', './?app=System&controller=AdminUser&action=unblock', '启用');
-$uiList->setAction('block', './?app=System&controller=AdminUser&action=block');
-$uiList->setAction('delete', './?app=System&controller=AdminUser&action=delete');
+$uiGrid->setAction('list', './?app=System&controller=AdminUser&action=users');
+$uiGrid->setAction('create', './?app=System&controller=AdminUser&action=edit');
+$uiGrid->setAction('edit', './?app=System&controller=AdminUser&action=edit');
+$uiGrid->setAction('unblock', './?app=System&controller=AdminUser&action=unblock', '启用');
+$uiGrid->setAction('block', './?app=System&controller=AdminUser&action=block');
+$uiGrid->setAction('delete', './?app=System&controller=AdminUser&action=delete');
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -66,8 +66,8 @@ foreach ($users as $user) {
     $user->roleName = '<span class="label label-info">'.$roleMap[$user->roleId].'</span>';
 }
 
-$uiList->setData($users);
-$uiList->setFields(
+$uiGrid->setData($users);
+$uiGrid->setFields(
     array(
         'name'=>'id',
         'label'=>'ID',
@@ -124,8 +124,8 @@ $uiList->setFields(
 );
 
 
-$uiList->setPagination($this->pagination);
-$uiList->orderBy($this->orderBy, $this->orderByDir);
-$uiList->display();
+$uiGrid->setPagination($this->pagination);
+$uiGrid->orderBy($this->orderBy, $this->orderByDir);
+$uiGrid->display();
 ?>
 <!--{/center}-->

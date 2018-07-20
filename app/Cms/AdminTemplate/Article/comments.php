@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -13,14 +13,14 @@ $uiList->head();
 <?php
 $comments = $this->get('comments');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('list', './?app=Cms&controller=Article&action=comments');
-$uiList->setAction('unblock', './?app=Cms&controller=Article&action=commentsUnblock');
-$uiList->setAction('block', './?app=Cms&controller=Article&action=commentsBlock');
-$uiList->setAction('delete', './?app=Cms&controller=Article&action=commentsDelete');
+$uiGrid->setAction('list', './?app=Cms&controller=Article&action=comments');
+$uiGrid->setAction('unblock', './?app=Cms&controller=Article&action=commentsUnblock');
+$uiGrid->setAction('block', './?app=Cms&controller=Article&action=commentsBlock');
+$uiGrid->setAction('delete', './?app=Cms&controller=Article&action=commentsDelete');
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -85,9 +85,9 @@ foreach ($comments as $comment) {
     $comment->address = '<a href="javascript:;" title="'.$libIp->convert($comment->ip).'" data-toggle="tooltip">'.$comment->ip.'</a>';
 }
 
-$uiList->setData($comments);
+$uiGrid->setData($comments);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'id',
         'label'=>'ID',
@@ -126,8 +126,8 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->orderBy($this->get('orderBy'), $this->get('orderByDir'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->orderBy($this->get('orderBy'), $this->get('orderByDir'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

@@ -29,7 +29,7 @@ $configArticle = Be::getConfig('Cms', 'Article');
 <div style="border:#eee 1px solid; border-left:<?php echo $this->primaryColor; ?> 5px solid;  background-color:#FFFFFF; padding:20px; box-shadow:1px 1px 3px #ccc;">
     <div class="row">
         <div class="col-3 text-center">
-            <img src="<?php echo Be::getRuntime()->getUrlData().'/System/User/avatar/'.($user->avatarL == ''?('default/'.$configUser->defaultAvatarL):$user->avatarL); ?>" alt="<?php echo $user->name; ?>" />
+            <img src="<?php echo Be::getRuntime()->getDataUrl().'/System/User/avatar/'.($user->avatarL == ''?('default/'.$configUser->defaultAvatarL):$user->avatarL); ?>" alt="<?php echo $user->name; ?>" />
 
         </div>
         <div class="col-17">
@@ -56,13 +56,13 @@ $configArticle = Be::getConfig('Cms', 'Article');
         ?>
             <div class="article">
                 <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                    <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $comment->article->title; ?>" target="Blank">
-                    <img src="<?php echo Be::getRuntime()->getUrlData().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $comment->article->title; ?>" />
+                    <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $comment->article->title; ?>" target="Blank">
+                    <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $comment->article->title; ?>" />
                     </a>
                 </div>
 
                 <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                    <h4 class="article-title"><a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $comment->article->title; ?>" target="Blank"><?php echo $article->title; ?></a></h4>
+                    <h4 class="article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $comment->article->title; ?>" target="Blank"><?php echo $article->title; ?></a></h4>
                     <div class="article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                     <div class="article-summary"><?php echo $article->summary; ?></div>
                 </div>
@@ -85,7 +85,7 @@ $configArticle = Be::getConfig('Cms', 'Article');
         foreach ($comments as $comment) {
         ?>
         <div class="comment">
-            <h4 class="article-title">评论文章：<a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$comment->article->id); ?>" title="<?php echo $comment->article->title; ?>" target="Blank"><?php echo $comment->article->title; ?></a></h4>
+            <h4 class="article-title">评论文章：<a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $comment->article->id]); ?>" title="<?php echo $comment->article->title; ?>" target="Blank"><?php echo $comment->article->title; ?></a></h4>
             <div class="comment-time"><?php echo date('Y-m-d H:i:s', $comment->createTime); ?></div>
             <div class="comment-body"><?php echo $comment->body; ?></div>
         </div>

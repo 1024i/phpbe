@@ -16,17 +16,17 @@ $config = Be::getConfig('System', 'System');
     <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <base href="<?php echo Be::getRuntime()->getUrlRoot(); ?>" />
+    <base href="<?php echo url(); ?>/" />
 
-    <script src="/theme/huxiu/js/jquery-1.12.4.min.js"></script>
-    <script src="/theme/huxiu/js/jquery.validate.min.js"></script>
-    <script src="/theme/huxiu/js/jquery.cookie.js"></script>
+    <script src="<?php echo url(); ?>/theme/huxiu/js/jquery-1.12.4.min.js"></script>
+    <script src="<?php echo url(); ?>/theme/huxiu/js/jquery.validate.min.js"></script>
+    <script src="<?php echo url(); ?>/theme/huxiu/js/jquery.cookie.js"></script>
 
-    <link rel="stylesheet" href="/theme/huxiu/css/be.css" />
-    <script src="/theme/huxiu/js/be.js"></script>
+    <link rel="stylesheet" href="<?php echo url(); ?>/theme/huxiu/css/be.css" />
+    <script src="<?php echo url(); ?>/theme/huxiu/js/be.js"></script>
 
-    <link rel="stylesheet" href="/theme/huxiu/css/theme.css" />
-    <script src="/theme/huxiu/js/theme.js"></script>
+    <link rel="stylesheet" href="<?php echo url(); ?>/theme/huxiu/css/theme.css" />
+    <script src="<?php echo url(); ?>/theme/huxiu/js/theme.js"></script>
 
     <!--{head}-->
     <!--{/head}-->
@@ -51,7 +51,7 @@ $config = Be::getConfig('System', 'System');
         ?>
         <div class="row">
             <div class="col-3">
-                <img src="<?php echo Be::getRuntime()->getUrlRoot(); ?>/system/theme/huxiu/images/logo.gif" alt="<?php echo $configSystem->siteName; ?>" />
+                <img src="<?php echo url(); ?>/theme/huxiu/images/logo.gif" alt="<?php echo $configSystem->siteName; ?>" />
             </div>
             <div class="col-17">
 
@@ -60,13 +60,13 @@ $config = Be::getConfig('System', 'System');
                     <?php
                     if (!isset($my->id) || $my->id == 0) {
                         ?>
-                        <a href="<?php echo url('controller=user&action=login'); ?>">登陆</a><a href="<?php echo url('controller=user&action=register'); ?>">注册</a>
+                        <a href="<?php echo url('System', 'User', 'login'); ?>">登陆</a><a href="<?php echo url('System', 'User', 'register'); ?>">注册</a>
                         <?php
                     } else {
                         ?>
-                        <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
-                        <a href="<?php echo url('controller=userProfile&action=home'); ?>"><?php echo $my->name; ?></a>
-                        <input type="button" class="btn btn-small btn-warning" onclick="javascript:window.location.href='<?php echo url('controller=user&action=logout'); ?>';" value="退出" />
+                        <img src="<?php echo Be::getRuntime()->getDataUrl().'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
+                        <a href="<?php echo url('System', 'UserProfile', 'home'); ?>"><?php echo $my->name; ?></a>
+                        <input type="button" class="btn btn-small btn-warning" onclick="window.location.href='<?php echo url('System', 'User', 'logout'); ?>';" value="退出" />
                         <?php
                     }
                     ?>
@@ -100,7 +100,7 @@ $config = Be::getConfig('System', 'System');
                                     echo '<li>';
                                 echo '<a href="';
                                 if ($menu->home)
-                                    echo Be::getRuntime()->getUrlRoot();
+                                    echo url();
                                 else
                                     echo $menu->url;
                                 echo '" target="'.$menu->target.'"><span>'.$menu->name.'</span></a>';
@@ -168,7 +168,7 @@ $config = Be::getConfig('System', 'System');
             foreach ($southMenuTree as $menu) {
                 echo '<li><a href="';
                 if ($menu->home)
-                    echo Be::getRuntime()->getUrlRoot();
+                    echo '/';
                 else
                     echo $menu->url;
                 echo '" target="'.$menu->target.'"><span>'.$menu->name.'</span></a></li>';

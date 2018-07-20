@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -13,16 +13,16 @@ $uiList->head();
 <?php
 $systemLinks = $this->get('systemLinks');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemLink&action=links');
-$uiList->setAction('create', './?controller=systemLink&action=edit');
-$uiList->setAction('edit', './?controller=systemLink&action=edit');
-$uiList->setAction('unblock', './?controller=systemLink&action=unblock');
-$uiList->setAction('block', './?controller=systemLink&action=block');
-$uiList->setAction('delete', './?controller=systemLink&action=delete');
+$uiGrid->setAction('list', './?controller=systemLink&action=links');
+$uiGrid->setAction('create', './?controller=systemLink&action=edit');
+$uiGrid->setAction('edit', './?controller=systemLink&action=edit');
+$uiGrid->setAction('unblock', './?controller=systemLink&action=unblock');
+$uiGrid->setAction('block', './?controller=systemLink&action=block');
+$uiGrid->setAction('delete', './?controller=systemLink&action=delete');
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -44,9 +44,9 @@ $uiList->setFilters(
    )
 );
 
-$uiList->setData($systemLinks);
+$uiGrid->setData($systemLinks);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'id',
         'label'=>'ID',
@@ -74,8 +74,8 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->orderBy($this->get('orderBy'), $this->get('orderByDir'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->orderBy($this->get('orderBy'), $this->get('orderByDir'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

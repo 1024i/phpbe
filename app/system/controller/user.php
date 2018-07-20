@@ -26,7 +26,7 @@ class User extends Controller
             $rememberMe = Request::post('rememberMe', '0');
 
             $return = Request::post('return', '');
-            $errorReturn = url('app=System&controller=User&action=login&return=' . $return);
+            $errorReturn = url('System', 'User', 'login', ['return' => $return]);
 
             $configUser = Be::getConfig('System', 'User');
             if ($configUser->captchaLogin) {
@@ -42,7 +42,7 @@ class User extends Controller
 
                 $redirectUrl = null;
                 if ($return == '') {
-                    $redirectUrl = url('app=System&controller=UserProfile&action=home');
+                    $redirectUrl = url('System', 'UserProfile', 'home');
                 } else {
                     $redirectUrl = base64_decode($return);
                 }
@@ -57,7 +57,7 @@ class User extends Controller
             // 登陆成功后跳转到的网址
             $return = Request::get('return', '');
             if ($return == 'httpReferer' && isset($_SERVER['HTTP_REFERER'])) $return = base64_encode($_SERVER['HTTP_REFERER']);
-            if ($return == '') $return = url('app=System&controller=UserProfile&action=home');
+            if ($return == '') $return = url('System', 'UserProfile', 'home');
 
             $my = Be::getUser();
             if ($my->id > 0) Response::redirect($return);
@@ -134,7 +134,7 @@ class User extends Controller
         $rowUserConnectQq->openid = $openid;
         $rowUserConnectQq->save();
 
-        Response::redirect(url('app=System&controller=UserProfile&action=home'));
+        Response::redirect(url('System', 'UserProfile', 'home'));
     }
 
 
@@ -181,7 +181,7 @@ class User extends Controller
         $rowUserConnectSina->uid = $uid;
         $rowUserConnectSina->save();
 
-        Response::redirect(url('app=System&controller=UserProfile&action=home'));
+        Response::redirect(url('System', 'UserProfile', 'home'));
     }
 
 
@@ -224,7 +224,7 @@ class User extends Controller
 
                 if ($configUser->captchaRegister) Session::delete('captchaRegister');
 
-                Response::success('您的账号已成功创建！', url('app=System&controller=User&action=registerSuccess&username=' . $username . '&email=' . $email));
+                Response::success('您的账号已成功创建！', url('System', 'User', 'registerSuccess&username=' . $username . '', ['email' => $email)]);
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
             }
@@ -351,7 +351,7 @@ class User extends Controller
         $model = Be::getService('System', 'User');
         $model->logout();
 
-        Response::success('成功退出！', url('app=System&controller=User&action=login'));
+        Response::success('成功退出！', url('System', 'User', 'login'));
     }
 
 }

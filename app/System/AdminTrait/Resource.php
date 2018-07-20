@@ -281,8 +281,8 @@ trait Resource
 
         $app = Be::getRuntime()->getApp();
         $controller = Be::getRuntime()->getController();
-        $taskUrl = adminUrl('app='.$app.'&controller='.$controller.'&action=exportTaskRun&taskId='.$taskId);
-        $returnUrl = adminUrl('app='.$app.'&controller='.$controller.'&action=exportTaskRun&return='. $_SERVER['HTTP_REFERER']);
+        $taskUrl = adminurl(''.$app.'', ''.$controller.'', 'exportTaskRun', ['taskId' => $taskId]);
+        $returnUrl = adminurl(''.$app.'', ''.$controller.'', 'exportTaskRun', ['return' => $_SERVER['HTTP_REFERER']]);
 
         echo '<iframe src="' . $taskUrl . '" style="width: 0; height: 0"></iframe>';
         echo '<script>setTimeout(function(){window.location.href="' . $returnUrl . '";}, 1000)</script>';

@@ -3,8 +3,8 @@ use Phpbe\System\Be;
 ?>
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -62,10 +62,10 @@ foreach ($data as $x) {
     $x->operation = '<a href="./?app=System&controller=System&action=clearCache&type=' . $x->id . '">清除</a>';
 }
 
-$uiList = Be::getUi('grid');
-$uiList->setData($data);
+$uiGrid = Be::getUi('grid');
+$uiGrid->setData($data);
 
-$uiList->setFields(
+$uiGrid->setFields(
     [
         'name' => 'id',
         'label' => '类型',
@@ -82,6 +82,6 @@ $uiList->setFields(
         'align' => 'center',
     ]
 );
-$uiList->display();
+$uiGrid->display();
 ?>
 <!--{/center}-->

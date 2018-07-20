@@ -14,7 +14,7 @@ class FileManager extends Service
     public function getFiles($option = array())
     {
         $absPath = $this->getAbsPath($option['path']);
-        if ($absPath == false) $absPath = Be::getRuntime()->getPathData();
+        if ($absPath == false) $absPath = Be::getRuntime()->getDataPath();
 
         $return = array();
 
@@ -162,7 +162,7 @@ class FileManager extends Service
         }
 
         // 绝对路径
-        $absPath = Be::getRuntime()->getPathData() . str_replace('/', DS, $path);
+        $absPath = Be::getRuntime()->getDataPath() . str_replace('/', DS, $path);
         if (!is_dir($absPath)) {
             throw new ServiceException('路径不存在！');
         }

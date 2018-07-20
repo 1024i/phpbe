@@ -29,7 +29,7 @@ class UserConnectQq extends \Phpbe\System\Service
         $url = 'https://graph.qq.com/oauth2.0/authorize';
         $url .= '?ResponseType=code';
         $url .= '&clientId=' . $this->appId;
-        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&action=qqLoginCallback');
+        $url .= '&redirectUri=' . urlencode(url() . '/?app=System&controller=User&action=qqLoginCallback');
         $url .= '&state=' . $state;
 
         header("Location:$url");
@@ -56,7 +56,7 @@ class UserConnectQq extends \Phpbe\System\Service
         $url .= '&clientId=' . $this->appId;
         $url .= '&clientSecret=' . $this->appKey;
         $url .= '&code=' . Request::get('code', '');
-        $url .= '&redirectUri=' . urlencode(Be::getRuntime()->getUrlRoot() . '/?app=System&controller=User&action=qqLoginCallback');
+        $url .= '&redirectUri=' . urlencode(url() . '/?app=System&controller=User&action=qqLoginCallback');
 
         $libHttp = Be::getLib('Http');
         $response = $libHttp->get($url);
@@ -141,7 +141,7 @@ class UserConnectQq extends \Phpbe\System\Service
 
         $t = date('YmdHis', $t);
 
-        $tmpAvatar = Be::getRuntime()->getPathData() . '/System/Tmp/user_connect_qq_' . $t . '_' . $rowUser->id;
+        $tmpAvatar = Be::getRuntime()->getDataPath() . '/System/Tmp/user_connect_qq_' . $t . '_' . $rowUser->id;
         file_put_contents($tmpAvatar, $response);
 
         $libImage = Be::getLib('image');
@@ -149,15 +149,15 @@ class UserConnectQq extends \Phpbe\System\Service
         if ($libImage->isImage()) {
 
             $libImage->resize($configUser->avatar_l_w, $configUser->avatar_l_h, 'north');
-            $libImage->save(Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_l.' . $libImage->getType());
+            $libImage->save(Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_l.' . $libImage->getType());
             $rowUser->avatar_l = $rowUser->id . '_' . $t . '_l.' . $libImage->getType();
 
             $libImage->resize($configUser->avatar_m_w, $configUser->avatar_m_h, 'north');
-            $libImage->save(Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_m.' . $libImage->getType());
+            $libImage->save(Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_m.' . $libImage->getType());
             $rowUser->avatar_m = $rowUser->id . '_' . $t . '_m.' . $libImage->getType();
 
             $libImage->resize($configUser->avatar_s_w, $configUser->avatar_s_h, 'north');
-            $libImage->save(Be::getRuntime()->getPathData() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_s.' . $libImage->getType());
+            $libImage->save(Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $rowUser->id . '_' . $t . '_s.' . $libImage->getType());
             $rowUser->avatar_s = $rowUser->id . '_' . $t . '_s.' . $libImage->getType();
 
             $rowUser->save();

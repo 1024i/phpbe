@@ -6,16 +6,16 @@ use Phpbe\System\Be;
 <?php
 $groups = $this->get('groups');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&action=menuGroups');
-$uiList->setAction('create', './?app=System&controller=System&action=menuGroupEdit');
-$uiList->setAction('edit', './?app=System&controller=System&action=menuGroupEdit');
-$uiList->setAction('delete', './?app=System&controller=System&action=menuGroupDelete');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=menuGroups');
+$uiGrid->setAction('create', './?app=System&controller=System&action=menuGroupEdit');
+$uiGrid->setAction('edit', './?app=System&controller=System&action=menuGroupEdit');
+$uiGrid->setAction('delete', './?app=System&controller=System&action=menuGroupDelete');
 
-$uiList->setData($groups);
+$uiGrid->setData($groups);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'name',
         'label'=>'菜单组名',
@@ -28,7 +28,7 @@ $uiList->setFields(
         'width'=>'180'
     )
 );
-$uiList->display();
+$uiGrid->display();
 
 ?>
 <div class="comment">

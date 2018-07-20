@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -17,17 +17,17 @@ foreach ($systemAnnouncements as $systemAnnouncement) {
     $systemAnnouncement->createTime =	date('Y-m-d H:i',$systemAnnouncement->createTime);
 }
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemAnnouncement&action=announcements');
-$uiList->setAction('create', './?controller=systemAnnouncement&action=edit');
-$uiList->setAction('edit', './?controller=systemAnnouncement&action=edit');
-$uiList->setAction('unblock', './?controller=systemAnnouncement&action=unblock');
-$uiList->setAction('block', './?controller=systemAnnouncement&action=block');
-$uiList->setAction('delete', './?controller=systemAnnouncement&action=delete');
+$uiGrid->setAction('list', './?controller=systemAnnouncement&action=announcements');
+$uiGrid->setAction('create', './?controller=systemAnnouncement&action=edit');
+$uiGrid->setAction('edit', './?controller=systemAnnouncement&action=edit');
+$uiGrid->setAction('unblock', './?controller=systemAnnouncement&action=unblock');
+$uiGrid->setAction('block', './?controller=systemAnnouncement&action=block');
+$uiGrid->setAction('delete', './?controller=systemAnnouncement&action=delete');
 
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -49,9 +49,9 @@ $uiList->setFilters(
    )
 );
 
-$uiList->setData($systemAnnouncements);
+$uiGrid->setData($systemAnnouncements);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'id',
         'label'=>'ID',
@@ -80,8 +80,8 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->orderBy($this->get('orderBy'), $this->get('orderByDir'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->orderBy($this->get('orderBy'), $this->get('orderByDir'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

@@ -13,7 +13,7 @@ use Phpbe\System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include Be::getRuntime()->getPathRoot() . '/template/userProfile/west.php'
+        include Be::getRuntime()->getRootPath() . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>

@@ -32,11 +32,11 @@ use Phpbe\System\Be;
                     if ($pagination->getPage() == 1) {
                         $article = array_shift($articles);
                         ?>
-                        <h4 class="head-article-title"><a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
+                        <h4 class="head-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
                         <div class="head-article-summary"><?php echo $article->summary; ?></div>
                         <div class="head-article-thumbnail">
-                            <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailL == ''?('default/'.$configArticle->defaultThumbnailL):$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" />
+                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailL == ''?('default/'.$configArticle->defaultThumbnailL):$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" />
                             </a>
                         </div>
                         <?php
@@ -50,13 +50,13 @@ use Phpbe\System\Be;
                         ?>
                         <div class="article">
                             <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailMW; ?>px; height:<?php echo $configArticle->thumbnailMH; ?>px;">
-                                <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                    <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailM == ''?('default/'.$configArticle->defaultThumbnailM):$article->thumbnailM; ?>" alt="<?php echo $article->title; ?>" />
+                                <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                    <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailM == ''?('default/'.$configArticle->defaultThumbnailM):$article->thumbnailM; ?>" alt="<?php echo $article->title; ?>" />
                                 </a>
                             </div>
 
                             <div style="margin-left:<?php echo $configArticle->thumbnailMW; ?>px;">
-                                <h4 class="article-title"><a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
+                                <h4 class="article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
                                 <div class="article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                                 <div class="article-summary"><?php echo $article->summary; ?></div>
                             </div>
@@ -100,13 +100,13 @@ use Phpbe\System\Be;
                                     <div class="hottest-article">
 
                                         <div class="hottest-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                                <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
                                         <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="hottest-article-title"><a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
+                                            <h5 class="hottest-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
                                             <div class="hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                                         </div>
                                     </div>
@@ -137,13 +137,13 @@ use Phpbe\System\Be;
                                     <div class="top-article">
 
                                         <div class="top-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                                <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
                                         <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="top-article-title"><a href="<?php echo url('app=Cms&controller=Article&action=detail&articleId='.$article->id); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
+                                            <h5 class="top-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
                                             <div class="top-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                                         </div>
                                     </div>

@@ -50,13 +50,13 @@ class Category extends AdminController
             systemLog('修改文章分类信息');
 
             Response::setMessage('保存分类成功！');
-            Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
+            Response::redirect(adminurl('Cms', 'Article', 'categories'));
 
         } catch (\Exception $e) {
             $db->rollback();
 
             Response::setMessage('保存分类失败：'.$e->getMessage());
-            Response::redirect(adminUrl('app=Cms&controller=Article&action=categories'));
+            Response::redirect(adminurl('Cms', 'Article', 'categories'));
         }
     }
 

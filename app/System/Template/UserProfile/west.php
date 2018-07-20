@@ -26,7 +26,7 @@
                         echo '<li>';
                         echo '<a href="';
                         if ($menu->home)
-                            echo Be::getRuntime()->getUrlRoot();
+                            echo url();
                         else
                             echo $menu->url;
                         echo '" target="'.$menu->target.'"><span>'.$menu->name.'</span></a>';

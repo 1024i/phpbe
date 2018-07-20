@@ -18,7 +18,7 @@ use Phpbe\System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include Be::getRuntime()->getPathRoot() . '/template/userProfile/west.php'
+        include Be::getRuntime()->getRootPath() . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -44,7 +44,7 @@ use Phpbe\System\Be;
                     <table style="width:100%;">
                         <tr>
                             <td style="width:200px; vertical-align: top; text-align:center;">
-                                <p><img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" /></p>
+                                <p><img src="<?php echo url().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" /></p>
                                 <p class="border-radius-5"  style="background-color:<?php echo $this->primaryColor; ?>; color:#FFFFFF; padding:2px;"><?php echo $my->name; ?></p>
                                 <p style="font-size:12px; color:#999;">注册于 <?php echo date('Y-m-d H:i', $my->registerTime); ?></p>
                             </td>

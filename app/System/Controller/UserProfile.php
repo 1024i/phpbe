@@ -13,7 +13,7 @@ class UserProfile extends Controller
     {
         $my = Be::getUser();
         if ($my->id == 0) {
-            Response::error('登陆超时，请重新登陆！', url('app=System&controller=User&action=login&return=httpReferer'), -1);
+            Response::error('登陆超时，请重新登陆！', url('System', 'User', 'login&return=httpReferer'), -1);
         }
     }
 

@@ -19,7 +19,7 @@ class Db extends \Phpbe\System\Service
     {
         $tables = [];
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/App/' . $app . '/Table/';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/App/' . $app . '/Table/';
         if (file_exists($path)) {
             if (is_dir($path)) {
                 $handle = opendir($path);
@@ -32,7 +32,7 @@ class Db extends \Phpbe\System\Service
             }
         }
 
-        $path = Be::getRuntime()->getPathRoot() . '/App/' . $app . '/Table/';
+        $path = Be::getRuntime()->getRootPath() . '/App/' . $app . '/Table/';
         if (file_exists($path)) {
             if (is_dir($path)) {
                 $handle = opendir($path);
@@ -65,7 +65,7 @@ class Db extends \Phpbe\System\Service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getPathData() . '/Runtime/App/' . $app . '/TableConfig/' . $name . '.php';
+        $path = Be::getRuntime()->getDataPath() . '/Runtime/App/' . $app . '/TableConfig/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -119,7 +119,7 @@ class Db extends \Phpbe\System\Service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/App/' . $app . '/Table/' . $name . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/App/' . $app . '/Table/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -172,7 +172,7 @@ class Db extends \Phpbe\System\Service
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/App/' . $app . '/Row/' . $name . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/App/' . $app . '/Row/' . $name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

@@ -14,7 +14,7 @@ $my = Be::getAdminUser();
 <meta charset="utf-8" />
 <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-<base href="<?php echo Be::getRuntime()->getUrlRoot(); ?>/" />
+<base href="<?php echo url(); ?>/" />
 
 <script src="theme/admin/js//jquery-1.12.4.min.js"></script>
 <script src="theme/admin/js//jquery.validate.min.js"></script>

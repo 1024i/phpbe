@@ -29,8 +29,8 @@ class Cache extends \Phpbe\System\Service
         }
 
         $libFso = Be::getLib('Fso');
-        if ($file === null) return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir);
-        return $libFso->rmDir(Be::getRuntime()->getPathCache() . '/' . $dir . '/' . $file);
+        if ($file === null) return $libFso->rmDir(Be::getRuntime()->getCachePath() . '/' . $dir);
+        return $libFso->rmDir(Be::getRuntime()->getCachePath() . '/' . $dir . '/' . $file);
     }
 
 

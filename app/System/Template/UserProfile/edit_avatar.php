@@ -14,7 +14,7 @@ use Phpbe\System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include Be::getRuntime()->getPathRoot() . '/template/userProfile/west.php'
+        include Be::getRuntime()->getRootPath() . '/template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -45,7 +45,7 @@ use Phpbe\System\Be;
                             </div>
                             <div class="col-15">
                                 <div class="val">
-                                    <img src="<?php echo Be::getRuntime()->getUrlRoot().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
+                                    <img src="<?php echo url().'/'.DATA.'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
                                     <?php
                                     $configUser = Be::getConfig('System', 'User');
                                     if ($my->avatarL != '') {

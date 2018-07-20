@@ -28,7 +28,7 @@ class UserConnectSina extends \Phpbe\System\Service
         $url = 'https://api.weibo.com/oauth2/authorize';
 		$url .= '?clientId='.$this->appKey;
 		$url .= '&ResponseType=code';
-		$url .= '&redirectUri='.urlencode(Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&action=sinaLoginCallback');
+		$url .= '&redirectUri='.urlencode(url().'/?app=System&controller=User&action=sinaLoginCallback');
 		$url .= '&state='.$state;
 
         header("Location:$url");
@@ -56,7 +56,7 @@ class UserConnectSina extends \Phpbe\System\Service
 		$data['clientId'] = $this->appKey;
 		$data['clientSecret'] = $this->appSecret;
 		$data['grantType'] = 'authorizationCode';
-		$data['redirectUri'] = Be::getRuntime()->getUrlRoot().'/?app=System&controller=User&action=sinaLoginCallback';
+		$data['redirectUri'] = url().'/?app=System&controller=User&action=sinaLoginCallback';
 		$data['code'] = Request::get('code','');
 
 		$libHttp = Be::getLib('Http');
@@ -123,22 +123,22 @@ class UserConnectSina extends \Phpbe\System\Service
 
 		$t = date('YmdHis', $t);
 		
-        $tmpAvatar = Be::getRuntime()->getPathData().'/System/Tmp/user_connect_sina_'.$t.'_'.$rowUser->id;
+        $tmpAvatar = Be::getRuntime()->getDataPath().'/System/Tmp/user_connect_sina_'.$t.'_'.$rowUser->id;
         file_put_contents($tmpAvatar, $response);
 
 		$libImage = Be::getLib('Image');
 		$libImage->open($tmpAvatar);
 		if ($libImage->isImage()) {
 			$libImage->resize($configUser->avatar_l_w, $configUser->avatar_l_h, 'north');
-			$libImage->save(Be::getRuntime()->getPathData().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_l.'.$libImage->getType());
+			$libImage->save(Be::getRuntime()->getDataPath().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_l.'.$libImage->getType());
 			$rowUser->avatar_l = $rowUser->id.'_'.$t.'_l.'.$libImage->getType();
 
 			$libImage->resize($configUser->avatar_m_w, $configUser->avatar_m_h, 'north');
-			$libImage->save(Be::getRuntime()->getPathData().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_m.'.$libImage->getType());
+			$libImage->save(Be::getRuntime()->getDataPath().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_m.'.$libImage->getType());
 			$rowUser->avatar_m= $rowUser->id.'_'.$t.'_m.'.$libImage->getType();
 
 			$libImage->resize($configUser->avatar_s_w, $configUser->avatar_s_h, 'north');
-			$libImage->save(Be::getRuntime()->getPathData().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_s.'.$libImage->getType());
+			$libImage->save(Be::getRuntime()->getDataPath().'/System/User/Avatar/'.$rowUser->id.'_'.$t.'_s.'.$libImage->getType());
 			$rowUser->avatar_s = $rowUser->id.'_'.$t.'_s.'.$libImage->getType();
 
 			$rowUser->save();

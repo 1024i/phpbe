@@ -112,7 +112,7 @@ class menu extends Service
     public function update($menuName)
     {
         $group = Be::getRow('System', 'MenuGroup');
-        $group->load(array('className' => $menuName));
+        $group->load(array('class_name' => $menuName));
         if (!$group->id) {
             throw new ServiceException('未找到调用类名为 ' . $menuName . ' 的菜单！');
         }
@@ -125,7 +125,7 @@ class menu extends Service
         $code = '<?php' . "\n";
         $code .= 'namespace Cache\\Runtime\\Menu;' . "\n";
         $code .= "\n";
-        $code .= 'class ' . $group->className . ' extends \\Phpbe\\System\\Menu' . "\n";
+        $code .= 'class ' . $group->class_name . ' extends \\Phpbe\\System\\Menu' . "\n";
         $code .= '{' . "\n";
         $code .= '  public function __construct()' . "\n";
         $code .= '  {' . "\n";
@@ -144,11 +144,11 @@ class menu extends Service
                     }
                 }
 
-                $configSystem = Be::getConfig('System', 'Config');
-                if (serialize($configSystem->homeParams) != serialize($homeParams)) {
-                    $configSystem->homeParams = $homeParams;
-                    $configSystem->updateConfig('System', $configSystem);
-                }
+//                $configSystem = Be::getConfig('System', 'Config');
+//                if (serialize($configSystem->homeParams) != serialize($homeParams)) {
+//                    $configSystem->homeParams = $homeParams;
+//                    $configSystem->updateConfig('System', $configSystem);
+//                }
             }
 
             $params = array();
@@ -173,12 +173,12 @@ class menu extends Service
                 $url = 'url(\'' . $url . '\')';
             }
 
-            $code .= '    $this->addMenu(' . $menu->id . ', ' . $menu->parentId . ', \'' . $menu->name . '\', ' . $url . ', \'' . $menu->target . '\', ' . $param . ', ' . $menu->home . ');' . "\n";
+            $code .= '    $this->addMenu(' . $menu->id . ', ' . $menu->parent_id . ', \'' . $menu->name . '\', ' . $url . ', \'' . $menu->target . '\', ' . $param . ', ' . $menu->home . ');' . "\n";
         }
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getPathCache() . '/Runtime/Menu/' . $group->className . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Runtime/Menu/' . $group->class_name . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

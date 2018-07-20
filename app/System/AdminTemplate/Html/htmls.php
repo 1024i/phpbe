@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -13,17 +13,17 @@ $uiList->head();
 <?php
 $systemHtmls = $this->get('systemHtmls');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('list', './?controller=systemHtml&action=htmls');
-$uiList->setAction('create', './?controller=systemHtml&action=edit');
-$uiList->setAction('edit', './?controller=systemHtml&action=edit');
-$uiList->setAction('unblock', './?controller=systemHtml&action=unblock');
-$uiList->setAction('block', './?controller=systemHtml&action=block');
-$uiList->setAction('delete', './?controller=systemHtml&action=delete');
+$uiGrid->setAction('list', './?controller=systemHtml&action=htmls');
+$uiGrid->setAction('create', './?controller=systemHtml&action=edit');
+$uiGrid->setAction('edit', './?controller=systemHtml&action=edit');
+$uiGrid->setAction('unblock', './?controller=systemHtml&action=unblock');
+$uiGrid->setAction('block', './?controller=systemHtml&action=block');
+$uiGrid->setAction('delete', './?controller=systemHtml&action=delete');
 
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -33,9 +33,9 @@ $uiList->setFilters(
    )
 );
 
-$uiList->setData($systemHtmls);
+$uiGrid->setData($systemHtmls);
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'id',
         'label'=>'ID',
@@ -57,8 +57,8 @@ $uiList->setFields(
     )
 );
 
-$uiList->setPagination($this->get('pagination'));
-$uiList->orderBy($this->get('orderBy'), $this->get('orderByDir'));
-$uiList->display();
+$uiGrid->setPagination($this->get('pagination'));
+$uiGrid->orderBy($this->get('orderBy'), $this->get('orderByDir'));
+$uiGrid->display();
 ?>
 <!--{/center}-->

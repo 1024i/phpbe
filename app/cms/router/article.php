@@ -14,17 +14,17 @@ class Article extends Router
         if ($action == 'articles') {
             if (isset($params['categoryId'])) {
                 if (isset($params['page'])) {
-                    return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
+                    return url() . '/Cms/Article/c' . $params['categoryId'] . '/p' . $params['page'] . '/';
                 }
-                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/c' . $params['categoryId'] . '/';
+                return url() . '/Cms/Article/c' . $params['categoryId'] . '/';
             }
         } elseif ($action == 'detail') {
             if (isset($params['articleId'])) {
-                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
+                return url() . '/Cms/Article/' . $params['articleId'] . $configSystem->sefSuffix;
             }
         } elseif ($action == 'user') {
             if (isset($params['userId'])) {
-                return Be::getRuntime()->getUrlRoot() . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
+                return url() . '/Cms/Article/user/' . $params['userId'] . $configSystem->sefSuffix;
             }
         }
 

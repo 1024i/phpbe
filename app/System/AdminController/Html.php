@@ -85,7 +85,7 @@ class Html extends AdminController
 
         if ($rowSystemHtml->save()) {
             $cleanBody = Request::post('body', '', 'html');
-            $dir = Be::getRuntime()->getPathData() . '/System/Html';
+            $dir = Be::getRuntime()->getDataPath() . '/System/Html';
             if (!file_exists($dir)) {
                 $libFso = Be::getLib('fso');
                 $libFso->mkDir($dir);

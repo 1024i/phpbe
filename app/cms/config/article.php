@@ -189,9 +189,9 @@ class Article
             $libImage->open($defaultThumbnailL['tmp_name']);
             if ($libImage->isImage()) {
                 $defaultThumbnailLName = date('YmdHis') . '_l.' . $libImage->getType();
-                $defaultThumbnailLPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
+                $defaultThumbnailLPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailLName;
                 if (move_uploaded_file($defaultThumbnailL['tmp_name'], $defaultThumbnailLPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailL);
+                    // @unlink(Be::getRuntime()->getDataPath().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailL);
                     $this->defaultThumbnailL = $defaultThumbnailLName;
                 }
             }
@@ -208,9 +208,9 @@ class Article
             $libImage->open($defaultThumbnailM['tmp_name']);
             if ($libImage->isImage()) {
                 $defaultThumbnailMName = date('YmdHis') . '_m.' . $libImage->getType();
-                $defaultThumbnailMPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
+                $defaultThumbnailMPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailMName;
                 if (move_uploaded_file($defaultThumbnailM['tmp_name'], $defaultThumbnailMPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailM);
+                    // @unlink(Be::getRuntime()->getDataPath().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailM);
                     $this->defaultThumbnailM = $defaultThumbnailMName;
                 }
             }
@@ -227,9 +227,9 @@ class Article
             $libImage->open($defaultThumbnailS['tmp_name']);
             if ($libImage->isImage()) {
                 $defaultThumbnailSName = date('YmdHis') . '_s.' . $libImage->getType();
-                $defaultThumbnailSPath = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
+                $defaultThumbnailSPath = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/Default/' .  $defaultThumbnailSName;
                 if (move_uploaded_file($defaultThumbnailS['tmp_name'], $defaultThumbnailSPath)) {
-                    // @unlink(Be::getRuntime()->getPathData().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailS);
+                    // @unlink(Be::getRuntime()->getDataPath().'/Cms/Article/Thumbnail/Default/'.$configArticle->defaultThumbnailS);
                     $this->defaultThumbnailS = $defaultThumbnailSName;
                 }
             }

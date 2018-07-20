@@ -136,7 +136,7 @@ class Article extends Service
         if (count($similarArticles) > 0) return $similarArticles;
 
         if ($rowArticle->title != '') {
-            $libScws = Be::getLib('scws');
+            $libScws = Be::getLib('Pscws');
             $libScws->sendText($rowArticle->title);
             $scwsKeywords = $libScws->getTops(3);
             $keywords = [];
@@ -245,9 +245,9 @@ class Article extends Service
                 $rowArticle = Be::getRow('Cms', 'Article');
                 $rowArticle->load($id);
 
-                if ($rowArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
-                if ($rowArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
-                if ($rowArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getPathData() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
+                if ($rowArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
+                if ($rowArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
+                if ($rowArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
 
                 $rowArticle->delete();
             }

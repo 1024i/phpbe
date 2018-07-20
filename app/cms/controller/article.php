@@ -71,6 +71,7 @@ class Article extends Controller
         }
 
         $configSystem = Be::getConfig('System', 'System');
+
         Response::setTitle($configSystem->homeTitle);
         Response::setMetaKeywords($configSystem->homeMetaKeywords);
         Response::setMetaDescription($configSystem->homeMetaDescription);
@@ -134,7 +135,7 @@ class Article extends Controller
         $pagination->setLimit($limit);
         $pagination->setTotal($serviceArticleCache->getArticleCount($option));
         $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->setUrl('app=Cms&controller=Article&action=articles&categoryId=' . $categoryId);
+        $pagination->seturl('Cms', 'Article', 'articles', ['categoryId' => $categoryId]);
         Response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->getOffset();

@@ -16,7 +16,7 @@ use Phpbe\System\Be;
         <?php
         foreach($this->apps as $app => $name) {
             ?>
-            <li data-url="<?php echo adminUrl('app=System&controller=Db&action=tables&type=lists&app=' . $this->app); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
+            <li data-url="<?php echo adminurl('System', 'Db', 'tables&type=lists', ['app' => $this->app]); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
             <?php
         }
         ?>

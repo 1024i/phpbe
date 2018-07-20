@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <link type="text/css" rel="stylesheet" href="bootstrap/2.3.2/css/bootstrap-lightbox.css" />
 <script type="text/javascript" language="javascript" src="bootstrap/2.3.2/js/bootstrap-lightbox.js"></script>
@@ -18,10 +18,10 @@ $uiList->head();
 <?php
 $themes = $this->get('themes');
 
-$uiList = Be::getUi('grid');
+$uiGrid = Be::getUi('grid');
 
-$uiList->setAction('listing', './?app=System&controller=System&action=themes');
-$uiList->setAction('create', './?app=System&controller=System&action=remoteThemes', '安装新主题');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=themes');
+$uiGrid->setAction('create', './?app=System&controller=System&action=remoteThemes', '安装新主题');
 
 
 $configSystem = Be::getConfig('System', 'System');
@@ -39,18 +39,18 @@ foreach ($themes as $key=>$theme) {
     $theme->deleteHtml = '<a class="icon delete"'.($theme->isDefault?' style="display:none;"':'').' href="javascript:;" onclick="javascript:deleteTheme(this, \''.$key.'\');"></a>';
 }
 
-$uiList->setData($themes);
+$uiGrid->setData($themes);
 
-$uiList->setFooter('共安装了 <strong>'.count($themes).'</strong> 个主题');
+$uiGrid->setFooter('共安装了 <strong>'.count($themes).'</strong> 个主题');
 
 
 $thumbnailTemplate = '';
-$thumbnailTemplate .= '<a href="javascript:" onclick="javascript:jQuery(\'#themeThumbnail_{id}\').lightbox();" data-title="" data-content="<div style=\'width:400px;height:400px;line-height:400px;text-align:center;\'><img src=\''.Be::getRuntime()->getUrlRoot().'/themes/{key}/{thumbnailM}\' style=\'max-width:400px;\' /></div>" data-toggle="popover" data-html="true" data-trigger="hover">';
-$thumbnailTemplate .= '	<img src="'.Be::getRuntime()->getUrlRoot().'/themes/{key}/{thumbnailS}" style="max-width:120px;" border="0" />';
+$thumbnailTemplate .= '<a href="javascript:" onclick="javascript:jQuery(\'#themeThumbnail_{id}\').lightbox();" data-title="" data-content="<div style=\'width:400px;height:400px;line-height:400px;text-align:center;\'><img src=\''.url().'/themes/{key}/{thumbnailM}\' style=\'max-width:400px;\' /></div>" data-toggle="popover" data-html="true" data-trigger="hover">';
+$thumbnailTemplate .= '	<img src="'.url().'/themes/{key}/{thumbnailS}" style="max-width:120px;" border="0" />';
 $thumbnailTemplate .= '</a>';
 $thumbnailTemplate .= '<div class="lightbox fade hide" id="themeThumbnail_{id}">';
 $thumbnailTemplate .= '	<div class="lightbox-content">';
-$thumbnailTemplate .= '		<img src="'.Be::getRuntime()->getUrlRoot().'/themes/{key}/{thumbnailL}" />';
+$thumbnailTemplate .= '		<img src="'.url().'/themes/{key}/{thumbnailL}" />';
 $thumbnailTemplate .= '		<div class="lightbox-caption"><p>{name}</p></div>';
 $thumbnailTemplate .= '	</div>';
 $thumbnailTemplate .= '</div>';
@@ -65,7 +65,7 @@ $authorTemplate .= '{authorEmail}<br />';
 $authorTemplate .= '{authorWebsite}';
 
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'thumbnail',
         'label'=>'缩略图',
@@ -99,6 +99,6 @@ $uiList->setFields(
         'width'=>'120'
     )
 );
-$uiList->display();
+$uiGrid->display();
 ?>
 <!--{/center}-->

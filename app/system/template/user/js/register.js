@@ -62,7 +62,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: Be::getRuntime()->getUrlRoot() + "/?controller=user&action=ajax_register_save",
+                url: url() + "/?controller=user&action=ajax_register_save",
                 data: $(form).serialize(),
                 dataType: "json",
                 success: function (json) {

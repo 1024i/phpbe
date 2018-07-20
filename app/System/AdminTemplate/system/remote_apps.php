@@ -4,8 +4,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$uiList = Be::getUi('grid');
-$uiList->head();
+$uiGrid = Be::getUi('grid');
+$uiGrid->head();
 ?>
 <!--{/head}-->
 
@@ -34,12 +34,12 @@ foreach ($apps as $app) {
     }
 }
 
-$uiList = Be::getUi('grid');
-$uiList->setAction('listing', './?app=System&controller=System&action=remoteApps');
+$uiGrid = Be::getUi('grid');
+$uiGrid->setAction('listing', './?app=System&controller=System&action=remoteApps');
 
-$uiList->setData($apps);
+$uiGrid->setData($apps);
 
-$uiList->setFilters(
+$uiGrid->setFilters(
     array(
         'type'=>'text',
         'name'=>'key',
@@ -49,7 +49,7 @@ $uiList->setFilters(
    )
 );
 
-$uiList->setFields(
+$uiGrid->setFields(
     array(
         'name'=>'logo',
         'label'=>'缩略图',
@@ -102,7 +102,7 @@ $pagination->setTotal($remoteApps->total);
 $pagination->setLimit($remoteApps->limit);
 $pagination->setPage($remoteApps->page);
 
-$uiList->setPagination($pagination);
-$uiList->display();
+$uiGrid->setPagination($pagination);
+$uiGrid->display();
 ?>
 <!--{/center}-->

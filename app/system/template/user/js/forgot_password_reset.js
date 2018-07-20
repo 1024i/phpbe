@@ -31,7 +31,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: Be::getRuntime()->getUrlRoot() + "/?controller=user&action=ajax_forgot_password_reset_save",
+                url: url() + "/?controller=user&action=ajax_forgot_password_reset_save",
                 data: $(form).serialize(),
                 dataType: "json",
                 success: function (json) {
@@ -40,7 +40,7 @@ $(function () {
 
                     alert(json.message);
                     if (json.error == '0') {
-                        window.location.href = Be::getRuntime()->getUrlRoot() + "/?controller=user&action=login";
+                        window.location.href = url() + "/?controller=user&action=login";
                     }
                 },
                 error: function () {

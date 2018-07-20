@@ -34,7 +34,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: Be::getRuntime()->getUrlRoot() + "/?controller=user&action=login_check",
+                url: url() + "/?controller=user&action=login_check",
                 data: $(form).serialize(),
                 dataType: "json",
                 success: function (json) {
