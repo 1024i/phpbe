@@ -1,7 +1,9 @@
 <?php
 namespace App\System\Service;
 
+use GuzzleHttp\Exception\ServerException;
 use Phpbe\System\Be;
+use Phpbe\System\Db\Row;
 use Phpbe\System\Service;
 use Phpbe\System\Service\ServiceException;
 use Phpbe\System\Session;
@@ -70,14 +72,7 @@ class AdminUser extends Service
                     } else {
                         session::delete($ip);
 
-                        $adminUser = $rowAdminUser->toObject();
-                        unset($adminUser->password);
-                        unset($adminUser->salt);
-                        unset($adminUser->remember_me_token);
-                        $adminUser->roleIds = Be::getTable('System', 'User')
-                            ->where('user_id', $adminUser->id)
-                            ->getArray('role_id');
-                        Session::set('_adminUser', $adminUser);
+                        $this->makeLogin($rowAdminUser);
 
                         $rowAdminUserAdminLog->success = 1;
                         $rowAdminUserAdminLog->description = '登陆成功！';
@@ -116,11 +111,42 @@ class AdminUser extends Service
         }
     }
 
+
+    /**
+     * 标记用户已成功登录
+     *
+     * @param Row | Object | int $userId 用户Row对象 | Object数据 | 用户ID
+     * @throws ServiceException
+     */
+    public function makeLogin($userId) {
+        $adminUser = null;
+        if($userId instanceof Row) {
+            $adminUser = $userId->toObject();
+        }elseif(is_object($userId)) {
+            $adminUser = $userId;
+        }elseif(is_numeric($userId)) {
+            $rowAdminUser = Be::getRow('System', 'AdminUser');
+            $rowAdminUser->load($userId);
+            $adminUser = $rowAdminUser->toObject();
+        } else {
+            throw new ServiceException('参数无法识别！');
+        }
+
+        unset($adminUser->password);
+        unset($adminUser->salt);
+        unset($adminUser->remember_me_token);
+        $adminUser->roleIds = Be::getTable('System', 'User')
+            ->where('user_id', $adminUser->id)
+            ->getArray('role_id');
+
+        Session::set('_adminUser', $adminUser);
+    }
+
     /**
      * 记住我
      *
+     * @return Row | false
      * @throws \Exception
-     * @return bool | \Phpbe\System\Db\Row
      */
     public function rememberMe()
     {
@@ -130,7 +156,8 @@ class AdminUser extends Service
                 $rowAdminUser = Be::getRow('System', 'AdminUser');
                 $rowAdminUser->load('remember_me_token', $adminRememberMe);
                 if ($rowAdminUser->id && $rowAdminUser->block == 0) {
-                    Session::set('_adminUser', Be::getAdminUser($rowAdminUser->id));
+
+                    $this->makeLogin($rowAdminUser);
 
                     $db = Be::getDb();
                     $db->beginTransaction();

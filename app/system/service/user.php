@@ -2,6 +2,7 @@
 
 namespace App\System\Service;
 
+use Phpbe\System\Db\Row;
 use Phpbe\System\Service\ServiceException;
 use Phpbe\Util\Random;
 use Phpbe\Util\Validator;
@@ -20,7 +21,7 @@ class User extends \Phpbe\System\Service
      * @param string $password 密码
      * @param string $ip IP 地址
      * @param bool $rememberMe 记住我
-     * @return \Phpbe\System\Db\Row
+     * @return Row
      * @throws \Exception
      */
     public function login($username, $password, $ip, $rememberMe = false)
@@ -65,16 +66,7 @@ class User extends \Phpbe\System\Service
                 }
 
                 session::delete($ip);
-
-                $user = $rowUser->toObject();
-                unset($user->password);
-                unset($user->salt);
-                unset($user->remember_me_token);
-                unset($user->token);
-                $user->roleIds = Be::getTable('System', 'User')
-                    ->where('user_id', $user->id)
-                    ->getArray('role_id');
-                Session::set('_user', $user);
+                $this->makeLogin($rowUser);
 
                 if ($rememberMe) {
 
@@ -86,7 +78,7 @@ class User extends \Phpbe\System\Service
                     $rowUser->remember_me_token = $rememberMeToken;
 
                     cookie::setExpire(time() + 30 * 86400);
-                    cookie::set('_remember_me', $rememberMeToken);
+                    cookie::set('_rememberMe', $rememberMeToken);
                 }
 
                 $rowUser->last_login_time = time();
@@ -102,25 +94,67 @@ class User extends \Phpbe\System\Service
     }
 
     /**
+     * 标记用户已成功登录
+     *
+     * @param Row | Object | int $userId 用户Row对象 | Object数据 | 用户ID
+     * @throws ServiceException
+     */
+    public function makeLogin($userId) {
+        $user = null;
+        if($userId instanceof Row) {
+            $user = $userId->toObject();
+        }elseif(is_object($userId)) {
+            $user = $userId;
+        }elseif(is_numeric($userId)) {
+            $rowUser = Be::getRow('System', 'User');
+            $rowUser->load($userId);
+            $user = $rowUser->toObject();
+        } else {
+            throw new ServiceException('参数无法识别！');
+        }
+
+        unset($user->password);
+        unset($user->salt);
+        unset($user->remember_me_token);
+        unset($user->token);
+        $user->roleIds = Be::getTable('System', 'User')
+            ->where('user_id', $user->id)
+            ->getArray('role_id');
+        Session::set('_user', $user);
+    }
+
+    /**
      * 记住我 自动登录
      *
-     * @return \Object | false
+     * @return Row | false
+     * @throws \Exception
      */
     public function rememberMe()
     {
-        if (cookie::has('_remember_me')) {
-            $rememberMe = cookie::get('_remember_me', '');
+        if (cookie::has('_rememberMe')) {
+            $rememberMe = cookie::get('_rememberMe', '');
             if ($rememberMe) {
                 $rowUser = Be::getRow('System', 'User');
                 $rowUser->load('remember_me_token', $rememberMe);
 
                 if ($rowUser->id > 0 && $rowUser->block == 0) {
-                    $rowUser->last_login_time = time();
-                    $rowUser->save();
 
-                    $user = $rowUser->toObject();
-                    Session::set('_user', $user);
-                    return $user;
+                    $this->makeLogin($rowUser);
+
+                    $db = Be::getDb();
+                    $db->beginTransaction();
+                    try {
+
+                        $rowUser->last_login_time = time();
+                        $rowUser->save();
+
+                        $db->commit();
+                        return $rowUser;
+
+                    } catch (\Exception $e) {
+                        $db->rollback();
+                        throw $e;
+                    }
                 }
             }
         }
@@ -135,7 +169,7 @@ class User extends \Phpbe\System\Service
     public function logout()
     {
         session::delete('_user');
-        cookie::delete('_remember_me');
+        cookie::delete('_rememberMe');
     }
 
     /**
