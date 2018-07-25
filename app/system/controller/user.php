@@ -96,7 +96,7 @@ class User extends Controller
         $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
-        $serviceUserConnectQq = Be::getService('userConnectQq');
+        $serviceUserConnectQq = Be::getService('System', 'userConnectQq');
         $serviceUserConnectQq->login();
     }
 
@@ -105,7 +105,7 @@ class User extends Controller
         $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectQq) Response::end('使用QQ账号登陆未启用！');
 
-        $serviceUserConnectQq = Be::getService('userConnectQq');
+        $serviceUserConnectQq = Be::getService('System', 'userConnectQq');
         $accessToken = $serviceUserConnectQq->callback();
         if ($accessToken == false) Response::end($serviceUserConnectQq->getError());
 
@@ -115,7 +115,7 @@ class User extends Controller
         $userInfo = $serviceUserConnectQq->getUserInfo($accessToken, $openid);
         if ($userInfo == false) Response::end($serviceUserConnectQq->getError());
 
-        $rowUserConnectQq = Be::getRow('userConnectQq');
+        $rowUserConnectQq = Be::getRow('System', 'userConnectQq');
         $rowUserConnectQq->loadBy('openid', $openid);
         if ($rowUserConnectQq->userId > 0) {
             $serviceUserConnectQq->systemLogin($rowUserConnectQq->userId);
@@ -143,7 +143,7 @@ class User extends Controller
         $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
-        $serviceUserConnectSina = Be::getService('userConnectSina');
+        $serviceUserConnectSina = Be::getService('System', 'userConnectSina');
         $serviceUserConnectSina->login();
     }
 
@@ -152,7 +152,7 @@ class User extends Controller
         $configUser = Be::getConfig('System', 'User');
         if (!$configUser->connectSina) Response::end('使用新浪微博账号登陆未启用！');
 
-        $serviceUserConnectSina = Be::getService('userConnectSina');
+        $serviceUserConnectSina = Be::getService('System', 'userConnectSina');
         $accessToken = $serviceUserConnectSina->callback();
         if ($accessToken == false) Response::end($serviceUserConnectSina->getError());
 
@@ -162,7 +162,7 @@ class User extends Controller
         $userInfo = $serviceUserConnectSina->getUserInfo($accessToken, $uid);
         if ($userInfo == false) Response::end($serviceUserConnectSina->getError());
 
-        $rowUserConnectSina = Be::getRow('userConnectSina');
+        $rowUserConnectSina = Be::getRow('System', 'userConnectSina');
         $rowUserConnectSina->loadBy('uid', $uid);
         if ($rowUserConnectSina->userId > 0) {
             $serviceUserConnectSina->systemLogin($rowUserConnectSina->userId);
@@ -224,7 +224,7 @@ class User extends Controller
 
                 if ($configUser->captchaRegister) Session::delete('captchaRegister');
 
-                Response::success('您的账号已成功创建！', url('System', 'User', 'registerSuccess&username=' . $username . '', ['email' => $email)]);
+                Response::success('您的账号已成功创建！', url('System', 'User', 'registerSuccess', ['username' => $username, 'email' => $email]));
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
             }

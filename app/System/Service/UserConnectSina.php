@@ -151,7 +151,15 @@ class UserConnectSina extends \Phpbe\System\Service
 
 	public function systemLogin($userId)
 	{
-		Session::set('_user', Be::getUser($userId));
+        $user = Be::getRow('System', 'User')->load($userId)->toObject();
+        unset($user->password);
+        unset($user->salt);
+        unset($user->remember_me_token);
+        unset($user->token);
+        $user->roleIds = Be::getTable('System', 'User')
+            ->where('user_id', $user->id)
+            ->getArray('role_id');
+        Session::set('_user', $user);
 	}
 
 }

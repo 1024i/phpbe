@@ -65,7 +65,16 @@ class User extends \Phpbe\System\Service
                 }
 
                 session::delete($ip);
-                Session::set('_user', $rowUser->toObject());
+
+                $user = $rowUser->toObject();
+                unset($user->password);
+                unset($user->salt);
+                unset($user->remember_me_token);
+                unset($user->token);
+                $user->roleIds = Be::getTable('System', 'User')
+                    ->where('user_id', $user->id)
+                    ->getArray('role_id');
+                Session::set('_user', $user);
 
                 if ($rememberMe) {
 

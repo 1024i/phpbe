@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\Controller;
+namespace App\Cms\AdminController;
 
 use Phpbe\System\Be;
 use Phpbe\System\Request;

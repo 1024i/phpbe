@@ -69,7 +69,15 @@ class AdminUser extends Service
                         throw new ServiceException('管理员账号已被停用！');
                     } else {
                         session::delete($ip);
-                        Session::set('_adminUser', $rowAdminUser->toObject());
+
+                        $adminUser = $rowAdminUser->toObject();
+                        unset($adminUser->password);
+                        unset($adminUser->salt);
+                        unset($adminUser->remember_me_token);
+                        $adminUser->roleIds = Be::getTable('System', 'User')
+                            ->where('user_id', $adminUser->id)
+                            ->getArray('role_id');
+                        Session::set('_adminUser', $adminUser);
 
                         $rowAdminUserAdminLog->success = 1;
                         $rowAdminUserAdminLog->description = '登陆成功！';

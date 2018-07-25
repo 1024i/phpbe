@@ -73,19 +73,19 @@ foreach ($categories as $category) {
 $configArticle = Be::getConfig('Cms', 'Article');
 
 foreach ($articles as $article) {
-    $article->titleHtml = '<span class="text-warning">[' . $indexCategories[$article->categoryId] . ']</span> <a href="' . url('Cms', 'Article', 'detail', ['articleId' => $article->id]) . '" title="' . $article->title . '" target="Blank" data-toggle="tooltip">' . limit($article->title, 50) . '</a>';
-    $article->createTime = date('Y-m-d H:i', $article->createTime);
+    $article->title_html = '<span class="text-warning">[' . $indexCategories[$article->category_id] . ']</span> <a href="' . url('Cms', 'Article', 'detail', ['articleId' => $article->id]) . '" title="' . $article->title . '" target="Blank" data-toggle="tooltip">' . limit($article->title, 50) . '</a>';
+    $article->create_time = date('Y-m-d H:i', $article->create_time);
 
-    $creator = Be::getUser($article->createById);
+    $creator = Be::getUser($article->create_by_id);
     $article->creator = $creator->id > 0 ? $creator->name : '不存在';
 
-    if ($article->thumbnailS == '') {
-        $article->thunbmailHtml = '<img src="' . Be::getRuntime()->getDataUrl() . '/Cms/Article/Thumbnail/Default/' . $configArticle->defaultThumbnailS . '" width="48" />';
+    if ($article->thumbnail_s == '') {
+        $article->thunbmail_html = '<img src="' . Be::getRuntime()->getDataUrl() . '/Cms/Article/Thumbnail/Default/' . $configArticle->defaultThumbnailS . '" width="48" />';
     } else {
-        $article->thunbmailHtml = '<img src="' . Be::getRuntime()->getDataUrl() . '/Cms/Article/Thumbnail/' . $article->thumbnailS . '" width="48" />';
+        $article->thunbmail_html = '<img src="' . Be::getRuntime()->getDataUrl() . '/Cms/Article/Thumbnail/' . $article->thumbnail_s . '" width="48" />';
     }
 
-    $article->comment = '<a href="' . url('Cms', 'Article', 'comments', ['articleId' => $article->id]) . '" class="label' . ($article->commentCount > 0 ? ' label-info' : '') . '">' . $article->commentCount . '</a>';
+    $article->comment = '<a href="' . url('Cms', 'Article', 'comments', ['articleId' => $article->id]) . '" class="label' . ($article->comment_count > 0 ? ' label-info' : '') . '">' . $article->comment_count . '</a>';
     $article->ordering = '<span class="label' . ($article->ordering > 0 ? ' label-success' : '') . '">' . $article->ordering . '</span>';
     $article->top = '<span class="label' . ($article->top > 0 ? ' label-warning' : '') . '">' . $article->top . '</span>';
 }
@@ -101,14 +101,14 @@ $uiGrid->setFields(
         'orderBy' => 'id'
     ),
     array(
-        'name' => 'thunbmailHtml',
+        'name' => 'thunbmail_html',
         'label' => '缩略图',
         'align' => 'center',
         'style' => 'margin:0;padding:2px;',
         'width' => '50'
     ),
     array(
-        'name' => 'titleHtml',
+        'name' => 'title_html',
         'label' => '标题',
         'align' => 'left'
     ),
@@ -119,11 +119,11 @@ $uiGrid->setFields(
         'width' => '120'
     ),
     array(
-        'name' => 'createTime',
+        'name' => 'create_time',
         'label' => '发布时间',
         'align' => 'center',
         'width' => '120',
-        'orderBy' => 'createTime'
+        'orderBy' => 'create_time'
     ),
     array(
         'name' => 'comment',
