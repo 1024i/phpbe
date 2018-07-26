@@ -140,6 +140,8 @@ class AdminUser extends Service
             ->getArray('role_id');
 
         Session::set('_adminUser', $adminUser);
+
+        Be::cleanCache('AdminUser:0');
     }
 
     /**

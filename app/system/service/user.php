@@ -121,6 +121,8 @@ class User extends \Phpbe\System\Service
             ->where('user_id', $user->id)
             ->getArray('role_id');
         Session::set('_user', $user);
+
+        Be::cleanCache('User:0');
     }
 
     /**
