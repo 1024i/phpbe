@@ -1,7 +1,0 @@
-
-.admin_ui_editor .required{ color:#f00; padding:0px 3px;}
-
-.admin_ui_editor .form-horizontal .control-group{ padding:6px 0; margin-bottom:2px;background:url("../images/bg.gif") repeat-y scroll -430px 0 transparent}
-
-.admin_ui_editor .error label.error{display: inline; background:url(../images/unchecked.gif) 0 center no-repeat; height:16px; line-height:16px; margin-left:5px; padding-left:20px; color:#f30;}
-.admin_ui_editor .success label.success{display: inline; background:url(../images/checked.gif) 0 center no-repeat; height:16px; line-height:16px; margin-left:5px; padding-left:20px;}
