@@ -16,36 +16,17 @@
         }
     ],
     "require": {
-        "php": ">=5.6.0",
+        "be/app-cms": "dev-master",
+        "be/app-system": "dev-master",
 
-        "phpbe/system": "dev-master",
-        "phpbe/util": "^2.0",
-
-        "phpbe/app-cms": "*",
-        "phpbe/app-system": "*",
-
-        "phpbe/lib-ip": "^1.0",
-        "phpbe/lib-image": "^1.0",
-        "phpbe/lib-history": "^1.0",
-        "phpbe/lib-captcha": "^1.0",
-        "phpbe/lib-css": "^1.0",
-        "phpbe/lib-fso": "^1.0",
-        "phpbe/lib-pscws": "^1.0",
-
-        "phpbe/ui-category": "^1.0",
-        "phpbe/ui-category-tree": "^1.0",
-        "phpbe/ui-admin-grid": "^1.0",
-
-        "monolog/monolog": "~1.11",
-        "guzzlehttp/guzzle" : "6.*",
-        "phpmailer/phpmailer": "^6.0",
-        "tinymce/tinymce": "^4.7"
+        "tinymce/tinymce": "~4.7"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Ui\\": "ui/",
-            "Cache\\": "cache/"
+            "Cache\\": "cache/",
+            "Data\\": "data/"
         }
     }
 }

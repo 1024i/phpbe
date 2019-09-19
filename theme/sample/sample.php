@@ -1,11 +1,11 @@
 <?php
-use Phpbe\System\Be;
-use Phpbe\System\Request;
+use Be\System\Be;
+use Be\System\Request;
 ?>
 
 <!--{html}-->
 <?php
-$config = Be::getConfig('System', 'System');
+$config = Be::getConfig('System.System');
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,6 +16,8 @@ $config = Be::getConfig('System', 'System');
     <meta name="description" content="<?php echo $this->metaDescription; ?>"/>
     <meta name="keywords" content="<?php echo $this->metaKeywords; ?>"/>
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
+
+    <base href="<?php echo url(); ?>/" />
 
     <script src="<?php echo url(); ?>/system/theme/sample/js/jquery-1.12.4.min.js"></script>
     <script src="<?php echo url(); ?>/system/theme/sample/js/jquery.validate.min.js"></script>
@@ -30,7 +32,7 @@ $config = Be::getConfig('System', 'System');
     <script src="<?php echo url(); ?>/system/theme/sample/js/theme.js"></script>
 
     <script>
-        var url() = '<?php echo url(); ?>';
+        var url = '<?php echo url(); ?>';
     </script>
 
     <!--{head}-->

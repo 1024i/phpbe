@@ -1,10 +1,10 @@
 <?php
-use Phpbe\System\Be;
-use Phpbe\System\Request;
+use Be\System\Be;
+use Be\System\Request;
 ?>
 <!--{html}-->
 <?php
-$config = Be::getConfig('System', 'System');
+$config = Be::getConfig('System.System');
 ?>
 <!DOCTYPE html>
 <html>
@@ -42,8 +42,8 @@ $config = Be::getConfig('System', 'System');
     <div class="theme-north">
         <!--{north}-->
         <?php
-        $configSystem = Be::getConfig('System', 'System');
-        $configUser = Be::getConfig('System', 'user');
+        $configSystem = Be::getConfig('System.System');
+        $configUser = Be::getConfig('System.user');
 
         $menuId = Request::get('menuId', 0, 'int');
 
@@ -60,13 +60,13 @@ $config = Be::getConfig('System', 'System');
                     <?php
                     if (!isset($my->id) || $my->id == 0) {
                         ?>
-                        <a href="<?php echo url('System', 'User', 'login'); ?>">登陆</a><a href="<?php echo url('System', 'User', 'register'); ?>">注册</a>
+                        <a href="<?php echo url('System.User.login'); ?>">登陆</a><a href="<?php echo url('System.User.register'); ?>">注册</a>
                         <?php
                     } else {
                         ?>
-                        <img src="<?php echo Be::getRuntime()->getDataUrl().'/user/avatar/'.($my->avatarL == ''?('default/'.$configUser->defaultAvatarL):$my->avatarL); ?>" />
-                        <a href="<?php echo url('System', 'UserProfile', 'home'); ?>"><?php echo $my->name; ?></a>
-                        <input type="button" class="btn btn-small btn-warning" onclick="window.location.href='<?php echo url('System', 'User', 'logout'); ?>';" value="退出" />
+                        <img src="<?php echo Be::getRuntime()->getDataUrl().'/user/avatar/'.($my->avatar_l == ''?('default/'.$configUser->defaultAvatarL):$my->avatar_l); ?>" />
+                        <a href="<?php echo url('System.UserProfile.home'); ?>"><?php echo $my->name; ?></a>
+                        <input type="button" class="btn btn-small btn-warning" onclick="window.location.href='<?php echo url('System.User.logout'); ?>';" value="退出" />
                         <?php
                     }
                     ?>
@@ -122,22 +122,6 @@ $config = Be::getConfig('System', 'System');
     <div class="theme-middle">
         <!--{middle}-->
         <div class="row">
-
-            <div class="col-14">
-
-                <div class="theme-center-container">
-                    <div class="theme-center">
-                        <!--{message}-->
-                        <?php
-                        if ($this->Message !== null) echo '<div class="theme-message theme-message-' . $this->Message->type . '"><a class="close" href="javascript:;">&times;</a>' . $this->Message->body . '</div>';
-                        ?>
-                        <!--{/message}-->
-
-                        <!--{center}-->
-                        <!--{/center}-->
-                    </div>
-                </div>
-            </div>
 
             <div class="col-6">
                 <div class="theme-east-container">

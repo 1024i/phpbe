@@ -1,6 +1,6 @@
 <?php
-use Phpbe\System\Be;
-use Phpbe\System\Session;
+use Be\System\Be;
+use Be\System\Session;
 ?>
 
 <!--{html}-->
@@ -11,178 +11,194 @@ $my = Be::getAdminUser();
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
+    <meta charset="utf-8" />
+    <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-<base href="<?php echo url(); ?>/" />
+    <base href="<?php echo url(); ?>/" />
 
-<script src="theme/admin/js//jquery-1.12.4.min.js"></script>
-<script src="theme/admin/js//jquery.validate.min.js"></script>
-<script src="theme/admin/js//jquery.cookie.js"></script>
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
 
-<link rel="stylesheet" href="theme/admin/bootstrap/2.3.2/css/bootstrap.min.css" />
-<script src="theme/admin/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios@0.19.0/dist/axios.min.js"></script>
+    <script>Vue.prototype.$http = axios;</script>
 
-<script type="text/javascript" language="javascript">
-	var gSLoadingImage = '<img src="theme/admin/images/loading.gif" alt="加载中..." align="absmiddle" /> ';
-	var gSLoading = gSLoadingImage + ' 加载中...';
-	var gSHandling = gSLoadingImage + ' 处理中...';
-</script>
+    <script src="https://unpkg.com/vue-cookies@1.5.13/vue-cookies.js"></script>
 
-<link rel="stylesheet" href="theme/admin/classic/css/theme.css" />
-<script src="theme/admin/admin/js/theme.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.css">
+    <script src="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.js"></script>
 
+    <link rel="stylesheet" href="theme/admin/css/theme.css" />
     <!--{head}-->
     <!--{/head}-->
 </head>
 <body>
     <!--{body}-->
-    <div class="theme-north">
-        <!--{north}-->
-        <?php
-        $adminConfigAdminUser = Be::getConfig('System', 'AdminUser');
-        ?>
-        <div class="theme-north-header">
-            <?php echo '您好： '; ?><img src="../<?php echo DATA.'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$adminConfigAdminUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" /> <?php echo $my->name; ?> &nbsp; &nbsp; <a href="./?controller=adminUser&action=logout" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
-        </div>
+    <div class="be-body">
 
-        <div class="theme-north-menu" id="north-menu">
-
-            <ul class="nav nav-pills">
-                <li><a href="./?app=System&controller=System&action=dashboard">后台首页</a></li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">菜单<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&action=menus">菜单列表</a></li>
-                        <li><a href="./?app=System&controller=System&action=menuGroups">菜单分组</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">主题<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&action=themes">已安装的主题</a></li>
-                        <li><a href="./?app=System&controller=System&action=remoteThemes">安装新主题</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">应用<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <?php
-                        $serviceApp = Be::getService('System', 'app');
-                        $apps = $serviceApp->getApps();
-                        ?>
-                        <li><a href="./?app=System&controller=System&action=apps">已安装的应用<span class="badge badge-warning" style="margin-left:10px;"><?php echo count($apps); ?></span></a></li>
-                        <li><a href="./?app=System&controller=System&action=remoteApps">安装新应用</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">系统管理<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="./?app=System&controller=System&action=config">系统基本设置</a></li>
-                        <li><a href="./?app=System&controller=System&action=configMail">发送邮件设置</a></li>
-                        <li><a href="./?app=System&controller=System&action=configWatermark">水印设置</a></li>
-                        <li class="divider"></li>
-                        <li><a href="./?app=System&controller=System&action=cache">缓存管理</a></li>
-                        <li><a href="./?app=System&controller=System&action=errorLogs">错误日志</a></li>
-                        <li><a href="./?app=System&controller=System&action=logs">系统日志</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">帮助<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="http://www.phpbe.com/" target="Blank">官方网站</a></li>
-                        <li><a href="http://support.phpbe.com/" target="Blank">技术支持</a></li>
-                        <li class="divider"></li>
-                        <li><a href="javascript:;" onClick="javasscript:$('#modal-about-be').modal();">关于...</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-            <div class="modal hide fade" id="modal-about-be">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>关于</h3>
-                </div>
-                <div class="modal-body">
-                    <p>当前BE系统版本号：v <?php echo Be::getVersion(); ?></p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn" data-dismiss="modal">关闭</a>
-                </div>
-            </div>
-
-        </div>
-
-        <!--{/north}-->
-    </div>
-    <div class="theme-middle">
-
-        <!--{middle}-->
-        <div class="theme-center-wrap">
-            <div class="theme-center">
-                <div class="center-title"><div class="title-icon"><?php echo $this->title; ?></div></div>
-                <div class="center-body">
-                    <!--{message}-->
-                    <?php
-                    if ($this->Message)
-                    {
-                        $message = $this->Message;
-                        //$message->type: success:成功 / error:错误 / warning:警告 / info:普通信息
-
-                        echo '<div class="theme-message theme-message-' . $message->type . ' alert alert-' . $message->type . '">';
-                        echo '<a href="javascript:;" class="close">&times;</a>';
-                        echo $message->body;
-                        echo '</div>';
-                    }
-                    ?>
-                    <!--{/message}-->
-
-                    <!--{center}-->
-                    <!--{/center}-->
-
-                </div>
-            </div>
-        </div>
-
-        <div class="theme-west">
+        <div id="app-west" :class="{'be-west': true, 'be-west-collapsed': collapsed}" v-cloak>
             <!--{west}-->
-            <?php
-            $serviceApp = Be::getService('System', 'app');
-            $apps = $serviceApp->getApps();
-            ?>
-            <div class="west-title"><div class="title-icon">已安装的应用</div></div>
 
-            <div class="theme-west-tree" id="west-tree">
-                <ul>
+            <div class="logo">
+                LOGO
+            </div>
+
+            <div class="west-menu">
+                <?php
+                $adminMenu = Be::getMenu('Admin');
+                $adminMenuTree = $adminMenu->getMenuTree()
+                ?>
+                <a-menu
+                        :defaultSelectedKeys="['1']"
+                        mode="inline"
+                        theme="dark"
+                        :inline-collapsed="collapsed">
                     <?php
-                    foreach ($apps as $app) {
-                        ?>
-                        <li class="node" id="app-<?php echo $app->name; ?>">
-                            <div><a href="javascript:;"><img src="<?php echo $app->icon; ?>" max-width="24" max-height="24" /><?php echo $app->label; ?></a></div>
-                            <ul>
-                                <?php
-                                $menus = $app->getAdminMenus();
-                                foreach ($menus as $menu) {
-                                    ?>
-                                    <li><a href="<?php echo $menu['url']; ?>"><img src="<?php echo $menu['icon']; ?>" max-width="24" max-height="24" /><?php echo $menu['name']; ?></a></li>
-                                    <?php
+                    $appName = Be::getRuntime()->getAppName();
+                    foreach ($adminMenuTree as $menu) {
+
+                        if ($menu->id == $appName) {
+                            // 有子菜单
+                            if ($menu->subMenu) {
+                                foreach ($menu->subMenu as $subMenu) {
+                                    echo '<a-sub-menu key="west-menu-'.$subMenu->id.'">';
+                                    echo '<span slot="title"><a-icon type="'.$subMenu->icon.'"></a-icon><span>'.$subMenu->label.'</span></span>';
+                                    if ($subMenu->subMenu) {
+                                        foreach ($subMenu->subMenu as $subSubMenu) {
+                                            echo '<a-menu-item key="west-menu-'.$subSubMenu->id.'">';
+                                            echo '<a href="'.$subSubMenu->url.'">'.'<a-icon type="'.$subSubMenu->icon.'"></a-icon>'.$subSubMenu->label.'</a>';
+                                            echo '</a-menu-item>';
+                                        }
+                                    }
+                                    echo '</a-sub-menu>';
                                 }
-                                ?>
-                            </ul>
-                        </li>
-                        <?php
+                            }
+                            break;
+                        }
                     }
                     ?>
-                </ul>
+                </a-menu>
             </div>
+
+            <div class="toggle" @click="toggleMenu">
+                <a-icon :type="collapsed ?'caret-right': 'caret-left'"></a-icon>
+            </div>
+
             <!--{/west}-->
         </div>
-        <!--{/middle}-->
+
+
+        <div class="be-middle" id="be-middle">
+            <!--{middle}-->
+
+            <div class="be-north">
+                <!--{north}-->
+
+
+                <div class="menu">
+
+                    <div id="north-menu" v-cloak>
+                        <?php
+                        $adminMenu = Be::getMenu('Admin');
+                        $adminMenuTree = $adminMenu->getMenuTree()
+                        ?>
+                        <a-menu v-model="current"
+                                mode="horizontal">
+
+                            <a-menu-item key="home">
+                                <a-icon type="home"></a-icon>后台首页
+                            </a-menu-item>
+
+                            <?php
+                            foreach ($adminMenuTree as $menu) {
+
+                                // 有子菜单
+                                if ($menu->subMenu) {
+                                    echo '<a-sub-menu key="north-menu-'.$menu->id.'">';
+                                    echo '<span slot="title">';
+                                    echo '<a-icon type="'.$menu->icon.'"></a-icon>'.$menu->label;
+                                    echo '</span>';
+                                    foreach ($menu->subMenu as $subMenu) {
+                                        echo '<a-sub-menu key="north-menu-'.$subMenu->id.'">';
+                                        echo '<span slot="title"><a-icon type="'.$subMenu->icon.'"></a-icon><span>'.$subMenu->label.'</span></span>';
+                                        if ($subMenu->subMenu) {
+                                            foreach ($subMenu->subMenu as $subSubMenu) {
+                                                echo '<a-menu-item key="north-menu-'.$subSubMenu->id.'">';
+                                                echo '<a href="'.$subSubMenu->url.'">'.'<a-icon type="'.$subSubMenu->icon.'"></a-icon>'.$subSubMenu->label.'</a>';
+                                                echo '</a-menu-item>';
+                                            }
+                                        }
+                                        echo '</a-sub-menu>';
+                                    }
+                                    echo '</a-sub-menu>';
+                                }
+                            }
+                            ?>
+
+                            <a-sub-menu>
+                                <span slot="title">
+                                    <a-icon type="info-circle"></a-icon>帮助
+                                </span>
+                                <a-menu-item key="help-official">
+                                    <a href="http://www.phpbe.com/" target="_blank"><a-icon type="global"></a-icon>官方网站</a>
+                                </a-menu-item>
+                                <a-menu-item key="help-support">
+                                    <a href="http://support.phpbe.com/" target="_blank"><a-icon type="bulb"></a-icon>技术支持</a>
+                                </a-menu-item>
+                                <a-menu-item key="help-about" @click="about"><a-icon type="info"></a-icon>关于...</a-menu-item>
+                            </a-sub-menu>
+
+                        </a-menu>
+
+                    </div>
+
+                </div>
+
+                <div class="user">
+                    <?php
+                    $adminConfigAdminUser = Be::getConfig('System', 'AdminUser');
+                    ?>
+                    您好：
+                    <img src="<?php echo Be::getRuntime()->getDataUrl().'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$adminConfigAdminUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" />
+                    <?php echo $my->name; ?> &nbsp; &nbsp;
+                    <a href="<?php echo adminUrl('System.AdminUser.logout')?>" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
+                </div>
+
+                <!--{/north}-->
+            </div>
+
+            <div class="be-center">
+                <div class="center-title" id="app-center-title" v-cloak>
+                    <?php
+                    $adminMenu = Be::getMenu('Admin');
+                    $pathway = $adminMenu->getPathwayByUrl(\Be\System\Request::url());
+                    ?>
+                    <a-breadcrumb>
+                        <a-breadcrumb-item href="">
+                            <a-icon type="home"></a-icon>
+                        </a-breadcrumb-item>
+                        <?php
+                        foreach ($pathway as $x) {
+                            ?>
+                            <a-breadcrumb-item>
+                                <span><?php echo $x->label; ?></span>
+                            </a-breadcrumb-item>
+                            <?php
+                        }
+                        ?>
+                    </a-breadcrumb>
+                </div>
+                <div class="center-body">
+                    <!--{center}-->
+                    <!--{/center}-->
+                </div>
+            </div>
+            <!--{/middle}-->
+        </div>
+
 
     </div>
+
+    <script src="theme/admin/js/theme.js"></script>
+
     <!--{/body}-->
 </body>
 </html>
